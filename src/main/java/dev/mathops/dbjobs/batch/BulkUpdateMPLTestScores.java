@@ -78,9 +78,9 @@ public final class BulkUpdateMPLTestScores {
             "JAMC-BA", "LLAC-BA", "LLAC-LFRZ-BA", "LLAC-LGEZ-BA", "LLAC-LSPZ-BA", "LLAC-SPPZ-BA", "MUSI-BA", "MUSC-BM",
             "MUSC-COMZ-BM", "MUSC-MUEZ-BM", "MUSC-MUTZ-BM", "MUSC-PERZ-BM", "PHIL-BA", "PHIL-GNPZ-BA", "PHIL-GPRZ-BA",
             "PHIL-PSAZ-BA", "POLS-BA", "POLS-EPAZ-BA", "POLS-GPPZ-BA", "POLS-ULPZ-BA", "POLS-LPGZ-BA", "POLS-PPSZ-BA",
-            "SOCI-BA", "SOCI-CRCZ-BA", "SOCI-ENSZ-BA", "SOCI-GNSZ-BA", "THTR-BA", "THTR-MUSZ-BA", "THTR-PRFZ-BA",
-            "THTR-CDTZ-BA", "THTR-LDTZ-BA", "THTR-PDTZ-BA", "THTR-SDSZ-BA", "THTR-SDTZ-BA", "WGST-BA", "INST-BA",
-            "INST-ASTZ-BA", "INST-EUSZ-BA", "INST-GBLZ-BA", "INST-LTSZ-BA", "INST-MEAZ-BA", "ILAR-BA",
+            "POLS-PJDZ-PA", "SOCI-BA", "SOCI-CRCZ-BA", "SOCI-ENSZ-BA", "SOCI-GNSZ-BA", "THTR-BA", "THTR-MUSZ-BA",
+            "THTR-PRFZ-BA", "THTR-CDTZ-BA", "THTR-LDTZ-BA", "THTR-PDTZ-BA", "THTR-SDSZ-BA", "THTR-SDTZ-BA", "WGST-BA",
+            "INST-BA", "INST-ASTZ-BA", "INST-EUSZ-BA", "INST-GBLZ-BA", "INST-LTSZ-BA", "INST-MEAZ-BA", "ILAR-BA",
             // Below are not in catalog
             "THTR-DTHZ-BA", "CMST-DD-BA", "HDFS-DHDZ-BS", "HDFS-DECZ-BS", "SOCI-DGSZ-BA", "ANTH-DD-BA", "HDFS-DPHZ-BS",
             "JAMC-DD-BA", "ILAR-DD-BA", "POLS-DD-BA", "DANC-DEDZ-BF", "HDFS-LEPZ-BS", "HDFS-DPIZ-BS", "ENGL-LANZ-BA",
@@ -99,7 +99,7 @@ public final class BulkUpdateMPLTestScores {
             "BUSA-ACCZ-BS", "BUSA-FINZ-BS", "BUSA-FPLZ-BS", "BUSA-HRMZ-BS", "BUSA-INSZ-BS", "BUSA-MINZ-BS",
             "BUSA-MKTZ-BS", "BUSA-REAZ-BS", "BUSA-SCMZ-BS", "BUSA-SUSZ-BS", "CBEG-DUAL", "CBEG-BMEC-BS", "CPEG-BMEP-BS",
             "ELEG-BMEE-BS", "ELEG-BMEL-BS", "MECH-BMEM-BS", "CBEG-BS", "CBEG-MLMZ-BS", "CBEG-BIMZ-BS", "CBEG-SSEZ-BS",
-            "CIVE-BS", "CPEG-BS", "CPEG-AESZ-BS", "CPEG-EISZ-BS", "CPEG-NDTZ-BS", "CPEG-VICZ-BS", "ELEG-BS",
+            "CIVE-BS", "CONE-BS", "CPEG-BS", "CPEG-AESZ-BS", "CPEG-EISZ-BS", "CPEG-NDTZ-BS", "CPEG-VICZ-BS", "ELEG-BS",
             "ELEG-ELEZ-BS", "ELEG-LOEZ-BS", "ELEG-ASPZ-BS", "ENVE-BS", "MECH-BS", "MECH-ACEZ-BS", "MECH-ADMZ-BS",
             "MECH-ASU-BS", "APAM-BS", "APAM-ADAZ-BS", "APAM-MDSZ-BS", "APAM-PDVZ-BS", "CTMG-BS", "FMST-BS", "HAES-BS",
             "HAES-HPRZ-BS", "HAES-SPMZ-BS", "HAES-EXSZ-BS", "HSMG-BS", "IARD-BS", "IARD-IADZ-BS", "IARD-IPRZ-BS",
@@ -111,13 +111,13 @@ public final class BulkUpdateMPLTestScores {
             "WRSC-WSUZ-BS", "BCHM-BS", "BCHM-ASBZ-BS", "BCHM-DTSZ-BS", "BCHM-HMSZ-BS", "BCHM-PPHZ-BS", "BLSC-BS",
             "BLSC-BLSZ-BS", "BLSC-BTNZ-BS", "CHEM-BS", "CHEM-ECHZ-BS", "CHEM-FCHZ-BS", "CHEM-HSCZ-BS", "CHEM-SCHZ-BS",
             "CHEM-MTRZ-BS", "CPSC-BS", "CPSC-CPSZ-BS", "CPSC-HCCZ-BS", "CPSC-AIMZ-BS", "CPSC-CSYZ-BS", "CPSC-NSCZ-BS",
-            "CPSC-SEGZ-BS", "CPSC-CSEZ-BS", "CPSC-DCCZ-BS", "DSCI-BS", "DSCI-CSCZ-BS", "DSCI-ECNZ-BS", "DSCI-MATZ-BS",
-            "DSCI-STSZ-BS", "DSCI-NEUZ-BS", "DSCI-DCMZ-BS", "MATH-BS", "MATH-ALSZ-BS", "MATH-AMTZ-BS", "MATH-GNMZ-BS",
-            "MATH-MTEZ-BS", "MATH-CPMZ-BS", "NSCI-BS", "NSCI-BLEZ-BS", "NSCI-CHEZ-BS", "NSCI-GLEZ-BS", "NSCI-PHSZ-BS",
-            "NSCI-PHEZ-BS", "PHYS-BS", "PHYS-APPZ-BS", "PHYS-PHYZ-BS", "PSYC-BS", "PSYC-ADCZ-BS", "PSYC-CCPZ-BS",
-            "PSYC-GPSZ-BS", "PSYC-IOPZ-BS", "PSYC-MBBZ-BS", "PSYC-AACZ-BS", "STAT-BS", "ZOOL-BS", "BIOM-BS",
-            "BIOM-APHZ-BS", "BIOM-EPHZ-BS", "BIOM-MIDZ-BS", "NERO-BS", "NERO-BCNZ-BS", "NERO-CMNZ-BS", "HEMG-BS",
-            "FAFS-BS", "FAFS-FSTZ-BS", "FAFS-FSIZ-BS", "HLPH-DD-BS",
+            "CPSC-SEGZ-BS", "CPSC-CSEZ-BS", "CPSC-DCCZ-BS", "DSCI-BS", "DSCI-CSCZ-BS", "DSCI-DSTZ-BS", "DSCI-ECNZ-BS",
+            "DSCI-MATZ-BS", "DSCI-STSZ-BS", "DSCI-NEUZ-BS", "DSCI-DCMZ-BS", "MATH-BS", "MATH-ALSZ-BS", "MATH-AMTZ-BS",
+            "MATH-GNMZ-BS", "MATH-MTEZ-BS", "MATH-CPMZ-BS", "NSCI-BS", "NSCI-BLEZ-BS", "NSCI-CHEZ-BS", "NSCI-GLEZ-BS",
+            "NSCI-PHSZ-BS", "NSCI-PHEZ-BS", "PHYS-BS", "PHYS-APPZ-BS", "PHYS-PHYZ-BS", "PSYC-BS", "PSYC-ADCZ-BS",
+            "PSYC-CCPZ-BS", "PSYC-GPSZ-BS", "PSYC-IOPZ-BS", "PSYC-MBBZ-BS", "PSYC-AACZ-BS", "STAT-BS", "ZOOL-BS",
+            "BIOM-BS", "BIOM-APHZ-BS", "BIOM-EPHZ-BS", "BIOM-MIDZ-BS", "NERO-BS", "NERO-BCNZ-BS", "NERO-CMNZ-BS",
+            "HEMG-BS", "FAFS-BS", "FAFS-FSTZ-BS", "FAFS-FSIZ-BS", "HLPH-DD-BS",
             // Below are not in catalog
             "PSYC-GDSZ-BS", "CPSC-DCSZ-BS", "HORT-DHBZ-BS", "BUSA-OIMZ-BS", "AGBU-DD-BS", "WSSS-WSDZ-BS", "WSSS-BS",
             "NRTM-NRTZ-BS", "NRTM-GLTZ-BS", "FESV-DD-BS", "CHEM-ACSZ-BS", "WSSS-WSSZ-BS", "EVHL-BS",
@@ -443,7 +443,8 @@ public final class BulkUpdateMPLTestScores {
                    || programCode.endsWith("-MED")
                    || programCode.endsWith("-DOT")
                    || programCode.endsWith("-MCL")
-                   || programCode.endsWith("MCIN")
+                   || programCode.endsWith("-MCIN")
+                   || programCode.endsWith("-MNRS")
                    || programCode.endsWith("-PHD")) {
             // Don't force grad students through the placement tool...
             auccOnly = true;

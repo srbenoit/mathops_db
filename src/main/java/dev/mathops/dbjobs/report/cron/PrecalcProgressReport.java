@@ -386,8 +386,9 @@ public final class PrecalcProgressReport {
      */
     public static void main(final String... args) {
 
-        final PrecalcProgressReport job = new PrecalcProgressReport("athletes_summary",
+        final PrecalcProgressReport job1 = new PrecalcProgressReport("athletes_summary",
                 RawSpecialStus.ATHLETE, "PRECALCULUS PROGRESS REPORT FOR REGISTERED STUDENT ATHLETES");
+        job1.execute();
 
 //        final PrecalcProgressReport job =
 //                new PrecalcProgressReport("engineering_summary", RawSpecialStus.ENGRSTU,
@@ -397,6 +398,8 @@ public final class PrecalcProgressReport {
 //                new PrecalcProgressReport("m116_summary", RawSpecialStus.M116,
 //                        "PRECALCULUS PROGRESS REPORT FOR STUDENTS IN MATH 116");
 
-        job.execute();
+        final PrecalcProgressReport job2 = new PrecalcProgressReport("csu_online_summary",
+                RawSpecialStus.DCE, "PRECALCULUS PROGRESS REPORT FOR CSU ONLINE STUDENTS");
+        job2.execute();
     }
 }
