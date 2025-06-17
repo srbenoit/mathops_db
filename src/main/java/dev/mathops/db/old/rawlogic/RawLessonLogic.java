@@ -46,7 +46,7 @@ public enum RawLessonLogic {
             tempList.add(mkCourseModel("M100T.17",
                     "Solve Conversions Problems"));
             tempList.add(mkCourseModel("M100T.18",
-                    "Solve Precentage Increase or Decrease Problems"));
+                    "Solve Percentage Increase or Decrease Problems"));
             tempList.add(mkCourseModel("M100T.19",
                     "Use Exponential Rules to Evaluate Expressions"));
             tempList.add(mkCourseModel("M100T.110",
@@ -99,7 +99,7 @@ public enum RawLessonLogic {
             tempList.add(mkCourseModel("M100T.43",
                     "Factor Polynomials"));
             tempList.add(mkCourseModel("M100T.44",
-                    "Determine the Slope of a Line (Algabraic Approach)"));
+                    "Determine the Slope of a Line (Algebraic Approach)"));
             tempList.add(mkCourseModel("M100T.45",
                     "Write the Slope-Intercept Form of a Line"));
             tempList.add(mkCourseModel("M100T.46",
@@ -699,7 +699,7 @@ public enum RawLessonLogic {
             tempList.add(mkCourseModel("M1240.27",
                     "Given the graph of a logarithmic function identify the equation."));
             tempList.add(mkCourseModel("M1240.28",
-                    "Solve basic logarithmic equations algabraically."));
+                    "Solve basic logarithmic equations algebraically."));
             tempList.add(mkCourseModel("M1240.29",
                     "Graph <em>y = ae<sup>x</sup></em> and <em>y =</em> ln <em>x</em>."));
             tempList.add(mkCourseModel("M1240.210",

@@ -338,7 +338,7 @@ public enum RawLessonComponentLogic {
         lst.add(mkETT("MT17T2", TT2));
 
         startLesson("M100T.18", 1, 8);
-        lst.add(mkLH2(null, O1_8, "Solve Precentage Increase or Decrease Problems"));
+        lst.add(mkLH2(null, O1_8, "Solve Percentage Increase or Decrease Problems"));
         lst.add(mkVid("MT18OV", OVVID101));
         lst.add(mkPdf("MT18OV", OVPDF));
         lst.add(mkETT("MT18E1", EX1));
@@ -566,7 +566,7 @@ public enum RawLessonComponentLogic {
         lst.add(mkETT("MT43T2", TT2));
 
         startLesson("M100T.44", 4, 4);
-        lst.add(mkLH2(null, O4_4, "Determine the Slope of a Line (Algabraic Approach)"));
+        lst.add(mkLH2(null, O4_4, "Determine the Slope of a Line (Algebraic Approach)"));
         lst.add(mkVid("MT44OV", OVVID101));
         lst.add(mkPdf("MT44OV", OVPDF));
         lst.add(mkETT("MT44E1", EX1));
@@ -2336,7 +2336,7 @@ public enum RawLessonComponentLogic {
         lst.add(mkVid("IV4.5.2", "Supplemental: Solving Systems of Nonlinear Equations Graphically"));
         lst.add(mkVid("TV4.5", "Supplemental: Solving Systems of Nonlinear Equations with Technology"));
 
-        lst.add(mkSEC("4.5.1", "Solve systems with nonlinear functions algabraically."));
+        lst.add(mkSEC("4.5.1", "Solve systems with nonlinear functions algebraically."));
         lst.add(mkETT("3451E1", EX1));
         lst.add(mkETT("3451T1", TT1));
         lst.add(mkETT("3451T2", TT2));
@@ -3141,7 +3141,7 @@ public enum RawLessonComponentLogic {
         lst.add(mkETT("4241E2", EX2));
         lst.add(mkETT("4241T1", TT1));
         lst.add(mkETT("4241T2", TT2));
-        lst.add(mkSEC("2.4.2", "Solve basic logarithmic equations algabraically."));
+        lst.add(mkSEC("2.4.2", "Solve basic logarithmic equations algebraically."));
         lst.add(mkETT("4242E1", EX1));
         lst.add(mkETT("4242E2", EX2));
         lst.add(mkETT("4242E3", EX3));
@@ -3680,8 +3680,8 @@ public enum RawLessonComponentLogic {
 
         startLesson(prefix + ".28", 2, 8);
         lst.add(mkLH2("2: Introduction to Exponential and Logarithmic Functions", O2_8,
-                "Solve basic logarithmic equations algabraically."));
-        lst.add(mkSEC("2.8.1", "Solve basic logarithmic equations algabraically."));
+                "Solve basic logarithmic equations algebraically."));
+        lst.add(mkSEC("2.8.1", "Solve basic logarithmic equations algebraically."));
         lst.add(mkETT("4242E1", EX1));
         lst.add(mkETT("4242E2", EX2));
         lst.add(mkETT("4242E3", EX3));
