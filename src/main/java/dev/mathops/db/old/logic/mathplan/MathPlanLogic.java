@@ -12,7 +12,12 @@ import dev.mathops.db.cfg.Login;
 import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.old.ifaces.ILiveCsuCredit;
 import dev.mathops.db.old.ifaces.ILiveTransferCredit;
+import dev.mathops.db.old.logic.PlacementStatus;
+import dev.mathops.db.old.logic.PrecalcTutorialStatus;
+import dev.mathops.db.old.logic.PrerequisiteLogic;
 import dev.mathops.db.old.logic.mathplan.data.CourseGroup;
+import dev.mathops.db.old.logic.mathplan.data.CourseRecommendations;
+import dev.mathops.db.old.logic.mathplan.data.ENextStep;
 import dev.mathops.db.old.logic.mathplan.data.Major;
 import dev.mathops.db.old.logic.mathplan.data.MajorMathRequirement;
 import dev.mathops.db.old.logic.mathplan.data.MathPlanConstants;
@@ -26,6 +31,7 @@ import dev.mathops.db.old.rawlogic.RawStmpeLogic;
 import dev.mathops.db.old.rawlogic.RawStudentLogic;
 import dev.mathops.db.old.rawrecord.RawCourse;
 import dev.mathops.db.old.rawrecord.RawFfrTrns;
+import dev.mathops.db.old.rawrecord.RawMpeCredit;
 import dev.mathops.db.old.rawrecord.RawRecordConstants;
 import dev.mathops.db.old.rawrecord.RawStcourse;
 import dev.mathops.db.old.rawrecord.RawStmathplan;
@@ -48,6 +54,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -2478,7 +2485,8 @@ public final class MathPlanLogic {
      * @throws SQLException if there is an error accessing the database
      */
     public MathPlanStudentData getStudentData(final Cache cache, final String studentId, final ZonedDateTime now,
-                                              final long loginSessionTag, final boolean writeChanges) throws SQLException {
+                                              final long loginSessionTag, final boolean writeChanges)
+            throws SQLException {
 
         synchronized (this.synch) {
             expireCache();
@@ -2905,14 +2913,29 @@ public final class MathPlanLogic {
         try {
             // Student 823251213 PIDM 10567708
 
-            final String status1 = getMathPlanStatus(cache, 12370959);
-            Log.info("Student 836959005 plan status: " + status1);
+            final String status1 = getMathPlanStatus(cache,  12462401);
+            Log.info("Student 837599652 plan status: " + status1);
 
-            final MathPlanPlacementStatus status2 = getMathPlacementStatus(cache, "836959005");
-            Log.info("Student 836959005 placement status: ");
+            final MathPlanPlacementStatus status2 = getMathPlacementStatus(cache, "837599652");
+            Log.info("Student 837599652 placement status: ");
             Log.info("    Placement needed:   ", status2.isPlacementNeeded);
             Log.info("    Placement complete: ", status2.isPlacementComplete);
             Log.info("    How satisfied:      ", status2.howSatisfied);
+
+            final MathPlanLogic logic = new MathPlanLogic(profile);
+            final MathPlanStudentData data = logic.getStudentData(cache, "837599652", ZonedDateTime.now(), 10L, true);
+
+            Log.info("Student 837599652 Math Plan Data: ");
+            Log.info("    Viewed existing:     ", data.viewedExisting);
+            Log.info("    Checked 'only rec.': ", data.checkedOnlyRecommendation);
+            Log.info("    Completed:           ", data.getCompletedCourses());
+            Log.info("    Transfer:            ", data.getLiveTransferCredit());
+            Log.info("    MPE Credit:          ", data.getPlacementCredit());
+            Log.info("    Requirements:        ", data.getRequirements());
+            Log.info("    Critical:            ", data.recommendations.criticalSequence);
+            Log.info("    Typical:             ", data.recommendations.typicalSequence);
+            Log.info("    Can Register For:    ", data.getCanRegisterFor());
+            Log.info("    Next steps:          ", data.getNextSteps());
         } catch (final SQLException ex) {
             Log.warning(ex);
         }

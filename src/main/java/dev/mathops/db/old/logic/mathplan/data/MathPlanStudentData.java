@@ -2,6 +2,7 @@ package dev.mathops.db.old.logic.mathplan.data;
 
 import dev.mathops.db.Cache;
 import dev.mathops.db.enums.ETermName;
+import dev.mathops.db.logic.SystemData;
 import dev.mathops.db.old.logic.HoldsStatus;
 import dev.mathops.db.old.logic.PlacementLogic;
 import dev.mathops.db.old.logic.PlacementStatus;
@@ -156,8 +157,8 @@ public final class MathPlanStudentData {
         this.liveTransferCredit = logic.getStudentTransferCredit(cache, studentId, true);
 
         // TODO: For any transfer rows (in MATH) that are not in the local database, inset them.
-        // And also, in the course web site, if a student has no prereqs, do a secondary live check
-        // against Aries and see if new transfer rows exist (and import them).
+        //  And also, in the course web site, if a student has no prereqs, do a secondary live check
+        //  against Aries and see if new transfer rows exist (and import them).
 
         this.placementCredit = RawMpeCreditLogic.queryByStudent(cache, studentId);
 
@@ -180,8 +181,7 @@ public final class MathPlanStudentData {
         this.precalcTutorialStatus = new PrecalcTutorialLogic(cache, studentId, now.toLocalDate(),
                 this.prereqLogic).status;
 
-        // Count the number of AUCC core mathematics course credits completed with a grade
-        // of C (2.000) or better.
+        // Count the number of AUCC core mathematics course credits completed with a grade of C (2.000) or better.
         countCoreCredits(logic);
 
         // Build the set of courses that the student can register for right now
@@ -562,7 +562,8 @@ public final class MathPlanStudentData {
         final CourseSequence recommend = this.recommendations.recommendedSequence;
         final CourseSequence typical = this.recommendations.typicalSequence;
 
-        final TermRec active = cache.getSystemData().getActiveTerm();
+        final SystemData systemData = cache.getSystemData();
+        final TermRec active = systemData.getActiveTerm();
 
         final ETermName activeTermName = active == null ? null : active.term.name;
         final int activeTermYear = active == null ? LocalDate.now().getYear() : active.term.year.intValue();
