@@ -1,5 +1,6 @@
 package dev.mathops.dbjobs.eos.rollover;
 
+import dev.mathops.commons.EDebugMode;
 import dev.mathops.commons.ESuccessFailure;
 import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
@@ -19,7 +20,6 @@ import dev.mathops.db.old.rawrecord.RawStcourse;
 import dev.mathops.db.old.rawrecord.RawSthomework;
 import dev.mathops.db.rec.TermRec;
 import dev.mathops.db.reclogic.TermLogic;
-import dev.mathops.dbjobs.EDebugMode;
 import dev.mathops.text.builder.SimpleBuilder;
 
 import java.sql.SQLException;

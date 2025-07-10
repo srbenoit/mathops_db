@@ -1,5 +1,6 @@
 package dev.mathops.dbjobs.eos.grading;
 
+import dev.mathops.commons.EDebugMode;
 import dev.mathops.commons.ESuccessFailure;
 import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
@@ -7,7 +8,6 @@ import dev.mathops.db.old.rawlogic.RawStcourseLogic;
 import dev.mathops.db.old.rawlogic.RawStpaceSummaryLogic;
 import dev.mathops.db.old.rawrecord.RawStcourse;
 import dev.mathops.db.old.rawrecord.RawStpaceSummary;
-import dev.mathops.dbjobs.EDebugMode;
 
 import java.sql.SQLException;
 import java.util.List;

@@ -1,6 +1,7 @@
 package dev.mathops.dbjobs.eos;
 
 import dev.mathops.commons.CoreConstants;
+import dev.mathops.commons.EDebugMode;
 import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
 import dev.mathops.db.Contexts;
@@ -15,7 +16,6 @@ import dev.mathops.db.old.rawlogic.RawGradeRollLogic;
 import dev.mathops.db.old.rawrecord.RawGradeRoll;
 import dev.mathops.db.rec.TermRec;
 import dev.mathops.db.type.TermKey;
-import dev.mathops.dbjobs.EDebugMode;
 import dev.mathops.text.builder.HtmlBuilder;
 import dev.mathops.text.builder.SimpleBuilder;
 

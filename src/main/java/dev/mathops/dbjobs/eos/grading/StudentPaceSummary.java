@@ -1,5 +1,6 @@
 package dev.mathops.dbjobs.eos.grading;
 
+import dev.mathops.commons.EDebugMode;
 import dev.mathops.commons.ESuccessFailure;
 import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
@@ -25,7 +26,6 @@ import dev.mathops.db.old.rawrecord.RawStterm;
 import dev.mathops.db.old.rawrecord.RawStudent;
 import dev.mathops.db.rec.TermRec;
 import dev.mathops.db.type.TermKey;
-import dev.mathops.dbjobs.EDebugMode;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
