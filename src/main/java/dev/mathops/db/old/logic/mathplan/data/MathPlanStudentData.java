@@ -37,6 +37,7 @@ import java.util.Set;
  * re-used on subsequent page loads, since this data is unlikely to change rapidly. If an update is made to the data by
  * the site (like the list of majors of interest), the cache is updated at the same time.
  */
+@Deprecated
 public final class MathPlanStudentData {
 
     /** Retain data for 60 seconds (adjust as needed). */

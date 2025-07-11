@@ -121,7 +121,7 @@ public final class ImportOdsTransferCredit {
 
         try (final Statement stmt = conn.createStatement()) {
 
-            final String sql = "SELECT A.ID x, B.COURSE_IDENTIFICATION y "
+            final String sql = "SELECT A.ID x, B.COURSE_IDENTIFICATION y, B.FINAL_GRADE z "
                                + "FROM CSUBAN.CSUS_SECTION_INFO_SPR A, ODSMGR.STUDENT_COURSE B "
                                + "WHERE A.PERSON_UID = B.PERSON_UID "
                                + " AND ((B.COURSE_IDENTIFICATION='MATH002'"
@@ -160,7 +160,8 @@ public final class ImportOdsTransferCredit {
                         report.add("ODS record had null course");
                     } else if (stuId.length() == 9) {
                         if (course.length() == 7) {
-                            result.add(new TransferRecord(stuId, course));
+                            final String grade = rs.getString("z");
+                            result.add(new TransferRecord(stuId, course, grade));
                         } else {
                             report.add("ODS record had bad course: '" + course + "'");
                         }
@@ -189,7 +190,7 @@ public final class ImportOdsTransferCredit {
 
         try (final Statement stmt = conn.createStatement()) {
 
-            final String sql = "SELECT A.ID x, B.COURSE_IDENTIFICATION y "
+            final String sql = "SELECT A.ID x, B.COURSE_IDENTIFICATION y, B.FINAL_GRADE z "
                                + "FROM CSUBAN.CSUS_SECTION_INFO_SMR A, ODSMGR.STUDENT_COURSE B "
                                + "WHERE A.PERSON_UID = B.PERSON_UID "
                                + " AND ((B.COURSE_IDENTIFICATION='MATH002'"
@@ -227,7 +228,8 @@ public final class ImportOdsTransferCredit {
                         report.add("ODS record had null course");
                     } else if (stuId.length() == 9) {
                         if (course.length() == 7) {
-                            result.add(new TransferRecord(stuId, course));
+                            final String grade = rs.getString("z");
+                            result.add(new TransferRecord(stuId, course, grade));
                         } else {
                             report.add("ODS record had bad course: '" + course + "'");
                         }
@@ -256,7 +258,7 @@ public final class ImportOdsTransferCredit {
 
         try (final Statement stmt = conn.createStatement()) {
 
-            final String sql = "SELECT A.ID x, B.COURSE_IDENTIFICATION y "
+            final String sql = "SELECT A.ID x, B.COURSE_IDENTIFICATION y, B.FINAL_GRADE z "
                                + "FROM CSUBAN.CSUS_SECTION_INFO_FAL A, ODSMGR.STUDENT_COURSE B "
                                + "WHERE A.PERSON_UID = B.PERSON_UID "
                                + " AND ((B.COURSE_IDENTIFICATION='MATH002'"
@@ -294,7 +296,8 @@ public final class ImportOdsTransferCredit {
                         report.add("ODS record had null course");
                     } else if (stuId.length() == 9) {
                         if (course.length() == 7) {
-                            result.add(new TransferRecord(stuId, course));
+                            final String grade = rs.getString("z");
+                            result.add(new TransferRecord(stuId, course, grade));
                         } else {
                             report.add("ODS record had bad course: '" + course + "'");
                         }
@@ -375,16 +378,21 @@ public final class ImportOdsTransferCredit {
         /** The course ID. */
         private final String course;
 
+        /** The course grade. */
+        private final String grade;
+
         /**
          * Constructs a new {@code TransferRecord}.
          *
          * @param theStuId  the student ID
          * @param theCourse the course
+         * @param theGrade  the grade
          */
-        TransferRecord(final String theStuId, final String theCourse) {
+        TransferRecord(final String theStuId, final String theCourse, final String theGrade) {
 
             this.stuId = theStuId;
             this.course = theCourse;
+            this.grade = theGrade;
         }
 
         /**
@@ -405,6 +413,16 @@ public final class ImportOdsTransferCredit {
         String getCourse() {
 
             return this.course;
+        }
+
+        /**
+         * Gets the course grade.
+         *
+         * @return the course grade
+         */
+        String getGrade() {
+
+            return this.grade;
         }
     }
 }

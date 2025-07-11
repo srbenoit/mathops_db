@@ -3,6 +3,7 @@ package dev.mathops.db.old.logic.mathplan;
 /**
  * A container for status of Math Placement relative to a Math Plan.
  */
+@Deprecated
 public class MathPlanPlacementStatus {
 
     /** True if student has completed the Math Plan and plan indicates placement is needed. */

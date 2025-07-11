@@ -12,12 +12,7 @@ import dev.mathops.db.cfg.Login;
 import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.old.ifaces.ILiveCsuCredit;
 import dev.mathops.db.old.ifaces.ILiveTransferCredit;
-import dev.mathops.db.old.logic.PlacementStatus;
-import dev.mathops.db.old.logic.PrecalcTutorialStatus;
-import dev.mathops.db.old.logic.PrerequisiteLogic;
 import dev.mathops.db.old.logic.mathplan.data.CourseGroup;
-import dev.mathops.db.old.logic.mathplan.data.CourseRecommendations;
-import dev.mathops.db.old.logic.mathplan.data.ENextStep;
 import dev.mathops.db.old.logic.mathplan.data.Major;
 import dev.mathops.db.old.logic.mathplan.data.MajorMathRequirement;
 import dev.mathops.db.old.logic.mathplan.data.MathPlanConstants;
@@ -31,7 +26,6 @@ import dev.mathops.db.old.rawlogic.RawStmpeLogic;
 import dev.mathops.db.old.rawlogic.RawStudentLogic;
 import dev.mathops.db.old.rawrecord.RawCourse;
 import dev.mathops.db.old.rawrecord.RawFfrTrns;
-import dev.mathops.db.old.rawrecord.RawMpeCredit;
 import dev.mathops.db.old.rawrecord.RawRecordConstants;
 import dev.mathops.db.old.rawrecord.RawStcourse;
 import dev.mathops.db.old.rawrecord.RawStmathplan;
@@ -54,7 +48,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -63,7 +56,7 @@ import java.util.TreeMap;
  * <p>
  * LAST REVIEW AGAINST CIM/Catalog: April 29, 2024
  */
-public final class MathPlanLogic {
+@Deprecated public final class MathPlanLogic {
 
     /** Object on which to synchronize member variable access. */
     private final Object synch;

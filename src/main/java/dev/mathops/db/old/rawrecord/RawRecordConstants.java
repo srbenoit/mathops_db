@@ -31,16 +31,10 @@ public enum RawRecordConstants {
     public static final String M126 = "M 126";
 
     /** A commonly used string. */
-    public static final String MATH116 = "MATH 116";
-
-    /** A commonly used string. */
     public static final String MATH117 = "MATH 117";
 
     /** A commonly used string. */
     public static final String MATH118 = "MATH 118";
-
-    /** A commonly used string. */
-    public static final String MATH122 = "MATH 122";
 
     /** A commonly used string. */
     public static final String MATH124 = "MATH 124";
@@ -53,6 +47,18 @@ public enum RawRecordConstants {
 
     /** A commonly used string. */
     public static final String M127 = "M 127";
+
+    /** A commonly used string. */
+    public static final String M141 = "M 141";
+
+    /** A commonly used string. */
+    public static final String M155 = "M 155";
+
+    /** A commonly used string. */
+    public static final String M156 = "M 156";
+
+    /** A commonly used string. */
+    public static final String M160 = "M 160";
 
     /** A commonly used string. */
     public static final String M100C = "M 100C";

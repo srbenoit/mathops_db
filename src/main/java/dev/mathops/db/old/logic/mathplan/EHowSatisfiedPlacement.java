@@ -3,6 +3,7 @@ package dev.mathops.db.old.logic.mathplan;
 /**
  * Possible methods by which the Math Placement requirement can be satisfied.
  */
+@Deprecated
 public enum EHowSatisfiedPlacement {
 
     /** The Math Placement tool was completed. */

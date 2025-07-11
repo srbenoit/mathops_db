@@ -22,6 +22,7 @@ import java.util.TreeSet;
  * A sequence of courses, including pre-arrival courses, semester 1 courses, semester 2 courses, and courses to be taken
  * after semester 2.
  */
+@Deprecated
 public final class CourseSequence {
 
     /** The core course group. */

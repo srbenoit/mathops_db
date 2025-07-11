@@ -3,6 +3,7 @@ package dev.mathops.db.old.logic.mathplan.data;
 /**
  * Possible statuses for a course.
  */
+@Deprecated
 public enum ECourseStatus {
 
     /** Student completed course at CSU, earning the required grade. */

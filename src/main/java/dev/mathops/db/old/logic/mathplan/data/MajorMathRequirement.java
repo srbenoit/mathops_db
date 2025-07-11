@@ -20,6 +20,7 @@ import java.util.List;
  * <li>A course group code followed by '!' (meaning the course is marked as "critical")
  * </ul>
  */
+@Deprecated
 public final class MajorMathRequirement {
 
     /** The program code from CIM (like 'MAJR-CONC-BS'). */

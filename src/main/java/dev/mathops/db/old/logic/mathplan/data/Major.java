@@ -11,6 +11,7 @@ import java.util.List;
  * They may be presented to users as a list of distinct majors, with concentrations only shown if a student expresses an
  * interest in the major.
  */
+@Deprecated
 public final class Major implements Comparable<Major> {
 
     /** The profile question numbers that map to this major ("Canonical" number first). */

@@ -12,6 +12,7 @@ import java.util.Map;
 /**
  * A container for the course recommendations for a student based on a selection of majors.
  */
+@Deprecated
 public final class CourseRecommendations {
 
     /** The critical course sequence. */

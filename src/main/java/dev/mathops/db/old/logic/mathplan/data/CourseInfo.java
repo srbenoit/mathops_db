@@ -5,6 +5,7 @@ import dev.mathops.db.old.rawrecord.RawCourse;
 /**
  * Information on a single course in a course sequence.
  */
+@Deprecated
 public final class CourseInfo {
 
     /** The course record. */

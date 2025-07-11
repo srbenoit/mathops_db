@@ -1,9 +1,8 @@
-package dev.mathops.db.old.logic.mathplan.data;
+package dev.mathops.db.logic.mathplan;
 
 /**
  * Possible next steps for a student.
  */
-@Deprecated
 public enum ENextStep {
 
     /**

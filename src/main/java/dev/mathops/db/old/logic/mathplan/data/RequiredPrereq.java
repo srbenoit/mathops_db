@@ -20,6 +20,7 @@ import java.util.Objects;
  * A single prerequisite may allow multiple course options (like "M 159" or "M 160"). This is represented by multiple
  * entries in the {@code prereqCourses} list.
  */
+@Deprecated
 public final class RequiredPrereq implements Serializable, Comparable<RequiredPrereq> {
 
     /** Version number for serialization. */

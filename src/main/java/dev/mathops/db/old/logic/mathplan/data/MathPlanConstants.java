@@ -3,6 +3,7 @@ package dev.mathops.db.old.logic.mathplan.data;
 /**
  * Constants used for the Math Plan.
  */
+@Deprecated
 public enum MathPlanConstants {
     ;
 

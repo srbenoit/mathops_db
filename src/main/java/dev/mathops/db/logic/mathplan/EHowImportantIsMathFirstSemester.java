@@ -11,6 +11,9 @@ public enum EHowImportantIsMathFirstSemester {
     /** Math is important. */
     IMPORTANT,
 
+    /** Math is recommended. */
+    RECOMMENDED,
+
     /** Math is not important. */
     NOT_IMPORTANT,
 }

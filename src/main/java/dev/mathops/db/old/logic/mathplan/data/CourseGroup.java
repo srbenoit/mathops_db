@@ -26,6 +26,7 @@ import java.util.Objects;
  * the same lowest course number, the group with the longer set of options is considered "less than" the group with
  * fewer options.
  */
+@Deprecated
 public final class CourseGroup implements Serializable, Comparable<CourseGroup> {
 
     /** Version number for serialization. */

@@ -120,6 +120,20 @@ public final class PrerequisiteLogic {
         if (checkCredit(RawRecordConstants.MATH126)) {
             this.creditFor.add(RawRecordConstants.M126);
         }
+
+        // See if the student has satisfied prereqs for Calculus courses
+        if (this.satisfied.contains(RawRecordConstants.M124)) {
+            this.satisfied.add(RawRecordConstants.M141);
+        }
+
+        if (this.creditFor.contains(RawRecordConstants.M124) && this.creditFor.contains(RawRecordConstants.M125)) {
+            this.satisfied.add(RawRecordConstants.M155);
+        }
+
+        if (hasBOrBetter(RawRecordConstants.M124) && hasBOrBetter(RawRecordConstants.M126)) {
+            this.satisfied.add(RawRecordConstants.M156);
+            this.satisfied.add(RawRecordConstants.M160);
+        }
     }
 
     /**
@@ -297,6 +311,52 @@ public final class PrerequisiteLogic {
             if (!hasCredit) {
                 for (final RawFfrTrns xfer : this.allTransfer) {
                     if (courseId.equals(xfer.course)) {
+                        if (!this.creditByTransfer.contains(courseId)) {
+                            this.creditByTransfer.add(courseId);
+                        }
+                        hasCredit = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return hasCredit;
+    }
+
+    /**
+     * Tests whether the student has a B- or better grade in a specified course (where placement credit counts as
+     * such).
+     *
+     * @param courseId the course ID
+     * @return true if the student has a B- or better
+     */
+    private boolean hasBOrBetter(final String courseId) {
+
+        boolean hasCredit = false;
+
+        for (final RawStcourse complete : this.allCompletions) {
+            if (courseId.equals(complete.course) &&
+                (complete.courseGrade.startsWith("A") || complete.courseGrade.startsWith(
+                        "B") || complete.courseGrade.equals("S"))) {
+                hasCredit = true;
+                break;
+            }
+        }
+
+        if (!hasCredit) {
+            for (final RawMpeCredit cred : this.allPlacementCredit) {
+                if (courseId.equals(cred.course)) {
+                    hasCredit = true;
+                    break;
+                }
+            }
+
+            if (!hasCredit) {
+                for (final RawFfrTrns xfer : this.allTransfer) {
+                    if (courseId.equals(xfer.course)
+//                        && (xfer.grade.startsWith("A") || xfer.grade.startsWith("B") || xfer.grade.equals("S"))
+                    ) {
                         if (!this.creditByTransfer.contains(courseId)) {
                             this.creditByTransfer.add(courseId);
                         }
