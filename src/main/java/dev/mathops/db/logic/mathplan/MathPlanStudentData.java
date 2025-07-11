@@ -1,8 +1,6 @@
 package dev.mathops.db.logic.mathplan;
 
 import dev.mathops.db.Cache;
-import dev.mathops.db.enums.ETermName;
-import dev.mathops.db.logic.SystemData;
 import dev.mathops.db.old.logic.PlacementLogic;
 import dev.mathops.db.old.logic.PlacementStatus;
 import dev.mathops.db.old.logic.PrecalcTutorialLogic;
@@ -17,10 +15,8 @@ import dev.mathops.db.old.rawrecord.RawStmathplan;
 import dev.mathops.db.old.rawrecord.RawStudent;
 import dev.mathops.db.rec.LiveCsuCredit;
 import dev.mathops.db.rec.LiveTransferCredit;
-import dev.mathops.db.rec.TermRec;
 
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -656,90 +652,54 @@ public final class MathPlanStudentData {
             case AUCC -> true;
             case M_117_120 -> this.prereqLogic.hasSatisfiedPrerequisitesFor(RawRecordConstants.M117);
             case M_118 -> this.prereqLogic.hasSatisfiedPrerequisitesFor(RawRecordConstants.M118);
-            case M_124 -> this.prereqLogic.hasSatisfiedPrerequisitesFor(RawRecordConstants.M124);
+//            case M_124 -> this.prereqLogic.hasSatisfiedPrerequisitesFor(RawRecordConstants.M124);
             case M_125 -> this.prereqLogic.hasSatisfiedPrerequisitesFor(RawRecordConstants.M125);
-            case M_126 -> this.prereqLogic.hasSatisfiedPrerequisitesFor(RawRecordConstants.M126);
-            case M_141 -> this.prereqLogic.hasSatisfiedPrerequisitesFor(RawRecordConstants.M141);
+//            case M_126 -> this.prereqLogic.hasSatisfiedPrerequisitesFor(RawRecordConstants.M126);
+//            case M_141 -> this.prereqLogic.hasSatisfiedPrerequisitesFor(RawRecordConstants.M141);
             case M_155, M_155_160 -> this.prereqLogic.hasSatisfiedPrerequisitesFor(RawRecordConstants.M155);
-            case M_156, M_156_160 -> this.prereqLogic.hasSatisfiedPrerequisitesFor(RawRecordConstants.M156);
+            case M_156_160 -> this.prereqLogic.hasSatisfiedPrerequisitesFor(RawRecordConstants.M156);
             case M_160 -> this.prereqLogic.hasSatisfiedPrerequisitesFor(RawRecordConstants.M160);
         };
 
-        //
-        // FIXME: below here is old
-        //
-
-        final SystemData systemData = cache.getSystemData();
-        final TermRec active = systemData.getActiveTerm();
-
-        final ETermName activeTermName = active == null ? null : active.term.name;
-        final int activeTermYear = active == null ? LocalDate.now().getYear() : active.term.year.intValue();
-
         if (highestMath.level > EEligibility.AUCC.level) {
-            // Student needs more than just AUCC
+            if (alreadyEligible) {
+                this.nextSteps.add(ENextStep.MSG_ALREADY_ELIGIBLE);
+            } else if (highestMath == EEligibility.M_117_120) {
+                this.nextSteps.add(ENextStep.MSG_PLACE_INTO_117);
+            } else if (highestMath == EEligibility.M_118) {
+                if (this.prereqLogic.hasSatisfiedPrerequisitesFor(RawRecordConstants.M117)) {
+                    this.nextSteps.add(ENextStep.MSG_PLACE_OUT_117);
+                } else {
+                    this.nextSteps.add(ENextStep.MSG_PLACE_INTO_118);
+                }
+            } else if (highestMath == EEligibility.M_125) {
+                if (this.prereqLogic.hasSatisfiedPrerequisitesFor(RawRecordConstants.M118)) {
+                    this.nextSteps.add(ENextStep.MSG_PLACE_OUT_118);
+                } else if (this.prereqLogic.hasSatisfiedPrerequisitesFor(RawRecordConstants.M117)) {
+                    this.nextSteps.add(ENextStep.MSG_PLACE_OUT_117_118);
+                } else {
+                    this.nextSteps.add(ENextStep.MSG_PLACE_INTO_125);
+                }
+            } else if (highestMath == EEligibility.M_155 || highestMath == EEligibility.M_155_160) {
+                if (this.prereqLogic.hasSatisfiedPrerequisitesFor(RawRecordConstants.M125)) {
+                    this.nextSteps.add(ENextStep.MSG_PLACE_OUT_125);
+                } else if (this.prereqLogic.hasSatisfiedPrerequisitesFor(RawRecordConstants.M118)) {
+                    this.nextSteps.add(ENextStep.MSG_PLACE_OUT_118_125);
+                } else if (this.prereqLogic.hasSatisfiedPrerequisitesFor(RawRecordConstants.M117)) {
+                    this.nextSteps.add(ENextStep.MSG_PLACE_OUT_117_118_125);
+                } else {
+                    this.nextSteps.add(ENextStep.MSG_PLACE_INTO_155);
+                }
+            } else {
+                // What remains is MATH 156 and MATH - we need to check for the "B-" in 124 and 126 if needed
+                TODO:
+
+                ALSO TODO:Fix ffr_trns to include grade, add to ODS transfer job (don 't fotget to update archive
+                schema)
+            }
         } else {
-            // Student just needs AUCC
+            this.nextSteps.add(ENextStep.MSG_PLACEMENT_NOT_NEEDED);
         }
-
-        final int numSem1 = critical.getSemester1Courses().size() + critical.getSemester1CourseGroups().size();
-
-        if (critical.hasPreArrivalData() > 0) {
-            // CASE 1.1, critical pre-arrival requirements
-            if (numSem1 > 1) {
-                createPlanCase1(activeTermYear, activeTermName, critical,
-                        dENextStep.MSG_1A_PLURAL,
-                        dENextStep.MSG_1B_PLURAL, numSem1);
-            } else {
-                createPlanCase1(activeTermYear, activeTermName, critical,
-                        dENextStep.MSG_1A_SINGULAR,
-                        dENextStep.MSG_1B_SINGULAR, numSem1);
-            }
-
-        } else if (recommend.hasPreArrivalData() > 0) {
-
-            // CASE 1.2 with RECOMMENDED requirements
-            if (numSem1 > 1) {
-                createPlanCase1(activeTermYear, activeTermName, recommend,
-                        dENextStep.MSG_1C_PLURAL,
-                        dENextStep.MSG_1D_PLURAL, numSem1);
-            } else {
-                createPlanCase1(activeTermYear, activeTermName, recommend,
-                        dENextStep.MSG_1C_SINGULAR,
-                        dENextStep.MSG_1D_SINGULAR, numSem1);
-            }
-
-        } else if (typical.hasPreArrivalData() > 0) {
-
-            // CASE 1.2 with no CRITICAL or RECOMMENDED requirements
-            if (numSem1 > 1) {
-                createPlanCase1(activeTermYear, activeTermName, typical,
-                        dENextStep.MSG_1E_PLURAL,
-                        dENextStep.MSG_1F_PLURAL, numSem1);
-            } else {
-                createPlanCase1(activeTermYear, activeTermName, typical,
-                        dENextStep.MSG_1E_SINGULAR,
-                        dENextStep.MSG_1F_SINGULAR, numSem1);
-            }
-
-        } else if (isEligibleForSemester1(typical)) {
-
-            // See if student is done with everything
-
-            if (typical.hasSemester1Data() || typical.hasSemester2Data() || typical.hasAdditionalData()) {
-                // CASE 3:
-                createPlanCase3(typical, logic);
-            } else {
-                // CASE 4:
-                createPlanCase4();
-            }
-
-        } else {
-
-            // CASE 2:
-            createPlanCase2(activeTermYear, activeTermName, critical, recommend, typical);
-        }
-
-        // Statistics
 
         return highestMath;
     }
