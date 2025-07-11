@@ -81,6 +81,12 @@ public final class MathPlanStudentData {
     /** List of course IDs that the student can register for. */
     private final Set<String> canRegisterFor;
 
+    /** True if the student has a B- or higher in MATH 124. */
+    private boolean bOrBetterIn124 = false;
+
+    /** True if the student has a B- or higher in MATH 126. */
+    private boolean bOrBetterIn126 = false;
+
     /**
      * Number of credits of core mathematics completed (placement results do not count toward completion of these
      * credits).
@@ -247,8 +253,6 @@ public final class MathPlanStudentData {
         result.add("STAT 201");
         result.add("STAT 204");
 
-        boolean bOrBetter124 = false;
-        boolean bOrBetter126 = false;
         boolean has160 = false;
 
         // First, get courses they can register for due to placement results
@@ -371,7 +375,7 @@ public final class MathPlanStudentData {
                 result.add(RawRecordConstants.M124);
                 result.add("M 141");
                 if (cr.getGradeGpa() != null && cr.getGradeGpa().floatValue() > 2.9f) {
-                    bOrBetter124 = true;
+                    this.bOrBetterIn124 = true;
                 }
             } else if (RawRecordConstants.M125.equals(courseId)) {
                 result.add(RawRecordConstants.M117);
@@ -390,7 +394,7 @@ public final class MathPlanStudentData {
                 result.add("M 141");
                 result.add("M 155");
                 if (cr.getGradeGpa() != null && cr.getGradeGpa().floatValue() > 2.9f) {
-                    bOrBetter126 = true;
+                    this.bOrBetterIn126 = true;
                 }
             } else if ("M 160".equals(courseId)) {
                 result.add(RawRecordConstants.M117);
@@ -405,11 +409,11 @@ public final class MathPlanStudentData {
             }
         }
 
-        if (bOrBetter124 && bOrBetter126) {
+        if (this.bOrBetterIn124 && this.bOrBetterIn126) {
             result.add("M 160");
         }
 
-        if (has160 && bOrBetter124) {
+        if (has160 && this.bOrBetterIn124) {
             result.add("M 161");
         }
 
@@ -687,9 +691,37 @@ public final class MathPlanStudentData {
                     this.nextSteps.add(ENextStep.MSG_PLACE_INTO_155);
                 }
             } else {
-                // What remains is MATH 156 and MATH - we need to check for the "B-" in 124 and 126 if needed
-
-
+                // What remains is MATH 156 and MATH, and student does NOT have a B- or better in both 124 and 126
+                if (this.bOrBetterIn124) {
+                    // What's needed is the B- in 126
+                    if (this.canRegisterFor.contains(RawRecordConstants.M126)) {
+                        this.nextSteps.add(ENextStep.MSG_PLACE_OUT_126);
+                    } else if (this.canRegisterFor.contains(RawRecordConstants.M125)) {
+                        this.nextSteps.add(ENextStep.MSG_PLACE_OUT_125_126);
+                    } else if (this.canRegisterFor.contains(RawRecordConstants.M118)) {
+                        this.nextSteps.add(ENextStep.MSG_PLACE_OUT_118_125_126);
+                    } else {
+                        this.nextSteps.add(ENextStep.MSG_PLACE_OUT_117_118_125_126);
+                    }
+                } else if (this.bOrBetterIn126) {
+                    // What's needed is the B- in 124
+                    if (this.canRegisterFor.contains(RawRecordConstants.M124)) {
+                        this.nextSteps.add(ENextStep.MSG_PLACE_OUT_124);
+                    } else if (this.canRegisterFor.contains(RawRecordConstants.M118)) {
+                        this.nextSteps.add(ENextStep.MSG_PLACE_OUT_118_124);
+                    } else {
+                        this.nextSteps.add(ENextStep.MSG_PLACE_OUT_117_118_124);
+                    }
+                    // Else: Needs both 124 and 126
+                } else if (this.canRegisterFor.contains(RawRecordConstants.M126)) {
+                    this.nextSteps.add(ENextStep.MSG_PLACE_OUT_124_126);
+                } else if (this.canRegisterFor.contains(RawRecordConstants.M125)) {
+                    this.nextSteps.add(ENextStep.MSG_PLACE_OUT_124_125_126);
+                } else if (this.canRegisterFor.contains(RawRecordConstants.M118)) {
+                    this.nextSteps.add(ENextStep.MSG_PLACE_OUT_118_124_125_126);
+                } else {
+                    this.nextSteps.add(ENextStep.MSG_PLACE_OUT_117_118_124_125_126);
+                }
             }
         } else {
             this.nextSteps.add(ENextStep.MSG_PLACEMENT_NOT_NEEDED);

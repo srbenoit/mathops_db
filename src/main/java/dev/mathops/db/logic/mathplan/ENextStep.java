@@ -1,16 +1,10 @@
 package dev.mathops.db.logic.mathplan;
 
-import dev.mathops.db.old.rawrecord.RawRecordConstants;
-
 /**
  * Possible next steps for a student.
  */
 public enum ENextStep {
-
-    //
-    //
-    //
-
+    
     // Student just needs 1B - Placement is not needed
     MSG_PLACEMENT_NOT_NEEDED,
 
@@ -47,8 +41,38 @@ public enum ENextStep {
     // Student should try to place into MATH 155
     MSG_PLACE_INTO_155,
 
+    // Student should try to place out of 126
+    MSG_PLACE_OUT_126,
 
+    // Student should try to place out of 125 and 126
+    MSG_PLACE_OUT_125_126,
 
+    // Student should try to place out of 118, 125 and 126
+    MSG_PLACE_OUT_118_125_126,
+
+    // Student should try to place out of 117, 118, 125 and 126
+    MSG_PLACE_OUT_117_118_125_126,
+
+    // Student should try to place out of 124
+    MSG_PLACE_OUT_124,
+
+    // Student should try to place out of 118 and 124
+    MSG_PLACE_OUT_118_124,
+
+    // Student should try to place out of 117, 118 and 124
+    MSG_PLACE_OUT_117_118_124,
+
+    // Student should try to place out of 124 and 126
+    MSG_PLACE_OUT_124_126,
+
+    // Student should try to place out of 124, 125, and 126
+    MSG_PLACE_OUT_124_125_126,
+
+    // Student should try to place out of 118, 124, 125, and 126
+    MSG_PLACE_OUT_118_124_125_126,
+
+    // Student should try to place out of 117, 118, 124, 125, and 126
+    MSG_PLACE_OUT_117_118_124_125_126,
 
     //
     //
