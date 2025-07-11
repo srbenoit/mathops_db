@@ -1,5 +1,7 @@
 package dev.mathops.db.old.logic.mathplan;
 
+import dev.mathops.db.logic.mathplan.EHowSatisfiedPlacement;
+
 /**
  * A container for status of Math Placement relative to a Math Plan.
  */

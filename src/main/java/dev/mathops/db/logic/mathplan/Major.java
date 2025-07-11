@@ -1,6 +1,7 @@
 package dev.mathops.db.logic.mathplan;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * A math requirement associated with a major (major or major/concentration).
@@ -11,7 +12,7 @@ public final class Major {
     public final int[] questionNumbers;
 
     /** The program codes from CIM (like 'MAJR-CONC-BS'). */
-    public final String[] programCodes;
+    public final List<String> programCodes;
 
     /** The program name. */
     public final String programName;
@@ -36,7 +37,7 @@ public final class Major {
           final EEligibility theIdealEligibility) {
 
         this.questionNumbers = theQuestionNumbers.clone();
-        this.programCodes = theProgramCodes.clone();
+        this.programCodes = Arrays.asList(theProgramCodes);
         this.programName = theProgramName;
         this.catalogPageUrl = theCatalogPageUrl;
         this.importance = theImportance;
@@ -50,7 +51,7 @@ public final class Major {
      */
     public int hashCode() {
 
-        return Arrays.hashCode(this.programCodes);
+        return this.programCodes.hashCode();
     }
 
     /**
@@ -62,12 +63,12 @@ public final class Major {
      */
     public boolean equals(final Object o) {
 
-        boolean equal;
+        final boolean equal;
 
         if (o == this) {
             equal = true;
         } else if (o instanceof final Major oMajor) {
-            equal = Arrays.equals(this.programCodes, oMajor.programCodes);
+            equal = this.programCodes.equals(oMajor.programCodes);
         } else {
             equal = false;
         }

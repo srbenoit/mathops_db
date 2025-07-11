@@ -6,7 +6,6 @@ import dev.mathops.db.old.logic.PlacementStatus;
 import dev.mathops.db.old.logic.PrecalcTutorialLogic;
 import dev.mathops.db.old.logic.PrecalcTutorialStatus;
 import dev.mathops.db.old.logic.PrerequisiteLogic;
-import dev.mathops.db.old.logic.mathplan.MathPlanLogic;
 import dev.mathops.db.old.rawlogic.RawMpeCreditLogic;
 import dev.mathops.db.old.rawlogic.RawStmathplanLogic;
 import dev.mathops.db.old.rawrecord.RawCourse;
@@ -18,10 +17,12 @@ import dev.mathops.db.rec.LiveCsuCredit;
 import dev.mathops.db.rec.LiveTransferCredit;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -70,6 +71,9 @@ public final class MathPlanStudentData {
     /** The course we will recommend the student try to become eligible for. */
     public final EEligibility recommendedEligibility;
 
+    /** The next step for the student. */
+    public final ENextStep nextStep;
+
     /** Prerequisite logic. */
     public final PrerequisiteLogic prereqLogic;
 
@@ -94,9 +98,6 @@ public final class MathPlanStudentData {
      */
     private double creditsOfCoreCompleted;
 
-    /** The list of possible next steps for the student, in order of preference. */
-    private final List<ENextStep> nextSteps;
-
     /**
      * Tests whether a student has completed the Math Plan, and returns the student ID if so.
      *
@@ -119,45 +120,59 @@ public final class MathPlanStudentData {
     }
 
     /**
+     * Gets the latest responses to the profile for the student.
+     *
+     * @param cache     the data cache
+     * @param studentId the student ID
+     * @param pageId    the page ID
+     * @return a map from question number to student response
+     * @throws SQLException if there is an error accessing the database
+     */
+    public static Map<Integer, RawStmathplan> getMathPlanResponses(final Cache cache, final String studentId,
+                                                                   final String pageId) throws SQLException {
+
+        final List<RawStmathplan> latest = RawStmathplanLogic.queryLatestByStudentPage(cache, studentId, pageId);
+
+        final Map<Integer, RawStmathplan> map = new HashMap<>(latest.size());
+        for (final RawStmathplan response : latest) {
+            map.put(response.surveyNbr, response);
+        }
+
+        return map;
+    }
+
+    /**
      * Constructs a new {@code MathPlanStudentData}.
      *
-     * @param cache           the data cache
-     * @param theStudent      the student record
-     * @param logic           the logic object to use to populate student data
-     * @param now             the date/time to consider "now"
-     * @param loginSessionTag the login session tag
-     * @param writeChanges    {@code true} to write profile value changes (used when the student is accessing the site);
-     *                        {@code false} to skip writing changes (used when an administrator or adviser is acting as
-     *                        a student)
+     * @param cache        the data cache
+     * @param theStudent   the student record
+     * @param logic        the math plan logic
+     * @param now          the date/time to consider "now"
+     * @param writeChanges {@code true} to write profile value changes (used when the student is accessing the site);
+     *                     {@code false} to skip writing changes (used when an administrator or adviser is acting as a
+     *                     student)
      * @throws SQLException if there is an error accessing the database
      */
     public MathPlanStudentData(final Cache cache, final RawStudent theStudent, final MathPlanLogic logic,
-                               final ZonedDateTime now, final long loginSessionTag, final boolean writeChanges)
-            throws SQLException {
+                               final ZonedDateTime now, final boolean writeChanges) throws SQLException {
 
         this.expiry = System.currentTimeMillis() + RETENTION_MS;
 
         this.student = theStudent;
         final String studentId = theStudent.stuId;
 
-        // Log.info(Res.fmt(Res.BUILDING_STU_DATA, this.studentId));
-
         // Populate "what student has told us"
-        this.majorProfileResponses =
-                MathPlanLogic.getMathPlanResponses(cache, studentId, MathPlanConstants.MAJORS_PROFILE);
+        this.majorProfileResponses = getMathPlanResponses(cache, studentId, MathPlanConstants.MAJORS_PROFILE);
 
         // Populate "existing work on record"
-        this.viewedExisting = MathPlanLogic
-                .getMathPlanResponses(cache, studentId, MathPlanConstants.EXISTING_PROFILE)
-                .containsKey(Integer.valueOf(1));
+        this.viewedExisting = getMathPlanResponses(cache, studentId, MathPlanConstants.EXISTING_PROFILE)
+                .containsKey(MathPlanConstants.ONE);
 
-        this.checkedOnlyRecommendation = MathPlanLogic
-                .getMathPlanResponses(cache, studentId, MathPlanConstants.ONLY_RECOM_PROFILE)
-                .containsKey(Integer.valueOf(1));
+        this.checkedOnlyRecommendation = getMathPlanResponses(cache, studentId, MathPlanConstants.ONLY_RECOM_PROFILE)
+                .containsKey(MathPlanConstants.ONE);
 
-        // Populate "intentions"
-        this.intentionsResponses = MathPlanLogic.getMathPlanResponses(cache, studentId,
-                MathPlanConstants.INTENTIONS_PROFILE);
+        // Populate "intentions" and "plan" responses
+        this.intentionsResponses = getMathPlanResponses(cache, studentId, MathPlanConstants.INTENTIONS_PROFILE);
 
         // Populate "what student has done"
         this.completedCourses = logic.getCompletedCourses(studentId);
@@ -172,8 +187,8 @@ public final class MathPlanStudentData {
 
         this.placementStatus = new PlacementLogic(cache, studentId, this.student.aplnTerm, now).status;
 
-        this.precalcTutorialStatus = new PrecalcTutorialLogic(cache, studentId, now.toLocalDate(),
-                this.prereqLogic).status;
+        final LocalDate today = now.toLocalDate();
+        this.precalcTutorialStatus = new PrecalcTutorialLogic(cache, studentId, today, this.prereqLogic).status;
 
         // Count the number of core mathematics course credits completed with a grade of C (2.000) or better.
         countCoreCredits(logic);
@@ -182,13 +197,12 @@ public final class MathPlanStudentData {
         this.canRegisterFor = getCoursesStudentCanRegisterFor();
 
         // Ready to construct plan...
-        this.nextSteps = new ArrayList<>(5);
-        this.recommendedEligibility = createPlan(cache, logic);
+        this.recommendedEligibility = determineRecommendedEligibility();
+        this.nextStep = createPlan();
+
 //        if (writeChanges) {
 //            recordPlan(cache, logic, now, studentId, loginSessionTag);
 //        }
-//
-//        recordAnalytics();
     }
 
     /**
@@ -200,8 +214,6 @@ public final class MathPlanStudentData {
      * Note that we skip 550 (placement credit) sections in the completed courses list since those are also reflected as
      * rows with placed='C' in the placement credit list (where dt_cr_refused is null). So we do count such placement
      * records. This avoids the delay that the 550 section can have in getting onto the student's transcript.
-     *
-     * @param logic the site logic
      */
     private void countCoreCredits(final MathPlanLogic logic) {
 
@@ -606,16 +618,6 @@ public final class MathPlanStudentData {
     }
 
     /**
-     * Gets the list of next steps for the student.
-     *
-     * @return the list of next steps
-     */
-    public List<ENextStep> getNextSteps() {
-
-        return this.nextSteps;
-    }
-
-    /**
      * Gathers the list of majors for which the student has expressed interest.
      *
      * @param declaredProgramCode the student's declared program code
@@ -653,15 +655,10 @@ public final class MathPlanStudentData {
     }
 
     /**
-     * Creates the student's personalized plan.
-     *
-     * @param cache the data cache
-     * @param logic the site logic
-     * @throws SQLException if there is an error accessing the database
+     * Determines the course for which it is "ideal" that the student be eligible in their first semester,
      */
-    private EEligibility createPlan(final Cache cache, final MathPlanLogic logic) throws SQLException {
+    private EEligibility determineRecommendedEligibility() {
 
-        // Determine the ideal eligibility based on the students list of selected majors
         EEligibility highestMath = EEligibility.AUCC;
         for (final Major major : this.majors) {
             if (major.idealEligibility.level > highestMath.level) {
@@ -669,8 +666,18 @@ public final class MathPlanStudentData {
             }
         }
 
+        return highestMath;
+    }
+
+    /**
+     * Creates the student's personalized plan.
+     */
+    private ENextStep createPlan() {
+
+        ENextStep result = null;
+
         // See if they are already eligible
-        final boolean alreadyEligible = switch (highestMath) {
+        final boolean alreadyEligible = switch (this.recommendedEligibility) {
             case AUCC -> true;
             case M_117_120 -> this.canRegisterFor.contains(RawRecordConstants.M117);
             case M_118 -> this.canRegisterFor.contains(RawRecordConstants.M118);
@@ -680,70 +687,130 @@ public final class MathPlanStudentData {
             case M_160 -> this.canRegisterFor.contains(RawRecordConstants.M160);
         };
 
-        if (highestMath.level > EEligibility.AUCC.level) {
+        if (this.recommendedEligibility.level > EEligibility.AUCC.level) {
             if (alreadyEligible) {
-                this.nextSteps.add(ENextStep.MSG_ALREADY_ELIGIBLE);
-            } else if (highestMath == EEligibility.M_117_120) {
-                this.nextSteps.add(ENextStep.MSG_PLACE_INTO_117);
-            } else if (highestMath == EEligibility.M_118) {
+                result = ENextStep.MSG_ALREADY_ELIGIBLE;
+            } else if (this.recommendedEligibility == EEligibility.M_117_120) {
+                result = ENextStep.MSG_PLACE_INTO_117;
+            } else if (this.recommendedEligibility == EEligibility.M_118) {
                 if (this.canRegisterFor.contains(RawRecordConstants.M117)) {
-                    this.nextSteps.add(ENextStep.MSG_PLACE_OUT_117);
+                    result = ENextStep.MSG_PLACE_OUT_117;
                 } else {
-                    this.nextSteps.add(ENextStep.MSG_PLACE_INTO_118);
+                    result = ENextStep.MSG_PLACE_INTO_118;
                 }
-            } else if (highestMath == EEligibility.M_125) {
+            } else if (this.recommendedEligibility == EEligibility.M_125) {
                 if (this.canRegisterFor.contains(RawRecordConstants.M118)) {
-                    this.nextSteps.add(ENextStep.MSG_PLACE_OUT_118);
+                    result = ENextStep.MSG_PLACE_OUT_118;
                 } else if (this.canRegisterFor.contains(RawRecordConstants.M117)) {
-                    this.nextSteps.add(ENextStep.MSG_PLACE_OUT_117_118);
+                    result = ENextStep.MSG_PLACE_OUT_117_118;
                 } else {
-                    this.nextSteps.add(ENextStep.MSG_PLACE_INTO_125);
+                    result = ENextStep.MSG_PLACE_INTO_125;
                 }
-            } else if (highestMath == EEligibility.M_155 || highestMath == EEligibility.M_155_160) {
+            } else if (this.recommendedEligibility == EEligibility.M_155 || this.recommendedEligibility == EEligibility.M_155_160) {
                 if (this.canRegisterFor.contains(RawRecordConstants.M125)) {
-                    this.nextSteps.add(ENextStep.MSG_PLACE_OUT_125);
+                    result = ENextStep.MSG_PLACE_OUT_125;
                 } else if (this.canRegisterFor.contains(RawRecordConstants.M118)) {
-                    this.nextSteps.add(ENextStep.MSG_PLACE_OUT_118_125);
+                    result = ENextStep.MSG_PLACE_OUT_118_125;
                 } else if (this.canRegisterFor.contains(RawRecordConstants.M117)) {
-                    this.nextSteps.add(ENextStep.MSG_PLACE_OUT_117_118_125);
+                    result = ENextStep.MSG_PLACE_OUT_117_118_125;
                 } else {
-                    this.nextSteps.add(ENextStep.MSG_PLACE_INTO_155);
+                    result = ENextStep.MSG_PLACE_INTO_155;
                 }
                 // What remains is MATH 156 and MATH, and student does NOT have a B- or better in both 124 and 126
             } else if (this.bOrBetterIn124) {
                 // What's needed is the B- in 126
                 if (this.canRegisterFor.contains(RawRecordConstants.M126)) {
-                    this.nextSteps.add(ENextStep.MSG_PLACE_OUT_126);
+                    result = ENextStep.MSG_PLACE_OUT_126;
                 } else if (this.canRegisterFor.contains(RawRecordConstants.M125)) {
-                    this.nextSteps.add(ENextStep.MSG_PLACE_OUT_125_126);
+                    result = ENextStep.MSG_PLACE_OUT_125_126;
                 } else if (this.canRegisterFor.contains(RawRecordConstants.M118)) {
-                    this.nextSteps.add(ENextStep.MSG_PLACE_OUT_118_125_126);
+                    result = ENextStep.MSG_PLACE_OUT_118_125_126;
                 } else {
-                    this.nextSteps.add(ENextStep.MSG_PLACE_OUT_117_118_125_126);
+                    result = ENextStep.MSG_PLACE_OUT_117_118_125_126;
                 }
             } else if (this.bOrBetterIn126) {
                 // What's needed is the B- in 124
                 if (this.canRegisterFor.contains(RawRecordConstants.M124)) {
-                    this.nextSteps.add(ENextStep.MSG_PLACE_OUT_124);
+                    result = ENextStep.MSG_PLACE_OUT_124;
                 } else if (this.canRegisterFor.contains(RawRecordConstants.M118)) {
-                    this.nextSteps.add(ENextStep.MSG_PLACE_OUT_118_124);
+                    result = ENextStep.MSG_PLACE_OUT_118_124;
                 } else {
-                    this.nextSteps.add(ENextStep.MSG_PLACE_OUT_117_118_124);
+                    result = ENextStep.MSG_PLACE_OUT_117_118_124;
                 }
                 // Else: Needs both 124 and 126
             } else if (this.canRegisterFor.contains(RawRecordConstants.M126)) {
-                this.nextSteps.add(ENextStep.MSG_PLACE_OUT_124_126);
+                result = ENextStep.MSG_PLACE_OUT_124_126;
             } else if (this.canRegisterFor.contains(RawRecordConstants.M125)) {
-                this.nextSteps.add(ENextStep.MSG_PLACE_OUT_124_125_126);
+                result = ENextStep.MSG_PLACE_OUT_124_125_126;
             } else if (this.canRegisterFor.contains(RawRecordConstants.M118)) {
-                this.nextSteps.add(ENextStep.MSG_PLACE_OUT_118_124_125_126);
+                result = ENextStep.MSG_PLACE_OUT_118_124_125_126;
             } else {
-                this.nextSteps.add(ENextStep.MSG_PLACE_OUT_117_118_124_125_126);
+                result = ENextStep.MSG_PLACE_OUT_117_118_124_125_126;
             }
         } else {
-            this.nextSteps.add(ENextStep.MSG_PLACEMENT_NOT_NEEDED);
+            result = ENextStep.MSG_PLACEMENT_NOT_NEEDED;
         }
 
-        return highestMath;
+        return result;
+    }
+
+    /**
+     * Records the plan in the profile response table so advisers can view it quickly without having to rebuilt it for
+     * each advisee.
+     *
+     * @param cache           the data cache
+     * @param logic           the logic object
+     * @param now             the date/time to consider "now"
+     * @param stuId           the student ID
+     * @param loginSessionTag the login session tag
+     * @throws SQLException if there is an error accessing the database
+     */
+    public void recordPlan(final Cache cache, final MathPlanLogic logic, final ZonedDateTime now, final String stuId,
+                           final long loginSessionTag) throws SQLException {
+
+        // Record only after student has checked the "only a recommendation" box
+        final Map<Integer, RawStmathplan> done = getMathPlanResponses(cache, stuId,
+                MathPlanConstants.ONLY_RECOM_PROFILE);
+
+        if (!done.isEmpty()) {
+            // NOTE: Historic data has 4 responses (pre-arrival, semester 1, semester 2, beyond).  This has been
+            // simplified to record just what the student should do before arrival to be ready for semester 1
+            final String value1 = this.nextStep.planText;
+            final String value2 = "(none)";
+            final String value3 = "(none)";
+            final String value4 = "(none)";
+
+            final Map<Integer, RawStmathplan> existing = getMathPlanResponses(cache, stuId,
+                    MathPlanConstants.PLAN_PROFILE);
+
+            final RawStmathplan exist1 = existing.get(MathPlanConstants.ONE);
+            final RawStmathplan exist2 = existing.get(MathPlanConstants.TWO);
+            final RawStmathplan exist3 = existing.get(MathPlanConstants.THREE);
+            final RawStmathplan exist4 = existing.get(MathPlanConstants.FOUR);
+
+            final boolean shouldInsertNew =
+                    exist1 == null
+                    || exist1.stuAnswer == null || !exist1.stuAnswer.equals(value1) || exist2 == null
+                    || exist2.stuAnswer == null || !exist2.stuAnswer.equals(value2) || exist3 == null
+                    || exist3.stuAnswer == null || !exist3.stuAnswer.equals(value3) || exist4 == null
+                    || exist4.stuAnswer == null || !exist4.stuAnswer.equals(value4);
+
+            if (shouldInsertNew) {
+                final List<Integer> questions = new ArrayList<>(4);
+                final List<String> answers = new ArrayList<>(4);
+
+                questions.add(MathPlanConstants.ONE);
+                questions.add(MathPlanConstants.TWO);
+                questions.add(MathPlanConstants.THREE);
+                questions.add(MathPlanConstants.FOUR);
+                answers.add(value1);
+                answers.add(value2);
+                answers.add(value3);
+                answers.add(value4);
+
+                logic.storeMathPlanResponses(cache, this.student, MathPlanConstants.PLAN_PROFILE, questions, answers,
+                        now, loginSessionTag);
+            }
+        }
     }
 }

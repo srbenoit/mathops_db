@@ -10,6 +10,7 @@ import dev.mathops.db.ESchema;
 import dev.mathops.db.cfg.DatabaseConfig;
 import dev.mathops.db.cfg.Login;
 import dev.mathops.db.cfg.Profile;
+import dev.mathops.db.logic.mathplan.EHowSatisfiedPlacement;
 import dev.mathops.db.old.ifaces.ILiveCsuCredit;
 import dev.mathops.db.old.ifaces.ILiveTransferCredit;
 import dev.mathops.db.old.logic.mathplan.data.CourseGroup;

@@ -6,6 +6,21 @@ package dev.mathops.db.logic.mathplan;
 public enum MathPlanConstants {
     ;
 
+    /** A commonly used integer. */
+    public static final Integer ZERO = Integer.valueOf(0);
+
+    /** A commonly used integer. */
+    public static final Integer ONE = Integer.valueOf(1);
+
+    /** A commonly used integer. */
+    public static final Integer TWO = Integer.valueOf(2);
+
+    /** A commonly used integer. */
+    public static final Integer THREE = Integer.valueOf(3);
+
+    /** A commonly used integer. */
+    public static final Integer FOUR = Integer.valueOf(4);
+
     /** The prefix for catalog URLs. */
     public static final String PGMS = "https://admissions.colostate.edu/programs/";
 
@@ -42,9 +57,6 @@ public enum MathPlanConstants {
     /** A course ID. */
     public static final String M_160 = "M 160";
 
-
-
-
     /** A course ID. */
     public static final String M_101 = "M 101";
 
@@ -67,56 +79,10 @@ public enum MathPlanConstants {
     public static final String M_141 = "M 141";
 
     /** A course ID. */
-    public static final String M_151 = "M 151";
-
-    /** A course ID. */
-    public static final String M_152 = "M 152";
-
-    /** A course ID. */
-    public static final String M_157 = "M 157";
-
-    /** A course ID. */
-    public static final String M_158 = "M 158";
-
-    /** A course ID. */
-    public static final String M_159 = "M 159";
-
-
-    /** A course ID. */
     public static final String M_161 = "M 161";
 
     /** A course ID. */
-    public static final String M_192 = "M 192";
-
-    /** A course ID. */
-    public static final String M_229 = "M 229";
-
-    /** A course ID. */
-    public static final String M_230 = "M 230";
-
-    /** A course ID. */
-    public static final String M_235 = "M 235";
-
-    /** A course ID. */
     public static final String M_255 = "M 255";
-
-    /** A course ID. */
-    public static final String M_256 = "M 256";
-
-    /** A course ID. */
-    public static final String M_261 = "M 261";
-
-    /** A course ID. */
-    public static final String M_269 = "M 269";
-
-    /** A course ID. */
-    public static final String M_271 = "M 271";
-
-    /** A course ID. */
-    public static final String M_272 = "M 272";
-
-
-
 
     /** The profile ID used to store the "majors of interest" response. */
     public static final String MAJORS_PROFILE = "WLCM1";

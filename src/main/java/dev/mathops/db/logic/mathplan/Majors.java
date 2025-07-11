@@ -1,11 +1,9 @@
 package dev.mathops.db.logic.mathplan;
 
 import dev.mathops.commons.log.Log;
-import dev.mathops.db.old.logic.mathplan.data.MajorMathRequirement;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * An immutable record of a major with the importance of Math in the first semester and the ideal placement outcome for
