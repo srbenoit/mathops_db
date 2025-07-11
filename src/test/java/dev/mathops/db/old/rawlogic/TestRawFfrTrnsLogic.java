@@ -86,9 +86,9 @@ final class TestRawFfrTrnsLogic {
             }
             conn.commit();
 
-            final RawFfrTrns raw1 = new RawFfrTrns("111111111", RawRecordConstants.M117, "A", date1, date2);
-            final RawFfrTrns raw2 = new RawFfrTrns("111111111", RawRecordConstants.M118, "B", date3, date4);
-            final RawFfrTrns raw3 = new RawFfrTrns("222222222", RawRecordConstants.M124, "C", date5, date6);
+            final RawFfrTrns raw1 = new RawFfrTrns("111111111", RawRecordConstants.M117, "X", date1, date2, "A");
+            final RawFfrTrns raw2 = new RawFfrTrns("111111111", RawRecordConstants.M118, "Y", date3, date4, "B");
+            final RawFfrTrns raw3 = new RawFfrTrns("222222222", RawRecordConstants.M124, "Z", date5, date6, "C");
 
             assertTrue(RawFfrTrnsLogic.insert(cache, raw1), "Failed to insert ffr_trns 1");
             assertTrue(RawFfrTrnsLogic.insert(cache, raw2), "Failed to insert ffr_trns 2");
@@ -120,23 +120,26 @@ final class TestRawFfrTrnsLogic {
             for (final RawFfrTrns test : all) {
                 if ("111111111".equals(test.stuId)
                     && RawRecordConstants.M117.equals(test.course)
-                    && "A".equals(test.examPlaced)
+                    && "X".equals(test.examPlaced)
                     && date1.equals(test.examDt)
-                    && date2.equals(test.dtCrRefused)) {
+                    && date2.equals(test.dtCrRefused)
+                    && "A".equals(test.grade)) {
 
                     found1 = true;
                 } else if ("111111111".equals(test.stuId)
                            && RawRecordConstants.M118.equals(test.course)
-                           && "B".equals(test.examPlaced)
+                           && "Y".equals(test.examPlaced)
                            && date3.equals(test.examDt)
-                           && date4.equals(test.dtCrRefused)) {
+                           && date4.equals(test.dtCrRefused)
+                           && "B".equals(test.grade)) {
 
                     found2 = true;
                 } else if ("222222222".equals(test.stuId)
                            && RawRecordConstants.M124.equals(test.course)
-                           && "C".equals(test.examPlaced)
+                           && "Z".equals(test.examPlaced)
                            && date5.equals(test.examDt)
-                           && date6.equals(test.dtCrRefused)) {
+                           && date6.equals(test.dtCrRefused)
+                           && "C".equals(test.grade)) {
 
                     found3 = true;
                 } else {
@@ -145,6 +148,7 @@ final class TestRawFfrTrnsLogic {
                     Log.warning("Unexpected examPlaced ", test.examPlaced);
                     Log.warning("Unexpected examDt ", test.examDt);
                     Log.warning("Unexpected dtCrRefused ", test.dtCrRefused);
+                    Log.warning("Unexpected grade ", test.grade);
                 }
             }
 
@@ -175,16 +179,18 @@ final class TestRawFfrTrnsLogic {
             for (final RawFfrTrns test : all) {
                 if ("111111111".equals(test.stuId)
                     && RawRecordConstants.M117.equals(test.course)
-                    && "A".equals(test.examPlaced)
+                    && "X".equals(test.examPlaced)
                     && date1.equals(test.examDt)
-                    && date2.equals(test.dtCrRefused)) {
+                    && date2.equals(test.dtCrRefused)
+                    && "A".equals(test.grade)) {
 
                     found1 = true;
                 } else if ("111111111".equals(test.stuId)
                            && RawRecordConstants.M118.equals(test.course)
-                           && "B".equals(test.examPlaced)
+                           && "Y".equals(test.examPlaced)
                            && date3.equals(test.examDt)
-                           && date4.equals(test.dtCrRefused)) {
+                           && date4.equals(test.dtCrRefused)
+                           && "B".equals(test.grade)) {
 
                     found2 = true;
                 } else {
@@ -193,6 +199,7 @@ final class TestRawFfrTrnsLogic {
                     Log.warning("Unexpected examPlaced ", test.examPlaced);
                     Log.warning("Unexpected examDt ", test.examDt);
                     Log.warning("Unexpected dtCrRefused ", test.dtCrRefused);
+                    Log.warning("Unexpected grade ", test.grade);
                 }
             }
 
@@ -212,8 +219,7 @@ final class TestRawFfrTrnsLogic {
         final Cache cache = new Cache(profile);
 
         try {
-            final RawFfrTrns raw2 = new RawFfrTrns("111111111", RawRecordConstants.M118, "B",
-                    date3, date4);
+            final RawFfrTrns raw2 = new RawFfrTrns("111111111", RawRecordConstants.M118, "Y", date3, date4, "B");
 
             final boolean result = RawFfrTrnsLogic.delete(cache, raw2);
             assertTrue(result, "delete returned false");
@@ -228,16 +234,18 @@ final class TestRawFfrTrnsLogic {
             for (final RawFfrTrns test : all) {
                 if ("111111111".equals(test.stuId)
                     && RawRecordConstants.M117.equals(test.course)
-                    && "A".equals(test.examPlaced)
+                    && "X".equals(test.examPlaced)
                     && date1.equals(test.examDt)
-                    && date2.equals(test.dtCrRefused)) {
+                    && date2.equals(test.dtCrRefused)
+                    && "A".equals(test.grade)) {
 
                     found1 = true;
                 } else if ("222222222".equals(test.stuId)
                            && RawRecordConstants.M124.equals(test.course)
-                           && "C".equals(test.examPlaced)
+                           && "Z".equals(test.examPlaced)
                            && date5.equals(test.examDt)
-                           && date6.equals(test.dtCrRefused)) {
+                           && date6.equals(test.dtCrRefused)
+                           && "C".equals(test.grade)) {
 
                     found3 = true;
                 } else {
@@ -246,6 +254,7 @@ final class TestRawFfrTrnsLogic {
                     Log.warning("Unexpected examPlaced ", test.examPlaced);
                     Log.warning("Unexpected examDt ", test.examDt);
                     Log.warning("Unexpected dtCrRefused ", test.dtCrRefused);
+                    Log.warning("Unexpected grade ", test.grade);
                 }
             }
 

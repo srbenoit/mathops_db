@@ -31,6 +31,9 @@ public final class RawFfrTrns extends RecBase implements Comparable<RawFfrTrns> 
     /** A field name. */
     private static final String FLD_DT_CR_REFUSED = "dt_cr_refused";
 
+    /** A field name. */
+    private static final String FLD_GRADE = "grade";
+
     /** The 'stu_id' field value. */
     public String stuId;
 
@@ -46,6 +49,9 @@ public final class RawFfrTrns extends RecBase implements Comparable<RawFfrTrns> 
     /** The 'dt_cr_refused' field value. */
     public LocalDate dtCrRefused;
 
+    /** The 'grade' field value. */
+    public String grade;
+
     /**
      * Constructs a new {@code RawFfrTrns}.
      */
@@ -59,12 +65,12 @@ public final class RawFfrTrns extends RecBase implements Comparable<RawFfrTrns> 
      *
      * @param theStuId       the student ID
      * @param theCourse      the course
-     * @param theExamPlaced  "Y" if placed by exam; "N" if not
+     * @param theExamPlaced  "C" if placed by challenge exam; "N" if not, "T" for transfer credit
      * @param theExamDt      the date the record was created
      * @param theDtCrRefused the date credit was refused
      */
     public RawFfrTrns(final String theStuId, final String theCourse, final String theExamPlaced,
-                      final LocalDate theExamDt, final LocalDate theDtCrRefused) {
+                      final LocalDate theExamDt, final LocalDate theDtCrRefused, final String theGrade) {
         super();
 
         this.stuId = theStuId;
@@ -72,6 +78,7 @@ public final class RawFfrTrns extends RecBase implements Comparable<RawFfrTrns> 
         this.examPlaced = theExamPlaced;
         this.examDt = theExamDt;
         this.dtCrRefused = theDtCrRefused;
+        this.grade = theGrade;
     }
 
     /**
@@ -90,6 +97,7 @@ public final class RawFfrTrns extends RecBase implements Comparable<RawFfrTrns> 
         result.examPlaced = getStringField(rs, FLD_EXAM_PLACED);
         result.examDt = getDateField(rs, FLD_EXAM_DT);
         result.dtCrRefused = getDateField(rs, FLD_DT_CR_REFUSED);
+        result.grade = getStringField(rs, FLD_GRADE);
 
         return result;
     }
@@ -136,6 +144,8 @@ public final class RawFfrTrns extends RecBase implements Comparable<RawFfrTrns> 
         appendField(htm, FLD_EXAM_DT, this.examDt);
         htm.add(DIVIDER);
         appendField(htm, FLD_DT_CR_REFUSED, this.dtCrRefused);
+        htm.add(DIVIDER);
+        appendField(htm, FLD_GRADE, this.grade);
 
         return htm.toString();
     }
@@ -149,10 +159,11 @@ public final class RawFfrTrns extends RecBase implements Comparable<RawFfrTrns> 
     public int hashCode() {
 
         return Objects.hashCode(this.stuId)
-                + Objects.hashCode(this.course)
-                + Objects.hashCode(this.examPlaced)
-                + Objects.hashCode(this.examDt)
-                + Objects.hashCode(this.dtCrRefused);
+               + Objects.hashCode(this.course)
+               + Objects.hashCode(this.examPlaced)
+               + Objects.hashCode(this.examDt)
+               + Objects.hashCode(this.dtCrRefused)
+               + Objects.hashCode(this.grade);
     }
 
     /**
@@ -173,7 +184,8 @@ public final class RawFfrTrns extends RecBase implements Comparable<RawFfrTrns> 
                     && Objects.equals(this.course, rec.course)
                     && Objects.equals(this.examPlaced, rec.examPlaced)
                     && Objects.equals(this.examDt, rec.examDt)
-                    && Objects.equals(this.dtCrRefused, rec.dtCrRefused);
+                    && Objects.equals(this.dtCrRefused, rec.dtCrRefused)
+                    && Objects.equals(this.grade, rec.grade);
         } else {
             equal = false;
         }

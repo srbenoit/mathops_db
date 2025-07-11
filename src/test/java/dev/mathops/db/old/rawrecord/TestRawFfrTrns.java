@@ -29,13 +29,17 @@ final class TestRawFfrTrns {
     /** A field name. */
     private static final LocalDate TEST_DT_CR_REFUSED = LocalDate.of(2023, 2, 3);
 
+    /** A field name. */
+    private static final String TEST_GRADE = "B+";
+
     /** The expected String serialization of a test record. */
     private static final String EXPECT_SER99 = String.join(RecBase.DIVIDER,
             "stu_id=888888888",
             "course=M 117",
             "exam_placed=P",
             "exam_dt=2022-01-02",
-            "dt_cr_refused=2023-02-03");
+            "dt_cr_refused=2023-02-03",
+            "grade=B+");
 
     /**
      * Constructs a new {@code IvtRawFfrTrns}.
@@ -51,13 +55,14 @@ final class TestRawFfrTrns {
     void test0001() {
 
         final RawFfrTrns obj = new RawFfrTrns(TEST_STU_ID, TEST_COURSE, TEST_EXAM_PLACED,
-                TEST_EXAM_DT, TEST_DT_CR_REFUSED);
+                TEST_EXAM_DT, TEST_DT_CR_REFUSED, TEST_GRADE);
 
         assertEquals(TEST_STU_ID, obj.stuId, "Invalid stu_id value after constructor");
         assertEquals(TEST_COURSE, obj.course, "Invalid course value after constructor");
         assertEquals(TEST_EXAM_PLACED, obj.examPlaced, "Invalid exam_placed value after constructor");
         assertEquals(TEST_EXAM_DT, obj.examDt, "Invalid exam_dt value after constructor");
         assertEquals(TEST_DT_CR_REFUSED, obj.dtCrRefused, "Invalid dt_cr_refused value after constructor");
+        assertEquals(TEST_GRADE, obj.grade, "Invalid grade value after constructor");
     }
 
     /** Test case. */
@@ -66,7 +71,7 @@ final class TestRawFfrTrns {
     void test0098() {
 
         final RawFfrTrns obj = new RawFfrTrns(TEST_STU_ID, TEST_COURSE, TEST_EXAM_PLACED,
-                TEST_EXAM_DT, TEST_DT_CR_REFUSED);
+                TEST_EXAM_DT, TEST_DT_CR_REFUSED, TEST_GRADE);
 
         final String ser = obj.toString();
 

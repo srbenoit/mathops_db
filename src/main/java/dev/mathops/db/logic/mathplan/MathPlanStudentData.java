@@ -135,10 +135,6 @@ public final class MathPlanStudentData {
         this.completedCourses = logic.getCompletedCourses(studentId);
         this.liveTransferCredit = logic.getStudentTransferCredit(cache, studentId, true);
 
-        // TODO: For any transfer rows (in MATH) that are not in the local database, inset them.
-        //  And also, in the course web site, if a student has no prereqs, do a secondary live check
-        //  against Aries and see if new transfer rows exist (and import them).
-
         this.placementCredit = RawMpeCreditLogic.queryByStudent(cache, studentId);
 
         // Gather math courses required by all selected majors (if any)
@@ -650,15 +646,15 @@ public final class MathPlanStudentData {
         // See if they are already eligible
         final boolean alreadyEligible = switch (highestMath) {
             case AUCC -> true;
-            case M_117_120 -> this.prereqLogic.hasSatisfiedPrerequisitesFor(RawRecordConstants.M117);
-            case M_118 -> this.prereqLogic.hasSatisfiedPrerequisitesFor(RawRecordConstants.M118);
-//            case M_124 -> this.prereqLogic.hasSatisfiedPrerequisitesFor(RawRecordConstants.M124);
-            case M_125 -> this.prereqLogic.hasSatisfiedPrerequisitesFor(RawRecordConstants.M125);
-//            case M_126 -> this.prereqLogic.hasSatisfiedPrerequisitesFor(RawRecordConstants.M126);
-//            case M_141 -> this.prereqLogic.hasSatisfiedPrerequisitesFor(RawRecordConstants.M141);
-            case M_155, M_155_160 -> this.prereqLogic.hasSatisfiedPrerequisitesFor(RawRecordConstants.M155);
-            case M_156_160 -> this.prereqLogic.hasSatisfiedPrerequisitesFor(RawRecordConstants.M156);
-            case M_160 -> this.prereqLogic.hasSatisfiedPrerequisitesFor(RawRecordConstants.M160);
+            case M_117_120 -> this.canRegisterFor.contains(RawRecordConstants.M117);
+            case M_118 -> this.canRegisterFor.contains(RawRecordConstants.M118);
+//            case M_124 -> this.canRegisterFor.contains(RawRecordConstants.M124);
+            case M_125 -> this.canRegisterFor.contains(RawRecordConstants.M125);
+//            case M_126 -> this.canRegisterFor.contains(RawRecordConstants.M126);
+//            case M_141 -> this.canRegisterFor.contains(RawRecordConstants.M141);
+            case M_155, M_155_160 -> this.canRegisterFor.contains(RawRecordConstants.M155);
+            case M_156_160 -> this.canRegisterFor.contains(RawRecordConstants.M156);
+            case M_160 -> this.canRegisterFor.contains(RawRecordConstants.M160);
         };
 
         if (highestMath.level > EEligibility.AUCC.level) {
@@ -667,35 +663,33 @@ public final class MathPlanStudentData {
             } else if (highestMath == EEligibility.M_117_120) {
                 this.nextSteps.add(ENextStep.MSG_PLACE_INTO_117);
             } else if (highestMath == EEligibility.M_118) {
-                if (this.prereqLogic.hasSatisfiedPrerequisitesFor(RawRecordConstants.M117)) {
+                if (this.canRegisterFor.contains(RawRecordConstants.M117)) {
                     this.nextSteps.add(ENextStep.MSG_PLACE_OUT_117);
                 } else {
                     this.nextSteps.add(ENextStep.MSG_PLACE_INTO_118);
                 }
             } else if (highestMath == EEligibility.M_125) {
-                if (this.prereqLogic.hasSatisfiedPrerequisitesFor(RawRecordConstants.M118)) {
+                if (this.canRegisterFor.contains(RawRecordConstants.M118)) {
                     this.nextSteps.add(ENextStep.MSG_PLACE_OUT_118);
-                } else if (this.prereqLogic.hasSatisfiedPrerequisitesFor(RawRecordConstants.M117)) {
+                } else if (this.canRegisterFor.contains(RawRecordConstants.M117)) {
                     this.nextSteps.add(ENextStep.MSG_PLACE_OUT_117_118);
                 } else {
                     this.nextSteps.add(ENextStep.MSG_PLACE_INTO_125);
                 }
             } else if (highestMath == EEligibility.M_155 || highestMath == EEligibility.M_155_160) {
-                if (this.prereqLogic.hasSatisfiedPrerequisitesFor(RawRecordConstants.M125)) {
+                if (this.canRegisterFor.contains(RawRecordConstants.M125)) {
                     this.nextSteps.add(ENextStep.MSG_PLACE_OUT_125);
-                } else if (this.prereqLogic.hasSatisfiedPrerequisitesFor(RawRecordConstants.M118)) {
+                } else if (this.canRegisterFor.contains(RawRecordConstants.M118)) {
                     this.nextSteps.add(ENextStep.MSG_PLACE_OUT_118_125);
-                } else if (this.prereqLogic.hasSatisfiedPrerequisitesFor(RawRecordConstants.M117)) {
+                } else if (this.canRegisterFor.contains(RawRecordConstants.M117)) {
                     this.nextSteps.add(ENextStep.MSG_PLACE_OUT_117_118_125);
                 } else {
                     this.nextSteps.add(ENextStep.MSG_PLACE_INTO_155);
                 }
             } else {
                 // What remains is MATH 156 and MATH - we need to check for the "B-" in 124 and 126 if needed
-                TODO:
 
-                ALSO TODO:Fix ffr_trns to include grade, add to ODS transfer job (don 't fotget to update archive
-                schema)
+
             }
         } else {
             this.nextSteps.add(ENextStep.MSG_PLACEMENT_NOT_NEEDED);

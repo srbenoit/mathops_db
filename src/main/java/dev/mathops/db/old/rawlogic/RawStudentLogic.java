@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.random.RandomGenerator;
@@ -1664,20 +1665,32 @@ public enum RawStudentLogic {
             final LocalDate today = LocalDate.now();
             for (final LiveTransferCredit live : liveTransfer) {
 
-                boolean searching = true;
+                RawFfrTrns currentRec = null;
                 for (final RawFfrTrns exist : existing) {
                     if (exist.course.equals(live.courseId)) {
-                        searching = false;
+                        currentRec = exist;
                         break;
                     }
                 }
 
-                if (searching) {
+                String recGrade = live.grade;
+                if (recGrade.startsWith("T")) {
+                    recGrade = recGrade.substring(1);
+                    if (recGrade.length() > 2) {
+                        recGrade = recGrade.substring(0, 2);
+                    }
+                }
+
+                if (currentRec == null) {
                     Log.info("Adding ", live.courseId, " transfer credit for student ", studentId);
 
-                    final RawFfrTrns toAdd = new RawFfrTrns(live.studentId, live.courseId, "T", today, null);
+                    final RawFfrTrns toAdd = new RawFfrTrns(live.studentId, live.courseId, "T", today, null, recGrade);
 
                     RawFfrTrnsLogic.insert(cache, toAdd);
+                } else if (!Objects.equals(currentRec.grade, recGrade)) {
+                    Log.info("Updating grade in ", currentRec.course, " transfer credit for student ",
+                            currentRec.stuId);
+                    RawFfrTrnsLogic.updateGrade(cache, currentRec, recGrade);
                 }
             }
         }

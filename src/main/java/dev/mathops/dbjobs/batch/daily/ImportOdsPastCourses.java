@@ -1,6 +1,7 @@
 package dev.mathops.dbjobs.batch.daily;
 
 import dev.mathops.commons.CoreConstants;
+import dev.mathops.commons.EDebugMode;
 import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
 import dev.mathops.db.Contexts;
@@ -20,11 +21,15 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A class that performs an import of past course registrations that can clear Precalculus prerequisites.
  */
 public final class ImportOdsPastCourses {
+
+    /** Set to DEBUG to just print rather than updating database; NORMAL to update database. */
+    private static final EDebugMode DEBUG = EDebugMode.NORMAL;
 
     /** The database profile through which to access the database. */
     private final Profile profile;
@@ -106,11 +111,12 @@ public final class ImportOdsPastCourses {
                 while (rs.next()) {
                     final String stuId = rs.getString("ID");
                     final String course = rs.getString("COURSE_IDENTIFICATION");
+                    final String grade = rs.getString("FINAL_GRADE");
 
                     if (stuId == null) {
                         report.add("ODS record had null student ID");
                     } else if (stuId.length() == 9) {
-                        result.add(new TransferRecord(stuId, course));
+                        result.add(new TransferRecord(stuId, course, grade));
                     } else {
                         report.add("ODS record had bad student ID: '" + stuId + "'");
                     }
@@ -134,6 +140,7 @@ public final class ImportOdsPastCourses {
 
         final LocalDate now = LocalDate.now();
         int count = 0;
+        int count2 = 0;
 
         for (final TransferRecord rec : list) {
             final String stu = rec.getStuId();
@@ -141,28 +148,47 @@ public final class ImportOdsPastCourses {
 
             final List<RawFfrTrns> existings = RawFfrTrnsLogic.queryByStudent(cache, stu);
 
-            boolean searching = true;
+            RawFfrTrns currentRec = null;
             for (final RawFfrTrns existing : existings) {
                 if (existing.course.equals(cid)) {
-                    searching = false;
+                    currentRec = existing;
                     break;
                 }
             }
 
-            if (searching) {
+            String recGrade = rec.getGrade();
+            if (recGrade.startsWith("T")) {
+                recGrade = recGrade.substring(1);
+                if (recGrade.length() > 2) {
+                    recGrade = recGrade.substring(0, 2);
+                }
+            }
+
+            if (currentRec == null) {
                 report.add("Inserting record for " + stu + CoreConstants.SLASH + cid + " - " + now);
-
-                final RawFfrTrns toInsert = new RawFfrTrns(stu, cid, "C", now, null);
-
-                if (RawFfrTrnsLogic.insert(cache, toInsert)) {
-                    ++count;
-                } else {
-                    report.add("Insert failed");
+                if (DEBUG == EDebugMode.NORMAL) {
+                    final RawFfrTrns toInsert = new RawFfrTrns(stu, cid, "T", now, null, recGrade);
+                    if (RawFfrTrnsLogic.insert(cache, toInsert)) {
+                        ++count;
+                    } else {
+                        report.add("Insert failed");
+                    }
+                }
+            } else if (!Objects.equals(currentRec.grade, recGrade)) {
+                Log.info("Updating grade from ", currentRec.grade, " to ", recGrade, " in ", currentRec.course,
+                        " transfer credit for student ", currentRec.stuId);
+                if (DEBUG == EDebugMode.NORMAL) {
+                    if (RawFfrTrnsLogic.updateGrade(cache, currentRec, recGrade)) {
+                        ++count2;
+                    } else {
+                        report.add("Update failed");
+                    }
                 }
             }
         }
 
         report.add("Inserted " + count + " records");
+        report.add("Updated " + count2 + " records");
     }
 
     /**
@@ -189,16 +215,21 @@ public final class ImportOdsPastCourses {
         /** The course ID. */
         private final String course;
 
+        /** The course grade. */
+        private final String grade;
+
         /**
          * Constructs a new {@code TransferRecord}.
          *
          * @param theStuId  the student ID
          * @param theCourse the course
+         * @param theGrade  the grade
          */
-        TransferRecord(final String theStuId, final String theCourse) {
+        TransferRecord(final String theStuId, final String theCourse, final String theGrade) {
 
             this.stuId = theStuId;
             this.course = theCourse;
+            this.grade = theGrade;
         }
 
         /**
@@ -219,6 +250,16 @@ public final class ImportOdsPastCourses {
         String getCourse() {
 
             return this.course;
+        }
+
+        /**
+         * Gets the course grade.
+         *
+         * @return the course grade
+         */
+        String getGrade() {
+
+            return this.grade;
         }
     }
 }

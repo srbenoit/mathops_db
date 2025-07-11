@@ -48,6 +48,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 
 /**
@@ -56,7 +57,8 @@ import java.util.TreeMap;
  * <p>
  * LAST REVIEW AGAINST CIM/Catalog: April 29, 2024
  */
-@Deprecated public final class MathPlanLogic {
+@Deprecated
+public final class MathPlanLogic {
 
     /** Object on which to synchronize member variable access. */
     private final Object synch;
@@ -2569,7 +2571,6 @@ import java.util.TreeMap;
         List<LiveTransferCredit> result;
 
         if (studentId.startsWith("99")) {
-
             // The following will return test data - convert to "live" data.
             final List<RawFfrTrns> list = RawFfrTrnsLogic.queryByStudent(cache, studentId);
             final int size = list.size();
@@ -2589,7 +2590,7 @@ import java.util.TreeMap;
                 final ILiveTransferCredit impl = ImplLiveTransferCredit.INSTANCE;
                 result = impl.query(bannerConn, studentId);
                 liveLogin.checkInConnection(bannerConn);
-            } catch (final Exception ex) {
+            } catch (final SQLException ex) {
                 LogicUtils.indicateBannerDown();
                 Log.warning(ex);
                 result = new ArrayList<>(0);
@@ -2614,21 +2615,30 @@ import java.util.TreeMap;
 
                 for (final LiveTransferCredit live : result) {
 
-                    boolean searching = true;
+                    RawFfrTrns currentRec = null;
                     for (final RawFfrTrns exist : existing) {
                         if (exist.course.equals(live.courseId)) {
-                            searching = false;
+                            currentRec = exist;
                             break;
                         }
                     }
 
-                    if (searching) {
+                    String recGrade = live.grade;
+                    if (recGrade.startsWith("T")) {
+                        recGrade = recGrade.substring(1);
+                        if (recGrade.length() > 2) {
+                            recGrade = recGrade.substring(0, 2);
+                        }
+                    }
+
+                    if (currentRec == null) {
                         Log.info("Adding ", live.courseId, " transfer credit for student ", studentId);
-
                         final RawFfrTrns toAdd = new RawFfrTrns(live.studentId, live.courseId, "T", LocalDate.now(),
-                                null);
-
+                                null, recGrade);
                         RawFfrTrnsLogic.insert(cache, toAdd);
+                    } else if (!Objects.equals(currentRec.grade, recGrade)) {
+                        Log.info("Updating grade in ", live.courseId, " transfer credit for student ", studentId);
+                        RawFfrTrnsLogic.updateGrade(cache, currentRec, recGrade);
                     }
                 }
             }
@@ -2906,7 +2916,7 @@ import java.util.TreeMap;
         try {
             // Student 823251213 PIDM 10567708
 
-            final String status1 = getMathPlanStatus(cache,  12462401);
+            final String status1 = getMathPlanStatus(cache, 12462401);
             Log.info("Student 837599652 plan status: " + status1);
 
             final MathPlanPlacementStatus status2 = getMathPlacementStatus(cache, "837599652");
