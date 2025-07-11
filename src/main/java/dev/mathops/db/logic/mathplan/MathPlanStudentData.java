@@ -8,6 +8,7 @@ import dev.mathops.db.old.logic.PrecalcTutorialStatus;
 import dev.mathops.db.old.logic.PrerequisiteLogic;
 import dev.mathops.db.old.logic.mathplan.MathPlanLogic;
 import dev.mathops.db.old.rawlogic.RawMpeCreditLogic;
+import dev.mathops.db.old.rawlogic.RawStmathplanLogic;
 import dev.mathops.db.old.rawrecord.RawCourse;
 import dev.mathops.db.old.rawrecord.RawMpeCredit;
 import dev.mathops.db.old.rawrecord.RawRecordConstants;
@@ -95,6 +96,27 @@ public final class MathPlanStudentData {
 
     /** The list of possible next steps for the student, in order of preference. */
     private final List<ENextStep> nextSteps;
+
+    /**
+     * Tests whether a student has completed the Math Plan, and returns the student ID if so.
+     *
+     * @param cache the data cache
+     * @param pidm  the student's PIDM
+     * @return the student ID if the student has completed the Math Plan; null if not
+     * @throws SQLException if there is an error accessing the database
+     */
+    public static String hasCompletedMathPlan(final Cache cache, final int pidm) throws SQLException {
+
+        final Integer pidmObj = Integer.valueOf(pidm);
+
+        final List<RawStmathplan> responses = RawStmathplanLogic.queryLatestByStudentPage(cache, pidmObj, "WLCM5");
+        String studentId = null;
+        if (!responses.isEmpty()) {
+            studentId = ((RawStmathplan) responses.getFirst()).stuId;
+        }
+
+        return studentId;
+    }
 
     /**
      * Constructs a new {@code MathPlanStudentData}.
