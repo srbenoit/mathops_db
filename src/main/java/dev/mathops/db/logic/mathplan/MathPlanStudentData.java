@@ -276,7 +276,7 @@ public final class MathPlanStudentData {
                 result.add(RawRecordConstants.M118);
                 result.add(RawRecordConstants.M124);
                 result.add("M 141");
-                bOrBetter124 = true;
+                this.bOrBetterIn124 = true;
             } else if (RawRecordConstants.M125.equals(courseId)) {
                 result.add(RawRecordConstants.M117);
                 result.add(RawRecordConstants.M118);
@@ -294,7 +294,7 @@ public final class MathPlanStudentData {
                 result.add("M 141");
                 result.add("M 155");
                 result.add("M 160");
-                bOrBetter126 = true;
+                this.bOrBetterIn126 = true;
             }
         }
 
@@ -321,7 +321,7 @@ public final class MathPlanStudentData {
                 result.add(RawRecordConstants.M124);
                 result.add("M 141");
                 if (gpa != null && gpa.floatValue() > 2.9f) {
-                    bOrBetter124 = true;
+                    this.bOrBetterIn124 = true;
                 }
             } else if (RawRecordConstants.M125.equals(id)) {
                 result.add(RawRecordConstants.M117);
@@ -340,7 +340,7 @@ public final class MathPlanStudentData {
                 result.add("M 141");
                 result.add("M 155");
                 if (gpa != null && gpa.floatValue() > 2.9f) {
-                    bOrBetter126 = true;
+                    this.bOrBetterIn126 = true;
                 }
             } else if ("M 160".equals(id)) {
                 result.add(RawRecordConstants.M117);
@@ -652,10 +652,7 @@ public final class MathPlanStudentData {
             case AUCC -> true;
             case M_117_120 -> this.canRegisterFor.contains(RawRecordConstants.M117);
             case M_118 -> this.canRegisterFor.contains(RawRecordConstants.M118);
-//            case M_124 -> this.canRegisterFor.contains(RawRecordConstants.M124);
             case M_125 -> this.canRegisterFor.contains(RawRecordConstants.M125);
-//            case M_126 -> this.canRegisterFor.contains(RawRecordConstants.M126);
-//            case M_141 -> this.canRegisterFor.contains(RawRecordConstants.M141);
             case M_155, M_155_160 -> this.canRegisterFor.contains(RawRecordConstants.M155);
             case M_156_160 -> this.canRegisterFor.contains(RawRecordConstants.M156);
             case M_160 -> this.canRegisterFor.contains(RawRecordConstants.M160);
@@ -690,38 +687,36 @@ public final class MathPlanStudentData {
                 } else {
                     this.nextSteps.add(ENextStep.MSG_PLACE_INTO_155);
                 }
-            } else {
                 // What remains is MATH 156 and MATH, and student does NOT have a B- or better in both 124 and 126
-                if (this.bOrBetterIn124) {
-                    // What's needed is the B- in 126
-                    if (this.canRegisterFor.contains(RawRecordConstants.M126)) {
-                        this.nextSteps.add(ENextStep.MSG_PLACE_OUT_126);
-                    } else if (this.canRegisterFor.contains(RawRecordConstants.M125)) {
-                        this.nextSteps.add(ENextStep.MSG_PLACE_OUT_125_126);
-                    } else if (this.canRegisterFor.contains(RawRecordConstants.M118)) {
-                        this.nextSteps.add(ENextStep.MSG_PLACE_OUT_118_125_126);
-                    } else {
-                        this.nextSteps.add(ENextStep.MSG_PLACE_OUT_117_118_125_126);
-                    }
-                } else if (this.bOrBetterIn126) {
-                    // What's needed is the B- in 124
-                    if (this.canRegisterFor.contains(RawRecordConstants.M124)) {
-                        this.nextSteps.add(ENextStep.MSG_PLACE_OUT_124);
-                    } else if (this.canRegisterFor.contains(RawRecordConstants.M118)) {
-                        this.nextSteps.add(ENextStep.MSG_PLACE_OUT_118_124);
-                    } else {
-                        this.nextSteps.add(ENextStep.MSG_PLACE_OUT_117_118_124);
-                    }
-                    // Else: Needs both 124 and 126
-                } else if (this.canRegisterFor.contains(RawRecordConstants.M126)) {
-                    this.nextSteps.add(ENextStep.MSG_PLACE_OUT_124_126);
+            } else if (this.bOrBetterIn124) {
+                // What's needed is the B- in 126
+                if (this.canRegisterFor.contains(RawRecordConstants.M126)) {
+                    this.nextSteps.add(ENextStep.MSG_PLACE_OUT_126);
                 } else if (this.canRegisterFor.contains(RawRecordConstants.M125)) {
-                    this.nextSteps.add(ENextStep.MSG_PLACE_OUT_124_125_126);
+                    this.nextSteps.add(ENextStep.MSG_PLACE_OUT_125_126);
                 } else if (this.canRegisterFor.contains(RawRecordConstants.M118)) {
-                    this.nextSteps.add(ENextStep.MSG_PLACE_OUT_118_124_125_126);
+                    this.nextSteps.add(ENextStep.MSG_PLACE_OUT_118_125_126);
                 } else {
-                    this.nextSteps.add(ENextStep.MSG_PLACE_OUT_117_118_124_125_126);
+                    this.nextSteps.add(ENextStep.MSG_PLACE_OUT_117_118_125_126);
                 }
+            } else if (this.bOrBetterIn126) {
+                // What's needed is the B- in 124
+                if (this.canRegisterFor.contains(RawRecordConstants.M124)) {
+                    this.nextSteps.add(ENextStep.MSG_PLACE_OUT_124);
+                } else if (this.canRegisterFor.contains(RawRecordConstants.M118)) {
+                    this.nextSteps.add(ENextStep.MSG_PLACE_OUT_118_124);
+                } else {
+                    this.nextSteps.add(ENextStep.MSG_PLACE_OUT_117_118_124);
+                }
+                // Else: Needs both 124 and 126
+            } else if (this.canRegisterFor.contains(RawRecordConstants.M126)) {
+                this.nextSteps.add(ENextStep.MSG_PLACE_OUT_124_126);
+            } else if (this.canRegisterFor.contains(RawRecordConstants.M125)) {
+                this.nextSteps.add(ENextStep.MSG_PLACE_OUT_124_125_126);
+            } else if (this.canRegisterFor.contains(RawRecordConstants.M118)) {
+                this.nextSteps.add(ENextStep.MSG_PLACE_OUT_118_124_125_126);
+            } else {
+                this.nextSteps.add(ENextStep.MSG_PLACE_OUT_117_118_124_125_126);
             }
         } else {
             this.nextSteps.add(ENextStep.MSG_PLACEMENT_NOT_NEEDED);
