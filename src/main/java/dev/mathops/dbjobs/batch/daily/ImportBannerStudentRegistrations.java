@@ -998,9 +998,8 @@ public final class ImportBannerStudentRegistrations {
             } else {
                 // Registration is changing sections
 
-                report.add(
-                        "SECTION CHANGE for ID: " + bannerReg.stuId + " in " + bannerReg.course + " from " + existing.sect
-                        + " to " + bannerReg.sect);
+                report.add("SECTION CHANGE for ID: " + bannerReg.stuId + " in " + bannerReg.course + " from "
+                           + existing.sect + " to " + bannerReg.sect);
 
                 // Mark old record as "dropped"
 

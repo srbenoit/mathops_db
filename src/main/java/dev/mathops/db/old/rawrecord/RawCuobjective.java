@@ -86,7 +86,7 @@ public final class RawCuobjective extends RawTermRecordBase implements Comparabl
     }
 
     /**
-     * Extracts an "cuobjective" record from a result set.
+     * Extracts a "cuobjective" record from a result set.
      *
      * @param rs the result set from which to retrieve the record
      * @return the record

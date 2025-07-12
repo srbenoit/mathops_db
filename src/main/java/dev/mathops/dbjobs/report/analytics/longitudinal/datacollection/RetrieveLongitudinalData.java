@@ -56,7 +56,7 @@ public enum RetrieveLongitudinalData {
 
                     // Gather all student enrollments in the period of interest (this should include several years
                     // prior to the reporting start date since we look back to see how students cleared prerequisites
-                    // for courses in the reporting period.
+                    // for courses in the reporting period).
 
                     final File enrollmentsFile = new File(dir, "enrollments.json");
                     FetchEnrollmentData.gatherEnrollmentData(odsConn, start, end, enrollmentsFile, map);

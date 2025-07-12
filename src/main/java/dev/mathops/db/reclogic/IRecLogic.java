@@ -163,7 +163,7 @@ public interface IRecLogic<T extends RecBase> {
      * Returns the string needed to include a date in an SQL statement for PostgreSQL.
      *
      * @param dt the date
-     * @return the SQL string, in the form "'2021-12-31')".
+     * @return the SQL string, in the form '2021-12-31'.
      */
     default String sqlPgDateValue(final LocalDate dt) {
 

@@ -126,7 +126,7 @@ public final class RawStqa extends RecBase implements Comparable<RawStqa> {
     }
 
     /**
-     * Extracts an "stqa" record from a result set.
+     * Extracts a "stqa" record from a result set.
      *
      * @param rs the result set from which to retrieve the record
      * @return the record

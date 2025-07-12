@@ -258,7 +258,7 @@ final class CompletionRates implements Runnable {
     }
 
     /**
-     * Scans for pace 1 students.
+     * Scans for students in 1-course pace.
      */
     private void scanPace1() {
 
@@ -328,7 +328,7 @@ final class CompletionRates implements Runnable {
     }
 
     /**
-     * Scans for pace 2 students.
+     * Scans for students in 2-course pace.
      */
     private void scanPace2() {
 
@@ -513,7 +513,7 @@ final class CompletionRates implements Runnable {
     }
 
     /**
-     * Scans for pace 3 students.
+     * Scans for students in 3-course pace.
      */
     private void scanPace3() {
 
@@ -736,7 +736,7 @@ final class CompletionRates implements Runnable {
     }
 
     /**
-     * Scans for pace 4 students.
+     * Scans for students in 4-course pace.
      */
     private void scanPace4() {
 
@@ -873,7 +873,7 @@ final class CompletionRates implements Runnable {
     }
 
     /**
-     * Scans for pace 5 students.
+     * Scans for students in 5-course pace.
      */
     private void scanPace5() {
 

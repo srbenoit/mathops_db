@@ -83,7 +83,7 @@ public enum DeleteTestUserData {
             cleanMpeCredit(cache);
             cleanMpecrDenied(cache);
             cleanMpeLog(cache);
-            cleanPaceApeals(cache);
+            cleanPaceAppeals(cache);
             cleanPendingExam(cache);
             cleanStchallenge(cache);
             cleanStcourse(cache);
@@ -199,7 +199,7 @@ public enum DeleteTestUserData {
      * @param cache the cache
      * @throws SQLException if there is an error accessing the database
      */
-    private static void cleanPaceApeals(final Cache cache) throws SQLException {
+    private static void cleanPaceAppeals(final Cache cache) throws SQLException {
 
         final List<RawPaceAppeals> all = RawPaceAppealsLogic.queryAll(cache);
 

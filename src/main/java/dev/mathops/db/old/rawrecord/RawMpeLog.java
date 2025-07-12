@@ -118,7 +118,7 @@ public final class RawMpeLog extends RecBase implements Comparable<RawMpeLog> {
     }
 
     /**
-     * Extracts an "mpe_log" record from a result set.
+     * Extracts a "mpe_log" record from a result set.
      *
      * @param rs the result set from which to retrieve the record
      * @return the record

@@ -57,10 +57,10 @@ public enum RawStexamLogic {
     ;
 
     /** The types considered "unit" exams. */
-    public static final String[] UNIT_EXAM_TYPES = {"U", "F"};
+//    public static final String[] UNIT_EXAM_TYPES = {"U", "F"};
 
     /** The types considered "review" exams. */
-    public static final String[] REVIEW_EXAM_TYPES = {"R"};
+//    public static final String[] REVIEW_EXAM_TYPES = {"R"};
 
     /** All exam types considered. */
     public static final String[] ALL_EXAM_TYPES = {"U", "F", "R"};
@@ -300,7 +300,8 @@ public enum RawStexamLogic {
      * @throws SQLException if there is an error accessing the database
      */
     public static void getHistory(final Cache cache, final Collection<? super List<RawStexam>> history,
-                                  final int numDays, final LocalDate today, final String... courses) throws SQLException {
+                                  final int numDays, final LocalDate today, final String... courses)
+            throws SQLException {
 
         // Get the earliest date for which to return data...
         LocalDate earliest;

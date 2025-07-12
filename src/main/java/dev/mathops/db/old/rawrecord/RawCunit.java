@@ -101,7 +101,7 @@ public final class RawCunit extends RawTermRecordBase implements Comparable<RawC
     }
 
     /**
-     * Extracts an "cunit" record from a result set.
+     * Extracts a "cunit" record from a result set.
      *
      * @param rs the result set from which to retrieve the record
      * @return the record

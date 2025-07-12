@@ -664,11 +664,11 @@ public final class MathPlanStudentData {
             final RawStmathplan exist3 = existing.get(key3);
             final RawStmathplan exist4 = existing.get(key4);
 
-            final boolean shouldInsertNew = exist1 == null || exist1.stuAnswer == null
-                                            || !exist1.stuAnswer.equals(value1) || exist2 == null || exist2.stuAnswer == null
-                                            || !exist2.stuAnswer.equals(value2) || exist3 == null || exist3.stuAnswer == null
-                                            || !exist3.stuAnswer.equals(value3) || exist4 == null || exist4.stuAnswer == null
-                                            || !exist4.stuAnswer.equals(value4);
+            final boolean shouldInsertNew =
+                    exist1 == null || exist1.stuAnswer == null || !exist1.stuAnswer.equals(value1)
+                    || exist2 == null || exist2.stuAnswer == null || !exist2.stuAnswer.equals(value2)
+                    || exist3 == null || exist3.stuAnswer == null || !exist3.stuAnswer.equals(value3)
+                    || exist4 == null || exist4.stuAnswer == null || !exist4.stuAnswer.equals(value4);
 
             if (shouldInsertNew) {
                 final List<Integer> questions = new ArrayList<>(4);

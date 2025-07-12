@@ -244,7 +244,7 @@ public enum ENextStep {
 
     /**
      * 2L. "You only need to complete the Algebra section of the Math Placement Exam to become eligible for MATH 117,
-     * but completing as much of the exam as you can gives you more options if you change majors."
+     * but completing as much of the exam as you can give you more options if you change majors."
      */
     MSG_2L,
 
@@ -277,7 +277,7 @@ public enum ENextStep {
 
     /**
      * 2R. "You only need to complete the Algebra section of the Math Placement Exam to become eligible for this (these)
-     * course(s), but completing as much of the exam as you can gives you more options in case you change majors."
+     * course(s), but completing as much of the exam as you can give you more options in case you change majors."
      */
     MSG_2R,
 

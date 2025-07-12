@@ -171,7 +171,7 @@ final class StudentStallPoints {
     }
 
     /**
-     * Processes a single registration. This may or may not generates a report row with a stall point for that student.
+     * Processes a single registration. This may or may not generate a report row with a stall point for that student.
      *
      * @param reg    the registration
      * @param output a list to which to add output lines
@@ -206,8 +206,10 @@ final class StudentStallPoints {
             for (final RawSthomework sthomework : sthomeworks) {
 
                 if (latestWorkDate == null) {
-                } else if (latestWorkDate.isAfter(sthomework.hwDt) || (latestWorkDate.equals(sthomework.hwDt)
-                                                                       && latestWorkTime >= sthomework.finishTime.intValue())) {
+
+                } else if (latestWorkDate.isAfter(sthomework.hwDt)
+                           || (latestWorkDate.equals(sthomework.hwDt)
+                               && latestWorkTime >= sthomework.finishTime.intValue())) {
                     continue;
                 }
 

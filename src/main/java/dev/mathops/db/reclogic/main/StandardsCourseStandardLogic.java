@@ -134,7 +134,8 @@ public final class StandardsCourseStandardLogic implements IRecLogic<StandardsCo
      * @return the list of modules found for the specified course
      * @throws SQLException if there is an error performing the query
      */
-    public List<StandardsCourseStandardRec> queryByCourse(final Cache cache, final String courseId) throws SQLException {
+    public List<StandardsCourseStandardRec> queryByCourse(final Cache cache, final String courseId)
+            throws SQLException {
 
         final String schemaPrefix = cache.getSchemaPrefix(ESchema.MAIN);
 

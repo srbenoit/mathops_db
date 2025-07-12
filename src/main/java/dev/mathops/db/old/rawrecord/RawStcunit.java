@@ -109,7 +109,7 @@ public final class RawStcunit extends RecBase implements Comparable<RawStcunit> 
     }
 
     /**
-     * Extracts an "stcunit" record from a result set.
+     * Extracts a "stcunit" record from a result set.
      *
      * @param rs the result set from which to retrieve the record
      * @return the record

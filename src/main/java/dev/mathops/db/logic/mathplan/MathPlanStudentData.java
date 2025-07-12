@@ -706,7 +706,8 @@ public final class MathPlanStudentData {
                 } else {
                     result = ENextStep.MSG_PLACE_INTO_125;
                 }
-            } else if (this.recommendedEligibility == EEligibility.M_155 || this.recommendedEligibility == EEligibility.M_155_160) {
+            } else if (this.recommendedEligibility == EEligibility.M_155
+                       || this.recommendedEligibility == EEligibility.M_155_160) {
                 if (this.canRegisterFor.contains(RawRecordConstants.M125)) {
                     result = ENextStep.MSG_PLACE_OUT_125;
                 } else if (this.canRegisterFor.contains(RawRecordConstants.M118)) {

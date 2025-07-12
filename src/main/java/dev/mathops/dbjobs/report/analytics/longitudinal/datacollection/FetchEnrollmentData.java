@@ -288,8 +288,7 @@ public enum FetchEnrollmentData {
                     Double gradeValue = null;
                     if (grade != null) {
                         switch (grade) {
-                            case "A+", "TA+", "RA+", "XA+" -> gradeValue = Double.valueOf(4.0);
-                            case "A", "TA", "RA", "XA" -> gradeValue = Double.valueOf(4.0);
+                            case "A+", "TA+", "RA+", "XA+", "A", "TA", "RA", "XA" -> gradeValue = Double.valueOf(4.0);
                             case "A-", "TA-", "RA-", "XA-" -> gradeValue = Double.valueOf(3.667);
                             case "B+", "TB+", "RB+", "XB+" -> gradeValue = Double.valueOf(3.333);
                             case "B", "TB", "RB", "XB" -> gradeValue = Double.valueOf(3.0);
@@ -300,8 +299,7 @@ public enum FetchEnrollmentData {
                             case "D+", "TD+", "RD+", "XD+" -> gradeValue = Double.valueOf(1.333);
                             case "D", "TD", "RD", "XD" -> gradeValue = Double.valueOf(1.0);
                             case "D-", "TD-", "RD-", "XD-" -> gradeValue = Double.valueOf(0.667);
-                            case "F", "TF", "RF", "XF" -> gradeValue = Double.valueOf(0.0);
-                            case "U", "TU", "RU", "XU" -> gradeValue = Double.valueOf(0.0);
+                            case "F", "TF", "RF", "XF", "U", "TU", "RU", "XU" -> gradeValue = Double.valueOf(0.0);
                             case "S", "TS", "XS" -> gradeValue = Double.valueOf(2.5);
                             case "W" -> withdrawn = true;
                             default -> Log.warning("Unrecognized grade: ", grade, " in ", course);

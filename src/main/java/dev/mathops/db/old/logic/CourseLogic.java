@@ -120,8 +120,7 @@ public enum CourseLogic {
                                 unit4 = test.msDate;
                             }
                             // Don't break - student milestones are sorted by deadline date, and if there are
-                            // multiple, we want
-                            // the later date
+                            // multiple, we want the later date
                         }
                     }
 

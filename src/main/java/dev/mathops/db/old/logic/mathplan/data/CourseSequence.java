@@ -244,19 +244,19 @@ public final class CourseSequence {
         priorAndCurrent.putAll(this.semester1Courses);
         final Collection<CourseInfoGroup> priorAndCurGroups = new HashSet<>(this.semester1CourseGroups);
         this.semester1CourseGroups.removeIf(g1 -> g1.isSatisfiedBy(priorAndCurrent.keySet(), allCourses)
-                || g1.isSatisfiedByGroup(priorAndCurGroups, allCourses));
+                                                  || g1.isSatisfiedByGroup(priorAndCurGroups, allCourses));
 
         // Clean semester 2 groups (looks at pre-arrival, semester 1, and semester 2 courses)
         priorAndCurrent.putAll(this.semester2Courses);
         priorAndCurGroups.addAll(this.semester2CourseGroups);
         this.semester2CourseGroups.removeIf(g2 -> g2.isSatisfiedBy(priorAndCurrent.keySet(), allCourses)
-                || g2.isSatisfiedByGroup(priorAndCurGroups, allCourses));
+                                                  || g2.isSatisfiedByGroup(priorAndCurGroups, allCourses));
 
         // Clean additional groups (looks at pre-arrival, semester 1, semester 2, and additional courses)
         priorAndCurrent.putAll(this.additionalCourses);
         priorAndCurGroups.addAll(this.additionalCourseGroups);
         this.additionalCourseGroups.removeIf(g3 -> g3.isSatisfiedBy(priorAndCurrent.keySet(), allCourses)
-                || g3.isSatisfiedByGroup(priorAndCurGroups, allCourses));
+                                                   || g3.isSatisfiedByGroup(priorAndCurGroups, allCourses));
     }
 
     /**
@@ -337,7 +337,7 @@ public final class CourseSequence {
         int earliest = 4;
 
         if (this.additionalCourses.remove(courseToRemove) != null
-                || this.additionalCourses.remove(leaveCourse) != null) {
+            || this.additionalCourses.remove(leaveCourse) != null) {
             earliest = 3;
         }
 
@@ -345,14 +345,14 @@ public final class CourseSequence {
         while (additional.hasNext()) {
             final CourseInfoGroup grp = additional.next();
             if (grp.getCourseNumbers().contains(courseToRemove)
-                    || grp.getCourseNumbers().contains(leaveCourse)) {
+                || grp.getCourseNumbers().contains(leaveCourse)) {
                 additional.remove();
                 earliest = 3;
             }
         }
 
         if (this.semester2Courses.remove(courseToRemove) != null
-                || this.semester2Courses.remove(leaveCourse) != null) {
+            || this.semester2Courses.remove(leaveCourse) != null) {
             earliest = 2;
         }
 
@@ -360,14 +360,14 @@ public final class CourseSequence {
         while (sem2.hasNext()) {
             final CourseInfoGroup grp = sem2.next();
             if (grp.getCourseNumbers().contains(courseToRemove)
-                    || grp.getCourseNumbers().contains(leaveCourse)) {
+                || grp.getCourseNumbers().contains(leaveCourse)) {
                 sem2.remove();
                 earliest = 2;
             }
         }
 
         if (this.semester1Courses.remove(courseToRemove) != null
-                || this.semester1Courses.remove(leaveCourse) != null) {
+            || this.semester1Courses.remove(leaveCourse) != null) {
             earliest = 1;
         }
 
@@ -375,14 +375,14 @@ public final class CourseSequence {
         while (sem1.hasNext()) {
             final CourseInfoGroup grp = sem1.next();
             if (grp.getCourseNumbers().contains(courseToRemove)
-                    || grp.getCourseNumbers().contains(leaveCourse)) {
+                || grp.getCourseNumbers().contains(leaveCourse)) {
                 sem1.remove();
                 earliest = 1;
             }
         }
 
         if (this.preArrivalCourses.remove(courseToRemove) != null
-                || this.preArrivalCourses.remove(leaveCourse) != null) {
+            || this.preArrivalCourses.remove(leaveCourse) != null) {
             earliest = 0;
         }
 
@@ -536,7 +536,7 @@ public final class CourseSequence {
                         info.earnedGrade = rowGrade;
 
                         if ((info.requiredGrade == null)
-                                || (info.earnedGrade.floatValue() >= info.requiredGrade.floatValue())) {
+                            || (info.earnedGrade.floatValue() >= info.requiredGrade.floatValue())) {
                             info.status = ECourseStatus.COMPLETED_AT_CSU;
                         } else {
                             info.status = ECourseStatus.COMPLETED_AT_CSU_GRADE_TOO_LOW;
@@ -547,19 +547,21 @@ public final class CourseSequence {
 
             final String testId = info.course.course;
             final boolean isPrecalc = RawRecordConstants.M117.equals(testId)
-                    || RawRecordConstants.M118.equals(testId) || RawRecordConstants.M124.equals(testId)
-                    || RawRecordConstants.M125.equals(testId) || RawRecordConstants.M126.equals(testId);
+                                      || RawRecordConstants.M118.equals(testId) || RawRecordConstants.M124.equals(
+                    testId)
+                                      || RawRecordConstants.M125.equals(testId) || RawRecordConstants.M126.equals(
+                    testId);
 
             for (final LiveTransferCredit row : data.getLiveTransferCredit()) {
                 final String rowId = row.courseId;
                 final Float gpa = row.getGradeGpa();
 
                 if ((courseId.equals(rowId) && gpa != null) && (info.earnedGrade == null
-                        || info.earnedGrade.floatValue() < gpa.floatValue())) {
+                                                                || info.earnedGrade.floatValue() < gpa.floatValue())) {
                     info.earnedGrade = gpa;
 
                     if ((info.requiredGrade == null)
-                            || (info.earnedGrade.floatValue() >= info.requiredGrade.floatValue())) {
+                        || (info.earnedGrade.floatValue() >= info.requiredGrade.floatValue())) {
                         info.status = ECourseStatus.TRANSFER_CREDIT;
                     } else {
                         info.status = ECourseStatus.TRANSFER_CREDIT_GRADE_TOO_LOW;
@@ -598,7 +600,8 @@ public final class CourseSequence {
      */
     private void checkSinglePreArrivalPrerequisite(final String course,
                                                    final Map<String, ? extends List<RequiredPrereq>> prereqData,
-                                                   final Map<String, RawCourse> courseData, final MathPlanStudentData data) {
+                                                   final Map<String, RawCourse> courseData,
+                                                   final MathPlanStudentData data) {
 
         final List<RequiredPrereq> prereqList = prereqData.get(course);
         if (prereqList != null) {
@@ -1347,7 +1350,7 @@ public final class CourseSequence {
                 final String courseId = info.course.course;
 
                 if (this.preArrivalCourses.containsKey(courseId) || this.semester1Courses.containsKey(courseId) ||
-                        this.semester2Courses.containsKey(courseId)) {
+                    this.semester2Courses.containsKey(courseId)) {
 
                     final RawCourse course = courseData.get(courseId);
                     final Integer numCredits = course == null ? null : course.nbrCredits;
@@ -1373,7 +1376,7 @@ public final class CourseSequence {
                 final String courseId = info.course.course;
 
                 if (this.preArrivalCourses.containsKey(courseId) || this.semester1Courses.containsKey(courseId) ||
-                        this.semester2Courses.containsKey(courseId) || this.additionalCourses.containsKey(courseId)) {
+                    this.semester2Courses.containsKey(courseId) || this.additionalCourses.containsKey(courseId)) {
 
                     final RawCourse course = courseData.get(courseId);
                     final Integer numCredits = course == null ? null : course.nbrCredits;
@@ -1470,7 +1473,7 @@ public final class CourseSequence {
     void ensureCoreSem12(final int numCredits) {
 
         final int numCoreInSem12 = countCore(this.semester1Courses, this.semester1CourseGroups)
-                + countCore(this.semester2Courses, this.semester2CourseGroups);
+                                   + countCore(this.semester2Courses, this.semester2CourseGroups);
 
         if (numCoreInSem12 < numCredits) {
             // Need to move core credits forward to semester 2
@@ -1612,10 +1615,10 @@ public final class CourseSequence {
     public boolean isPrecalcCourseInSemester1() {
 
         boolean req = this.semester1Courses.containsKey(RawRecordConstants.M117)
-                || this.semester1Courses.containsKey(RawRecordConstants.M118)
-                || this.semester1Courses.containsKey(RawRecordConstants.M124)
-                || this.semester1Courses.containsKey(RawRecordConstants.M125)
-                || this.semester1Courses.containsKey(RawRecordConstants.M126);
+                      || this.semester1Courses.containsKey(RawRecordConstants.M118)
+                      || this.semester1Courses.containsKey(RawRecordConstants.M124)
+                      || this.semester1Courses.containsKey(RawRecordConstants.M125)
+                      || this.semester1Courses.containsKey(RawRecordConstants.M126);
 
         if (!req) {
             for (final CourseInfoGroup grp : this.semester1CourseGroups) {
@@ -1638,10 +1641,10 @@ public final class CourseSequence {
     boolean isPrecalcCourseInSemester2() {
 
         boolean req = this.semester2Courses.containsKey(RawRecordConstants.M117)
-                || this.semester2Courses.containsKey(RawRecordConstants.M118)
-                || this.semester2Courses.containsKey(RawRecordConstants.M124)
-                || this.semester2Courses.containsKey(RawRecordConstants.M125)
-                || this.semester2Courses.containsKey(RawRecordConstants.M126);
+                      || this.semester2Courses.containsKey(RawRecordConstants.M118)
+                      || this.semester2Courses.containsKey(RawRecordConstants.M124)
+                      || this.semester2Courses.containsKey(RawRecordConstants.M125)
+                      || this.semester2Courses.containsKey(RawRecordConstants.M126);
 
         if (!req) {
             for (final CourseInfoGroup grp : this.semester2CourseGroups) {
@@ -1679,7 +1682,7 @@ public final class CourseSequence {
             needs117 = false;
         } else {
             needs117 = isCourseInSemester1(RawRecordConstants.M117) || isGroupInSemester1("AGED3")
-                    || isGroupInSemester1("ANIM3");
+                       || isGroupInSemester1("ANIM3");
         }
 
         return needs117;

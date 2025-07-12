@@ -482,8 +482,8 @@ public final class BulkUpdateStudentInformation {
         final boolean matchHsClassRank = Objects.equals(student.hsClassRank, hsClassRank);
 
         final boolean changed = !(matchPidm && matchFirstName && matchMiddleInitial && matchLastName && matchPrefName
-                                  && matchEmail && matchBirthDate && matchAct && matchSat && matchHsGpa && matchHsCode && matchHsClassSize
-                                  && matchHsClassRank);
+                                  && matchEmail && matchBirthDate && matchAct && matchSat && matchHsGpa && matchHsCode
+                                  && matchHsClassSize && matchHsClassRank);
 
         if (changed) {
             final String stuId = student.stuId;

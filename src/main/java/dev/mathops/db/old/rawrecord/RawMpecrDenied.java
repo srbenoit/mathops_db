@@ -101,7 +101,7 @@ public final class RawMpecrDenied extends RecBase implements Comparable<RawMpecr
     }
 
     /**
-     * Extracts an "mpecr_denied" record from a result set.
+     * Extracts a "mpecr_denied" record from a result set.
      *
      * @param rs the result set from which to retrieve the record
      * @return the record

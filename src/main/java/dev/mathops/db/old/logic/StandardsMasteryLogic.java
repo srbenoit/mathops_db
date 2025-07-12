@@ -22,6 +22,9 @@ import java.util.Map;
  */
 public final class StandardsMasteryLogic {
 
+    /** All homework types considered. */
+    private static final String[] ALL_HW_TYPES = {"HW", "ST"};
+
     /** Homeworks the student has taken. */
     private final List<RawSthomework> stHomeworks;
 
@@ -49,8 +52,7 @@ public final class StandardsMasteryLogic {
 
         final SystemData systemData = cache.getSystemData();
 
-        this.stHomeworks = RawSthomeworkLogic.getHomeworks(cache, stuId, courseId, false,
-                RawSthomeworkLogic.ALL_HW_TYPES);
+        this.stHomeworks = RawSthomeworkLogic.getHomeworks(cache, stuId, courseId, false, ALL_HW_TYPES);
 
         this.masteryExams = systemData.getActiveMasteryExamsByCourse(courseId);
         final int numExams = this.masteryExams.size();
@@ -169,9 +171,9 @@ public final class StandardsMasteryLogic {
      *
      * @param examId the mastery exam ID
      * @return 0 if neither question was answered correctly; 1 if question 1 has been answered correctly twice, but not
-     * question 2; 2 if question 2 was answered correctly twice, but not question 1; 3 if both have been answered
-     * correctly twice (this number is the bit-wise combination of 0x01 representing question 1, and 0x02 representing
-     * question2)
+     *         question 2; 2 if question 2 was answered correctly twice, but not question 1; 3 if both have been
+     *         answered correctly twice (this number is the bit-wise combination of 0x01 representing question 1, and
+     *         0x02 representing question2)
      */
     public int whichQuestionsPassedTwice(final String examId) {
 
@@ -205,6 +207,7 @@ public final class StandardsMasteryLogic {
 
     /**
      * Tests whether the student has passed the "standard assignment" to enable mastery of a standard.
+     *
      * @param unit      the unit (typically 1 through 8 for a course)
      * @param objective the objective (typically 1 through 3)
      * @return true if the student has passed a homework of type "ST" for the indicated unit and objective
@@ -242,7 +245,6 @@ public final class StandardsMasteryLogic {
 
         return available;
     }
-
 
     /**
      * Assembles a list of the mastery exams for which the student is eligible to attempt mastery.

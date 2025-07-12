@@ -41,7 +41,7 @@ public final class MetadataSkillsReview {
         }
 
         for (int i = 11; i < 30; ++i) {
-            final String objectiveDirName = i + "_objective_" + SUFFIXES.substring(i, i + 1);
+            final String objectiveDirName = i + "_objective_" + SUFFIXES.charAt(i);
             final File objectiveDir = new File(theSkillsReviewDir, objectiveDirName);
 
             if (objectiveDir.exists() && objectiveDir.isDirectory()) {

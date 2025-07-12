@@ -397,7 +397,7 @@ public enum RawClientPcLogic {
 
     /**
      * Updates the 'power_on_due' field of a client_pc record, and if the last ping time is not null, updates the
-     * "power_status
+     * 'power_status' field.
      *
      * @param cache       the data cache
      * @param computerId  the computer ID of the record to update

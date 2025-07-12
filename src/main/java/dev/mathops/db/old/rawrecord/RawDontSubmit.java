@@ -51,7 +51,7 @@ public final class RawDontSubmit extends RawTermRecordBase implements Comparable
     }
 
     /**
-     * Extracts an "dont_submit" record from a result set.
+     * Extracts a "dont_submit" record from a result set.
      *
      * @param rs the result set from which to retrieve the record
      * @return the record

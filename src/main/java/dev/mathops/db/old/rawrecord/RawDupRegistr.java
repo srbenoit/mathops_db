@@ -303,7 +303,7 @@ public final class RawDupRegistr extends RawTermRecordBase implements Comparable
     }
 
     /**
-     * Extracts an "dup_registr" record from a result set.
+     * Extracts a "dup_registr" record from a result set.
      *
      * @param rs the result set from which to retrieve the record
      * @return the record

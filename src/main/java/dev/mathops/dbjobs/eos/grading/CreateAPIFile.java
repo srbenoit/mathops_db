@@ -263,14 +263,14 @@ public class CreateAPIFile implements Runnable {
         final String reportString = htm.toString();
 
         final File reportFile = new File(this.reportPath, "final_grade_API_file");
-        final String reportPath = reportFile.getAbsolutePath();
+        final String repPath = reportFile.getAbsolutePath();
 
         try (final FileWriter writer = new FileWriter(reportFile)) {
             writer.write(reportString);
             final String countStr = Integer.toString(count);
-            Log.info("Emitted ", countStr, " records to API file ", reportPath);
+            Log.info("Emitted ", countStr, " records to API file ", repPath);
         } catch (final IOException ex) {
-            Log.warning("ERROR: failed to write ", reportPath, ex);
+            Log.warning("ERROR: failed to write ", repPath, ex);
         }
     }
 

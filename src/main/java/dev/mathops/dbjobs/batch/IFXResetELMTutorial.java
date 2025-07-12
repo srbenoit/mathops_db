@@ -251,8 +251,7 @@ public enum IFXResetELMTutorial {
                 }
             }
 
-            // report.addln(" check on value of min_dt prior to setting P: ",
-            // TemporalUtils.FMT_MDY.format(minDate));
+            // report.addln(" check on value of min_dt prior to setting P: ", TemporalUtils.FMT_MDY.format(minDate));
 
             if (minDate.isBefore(latestStartDate) && maxDate.isBefore(latestWorkDate)) {
 

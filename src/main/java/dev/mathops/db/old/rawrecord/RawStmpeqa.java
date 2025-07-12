@@ -109,7 +109,7 @@ public final class RawStmpeqa extends RecBase {
     }
 
     /**
-     * Extracts an "stmpeqa" record from a result set.
+     * Extracts a "stmpeqa" record from a result set.
      *
      * @param rs the result set from which to retrieve the record
      * @return the record

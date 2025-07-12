@@ -108,7 +108,7 @@ public record EnrollmentRec(String studentId, int academicPeriod, String course,
     }
 
     /**
-     * Tests whether this enrollment attempt is a "DFW'
+     * Tests whether this enrollment attempt is a "DFW"
      *
      * @return true if the course section is gradable
      */

@@ -22,7 +22,7 @@ public final class Path implements Comparable<Path> {
     /** The number of times this path has been found in a population and student completed requirements. */
     private int numCompleted;
 
-    /** The number of times this path has been found in a population and student did not completed requirements. */
+    /** The number of times this path has been found in a population and student did not complete requirements. */
     private int numDidNotComplete;
 
     /** The list of child paths. */

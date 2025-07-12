@@ -101,7 +101,7 @@ public final class RawMpeCredit extends RecBase implements Comparable<RawMpeCred
     }
 
     /**
-     * Extracts an "mpe_credit" record from a result set.
+     * Extracts a "mpe_credit" record from a result set.
      *
      * @param rs the result set from which to retrieve the record
      * @return the record

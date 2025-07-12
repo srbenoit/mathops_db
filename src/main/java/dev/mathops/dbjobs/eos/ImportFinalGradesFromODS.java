@@ -242,7 +242,8 @@ public class ImportFinalGradesFromODS implements Runnable {
 
             for (final RawGradeRoll row : existings) {
                 report.add("    Deleting record for " + row.stuId + CoreConstants.SLASH + row.course + " ("
-                           + row.sect + ") - " + row.gradeOpt + " for " + row.fullname + " in " + row.termKey.shortString);
+                           + row.sect + ") - " + row.gradeOpt + " for " + row.fullname + " in "
+                           + row.termKey.shortString);
 
                 if (DEBUG_MODE == EDebugMode.NORMAL) {
                     if (RawGradeRollLogic.delete(cache, row)) {

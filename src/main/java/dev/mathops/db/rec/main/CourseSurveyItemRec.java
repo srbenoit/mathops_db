@@ -25,7 +25,7 @@ public final class CourseSurveyItemRec extends RecBase implements Comparable<Cou
     public static final int LIKERT_AGREE = 3;
 
     /** Integer constant for item type (1=Very good, 2=Pretty good, 3=Not very good, 4=Very bad) */
-    public static final int LIKERT_EFFICAFCY = 4;
+    public static final int LIKERT_EFFICACY = 4;
 
     /** Integer constant for item type. */
     public static final int TEXT = 9;

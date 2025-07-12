@@ -120,13 +120,13 @@ final class BannerDataDictionary {
 
                 try (final ResultSet columns = metadata.getColumns(null, schema, name, null)) {
                     while (columns.next()) {
-                        final String colname = columns.getString("COLUMN_NAME");
-                        final String coltype = columns.getString("TYPE_NAME");
+                        final String colName = columns.getString("COLUMN_NAME");
+                        final String colType = columns.getString("TYPE_NAME");
                         final String size = columns.getString("COLUMN_SIZE");
                         if (size == null) {
-                            report.add(SimpleBuilder.concat("    ", colname, " (", coltype, ")"));
+                            report.add(SimpleBuilder.concat("    ", colName, " (", colType, ")"));
                         } else {
-                            report.add(SimpleBuilder.concat("    ", colname, " (", coltype, "[", size, "])"));
+                            report.add(SimpleBuilder.concat("    ", colName, " (", colType, "[", size, "])"));
                         }
                     }
                 }

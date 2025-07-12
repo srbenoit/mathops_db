@@ -379,8 +379,8 @@ public abstract class StuUnitMasteryLogic implements IRecLogic<StuUnitMasteryRec
          * @throws SQLException if there is an error performing the query
          */
         @Override
-        public List<StuUnitMasteryRec> queryByStudentCourse(final Cache cache,
-                                                            final String stuId, final String courseId) throws SQLException {
+        public List<StuUnitMasteryRec> queryByStudentCourse(final Cache cache, final String stuId,
+                                                            final String courseId) throws SQLException {
 
             final String sql = SimpleBuilder.concat("SELECT * FROM stu_unit_mastery ",
                     "WHERE stu_id=", sqlStringValue(stuId),

@@ -106,7 +106,7 @@ public final class LiveStudent implements Serializable, Comparable<LiveStudent> 
      * @param theStudentId           the student ID
      * @param theInternalId          the student's internal ID
      * @param theLastName            the student's last name
-     * @param theFirstName           the stuednt's first name
+     * @param theFirstName           the student's first name
      * @param thePrefName            the student's preferred first name
      * @param theMiddleInitial       the student's middle initial
      * @param theCollegeCode         the college code

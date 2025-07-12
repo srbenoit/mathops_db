@@ -240,8 +240,8 @@ public class CreateLastAttendanceFile implements Runnable {
      * @param gradesToSubmit the list of registrations with grades to submit
      * @param sections       the list of course section records
      */
-    private void generateFile(final RawParameters parameters,
-                              final List<RawStcourse> gradesToSubmit, final List<RawCsection> sections) {
+    private void generateFile(final RawParameters parameters, final List<RawStcourse> gradesToSubmit,
+                              final List<RawCsection> sections) {
 
         final String instr = parameters.parm1.trim();
         final String instrId = parameters.parm2.trim();
@@ -295,8 +295,8 @@ public class CreateLastAttendanceFile implements Runnable {
                         }
                     }
                 } else {
-                    exams = getStudentExams(this.cache, reg.stuId);
-                    homeworks = getStudentHomrework(this.cache, reg.stuId);
+                    exams = getStudentExams(reg.stuId);
+                    homeworks = getStudentHomrework(reg.stuId);
 
                     // This is the first course for the student, allow the User's exam to count as an activity
                     if (exams != null && homeworks != null) {
@@ -342,30 +342,29 @@ public class CreateLastAttendanceFile implements Runnable {
         final String reportString = htm.toString();
 
         final File reportFile = new File(this.reportPath, "AREGORLA.AREGS519_01.DAT");
-        final String reportPath = reportFile.getAbsolutePath();
+        final String repPath = reportFile.getAbsolutePath();
 
         try (final FileWriter writer = new FileWriter(reportFile)) {
             writer.write(reportString);
             final String countStr = Integer.toString(count);
-            Log.info("Emitted ", countStr, " records to last attendance file ", reportPath);
+            Log.info("Emitted ", countStr, " records to last attendance file ", repPath);
         } catch (final IOException ex) {
-            Log.warning("ERROR: failed to write ", reportPath, ex);
+            Log.warning("ERROR: failed to write ", repPath, ex);
         }
     }
 
     /**
      * Queries student exams for a student.
      *
-     * @param cache the data cache
      * @param stuId the student ID
      * @return the list of student exam records
      */
-    private List<RawStexam> getStudentExams(final Cache cache, final String stuId) {
+    private List<RawStexam> getStudentExams(final String stuId) {
 
         List<RawStexam> result = null;
 
         try {
-            result = RawStexamLogic.queryByStudent(cache, stuId, true);
+            result = RawStexamLogic.queryByStudent(this.cache, stuId, true);
         } catch (final SQLException ex) {
             Log.warning("ERROR: failed to query student exams for ", stuId);
         }
@@ -376,16 +375,15 @@ public class CreateLastAttendanceFile implements Runnable {
     /**
      * Queries student homework records for a student.
      *
-     * @param cache the data cache
      * @param stuId the student ID
      * @return the list of student homework records
      */
-    private List<RawSthomework> getStudentHomrework(final Cache cache, final String stuId) {
+    private List<RawSthomework> getStudentHomrework(final String stuId) {
 
         List<RawSthomework> result = null;
 
         try {
-            result = RawSthomeworkLogic.queryByStudent(cache, stuId, true);
+            result = RawSthomeworkLogic.queryByStudent(this.cache, stuId, true);
         } catch (final SQLException ex) {
             Log.warning("ERROR: failed to query student homeworks for ", stuId);
         }

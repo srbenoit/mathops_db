@@ -22,7 +22,7 @@ import java.util.Random;
  */
 public final class FaceToFaceSimulation {
 
-    /** The fraction of the student population expected to want face-to-face." */
+    /** The fraction of the student population expected to want face-to-face. */
     private static final float PORTION_OF_POPULATION_IN_F2F = 1.0f;
 
     /** The maximum number of registrations per meeting time. */

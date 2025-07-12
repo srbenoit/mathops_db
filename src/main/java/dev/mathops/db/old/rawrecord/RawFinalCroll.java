@@ -265,7 +265,7 @@ public final class RawFinalCroll extends RawTermRecordBase implements Comparable
     }
 
     /**
-     * Extracts an "final_croll" record from a result set.
+     * Extracts a "final_croll" record from a result set.
      *
      * @param rs the result set from which to retrieve the record
      * @return the record

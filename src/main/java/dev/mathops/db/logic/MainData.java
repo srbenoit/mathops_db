@@ -390,7 +390,8 @@ public final class MainData {
      * @return the list choices for the of survey item
      * @throws SQLException if there is an error accessing the database
      */
-    public List<CourseSurveyItemChoiceRec> getCourseSurveyItems(final String surveyId, Integer itemNbr) throws SQLException {
+    public List<CourseSurveyItemChoiceRec> getCourseSurveyItems(final String surveyId, final Integer itemNbr)
+            throws SQLException {
 
         if (this.courseSurveyItemChoices == null) {
             this.courseSurveyItemChoices = new HashMap<>(10);

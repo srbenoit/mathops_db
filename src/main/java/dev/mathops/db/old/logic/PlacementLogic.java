@@ -69,7 +69,7 @@ import java.util.Set;
  *
  * <ul>
  * <li>Count attempts on record, classify as proctored or unproctored, determine if any attempts remain or not.
- * <li>If attempts remain, do the following to determine when each form of testing is available:
+ * <li>If there are attempts remaining, do the following to determine when each form of testing is available:
  * <ul>
  * <li>Query all remote MPE records with course "M 100P" based on the student's application term (use an empty list
  * if the student has no application term) - these will indicate when unproctored placement exams are available.

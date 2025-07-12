@@ -68,7 +68,7 @@ public final class RawPlcFee extends RecBase implements Comparable<RawPlcFee> {
     }
 
     /**
-     * Extracts an "plc_fee" record from a result set.
+     * Extracts a "plc_fee" record from a result set.
      *
      * @param rs the result set from which to retrieve the record
      * @return the record

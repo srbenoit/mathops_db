@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * Student course records divided by classification.  Lists of second course records are  organized by integer term code
  * (like 202490), then by first course classification (local course with A, B, or lower grade, transfer credit with A,
- * B, or lower grade, or AP/IB/CLEP credit.
+ * B, or lower grade, or AP/IB/CLEP credit).
  */
 public final class ClassifiedData {
 

@@ -16,7 +16,8 @@ import java.util.Objects;
  * <p>
  * The primary key on the underlying table is the serial number and question number.
  */
-public final class StandardAssignmentAttemptQaRec extends RecBase implements Comparable<StandardAssignmentAttemptQaRec> {
+public final class StandardAssignmentAttemptQaRec extends RecBase
+        implements Comparable<StandardAssignmentAttemptQaRec> {
 
     /** The table name for serialization of records. */
     public static final String TABLE_NAME = "standard_assignment_attempt_qa";

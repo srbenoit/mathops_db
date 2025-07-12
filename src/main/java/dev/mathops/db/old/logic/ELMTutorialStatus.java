@@ -263,11 +263,11 @@ public final class ELMTutorialStatus {
 //
 //        final List<DateRange> site = status.webSiteAvailability.getAll();
 //        for (final DateRange r : site) {
-//            Log.info("Site availble         : ", r);
+//            Log.info("Site available         : ", r);
 //        }
 //        final List<DateRange> exam = status.onlineProctoredExamAvailability.getAll();
 //        for (final DateRange r : exam) {
-//            Log.info("Online Exams availble : ", r);
+//            Log.info("Online Exams available : ", r);
 //        }
 //    }
 }

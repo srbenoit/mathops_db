@@ -203,9 +203,9 @@ public abstract class AbstractImpl<E> implements IDataObject<E> {
         try (final Statement stmt = conn.createStatement()) {
             final List<E> results = new ArrayList<>(10);
 
-            try (final ResultSet rset = stmt.executeQuery(sql)) {
-                while (rset.next()) {
-                    final E record = constructFromResultSet(conn, rset);
+            try (final ResultSet rs = stmt.executeQuery(sql)) {
+                while (rs.next()) {
+                    final E record = constructFromResultSet(conn, rs);
                     if (record != null) {
                         results.add(record);
                     }

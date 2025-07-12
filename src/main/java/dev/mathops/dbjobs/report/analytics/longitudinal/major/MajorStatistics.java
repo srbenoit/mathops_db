@@ -342,7 +342,8 @@ public final class MajorStatistics {
         generateMajor("Psychology", programPSYC, M_124, 1, 3, allEnrollments, allStudentTerms);
 
         final List<String> programSOCR = Arrays.asList("SOCR-BS", "SOCR-SAMZ-BS", "SOCR-SESZ-BS");
-        generateMajor("Soil and Crop Sciences (general)", programSOCR, M_124_125, 1, 3, allEnrollments, allStudentTerms);
+        generateMajor("Soil and Crop Sciences (general)", programSOCR, M_124_125, 1, 3, allEnrollments,
+                allStudentTerms);
 
         final List<String> programSOCRPBTZ = List.of("SOCR-PBTZ-BS");
         generateMajor("Soil and Crop Sciences (Plant Biotechnology Concentration)", programSOCRPBTZ, M_124_125, 2, 4,

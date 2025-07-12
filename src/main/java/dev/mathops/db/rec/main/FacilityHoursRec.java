@@ -15,7 +15,7 @@ import java.util.Objects;
  * Each record represents a regularly scheduled time when a facility is open or available for use.  It may take several
  * such records to collectively represent the total set of scheduled open times, but in this case, the rows should not
  * overlap (for example, if a facility is open 8AM to 5PM Monday through Friday, but stays open until 6PM on Tuesdays,
- * it should have one record for the 8AM to 5PM times, and a second record for the hour form 5PM to 6PM on Tuesdays.
+ * it should have one record for the 8AM to 5PM times, and a second record for the hour form 5PM to 6PM on Tuesdays).
  *
  * <p>
  * Each row has a "display_index" field that controls the order in which schedule information is presented to users. The

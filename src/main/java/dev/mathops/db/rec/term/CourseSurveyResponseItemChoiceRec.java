@@ -14,7 +14,8 @@ import dev.mathops.text.builder.HtmlBuilder;
  * <p>
  * The primary key on the underlying table is the serial number of the response and the item number.
  */
-public final class CourseSurveyResponseItemChoiceRec extends RecBase implements Comparable<CourseSurveyResponseItemChoiceRec> {
+public final class CourseSurveyResponseItemChoiceRec extends RecBase
+        implements Comparable<CourseSurveyResponseItemChoiceRec> {
 
     /** The table name. */
     public static final String TABLE_NAME = "course_survey_response_item_choice";

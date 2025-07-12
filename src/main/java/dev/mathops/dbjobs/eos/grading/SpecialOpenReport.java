@@ -246,7 +246,7 @@ public class SpecialOpenReport implements Runnable {
     private record ReportRow(String lastName, String firstName, String stuId, String course, String sect,
                              Integer paceOrder, String openStatus, String grade) implements Comparable<ReportRow> {
 
-        public ReportRow {
+        private ReportRow {
             if (openStatus == null) {
                 throw new IllegalArgumentException("Open status may not be null.");
             }

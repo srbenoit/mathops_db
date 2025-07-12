@@ -219,7 +219,8 @@ public enum RawMpscorequeueLogic {
      * @throws SQLException if there is an error accessing the database
      */
     public static void postChallengeCredit(final Cache cache, final DbConnection liveConn, final Integer pidm,
-                                           final String courseId, final LocalDateTime examFinishTime) throws SQLException {
+                                           final String courseId, final LocalDateTime examFinishTime)
+            throws SQLException {
 
         String testCode = null;
         if (RawRecordConstants.M117.equals(courseId)) {
@@ -269,8 +270,8 @@ public enum RawMpscorequeueLogic {
      * @throws SQLException if there is an error accessing the database
      */
     public static void postPlacementToolResult(final Cache cache, final DbConnection liveConn, final Integer pidm,
-                                               final Iterable<String> earnedPlacement, final LocalDateTime examFinishTime)
-            throws SQLException {
+                                               final Iterable<String> earnedPlacement,
+                                               final LocalDateTime examFinishTime) throws SQLException {
 
         List<RawMpscorequeue> existing = null;
         if (!LogicUtils.isBannerDown()) {

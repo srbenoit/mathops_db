@@ -52,7 +52,7 @@ public final class RawPrereq extends RawTermRecordBase implements Comparable<Raw
     }
 
     /**
-     * Extracts an "prereq" record from a result set.
+     * Extracts a "prereq" record from a result set.
      *
      * @param rs the result set from which to retrieve the record
      * @return the record

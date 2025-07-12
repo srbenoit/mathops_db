@@ -118,7 +118,7 @@ public final class RawDiscipline extends RecBase implements Comparable<RawDiscip
     }
 
     /**
-     * Extracts an "discipline" record from a result set.
+     * Extracts a "discipline" record from a result set.
      *
      * @param rs the result set from which to retrieve the record
      * @return the record

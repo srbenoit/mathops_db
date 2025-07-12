@@ -104,8 +104,7 @@ final class StudentsByUniqueCourseCombination implements Runnable {
             studentIds.add(stc.stuId);
         }
 
-        // For each student, compute the collection of courses and increment the count for that'
-        // combination
+        // For each student, compute the collection of courses and increment the count for that combination
         final StringBuilder key = new StringBuilder(5);
         for (final String studentId : studentIds) {
             boolean has117 = false;
