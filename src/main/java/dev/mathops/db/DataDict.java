@@ -257,6 +257,9 @@ public enum DataDict {
     public static final String FLD_POINTS = "points";
 
     /** A field name for serialization of records. */
+    public static final String FLD_POSITION_ID = "position_id";
+
+    /** A field name for serialization of records. */
     public static final String FLD_PREF_KEY = "pref_key";
 
     /** A field name for serialization of records. */
@@ -297,6 +300,9 @@ public enum DataDict {
     public static final String FLD_ROOM_NBR = "room_nbr";
 
     //
+
+    /** A field name for serialization of records. */
+    public static final String FLD_SCHEDULE_ID = "schedule_id";
 
     /** A field name for serialization of records. */
     public static final String FLD_SCORE = "score";
@@ -346,4 +352,9 @@ public enum DataDict {
     /** A field name for serialization of records. */
     public static final String FLD_WEEKDAYS = "weekdays";
 
+    /** A field name for serialization of records. */
+    public static final String FLD_WORKPLACE_ID = "workplace_id";
+
+    /** A field name for serialization of records. */
+    public static final String FLD_WORKPLACE_NAME = "workplace_name";
 }
