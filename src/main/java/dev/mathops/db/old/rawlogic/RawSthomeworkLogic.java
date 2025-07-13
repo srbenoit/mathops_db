@@ -48,6 +48,9 @@ import java.util.List;
 public enum RawSthomeworkLogic {
     ;
 
+    /** The types of homework. */
+    public static final String[] ALL_HW_TYPES = {"HW"};
+
     /**
      * Inserts a new record.
      *

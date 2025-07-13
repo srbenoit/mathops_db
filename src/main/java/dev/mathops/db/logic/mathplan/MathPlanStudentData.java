@@ -612,7 +612,7 @@ public final class MathPlanStudentData {
      *
      * @return the number of completed credits
      */
-    double getCreditsOfCoreCompleted() {
+    public double getCreditsOfCoreCompleted() {
 
         return this.creditsOfCoreCompleted;
     }

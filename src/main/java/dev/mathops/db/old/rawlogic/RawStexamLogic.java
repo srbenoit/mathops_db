@@ -57,10 +57,10 @@ public enum RawStexamLogic {
     ;
 
     /** The types considered "unit" exams. */
-//    public static final String[] UNIT_EXAM_TYPES = {"U", "F"};
+    public static final String[] UNIT_EXAM_TYPES = {"U", "F"};
 
     /** The types considered "review" exams. */
-//    public static final String[] REVIEW_EXAM_TYPES = {"R"};
+    public static final String[] REVIEW_EXAM_TYPES = {"R"};
 
     /** All exam types considered. */
     public static final String[] ALL_EXAM_TYPES = {"U", "F", "R"};

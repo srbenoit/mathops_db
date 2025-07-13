@@ -1325,10 +1325,6 @@ public final class Majors {
             }
         }
 
-        if (result == null) {
-            Log.warning("No major found with program code '", programCode, "' (scanned " + this.majors.size() + ")");
-        }
-
         return result;
     }
 }
