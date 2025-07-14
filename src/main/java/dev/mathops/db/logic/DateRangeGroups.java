@@ -1,4 +1,8 @@
-package dev.mathops.db.old.logic;
+package dev.mathops.db.logic;
+
+import dev.mathops.commons.CoreConstants;
+import dev.mathops.commons.TemporalUtils;
+import dev.mathops.text.builder.HtmlBuilder;
 
 import java.time.chrono.ChronoLocalDate;
 import java.util.ArrayList;
@@ -27,7 +31,7 @@ public final class DateRangeGroups {
      * @param theRanges the list of ranges to categorize (does not need to be sorted)
      * @param today     the current date
      */
-    DateRangeGroups(final Collection<DateRange> theRanges, final ChronoLocalDate today) {
+    public DateRangeGroups(final Collection<DateRange> theRanges, final ChronoLocalDate today) {
 
         final int numRanges = theRanges.size();
         final List<DateRange> p = new ArrayList<>(numRanges);
@@ -88,5 +92,44 @@ public final class DateRangeGroups {
     public boolean hasCurrentOrFuture() {
 
         return this.current != null || !this.future.isEmpty();
+    }
+
+    /**
+     * Generates a string representation of the date range.
+     */
+    @Override
+    public String toString() {
+
+        final HtmlBuilder result = new HtmlBuilder(100);
+
+        final int numPast = this.past.size();
+        if (numPast > 0) {
+            result.add("Past: [");
+            final DateRange first = this.past.getFirst();
+            result.add(first);
+            for (int i = 1; i < numPast; ++i) {
+                final DateRange next = this.past.get(i);
+                result.add(CoreConstants.COMMA, next);
+            }
+            result.add("] ");
+        }
+        if (this.current != null) {
+            result.add("Current: [");
+            result.add(this.current);
+            result.add("] ");
+        }
+        final int numFuture = this.future.size();
+        if (numFuture > 0) {
+            result.add("Future: [");
+            final DateRange first = this.future.getFirst();
+            result.add(first);
+            for (int i = 1; i < numFuture; ++i) {
+                final DateRange next = this.future.get(i);
+                result.add(CoreConstants.COMMA, next);
+            }
+            result.add("]");
+        }
+
+        return result.toString();
     }
 }

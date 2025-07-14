@@ -4,16 +4,20 @@ import dev.mathops.commons.CoreConstants;
 import dev.mathops.commons.TemporalUtils;
 import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
+import dev.mathops.db.Contexts;
 import dev.mathops.db.DbConnection;
 import dev.mathops.db.ESchema;
+import dev.mathops.db.cfg.DatabaseConfig;
 import dev.mathops.db.cfg.Login;
 import dev.mathops.db.cfg.Profile;
-import dev.mathops.db.old.logic.mathplan.data.MathPlanStudentData;
+import dev.mathops.db.logic.StudentData;
+import dev.mathops.db.old.logic.PlacementStatus;
 import dev.mathops.db.old.rawlogic.LogicUtils;
 import dev.mathops.db.old.rawlogic.RawFfrTrnsLogic;
 import dev.mathops.db.old.rawlogic.RawStmathplanLogic;
 import dev.mathops.db.old.rawrecord.RawCourse;
 import dev.mathops.db.old.rawrecord.RawFfrTrns;
+import dev.mathops.db.old.rawrecord.RawMpeCredit;
 import dev.mathops.db.old.rawrecord.RawRecordConstants;
 import dev.mathops.db.old.rawrecord.RawStmathplan;
 import dev.mathops.db.old.rawrecord.RawStudent;
@@ -30,10 +34,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Business logic for the Math Plan.
@@ -362,6 +366,91 @@ public class MathPlanLogic {
             } else {
                 RawStmathplanLogic.insert(cache, resp);
             }
+        }
+    }
+
+    /**
+     * Main method to gather and print test data.
+     *
+     * @param args command-line arguments
+     */
+    public static void main(final String... args) {
+
+        DbConnection.registerDrivers();
+
+        final DatabaseConfig config = DatabaseConfig.getDefault();
+        final Profile profile = config.getCodeProfile(Contexts.BATCH_PATH);
+        final Cache cache = new Cache(profile);
+
+        try {
+            final String stuId = "888888888";
+            final StudentData studentData = cache.getStudent(stuId);
+            final RawStudent stu = studentData.getStudentRecord();
+            final String screenName = stu.getScreenName();
+
+            final MathPlanLogic logic = new MathPlanLogic(profile);
+            final ZonedDateTime now = ZonedDateTime.now();
+            final MathPlanStudentData data = new MathPlanStudentData(cache, stu, logic, now, 12345L, false);
+
+            final PlacementStatus mptStatus = data.placementStatus;
+            final String canUseUnproctored = mptStatus.allowedToUseUnproctored ? "Y" : "N";
+            final String isPlacementAttempted = mptStatus.placementAttempted ? "Y" : "N";
+            final String attemptsUsedStr = Integer.toString(mptStatus.attemptsUsed);
+            final String attemptsRemainingStr = Integer.toString(mptStatus.attemptsRemaining);
+            final String isUnproctoredUsed = mptStatus.unproctoredUsed ? "Y" : "N";
+
+            Log.info("Student ", stuId, " (", screenName, ") placement status: ");
+            Log.info("    Available local proctored exams:  ", mptStatus.availableLocalProctoredIds);
+            Log.info("    Available online proctored exams: ", mptStatus.availableOnlineProctoredIds);
+            Log.info("    Available unproctored exams:      ", mptStatus.availableUnproctoredIds);
+            Log.info("    Allowed to use unproctored:       ", canUseUnproctored);
+            Log.info("    Why unproctored allowed:          ", mptStatus.whyUnproctoredAllowed);
+            Log.info("    Why unproctored unavailable:      ", mptStatus.whyUnproctoredUnavailable);
+            Log.info("    Has attempted placement:          ", isPlacementAttempted);
+            Log.info("    Placement attempts used:          ", attemptsUsedStr);
+            Log.info("    Placement attempts remaining:     ", attemptsRemainingStr);
+            Log.info("    Unproctored attempt used:         ", isUnproctoredUsed);
+            Log.info("    Why proctored unavailable:        ", mptStatus.whyProctoredUnavailable);
+            Log.info("    Short why proctored unavailable:  ", mptStatus.shortWhyProctoredUnavailable);
+            Log.info("    Unproctored date range:           ", mptStatus.unproctoredDateRanges);
+            Log.info("    Placed out of:                    ", mptStatus.placedOutOf);
+            Log.info("    Cleared for:                      ", mptStatus.clearedFor);
+            Log.info("    Earned credit for:                ", mptStatus.earnedCreditFor);
+
+            final String viewedExisting = data.viewedExisting ? "Y" : "N";
+            final String checkedRecommendation = data.checkedOnlyRecommendation ? "Y" : "N";
+            final Map<Integer, RawStmathplan> majorResponses = data.getMajorProfileResponses();
+            final Map<Integer, RawStmathplan> intentions = data.getIntentions();
+            final List<LiveCsuCredit> completed = data.getCompletedCourses();
+            final List<LiveTransferCredit> transferCredit = data.getLiveTransferCredit();
+            final List<RawMpeCredit> placementCred = data.getPlacementCredit();
+            final List<Major> majors = data.getMajors();
+            final Set<String> eligibleFor = data.getCanRegisterFor();
+            final Set<String> eligibleForDoesNotHave = data.getCanRegisterForAndDoesNotHave();
+            final String bOrBetter124 = data.hasBOrBetterIn124() ? "Y" : "N";
+            final String bOrBetter126 = data.hasBOrBetterIn126() ? "Y" : "N";
+            final double creditsOfCoreCompleted = data.getCreditsOfCoreCompleted();
+            final String coreCompleted = Double.toString(creditsOfCoreCompleted);
+
+            Log.info("Student ", stuId, " (", screenName, ") Math Plan status: ");
+            Log.info("    Major Profile Responses:       ", majorResponses);
+            Log.info("    Viewed existing:               ", viewedExisting);
+            Log.info("    Checked 'only recommendation': ", checkedRecommendation);
+            Log.info("    Stated Intentions:             ", intentions);
+            Log.info("    Completed:                     ", completed);
+            Log.info("    Transfer:                      ", transferCredit);
+            Log.info("    Math Placement credit:         ", placementCred);
+            Log.info("    Majors:                        ", majors);
+            Log.info("    Recommended Eligibility:       ", data.recommendedEligibility);
+            Log.info("    Credits of Core Completed:     ", coreCompleted);
+            Log.info("    Next step:                     ", data.nextStep);
+            Log.info("    Can register for:              ", eligibleFor);
+            Log.info("    Can register for doesn't have: ", eligibleForDoesNotHave);
+            Log.info("    B- or better in MATH 124:      ", bOrBetter124);
+            Log.info("    B- or better in MATH 126:      ", bOrBetter126);
+
+        } catch (final SQLException ex) {
+            Log.warning(ex);
         }
     }
 }

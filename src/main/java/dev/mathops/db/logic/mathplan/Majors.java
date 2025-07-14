@@ -1,7 +1,5 @@
 package dev.mathops.db.logic.mathplan;
 
-import dev.mathops.commons.log.Log;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +22,7 @@ public final class Majors {
 
         this.majors = new ArrayList<>(150);
 
-        // *** Last reviewed July 9, 2025 - Concentrations condensed into one code for the major ***
+        // *** Last reviewed July 14, 2025 - Concentrations condensed into one code for the major ***
 
         // ================================
         // College of Agricultural Sciences
@@ -58,7 +56,7 @@ public final class Majors {
                 "Agricultural Business",
                 MathPlanConstants.PGMS + "agricultural-business/",
                 EHowImportantIsMathFirstSemester.IMPORTANT,
-                EEligibility.M_117_120);
+                EEligibility.M_117, EEligibility.M_118, EEligibility.M_124);
         this.majors.add(mAGBU);
 
         // *** Major in Agricultural Education
@@ -72,7 +70,7 @@ public final class Majors {
                 "Agricultural Education",
                 MathPlanConstants.PGMS + "agricultural-education/",
                 EHowImportantIsMathFirstSemester.IMPORTANT,
-                EEligibility.M_117_120);
+                EEligibility.M_117, EEligibility.M_118, EEligibility.M_124);
         this.majors.add(mAGED);
 
         // *** Major in Animal Science
@@ -83,7 +81,7 @@ public final class Majors {
                 "Animal Science",
                 MathPlanConstants.PGMS + "animal-science/",
                 EHowImportantIsMathFirstSemester.VERY_IMPORTANT,
-                EEligibility.M_117_120);
+                EEligibility.M_117, EEligibility.M_118, EEligibility.M_124, EEligibility.M_120);
         this.majors.add(mANIM);
 
         // *** Major in Environmental and Natural Resource Economics
@@ -96,7 +94,7 @@ public final class Majors {
                 "Environmental and Natural Resource Economics",
                 MathPlanConstants.PGMS + "environmental-and-natural-resource-economics/",
                 EHowImportantIsMathFirstSemester.IMPORTANT,
-                EEligibility.M_117_120);
+                EEligibility.M_117, EEligibility.M_118, EEligibility.M_124);
         this.majors.add(mENRE);
 
         // *** Major in Environmental Horticulture
@@ -106,14 +104,23 @@ public final class Majors {
         // 1043: ENHR-NALZ-BS, Environmental Horticulture - Nursery and Landscape Management
         // 1044: ENHR-TURZ-BS, Environmental Horticulture - Turf Management
 
-        final Major mENHR = new Major(
-                new int[]{1040, 1041, 1042, 1043, 1044},
-                new String[]{"ENHR-BS", "ENHR-LNBZ-BS", "ENHR-LDAZ-BS", "ENHR-NALZ-BS", "ENHR-TURZ-BS"},
+        final Major mENHR1 = new Major(
+                new int[]{1040, 1041, 1043, 1044},
+                new String[]{"ENHR-BS", "ENHR-LNBZ-BS", "ENHR-NALZ-BS", "ENHR-TURZ-BS"},
                 "Environmental Horticulture",
                 MathPlanConstants.PGMS + "environmental-horticulture/",
                 EHowImportantIsMathFirstSemester.IMPORTANT,
-                EEligibility.M_117_120);
-        this.majors.add(mENHR);
+                EEligibility.M_117, EEligibility.M_118, EEligibility.M_124);
+        this.majors.add(mENHR1);
+
+        final Major mENH2 = new Major(
+                new int[]{1042},
+                new String[]{"ENHR-LDAZ-BS"},
+                "Environmental Horticulture",
+                MathPlanConstants.PGMS + "environmental-horticulture/",
+                EHowImportantIsMathFirstSemester.IMPORTANT,
+                EEligibility.M_117, EEligibility.M_118, EEligibility.M_125);
+        this.majors.add(mENH2);
 
         // *** Major in Equine Science
 
@@ -123,7 +130,7 @@ public final class Majors {
                 "Equine Science",
                 MathPlanConstants.PGMS + "equine-science/",
                 EHowImportantIsMathFirstSemester.VERY_IMPORTANT,
-                EEligibility.M_117_120);
+                EEligibility.M_117, EEligibility.M_118, EEligibility.M_124, EEligibility.M_120);
         this.majors.add(mEQSC);
 
         // *** Major in Horticulture
@@ -136,15 +143,24 @@ public final class Majors {
         // 1066: HORT-CEHZ-BS, Horticulture - Controlled Environmental Horticulture
         // FAKE: HORT-DHBZ-BS, Horticulture - ???
 
-        final Major mHORT = new Major(
-                new int[]{1060, 1061, 1062, 1063, 1064, 1065, 1066},
-                new String[]{"HORT-BS", "HORT-FLOZ-BS", "HORT-HBMZ-BS", "HORT-HFCZ-BS", "HORT-HOSZ-BS", "HORT-HTHZ-BS",
+        final Major mHORT1 = new Major(
+                new int[]{1060, 1061, 1062, 1063, 1065, 1066},
+                new String[]{"HORT-BS", "HORT-FLOZ-BS", "HORT-HBMZ-BS", "HORT-HFCZ-BS", "HORT-HTHZ-BS",
                         "HORT-CEHZ-BS", "HORT-DHBZ-BS"},
                 "Horticulture",
                 MathPlanConstants.PGMS + "horticulture/",
                 EHowImportantIsMathFirstSemester.IMPORTANT,
-                EEligibility.M_117_120);
-        this.majors.add(mHORT);
+                EEligibility.M_117, EEligibility.M_124, EEligibility.M_124, EEligibility.M_155);
+        this.majors.add(mHORT1);
+
+        final Major mHORT2 = new Major(
+                new int[]{1064},
+                new String[]{"HORT-HOSZ-BS"},
+                "Horticulture",
+                MathPlanConstants.PGMS + "horticulture/",
+                EHowImportantIsMathFirstSemester.IMPORTANT,
+                EEligibility.M_117, EEligibility.M_124, EEligibility.M_124, EEligibility.M_125, EEligibility.M_155);
+        this.majors.add(mHORT2);
 
         // *** Major in Landscape Architecture
 
@@ -154,7 +170,7 @@ public final class Majors {
                 "Landscape Architecture",
                 MathPlanConstants.PGMS + "landscape-architecture/",
                 EHowImportantIsMathFirstSemester.IMPORTANT,
-                EEligibility.M_117_120);
+                EEligibility.M_117, EEligibility.M_118, EEligibility.M_125, EEligibility.M_126);
         this.majors.add(mLDAR);
 
         // *** Major in Livestock Business Management
@@ -165,7 +181,7 @@ public final class Majors {
                 "Livestock Business Management",
                 MathPlanConstants.PGMS + "livestock-business-management/",
                 EHowImportantIsMathFirstSemester.IMPORTANT,
-                EEligibility.M_117_120);
+                EEligibility.M_117);
         this.majors.add(mLSBM);
 
         // *** Major in Soil and Crop Sciences
@@ -188,7 +204,7 @@ public final class Majors {
                 "Soil and Crop Sciences",
                 MathPlanConstants.PGMS + "soil-and-crop-sciences/",
                 EHowImportantIsMathFirstSemester.IMPORTANT,
-                EEligibility.M_117_120);
+                EEligibility.M_117, EEligibility.M_118, EEligibility.M_124);
         this.majors.add(mSOCR);
 
         // ===================
@@ -218,7 +234,8 @@ public final class Majors {
                 "Business Administration",
                 MathPlanConstants.PGMS + "business-administration/",
                 EHowImportantIsMathFirstSemester.IMPORTANT,
-                EEligibility.M_117_120);
+                EEligibility.M_117, EEligibility.M_118, EEligibility.M_124, EEligibility.M_120, EEligibility.M_125,
+                EEligibility.M_126);
         this.majors.add(mBUSA);
 
         // ======================
@@ -362,7 +379,7 @@ public final class Majors {
                 "Apparel and Merchandising",
                 MathPlanConstants.PGMS + "apparel-and-merchandising/",
                 EHowImportantIsMathFirstSemester.VERY_IMPORTANT,
-                EEligibility.M_117_120);
+                EEligibility.M_117, EEligibility.M_118, EEligibility.M_124);
         this.majors.add(mAPAM);
 
         // *** Major in Construction Management
@@ -412,7 +429,7 @@ public final class Majors {
                 "Fermentation Science and Technology",
                 MathPlanConstants.PGMS + "fermentation-and-food-science/",
                 EHowImportantIsMathFirstSemester.IMPORTANT,
-                EEligibility.M_117_120);
+                EEligibility.M_117, EEligibility.M_118, EEligibility.M_124, EEligibility.M_120, EEligibility.M_125);
         this.majors.add(mFMST);
 
         // *** Major in Health and Exercise Science
@@ -426,7 +443,7 @@ public final class Majors {
                 "Health and Exercise Science",
                 MathPlanConstants.PGMS + "health-and-exercise-science/",
                 EHowImportantIsMathFirstSemester.IMPORTANT,
-                EEligibility.M_118);
+                EEligibility.M_118, EEligibility.M_124, EEligibility.M_125);
         this.majors.add(mHAES);
 
         // *** Major in Hospitality Management
@@ -437,7 +454,7 @@ public final class Majors {
                 "Hospitality and Event Management",
                 MathPlanConstants.PGMS + "hospitality-event-management/",
                 EHowImportantIsMathFirstSemester.IMPORTANT,
-                EEligibility.M_117_120);
+                EEligibility.M_117);
         this.majors.add(mHSMG);
 
         // *** Major in Human Development and Family Studies
@@ -457,16 +474,25 @@ public final class Majors {
         // FAKE: HDFS-DLEZ-BS, Human Development and Family Studies - ???
         // FAKE: HDFS-LEPZ-BS, Human Development and Family Studies - ???
 
-        final Major mHDFS = new Major(
-                new int[]{4070, 4071, 4072, 4073, 4074, 4075, 4076},
-                new String[]{"HDFS-BS", "HDFS-ECPZ-BS", "HDFS-HDEZ-BS", "HDFS-PHPZ-BS", "HDFS-PHPZ-BS", "HDFS-PISZ-BS",
+        final Major mHDFS1 = new Major(
+                new int[]{4070, 4071, 4072, 4073, 4075, 4076},
+                new String[]{"HDFS-BS", "HDFS-ECPZ-BS", "HDFS-HDEZ-BS", "HDFS-PHPZ-BS", "HDFS-PISZ-BS",
                         "HDFS-LADZ-BS", "HDFS-DECZ-BS", "HDFS-DHDZ-BS", "HDFS-DPHZ-BS", "HDFS-DPIZ-BS", "HDFS-DLAZ-BS",
                         "HDFS-DLEZ-BS", "HDFS-LEPZ-BS"},
                 "Human Development and Family Studies",
                 MathPlanConstants.PGMS + "human-development-and-family-studies/",
                 EHowImportantIsMathFirstSemester.IMPORTANT,
                 EEligibility.AUCC);
-        this.majors.add(mHDFS);
+        this.majors.add(mHDFS1);
+
+        final Major mHDFS2 = new Major(
+                new int[]{4074},
+                new String[]{"HDFS-PHPZ-BS"},
+                "Human Development and Family Studies",
+                MathPlanConstants.PGMS + "human-development-and-family-studies/",
+                EHowImportantIsMathFirstSemester.IMPORTANT,
+                EEligibility.M_117, EEligibility.M_120);
+        this.majors.add(mHDFS2);
 
         // *** Major in Interior Architecture and Design
         // Concentrations grouped into major:
@@ -478,7 +504,7 @@ public final class Majors {
                 "Interior Architecture and Design",
                 MathPlanConstants.PGMS + "interior-architecture-and-design/",
                 EHowImportantIsMathFirstSemester.IMPORTANT,
-                EEligibility.M_117_120);
+                EEligibility.M_117, EEligibility.M_118, EEligibility.M_124);
         this.majors.add(mIARD);
 
         // *** Major in Nutrition Science
@@ -502,7 +528,7 @@ public final class Majors {
                 "Nutrition Science",
                 MathPlanConstants.PGMS + "nutrition-science/",
                 EHowImportantIsMathFirstSemester.IMPORTANT,
-                EEligibility.M_117_120);
+                EEligibility.M_117, EEligibility.M_118, EEligibility.M_124, EEligibility.M_120);
         this.majors.add(mNAFS);
 
         // *** Major in Social Work
@@ -605,7 +631,7 @@ public final class Majors {
                 "Economics",
                 MathPlanConstants.PGMS + "economics/",
                 EHowImportantIsMathFirstSemester.VERY_IMPORTANT,
-                EEligibility.M_117_120);
+                EEligibility.M_117, EEligibility.M_118);
         this.majors.add(mECON);
 
         // *** Major in English
@@ -842,7 +868,7 @@ public final class Majors {
                 "Ecosystem Science and Sustainability",
                 MathPlanConstants.PGMS + "ecosystem-science-sustainability/",
                 EHowImportantIsMathFirstSemester.VERY_IMPORTANT,
-                EEligibility.M_155_160);
+                EEligibility.M_155, EEligibility.M_160);
         this.majors.add(mECSS);
 
         // *** Major in Fish, Wildlife and Conservation Biology
@@ -857,7 +883,7 @@ public final class Majors {
                 "Fish, Wildlife and Conservation Biology",
                 MathPlanConstants.PGMS + "fish-wildlife-and-conservation-biology/",
                 EHowImportantIsMathFirstSemester.VERY_IMPORTANT,
-                EEligibility.M_117_120);
+                EEligibility.M_117);
         this.majors.add(mFWCB);
 
         // *** Major in Forest and Rangeland Stewardship
@@ -874,7 +900,7 @@ public final class Majors {
                 "Forest and Rangeland Stewardship",
                 MathPlanConstants.PGMS + "forest-and-rangeland-stewardship/",
                 EHowImportantIsMathFirstSemester.IMPORTANT,
-                EEligibility.M_117_120);
+                EEligibility.M_117);
         this.majors.add(mFRRS);
 
         // *** Major in Geology
@@ -901,7 +927,7 @@ public final class Majors {
                 "Human Dimensions of Natural Resources",
                 MathPlanConstants.PGMS + "human-dimensions-of-natural-resources/",
                 EHowImportantIsMathFirstSemester.NOT_IMPORTANT,
-                EEligibility.M_117_120);
+                EEligibility.M_117, EEligibility.M_118, EEligibility.M_124);
         this.majors.add(mHDNR);
 
         // *** Major in Natural Resource Tourism
@@ -915,7 +941,7 @@ public final class Majors {
                 "Natural Resource Tourism",
                 MathPlanConstants.PGMS + "natural-resource-tourism/",
                 EHowImportantIsMathFirstSemester.NOT_IMPORTANT,
-                EEligibility.M_117_120);
+                EEligibility.M_117, EEligibility.M_118, EEligibility.M_124);
         this.majors.add(mNRRT);
 
         // *** Major in Natural Resources Management
@@ -926,7 +952,7 @@ public final class Majors {
                 "Natural Resources Management",
                 MathPlanConstants.PGMS + "natural-resources-management/",
                 EHowImportantIsMathFirstSemester.IMPORTANT,
-                EEligibility.M_117_120);
+                EEligibility.M_117);
         this.majors.add(mNRMG);
 
         // *** Major in Restoration Ecology
@@ -937,7 +963,7 @@ public final class Majors {
                 "Restoration Ecology",
                 MathPlanConstants.PGMS + "restoration-ecology/",
                 EHowImportantIsMathFirstSemester.IMPORTANT,
-                EEligibility.M_117_120);
+                EEligibility.M_117);
         this.majors.add(mRECO);
 
         // *** Major in Watershed Science and Sustainability
@@ -974,7 +1000,7 @@ public final class Majors {
                 "Biochemistry",
                 MathPlanConstants.PGMS + "biochemistry/",
                 EHowImportantIsMathFirstSemester.VERY_IMPORTANT,
-                EEligibility.M_155_160);
+                EEligibility.M_155, EEligibility.M_160);
         this.majors.add(mBCHM);
 
         // *** Major in Biological Science
@@ -988,7 +1014,8 @@ public final class Majors {
                 "Biology",
                 MathPlanConstants.PGMS + "biology/",
                 EHowImportantIsMathFirstSemester.VERY_IMPORTANT,
-                EEligibility.M_117_120);
+                EEligibility.M_117, EEligibility.M_118, EEligibility.M_124, EEligibility.M_120, EEligibility.M_125,
+                EEligibility.M_155);
         this.majors.add(mBLSC);
 
         // *** Major in Chemistry
@@ -1007,7 +1034,7 @@ public final class Majors {
                 "Chemistry",
                 MathPlanConstants.PGMS + "chemistry/",
                 EHowImportantIsMathFirstSemester.VERY_IMPORTANT,
-                EEligibility.M_155_160);
+                EEligibility.M_155, EEligibility.M_160);
         this.majors.add(mCHEM);
 
         // *** Major in Computer Science
@@ -1037,7 +1064,7 @@ public final class Majors {
                 "Computer Science",
                 MathPlanConstants.PGMS + "computer-science/",
                 EHowImportantIsMathFirstSemester.VERY_IMPORTANT,
-                EEligibility.M_156_160);
+                EEligibility.M_156, EEligibility.M_160);
         this.majors.add(mCPSC);
 
         // *** Major in Data Science
@@ -1054,7 +1081,7 @@ public final class Majors {
                 "Data Science",
                 MathPlanConstants.PGMS + "data-science/",
                 EHowImportantIsMathFirstSemester.VERY_IMPORTANT,
-                EEligibility.M_156_160);
+                EEligibility.M_156, EEligibility.M_160);
         this.majors.add(mDSCI);
 
         // *** Major in Mathematics
@@ -1088,7 +1115,7 @@ public final class Majors {
                 "Natural Sciences",
                 MathPlanConstants.PGMS + "natural-sciences/",
                 EHowImportantIsMathFirstSemester.VERY_IMPORTANT,
-                EEligibility.M_155_160);
+                EEligibility.M_155, EEligibility.M_160);
         this.majors.add(mNSCI);
 
         // *** Major in Physics
@@ -1121,7 +1148,7 @@ public final class Majors {
                 "Psychology",
                 MathPlanConstants.PGMS + "psychology/",
                 EHowImportantIsMathFirstSemester.IMPORTANT,
-                EEligibility.M_117_120);
+                EEligibility.M_117);
         this.majors.add(mPSYC);
 
         // *** Major in Statistics
@@ -1135,7 +1162,7 @@ public final class Majors {
                 "Statistics",
                 MathPlanConstants.PGMS + "statistics/",
                 EHowImportantIsMathFirstSemester.VERY_IMPORTANT,
-                EEligibility.M_156_160);
+                EEligibility.M_156, EEligibility.M_160);
         this.majors.add(mSTAT);
 
         // *** Major in Zoology
@@ -1146,7 +1173,8 @@ public final class Majors {
                 "Zoology",
                 MathPlanConstants.PGMS + "zoology/",
                 EHowImportantIsMathFirstSemester.VERY_IMPORTANT,
-                EEligibility.M_117_120);
+                EEligibility.M_117, EEligibility.M_118, EEligibility.M_124, EEligibility.M_120, EEligibility.M_125,
+                EEligibility.M_155);
         this.majors.add(mZOOL);
 
         // ======================================================
@@ -1167,7 +1195,7 @@ public final class Majors {
                 "Biomedical Sciences",
                 MathPlanConstants.PGMS + "biomedical-sciences/",
                 EHowImportantIsMathFirstSemester.VERY_IMPORTANT,
-                EEligibility.M_118);
+                EEligibility.M_118, EEligibility.M_124, EEligibility.M_125, EEligibility.M_126);
         this.majors.add(mBIOM1);
 
         final Major mBIOM2 = new Major(
@@ -1176,7 +1204,7 @@ public final class Majors {
                 "Biomedical Sciences",
                 MathPlanConstants.PGMS + "biomedical-sciences/",
                 EHowImportantIsMathFirstSemester.VERY_IMPORTANT,
-                EEligibility.M_155_160);
+                EEligibility.M_155, EEligibility.M_160);
         this.majors.add(mBIOM2);
 
         // *** Major in Neuroscience
@@ -1190,7 +1218,7 @@ public final class Majors {
                 "Neuroscience",
                 MathPlanConstants.PGMS + "neuroscience/",
                 EHowImportantIsMathFirstSemester.VERY_IMPORTANT,
-                EEligibility.M_155_160);
+                EEligibility.M_155, EEligibility.M_160);
         this.majors.add(mNERO);
 
         // *** Major in Exploratory Studies
@@ -1201,7 +1229,7 @@ public final class Majors {
                 "Exploratory Studies",
                 MathPlanConstants.PGMS + "exploratory-studies/",
                 EHowImportantIsMathFirstSemester.RECOMMENDED,
-                EEligibility.M_117_120);
+                EEligibility.M_117, EEligibility.M_120);
         this.majors.add(mEXUN);
 
         final Major mEXAD = new Major(
@@ -1210,7 +1238,7 @@ public final class Majors {
                 "Exploratory Studies", // Arts, Humanities, and Design
                 MathPlanConstants.PGMS + "exploratory-studies/",
                 EHowImportantIsMathFirstSemester.RECOMMENDED,
-                EEligibility.M_117_120);
+                EEligibility.M_117, EEligibility.M_120);
         this.majors.add(mEXAD);
 
         final Major mEXHF = new Major(
@@ -1219,7 +1247,7 @@ public final class Majors {
                 "Exploratory Studies", // Health, Life, and Food Sciences
                 MathPlanConstants.PGMS + "exploratory-studies/",
                 EHowImportantIsMathFirstSemester.IMPORTANT,
-                EEligibility.M_117_120);
+                EEligibility.M_117, EEligibility.M_120);
         this.majors.add(mEXHF);
 
         final Major mEXTC = new Major(
@@ -1228,7 +1256,7 @@ public final class Majors {
                 "Exploratory Studies", // Education and Teaching
                 MathPlanConstants.PGMS + "exploratory-studies/",
                 EHowImportantIsMathFirstSemester.RECOMMENDED,
-                EEligibility.M_117_120);
+                EEligibility.M_117, EEligibility.M_120);
         this.majors.add(mEXTC);
 
         final Major mEXPL = new Major(
@@ -1237,7 +1265,7 @@ public final class Majors {
                 "Exploratory Studies", // Land, Plant, and Animal Sciences
                 MathPlanConstants.PGMS + "exploratory-studies/",
                 EHowImportantIsMathFirstSemester.IMPORTANT,
-                EEligibility.M_117_120);
+                EEligibility.M_117, EEligibility.M_120);
         this.majors.add(mEXPL);
 
         final Major mEXNR = new Major(
@@ -1246,7 +1274,7 @@ public final class Majors {
                 "Exploratory Studies", // Environment and Natural Resources
                 MathPlanConstants.PGMS + "exploratory-studies/",
                 EHowImportantIsMathFirstSemester.IMPORTANT,
-                EEligibility.M_117_120);
+                EEligibility.M_117, EEligibility.M_120);
         this.majors.add(mEXNR);
 
         final Major mEXPE = new Major(
@@ -1264,7 +1292,7 @@ public final class Majors {
                 "Exploratory Studies", // Global and Social Sciences
                 MathPlanConstants.PGMS + "exploratory-studies/",
                 EHowImportantIsMathFirstSemester.RECOMMENDED,
-                EEligibility.M_117_120);
+                EEligibility.M_117, EEligibility.M_120);
         this.majors.add(mEXGS);
 
         final Major mEXBU = new Major(
@@ -1273,7 +1301,7 @@ public final class Majors {
                 "Exploratory Studies", // Organization, Management, and Enterprise
                 MathPlanConstants.PGMS + "exploratory-studies/",
                 EHowImportantIsMathFirstSemester.IMPORTANT,
-                EEligibility.M_117_120);
+                EEligibility.M_117, EEligibility.M_120);
         this.majors.add(mEXBU);
 
         // Codes that the Math Plan will ignore:
@@ -1289,6 +1317,8 @@ public final class Majors {
         // IGNORE: CTED-UG
         // IGNORE: FCST-UG
         // IGNORE: SSAS-UG
+
+        this.majors.sort(null);
     }
 
     /**

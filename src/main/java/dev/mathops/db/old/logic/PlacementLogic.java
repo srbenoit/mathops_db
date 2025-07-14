@@ -8,6 +8,8 @@ import dev.mathops.db.DbConnection;
 import dev.mathops.db.cfg.DatabaseConfig;
 import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.enums.ETermName;
+import dev.mathops.db.logic.DateRange;
+import dev.mathops.db.logic.DateRangeGroups;
 import dev.mathops.db.logic.SystemData;
 import dev.mathops.db.old.rawlogic.RawMpeCreditLogic;
 import dev.mathops.db.old.rawlogic.RawStmpeLogic;
@@ -424,11 +426,11 @@ public class PlacementLogic {
             if (RawRecordConstants.M100C.equals(course)) {
                 cleared.add(RawRecordConstants.MATH117);
                 cleared.add("MATH 120");
-                cleared.add("MATH 127");
+//                cleared.add("MATH 127");
             } else if ("M 100A".equals(course)) {
                 cleared.add(RawRecordConstants.MATH117);
                 cleared.add("MATH 120");
-                cleared.add("MATH 127");
+//                cleared.add("MATH 127");
             } else if (RawRecordConstants.M117.equals(course)) {
                 if ("C".equals(cred.examPlaced)) {
                     earnedCredit.add(RawRecordConstants.MATH117);

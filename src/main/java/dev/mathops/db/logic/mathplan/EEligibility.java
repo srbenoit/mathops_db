@@ -9,34 +9,31 @@ public enum EEligibility {
     AUCC(0),
 
     /** Eligible for MATH 117 or MATH 120. */
-    M_117_120(10),
+    M_117(10),
+
+    /** Eligible for MATH 117 or MATH 120. */
+    M_120(10),
 
     /** Eligible for MATH 118. */
     M_118(20),
 
     /** Eligible for MATH 124. */
-//    M_124(30),
+    M_124(30),
 
     /** Eligible for MATH 125. */
     M_125(40),
 
     /** Eligible for MATH 126. */
-//    M_126(50),
+    M_126(50),
 
     /** Eligible for MATH 141. */
-//    M_141(35),
+    M_141(35),
 
     /** Eligible for MATH 155. */
     M_155(60),
 
-    /** Eligible for MATH 155 or MATH 160. */
-    M_155_160(65),
-
     /** Eligible for MATH 156. */
-//    M_156(90),
-
-    /** Eligible for MATH 156 or MATH 160. */
-    M_156_160(95),
+    M_156(90),
 
     /** Eligible for MATH 160. */
     M_160(100);

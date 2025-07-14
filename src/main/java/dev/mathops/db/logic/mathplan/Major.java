@@ -1,12 +1,15 @@
 package dev.mathops.db.logic.mathplan;
 
+import dev.mathops.commons.TemporalUtils;
+
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 /**
  * A math requirement associated with a major (major or major/concentration).
  */
-public final class Major {
+public final class Major implements Comparable<Major> {
 
     /** The question numbers in the Math Plan that indicate the program is selected. */
     public final int[] questionNumbers;
@@ -23,10 +26,8 @@ public final class Major {
     /** How important it is for students to take math in their first semester. */
     public final EHowImportantIsMathFirstSemester importance;
 
-    /**
-     * Possible lists of courses that would be ideal for students to be eligible for in their first semester.
-     */
-    public final EEligibility idealEligibility;
+    /** The list of courses the student would ideally be eligible for in their first semester. */
+    public final List<EEligibility> idealEligibility;
 
     /**
      * Constructs a new {@code MajorMathRequirement}.
@@ -34,14 +35,14 @@ public final class Major {
     Major(final int[] theQuestionNumbers, final String[] theProgramCodes,
           final String theProgramName, final String theCatalogPageUrl,
           final EHowImportantIsMathFirstSemester theImportance,
-          final EEligibility theIdealEligibility) {
+          final EEligibility... theIdealEligibility) {
 
         this.questionNumbers = theQuestionNumbers.clone();
         this.programCodes = Arrays.asList(theProgramCodes);
         this.programName = theProgramName;
         this.catalogPageUrl = theCatalogPageUrl;
         this.importance = theImportance;
-        this.idealEligibility = theIdealEligibility;
+        this.idealEligibility = List.of(theIdealEligibility);
     }
 
     /**
@@ -74,5 +75,37 @@ public final class Major {
         }
 
         return equal;
+    }
+
+    /**
+     * Generates a string representation of the date range.
+     */
+    @Override
+    public String toString() {
+
+        return this.programName;
+    }
+
+    /**
+     * Compares this major to another for order. Order is based first on the major name (compared as strings), then by
+     * concentration name (as strings).
+     *
+     * @param other the other object against which to compare
+     * @return 0 if {@code other} is equal to this major; a value less than 0 if this major is lexicographically less
+     *         than {@code other}; and a value greater than 0 if this major is lexicographically greater than
+     *         {@code other}
+     */
+    @Override
+    public int compareTo(final Major other) {
+
+        int result = this.programName.compareTo(other.programName);
+
+        if (result == 0) {
+            final String first = this.programCodes.getFirst();
+            final String otherFirst = other.programCodes.getFirst();
+            result = first.compareTo(otherFirst);
+        }
+
+        return result;
     }
 }

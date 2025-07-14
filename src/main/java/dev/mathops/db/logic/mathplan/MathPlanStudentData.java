@@ -22,6 +22,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -69,7 +70,7 @@ public final class MathPlanStudentData {
     private final List<Major> majors;
 
     /** The course we will recommend the student try to become eligible for. */
-    public final EEligibility recommendedEligibility;
+    public final Set<EEligibility> recommendedEligibility;
 
     /** The next step for the student. */
     public final ENextStep nextStep;
@@ -85,6 +86,9 @@ public final class MathPlanStudentData {
 
     /** List of course IDs that the student can register for. */
     private final Set<String> canRegisterFor;
+
+    /** List of course IDs that the student can register for that they don't already have. */
+    private final Set<String> canRegisterForAndDoesNotHave;
 
     /** True if the student has a B- or higher in MATH 124. */
     private boolean bOrBetterIn124 = false;
@@ -144,17 +148,19 @@ public final class MathPlanStudentData {
     /**
      * Constructs a new {@code MathPlanStudentData}.
      *
-     * @param cache        the data cache
-     * @param theStudent   the student record
-     * @param logic        the math plan logic
-     * @param now          the date/time to consider "now"
-     * @param writeChanges {@code true} to write profile value changes (used when the student is accessing the site);
-     *                     {@code false} to skip writing changes (used when an administrator or adviser is acting as a
-     *                     student)
+     * @param cache           the data cache
+     * @param theStudent      the student record
+     * @param logic           the math plan logic
+     * @param now             the date/time to consider "now"
+     * @param loginSessionTag the login session tag
+     * @param writeChanges    {@code true} to write profile value changes (used when the student is accessing the site);
+     *                        {@code false} to skip writing changes (used when an administrator or adviser is acting as
+     *                        a student)
      * @throws SQLException if there is an error accessing the database
      */
     public MathPlanStudentData(final Cache cache, final RawStudent theStudent, final MathPlanLogic logic,
-                               final ZonedDateTime now, final boolean writeChanges) throws SQLException {
+                               final ZonedDateTime now, final long loginSessionTag, final boolean writeChanges)
+            throws SQLException {
 
         this.expiry = System.currentTimeMillis() + RETENTION_MS;
 
@@ -195,14 +201,21 @@ public final class MathPlanStudentData {
 
         // Build the set of courses that the student can register for right now
         this.canRegisterFor = getCoursesStudentCanRegisterFor();
+        final int count = this.canRegisterFor.size();
+        this.canRegisterForAndDoesNotHave = new HashSet<>(count);
+        for (final String course : this.canRegisterFor) {
+            if (!testForCompletedOrTransfer(course, 1.0f)) {
+                this.canRegisterForAndDoesNotHave.add(course);
+            }
+        }
 
         // Ready to construct plan...
         this.recommendedEligibility = determineRecommendedEligibility();
         this.nextStep = createPlan();
 
-//        if (writeChanges) {
-//            recordPlan(cache, logic, now, studentId, loginSessionTag);
-//        }
+        if (writeChanges) {
+            recordPlan(cache, logic, now, studentId, loginSessionTag);
+        }
     }
 
     /**
@@ -540,6 +553,16 @@ public final class MathPlanStudentData {
     }
 
     /**
+     * Gets the list of majors.
+     *
+     * @return the list of majors
+     */
+    public List<Major> getMajors() {
+
+        return this.majors;
+    }
+
+    /**
      * Gets the intentions profile responses in the student's math plan.
      *
      * @return the profile responses
@@ -608,6 +631,17 @@ public final class MathPlanStudentData {
     }
 
     /**
+     * Gets the set of courses (through Calculus I) that the student is eligible to register for right now but that they
+     * don't already have credit for.
+     *
+     * @return the set of course IDs ({@code null} if none)
+     */
+    public Set<String> getCanRegisterForAndDoesNotHave() {
+
+        return this.canRegisterForAndDoesNotHave;
+    }
+
+    /**
      * Gets the number of core credits the student has completed.
      *
      * @return the number of completed credits
@@ -657,16 +691,40 @@ public final class MathPlanStudentData {
     /**
      * Determines the course for which it is "ideal" that the student be eligible in their first semester,
      */
-    private EEligibility determineRecommendedEligibility() {
+    private Set<EEligibility> determineRecommendedEligibility() {
 
-        EEligibility highestMath = EEligibility.AUCC;
+        final Set<EEligibility> set = EnumSet.noneOf(EEligibility.class);
+
+        // Add all that are NOT "AUCC" - if that comes out to zero records, add AUCC at the end
+
+        boolean hasPure160 = false;
         for (final Major major : this.majors) {
-            if (major.idealEligibility.level > highestMath.level) {
-                highestMath = major.idealEligibility;
+            if (major.idealEligibility.size() == 1 && major.idealEligibility.contains(EEligibility.M_160)) {
+                hasPure160 = true;
             }
+            set.addAll(major.idealEligibility);
         }
 
-        return highestMath;
+        if (hasPure160) {
+            // If there is a major that NEEDS 160 exclusively, treat that as the only Calc requirement for the purpose
+            // of making recommendations,
+            set.remove(EEligibility.M_141);
+            set.remove(EEligibility.M_155);
+            set.remove(EEligibility.M_156);
+        } else if (set.contains(EEligibility.M_156)) {
+            // 156 only occurs in combination with 160, so if it's here, one selected course had that combination,
+            // but if we get here, the student does NOT have an exclusive MATH 160 major selected, so we should base
+            // their recommendations on 156 (and possibly 160)
+            set.remove(EEligibility.M_141);
+            set.remove(EEligibility.M_155);
+        }
+
+        set.remove(EEligibility.AUCC);
+        if (set.isEmpty()) {
+            set.add(EEligibility.AUCC);
+        }
+
+        return set;
     }
 
     /**
@@ -674,82 +732,550 @@ public final class MathPlanStudentData {
      */
     private ENextStep createPlan() {
 
-        ENextStep result = null;
+        final ENextStep result;
 
-        // See if they are already eligible
-        final boolean alreadyEligible = switch (this.recommendedEligibility) {
-            case AUCC -> true;
-            case M_117_120 -> this.canRegisterFor.contains(RawRecordConstants.M117);
-            case M_118 -> this.canRegisterFor.contains(RawRecordConstants.M118);
-            case M_125 -> this.canRegisterFor.contains(RawRecordConstants.M125);
-            case M_155, M_155_160 -> this.canRegisterFor.contains(RawRecordConstants.M155);
-            case M_156_160 -> this.canRegisterFor.contains(RawRecordConstants.M156);
-            case M_160 -> this.canRegisterFor.contains(RawRecordConstants.M160);
-        };
+        if (this.recommendedEligibility.contains(EEligibility.M_160)) {
+            if (this.recommendedEligibility.contains(EEligibility.M_155)) {
+                // Base the plan on becoming eligible for MATH 155 or MATH 160.
+                result = makePlan155Or160();
+            } else if (this.recommendedEligibility.contains(EEligibility.M_156)) {
+                // Base the plan on becoming eligible for MATH 156 or MATH 160.
+                result = makePlan156Or160();
+            } else {
+                // Base the plan on becoming eligible for MATH 160.
+                result = makePlan160();
+            }
+        } else if (this.recommendedEligibility.contains(EEligibility.M_156)) {
+            // This catches combinations that have "156 or 155" - we want the student to get ready for 156 to keep
+            // all their options open
+            result = makePlan156();
+        } else if (this.recommendedEligibility.contains(EEligibility.M_155)) {
+            result = makePlan155();
 
-        if (this.recommendedEligibility.level > EEligibility.AUCC.level) {
-            if (alreadyEligible) {
-                result = ENextStep.MSG_ALREADY_ELIGIBLE;
-            } else if (this.recommendedEligibility == EEligibility.M_117_120) {
-                result = ENextStep.MSG_PLACE_INTO_117;
-            } else if (this.recommendedEligibility == EEligibility.M_118) {
-                if (this.canRegisterFor.contains(RawRecordConstants.M117)) {
-                    result = ENextStep.MSG_PLACE_OUT_117;
+            // Below here does not need Calculus (no majors need MATh 141 at the moment)
+        } else if (this.recommendedEligibility.contains(EEligibility.M_126)) {
+            if (this.recommendedEligibility.contains(EEligibility.M_124)) {
+                result = makePlan124_126();
+            } else {
+                result = makePlan126();
+            }
+        } else if (this.recommendedEligibility.contains(EEligibility.M_124)) {
+            if (this.recommendedEligibility.contains(EEligibility.M_125)) {
+                result = makePlan124_125();
+            } else {
+                result = makePlan124();
+            }
+        } else if (this.recommendedEligibility.contains(EEligibility.M_125)) {
+            result = makePlan125();
+        } else if (this.recommendedEligibility.contains(EEligibility.M_118)) {
+            result = makePlan118();
+        } else if (this.recommendedEligibility.contains(EEligibility.M_117)) {
+            result = makePlan117();
+        } else {
+            result = ENextStep.MSG_PLACEMENT_NOT_NEEDED;
+        }
+
+        return result;
+    }
+
+    /**
+     * Generates the student's plan if they should become eligible for MATH 155 or MATh 160.
+     *
+     * @return the student's next steps
+     */
+    private ENextStep makePlan155Or160() {
+
+        final ENextStep result;
+
+        if (this.canRegisterFor.contains(RawRecordConstants.M155)
+            || this.canRegisterFor.contains(RawRecordConstants.M160)) {
+            result = ENextStep.MSG_ALREADY_ELIGIBLE;
+        } else {
+            final Set<String> placedOutOf = this.placementStatus.placedOutOf;
+            final Set<String> placementCreditFor = this.placementStatus.earnedCreditFor;
+            boolean has117 = placedOutOf.contains(RawRecordConstants.MATH117)
+                             || placementCreditFor.contains(RawRecordConstants.MATH117)
+                             || testForCompletedOrTransfer(RawRecordConstants.M117, 1.0f);
+            boolean has118 = placedOutOf.contains(RawRecordConstants.MATH118)
+                             || placementCreditFor.contains(RawRecordConstants.MATH118)
+                             || testForCompletedOrTransfer(RawRecordConstants.M118, 1.0f);
+            boolean has124 = placedOutOf.contains(RawRecordConstants.MATH124)
+                             || placementCreditFor.contains(RawRecordConstants.MATH124)
+                             || testForCompletedOrTransfer(RawRecordConstants.M124, 1.0f);
+            boolean has125 = placedOutOf.contains(RawRecordConstants.MATH125)
+                             || placementCreditFor.contains(RawRecordConstants.MATH125)
+                             || testForCompletedOrTransfer(RawRecordConstants.M125, 1.0f);
+
+            if (testForCompletedOrTransfer(RawRecordConstants.M120, 1.0f)) {
+                has117 = true;
+                has118 = true;
+                has124 = true;
+            }
+            if (testForCompletedOrTransfer(RawRecordConstants.M127, 1.0f)) {
+                has117 = true;
+                has118 = true;
+                has124 = true;
+                has125 = true;
+            }
+
+            if (has125) {
+                if (has124) {
+                    result = ENextStep.MSG_ALREADY_ELIGIBLE;
                 } else {
-                    result = ENextStep.MSG_PLACE_INTO_118;
-                }
-            } else if (this.recommendedEligibility == EEligibility.M_125) {
-                if (this.canRegisterFor.contains(RawRecordConstants.M118)) {
-                    result = ENextStep.MSG_PLACE_OUT_118;
-                } else if (this.canRegisterFor.contains(RawRecordConstants.M117)) {
-                    result = ENextStep.MSG_PLACE_OUT_117_118;
-                } else {
-                    result = ENextStep.MSG_PLACE_INTO_125;
-                }
-            } else if (this.recommendedEligibility == EEligibility.M_155
-                       || this.recommendedEligibility == EEligibility.M_155_160) {
-                if (this.canRegisterFor.contains(RawRecordConstants.M125)) {
-                    result = ENextStep.MSG_PLACE_OUT_125;
-                } else if (this.canRegisterFor.contains(RawRecordConstants.M118)) {
-                    result = ENextStep.MSG_PLACE_OUT_118_125;
-                } else if (this.canRegisterFor.contains(RawRecordConstants.M117)) {
-                    result = ENextStep.MSG_PLACE_OUT_117_118_125;
-                } else {
-                    result = ENextStep.MSG_PLACE_INTO_155;
-                }
-                // What remains is MATH 156 and MATH, and student does NOT have a B- or better in both 124 and 126
-            } else if (this.bOrBetterIn124) {
-                // What's needed is the B- in 126
-                if (this.canRegisterFor.contains(RawRecordConstants.M126)) {
-                    result = ENextStep.MSG_PLACE_OUT_126;
-                } else if (this.canRegisterFor.contains(RawRecordConstants.M125)) {
-                    result = ENextStep.MSG_PLACE_OUT_125_126;
-                } else if (this.canRegisterFor.contains(RawRecordConstants.M118)) {
-                    result = ENextStep.MSG_PLACE_OUT_118_125_126;
-                } else {
-                    result = ENextStep.MSG_PLACE_OUT_117_118_125_126;
-                }
-            } else if (this.bOrBetterIn126) {
-                // What's needed is the B- in 124
-                if (this.canRegisterFor.contains(RawRecordConstants.M124)) {
                     result = ENextStep.MSG_PLACE_OUT_124;
-                } else if (this.canRegisterFor.contains(RawRecordConstants.M118)) {
+                }
+            } else if (has124) {
+                result = ENextStep.MSG_PLACE_OUT_125;
+            } else if (has118) {
+                result = ENextStep.MSG_PLACE_OUT_124_125;
+            } else if (has117) {
+                result = ENextStep.MSG_PLACE_OUT_118_124_125;
+            } else {
+                result = ENextStep.MSG_PLACE_OUT_117_118_124_125;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Generates the student's plan if they should become eligible for MATH 156 or MATh 160.
+     *
+     * @return the student's next steps
+     */
+    private ENextStep makePlan156Or160() {
+
+        // At the moment, the requirements for 156 and 160 are the same
+        return makePlan160();
+    }
+
+    /**
+     * Generates the student's plan if they should become eligible for MATh 160.
+     *
+     * @return the student's next steps
+     */
+    private ENextStep makePlan160() {
+
+        final ENextStep result;
+
+        if (this.canRegisterFor.contains(RawRecordConstants.M160)) {
+            result = ENextStep.MSG_ALREADY_ELIGIBLE;
+        } else {
+            final Set<String> placedOutOf = this.placementStatus.placedOutOf;
+            final Set<String> placementCreditFor = this.placementStatus.earnedCreditFor;
+            boolean has117 = placedOutOf.contains(RawRecordConstants.MATH117)
+                             || placementCreditFor.contains(RawRecordConstants.MATH117)
+                             || testForCompletedOrTransfer(RawRecordConstants.M117, 1.0f);
+            boolean has118 = placedOutOf.contains(RawRecordConstants.MATH118)
+                             || placementCreditFor.contains(RawRecordConstants.MATH118)
+                             || testForCompletedOrTransfer(RawRecordConstants.M118, 1.0f);
+            boolean has125 = placedOutOf.contains(RawRecordConstants.MATH125)
+                             || placementCreditFor.contains(RawRecordConstants.MATH125)
+                             || testForCompletedOrTransfer(RawRecordConstants.M125, 1.0f);
+
+            if (testForCompletedOrTransfer(RawRecordConstants.M120, 1.0f)) {
+                has117 = true;
+                has118 = true;
+            }
+            if (testForCompletedOrTransfer(RawRecordConstants.M127, 1.0f)) {
+                has117 = true;
+                has118 = true;
+                has125 = true;
+            }
+
+            if (this.bOrBetterIn126) {
+                if (this.bOrBetterIn124) {
+                    result = ENextStep.MSG_ALREADY_ELIGIBLE;
+                    // Else: Need the B in 124
+                } else if (has118) {
+                    result = ENextStep.MSG_PLACE_OUT_124;
+                } else if (has117) {
                     result = ENextStep.MSG_PLACE_OUT_118_124;
                 } else {
                     result = ENextStep.MSG_PLACE_OUT_117_118_124;
                 }
-                // Else: Needs both 124 and 126
-            } else if (this.canRegisterFor.contains(RawRecordConstants.M126)) {
-                result = ENextStep.MSG_PLACE_OUT_124_126;
-            } else if (this.canRegisterFor.contains(RawRecordConstants.M125)) {
-                result = ENextStep.MSG_PLACE_OUT_124_125_126;
-            } else if (this.canRegisterFor.contains(RawRecordConstants.M118)) {
+            } else if (this.bOrBetterIn124) {
+                // Needs the B in 126
+                if (has125) {
+                    result = ENextStep.MSG_PLACE_OUT_126;
+                } else if (has118) {
+                    result = ENextStep.MSG_PLACE_OUT_125_126;
+                } else if (has117) {
+                    result = ENextStep.MSG_PLACE_OUT_118_125_126;
+                } else {
+                    result = ENextStep.MSG_PLACE_OUT_117_118_125_126;
+                }
+                // Else: Needs the B in 124 and 126
+            } else if (has118) {
+                if (has125) {
+                    result = ENextStep.MSG_PLACE_OUT_124_126;
+                } else {
+                    result = ENextStep.MSG_PLACE_OUT_124_125_126;
+                }
+            } else if (has117) {
                 result = ENextStep.MSG_PLACE_OUT_118_124_125_126;
             } else {
                 result = ENextStep.MSG_PLACE_OUT_117_118_124_125_126;
             }
+        }
+
+        return result;
+    }
+
+    /**
+     * Generates the student's plan if they should become eligible for MATH 156.
+     *
+     * @return the student's next steps
+     */
+    private ENextStep makePlan156() {
+
+        // At the moment, the requirements for 156 and 160 are the same
+        return makePlan160();
+    }
+
+    /**
+     * Generates the student's plan if they should become eligible for MATh 155.
+     *
+     * @return the student's next steps
+     */
+    private ENextStep makePlan155() {
+
+        final ENextStep result;
+
+        if (this.canRegisterFor.contains(RawRecordConstants.M155)) {
+            result = ENextStep.MSG_ALREADY_ELIGIBLE;
         } else {
-            result = ENextStep.MSG_PLACEMENT_NOT_NEEDED;
+            final Set<String> placedOutOf = this.placementStatus.placedOutOf;
+            final Set<String> placementCreditFor = this.placementStatus.earnedCreditFor;
+            boolean has117 = placedOutOf.contains(RawRecordConstants.MATH117)
+                             || placementCreditFor.contains(RawRecordConstants.MATH117)
+                             || testForCompletedOrTransfer(RawRecordConstants.M117, 1.0f);
+            boolean has118 = placedOutOf.contains(RawRecordConstants.MATH118)
+                             || placementCreditFor.contains(RawRecordConstants.MATH118)
+                             || testForCompletedOrTransfer(RawRecordConstants.M118, 1.0f);
+            boolean has124 = placedOutOf.contains(RawRecordConstants.MATH124)
+                             || placementCreditFor.contains(RawRecordConstants.MATH124)
+                             || testForCompletedOrTransfer(RawRecordConstants.M124, 1.0f);
+            boolean has125 = placedOutOf.contains(RawRecordConstants.MATH125)
+                             || placementCreditFor.contains(RawRecordConstants.MATH125)
+                             || testForCompletedOrTransfer(RawRecordConstants.M125, 1.0f);
+
+            if (testForCompletedOrTransfer(RawRecordConstants.M120, 1.0f)) {
+                has117 = true;
+                has118 = true;
+                has124 = true;
+            }
+            if (testForCompletedOrTransfer(RawRecordConstants.M127, 1.0f)) {
+                has117 = true;
+                has118 = true;
+                has124 = true;
+                has125 = true;
+            }
+
+            if (has125) {
+                if (has124) {
+                    result = ENextStep.MSG_ALREADY_ELIGIBLE;
+                } else if (has118) {
+                    result = ENextStep.MSG_PLACE_OUT_124;
+                } else if (has117) {
+                    result = ENextStep.MSG_PLACE_OUT_118_124;
+                } else {
+                    result = ENextStep.MSG_PLACE_OUT_117_118_124;
+                }
+            } else if (has124) {
+                if (has118) {
+                    result = ENextStep.MSG_PLACE_OUT_125;
+                } else if (has117) {
+                    result = ENextStep.MSG_PLACE_OUT_118_125;
+                } else {
+                    result = ENextStep.MSG_PLACE_OUT_117_118_125;
+                }
+            } else if (has118) {
+                result = ENextStep.MSG_PLACE_OUT_124_125;
+            } else if (has117) {
+                result = ENextStep.MSG_PLACE_OUT_118_124_125;
+            } else {
+                result = ENextStep.MSG_PLACE_OUT_117_118_124_125;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Generates the student's plan if they should become eligible for MATH 124 and MATH 126.
+     *
+     * @return the student's next steps
+     */
+    private ENextStep makePlan124_126() {
+
+        final ENextStep result;
+
+        if (this.canRegisterFor.contains(RawRecordConstants.M124)
+            && this.canRegisterFor.contains(RawRecordConstants.M126)) {
+            result = ENextStep.MSG_ALREADY_ELIGIBLE;
+        } else {
+            final Set<String> placedOutOf = this.placementStatus.placedOutOf;
+            final Set<String> placementCreditFor = this.placementStatus.earnedCreditFor;
+            boolean has117 = placedOutOf.contains(RawRecordConstants.MATH117)
+                             || placementCreditFor.contains(RawRecordConstants.MATH117)
+                             || testForCompletedOrTransfer(RawRecordConstants.M117, 1.0f);
+            boolean has118 = placedOutOf.contains(RawRecordConstants.MATH118)
+                             || placementCreditFor.contains(RawRecordConstants.MATH118)
+                             || testForCompletedOrTransfer(RawRecordConstants.M118, 1.0f);
+            boolean has125 = placedOutOf.contains(RawRecordConstants.MATH125)
+                             || placementCreditFor.contains(RawRecordConstants.MATH125)
+                             || testForCompletedOrTransfer(RawRecordConstants.M125, 1.0f);
+
+            if (testForCompletedOrTransfer(RawRecordConstants.M120, 1.0f)) {
+                has117 = true;
+                has118 = true;
+            }
+            if (testForCompletedOrTransfer(RawRecordConstants.M127, 1.0f)) {
+                has117 = true;
+                has118 = true;
+                has125 = true;
+            }
+
+            if (has118) {
+                if (has125) {
+                    result = ENextStep.MSG_ALREADY_ELIGIBLE;
+                } else {
+                    result = ENextStep.MSG_PLACE_OUT_125;
+                }
+            } else if (has117) {
+                result = ENextStep.MSG_PLACE_OUT_118_125;
+            } else {
+                result = ENextStep.MSG_PLACE_OUT_117_118_125;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Generates the student's plan if they should become eligible for MATH 126 (but 124 is not needed).
+     *
+     * @return the student's next steps
+     */
+    private ENextStep makePlan126() {
+
+        final ENextStep result;
+
+        if (this.canRegisterFor.contains(RawRecordConstants.M126)) {
+            result = ENextStep.MSG_ALREADY_ELIGIBLE;
+        } else {
+            final Set<String> placedOutOf = this.placementStatus.placedOutOf;
+            final Set<String> placementCreditFor = this.placementStatus.earnedCreditFor;
+            boolean has117 = placedOutOf.contains(RawRecordConstants.MATH117)
+                             || placementCreditFor.contains(RawRecordConstants.MATH117)
+                             || testForCompletedOrTransfer(RawRecordConstants.M117, 1.0f);
+            boolean has118 = placedOutOf.contains(RawRecordConstants.MATH118)
+                             || placementCreditFor.contains(RawRecordConstants.MATH118)
+                             || testForCompletedOrTransfer(RawRecordConstants.M118, 1.0f);
+            boolean has125 = placedOutOf.contains(RawRecordConstants.MATH125)
+                             || placementCreditFor.contains(RawRecordConstants.MATH125)
+                             || testForCompletedOrTransfer(RawRecordConstants.M125, 1.0f);
+
+            if (testForCompletedOrTransfer(RawRecordConstants.M120, 1.0f)) {
+                has117 = true;
+                has118 = true;
+            }
+            if (testForCompletedOrTransfer(RawRecordConstants.M127, 1.0f)) {
+                has117 = true;
+                has118 = true;
+                has125 = true;
+            }
+
+            if (has125) {
+                result = ENextStep.MSG_ALREADY_ELIGIBLE;
+            } else if (has118) {
+                result = ENextStep.MSG_PLACE_OUT_125;
+            } else if (has117) {
+                result = ENextStep.MSG_PLACE_OUT_118_125;
+            } else {
+                result = ENextStep.MSG_PLACE_OUT_117_118_125;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Generates the student's plan if they should become eligible for MATH 124 and MATH 125 (but not 126).
+     *
+     * @return the student's next steps
+     */
+    private ENextStep makePlan124_125() {
+
+        final ENextStep result;
+
+        if (this.canRegisterFor.contains(RawRecordConstants.M124)
+            && this.canRegisterFor.contains(RawRecordConstants.M125)) {
+            result = ENextStep.MSG_ALREADY_ELIGIBLE;
+        } else {
+            final Set<String> placedOutOf = this.placementStatus.placedOutOf;
+            final Set<String> placementCreditFor = this.placementStatus.earnedCreditFor;
+            boolean has117 = placedOutOf.contains(RawRecordConstants.MATH117)
+                             || placementCreditFor.contains(RawRecordConstants.MATH117)
+                             || testForCompletedOrTransfer(RawRecordConstants.M117, 1.0f);
+            boolean has118 = placedOutOf.contains(RawRecordConstants.MATH118)
+                             || placementCreditFor.contains(RawRecordConstants.MATH118)
+                             || testForCompletedOrTransfer(RawRecordConstants.M118, 1.0f);
+
+            if (testForCompletedOrTransfer(RawRecordConstants.M120, 1.0f)) {
+                has117 = true;
+                has118 = true;
+            }
+            if (testForCompletedOrTransfer(RawRecordConstants.M127, 1.0f)) {
+                has117 = true;
+                has118 = true;
+            }
+
+            if (has118) {
+                result = ENextStep.MSG_ALREADY_ELIGIBLE;
+            } else if (has117) {
+                result = ENextStep.MSG_PLACE_OUT_118;
+            } else {
+                result = ENextStep.MSG_PLACE_OUT_117_118;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Generates the student's plan if they should become eligible for MATH 124 (but not 125 or 126).
+     *
+     * @return the student's next steps
+     */
+    private ENextStep makePlan124() {
+
+        final ENextStep result;
+
+        if (this.canRegisterFor.contains(RawRecordConstants.M124)) {
+            result = ENextStep.MSG_ALREADY_ELIGIBLE;
+        } else {
+            final Set<String> placedOutOf = this.placementStatus.placedOutOf;
+            final Set<String> placementCreditFor = this.placementStatus.earnedCreditFor;
+            boolean has117 = placedOutOf.contains(RawRecordConstants.MATH117)
+                             || placementCreditFor.contains(RawRecordConstants.MATH117)
+                             || testForCompletedOrTransfer(RawRecordConstants.M117, 1.0f);
+            boolean has118 = placedOutOf.contains(RawRecordConstants.MATH118)
+                             || placementCreditFor.contains(RawRecordConstants.MATH118)
+                             || testForCompletedOrTransfer(RawRecordConstants.M118, 1.0f);
+
+            if (testForCompletedOrTransfer(RawRecordConstants.M120, 1.0f)) {
+                has117 = true;
+                has118 = true;
+            }
+            if (testForCompletedOrTransfer(RawRecordConstants.M127, 1.0f)) {
+                has117 = true;
+                has118 = true;
+            }
+
+            if (has118) {
+                result = ENextStep.MSG_ALREADY_ELIGIBLE;
+            } else if (has117) {
+                result = ENextStep.MSG_PLACE_OUT_118;
+            } else {
+                result = ENextStep.MSG_PLACE_OUT_117_118;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Generates the student's plan if they should become eligible for MATH 125 (but not 124 or 126).
+     *
+     * @return the student's next steps
+     */
+    private ENextStep makePlan125() {
+
+        final ENextStep result;
+
+        if (this.canRegisterFor.contains(RawRecordConstants.M125)) {
+            result = ENextStep.MSG_ALREADY_ELIGIBLE;
+        } else {
+            final Set<String> placedOutOf = this.placementStatus.placedOutOf;
+            final Set<String> placementCreditFor = this.placementStatus.earnedCreditFor;
+            boolean has117 = placedOutOf.contains(RawRecordConstants.MATH117)
+                             || placementCreditFor.contains(RawRecordConstants.MATH117)
+                             || testForCompletedOrTransfer(RawRecordConstants.M117, 1.0f);
+            boolean has118 = placedOutOf.contains(RawRecordConstants.MATH118)
+                             || placementCreditFor.contains(RawRecordConstants.MATH118)
+                             || testForCompletedOrTransfer(RawRecordConstants.M118, 1.0f);
+
+            if (testForCompletedOrTransfer(RawRecordConstants.M120, 1.0f)) {
+                has117 = true;
+                has118 = true;
+            }
+            if (testForCompletedOrTransfer(RawRecordConstants.M127, 1.0f)) {
+                has117 = true;
+                has118 = true;
+            }
+
+            if (has118) {
+                result = ENextStep.MSG_ALREADY_ELIGIBLE;
+            } else if (has117) {
+                result = ENextStep.MSG_PLACE_OUT_118;
+            } else {
+                result = ENextStep.MSG_PLACE_OUT_117_118;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Generates the student's plan if they should become eligible for MATH 118.
+     *
+     * @return the student's next steps
+     */
+    private ENextStep makePlan118() {
+
+        final ENextStep result;
+
+        if (this.canRegisterFor.contains(RawRecordConstants.M118)) {
+            result = ENextStep.MSG_ALREADY_ELIGIBLE;
+        } else {
+            final Set<String> placedOutOf = this.placementStatus.placedOutOf;
+            final Set<String> placementCreditFor = this.placementStatus.earnedCreditFor;
+            boolean has117 = placedOutOf.contains(RawRecordConstants.MATH117)
+                             || placementCreditFor.contains(RawRecordConstants.MATH117)
+                             || testForCompletedOrTransfer(RawRecordConstants.M117, 1.0f);
+
+            if (testForCompletedOrTransfer(RawRecordConstants.M120, 1.0f)) {
+                has117 = true;
+            }
+            if (testForCompletedOrTransfer(RawRecordConstants.M127, 1.0f)) {
+                has117 = true;
+            }
+
+            if (has117) {
+                result = ENextStep.MSG_ALREADY_ELIGIBLE;
+            } else {
+                result = ENextStep.MSG_PLACE_OUT_117;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Generates the student's plan if they should become eligible for MATH 117.
+     *
+     * @return the student's next steps
+     */
+    private ENextStep makePlan117() {
+
+        final ENextStep result;
+
+        if (this.canRegisterFor.contains(RawRecordConstants.M117)) {
+            result = ENextStep.MSG_ALREADY_ELIGIBLE;
+        } else {
+            result = ENextStep.MSG_PLACE_INTO_117;
         }
 
         return result;
@@ -766,8 +1292,8 @@ public final class MathPlanStudentData {
      * @param loginSessionTag the login session tag
      * @throws SQLException if there is an error accessing the database
      */
-    public void recordPlan(final Cache cache, final MathPlanLogic logic, final ZonedDateTime now, final String stuId,
-                           final long loginSessionTag) throws SQLException {
+    public void recordPlan(final Cache cache, final MathPlanLogic logic, final ZonedDateTime now,
+                           final String stuId, final long loginSessionTag) throws SQLException {
 
         // Record only after student has checked the "only a recommendation" box
         final Map<Integer, RawStmathplan> done = getMathPlanResponses(cache, stuId,
@@ -809,9 +1335,30 @@ public final class MathPlanStudentData {
                 answers.add(value3);
                 answers.add(value4);
 
-                logic.storeMathPlanResponses(cache, this.student, MathPlanConstants.PLAN_PROFILE, questions, answers,
+                logic.storeMathPlanResponses(cache, this.student, MathPlanConstants.PLAN_PROFILE, questions,
+                        answers,
                         now, loginSessionTag);
             }
         }
+    }
+
+    /**
+     * Tests if the student has a B- or higher in MATH 124.
+     *
+     * @return true if the student has a B- or higher in MATH 124
+     */
+    public boolean hasBOrBetterIn124() {
+
+        return this.bOrBetterIn124;
+    }
+
+    /**
+     * Tests if the student has a B- or higher in MATH 126.
+     *
+     * @return true if the student has a B- or higher in MATH 126
+     */
+    public boolean hasBOrBetterIn126() {
+
+        return this.bOrBetterIn126;
     }
 }

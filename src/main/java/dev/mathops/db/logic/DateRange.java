@@ -1,4 +1,4 @@
-package dev.mathops.db.old.logic;
+package dev.mathops.db.logic;
 
 import dev.mathops.commons.TemporalUtils;
 
@@ -169,7 +169,7 @@ public final class DateRange implements Comparable<DateRange> {
      *
      * @param ranges the list of ranges
      */
-    static void mergeRanges(final List<DateRange> ranges) {
+    public static void mergeRanges(final List<DateRange> ranges) {
 
         if (!ranges.isEmpty()) {
 
