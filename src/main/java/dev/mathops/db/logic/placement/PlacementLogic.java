@@ -1,4 +1,4 @@
-package dev.mathops.db.old.logic;
+package dev.mathops.db.logic.placement;
 
 import dev.mathops.commons.TemporalUtils;
 import dev.mathops.commons.log.Log;
@@ -11,6 +11,7 @@ import dev.mathops.db.enums.ETermName;
 import dev.mathops.db.logic.DateRange;
 import dev.mathops.db.logic.DateRangeGroups;
 import dev.mathops.db.logic.SystemData;
+import dev.mathops.db.old.logic.SpecialCategoriesStatus;
 import dev.mathops.db.old.rawlogic.RawMpeCreditLogic;
 import dev.mathops.db.old.rawlogic.RawStmpeLogic;
 import dev.mathops.db.old.rawlogic.RawStudentLogic;

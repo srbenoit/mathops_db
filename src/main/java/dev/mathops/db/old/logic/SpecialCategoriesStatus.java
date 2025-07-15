@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * A container for special categories to which a student belongs.
  */
-final class SpecialCategoriesStatus {
+public final class SpecialCategoriesStatus {
 
     /** The list of special student categories; empty if none. */
     private final List<RawSpecialStus> specials;
@@ -39,7 +39,7 @@ final class SpecialCategoriesStatus {
      * @return the generated status object
      * @throws SQLException if there is an error accessing the database
      */
-    static SpecialCategoriesStatus of(final Cache cache, final String studentId) throws SQLException {
+    public static SpecialCategoriesStatus of(final Cache cache, final String studentId) throws SQLException {
 
         return new SpecialCategoriesStatus(RawSpecialStusLogic.queryByStudent(cache, studentId));
     }
@@ -60,7 +60,7 @@ final class SpecialCategoriesStatus {
      * @param today the current date
      * @return the list of categories
      */
-    List<RawSpecialStus> getActive(final ChronoLocalDate today) {
+    public List<RawSpecialStus> getActive(final ChronoLocalDate today) {
 
         final List<RawSpecialStus> result = new ArrayList<>(this.specials.size());
 

@@ -11,7 +11,7 @@ import dev.mathops.db.cfg.DatabaseConfig;
 import dev.mathops.db.cfg.Login;
 import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.logic.StudentData;
-import dev.mathops.db.old.logic.PlacementStatus;
+import dev.mathops.db.logic.placement.PlacementStatus;
 import dev.mathops.db.old.rawlogic.LogicUtils;
 import dev.mathops.db.old.rawlogic.RawFfrTrnsLogic;
 import dev.mathops.db.old.rawlogic.RawStmathplanLogic;

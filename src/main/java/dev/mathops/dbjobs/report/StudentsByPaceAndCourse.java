@@ -8,7 +8,7 @@ import dev.mathops.db.Contexts;
 import dev.mathops.db.DbConnection;
 import dev.mathops.db.cfg.DatabaseConfig;
 import dev.mathops.db.cfg.Profile;
-import dev.mathops.db.old.logic.PaceTrackLogic;
+import dev.mathops.db.logic.course.PaceTrackLogic;
 import dev.mathops.db.old.rawlogic.RawStcourseLogic;
 import dev.mathops.db.old.rawrecord.RawStcourse;
 import dev.mathops.text.builder.HtmlBuilder;

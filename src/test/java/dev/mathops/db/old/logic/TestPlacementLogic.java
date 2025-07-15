@@ -6,6 +6,8 @@ import dev.mathops.db.Contexts;
 import dev.mathops.db.cfg.DatabaseConfig;
 import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.enums.ETermName;
+import dev.mathops.db.logic.placement.PlacementLogic;
+import dev.mathops.db.logic.placement.PlacementStatus;
 import dev.mathops.db.type.TermKey;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;

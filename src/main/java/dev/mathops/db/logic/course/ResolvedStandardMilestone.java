@@ -1,4 +1,4 @@
-package dev.mathops.db.old.logic;
+package dev.mathops.db.logic.course;
 
 import dev.mathops.db.rec.StandardMilestoneRec;
 import dev.mathops.db.rec.StuStandardMilestoneRec;

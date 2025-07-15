@@ -1,4 +1,4 @@
-package dev.mathops.db.old.logic;
+package dev.mathops.db.logic.challenge;
 
 /**
  * A data class containing student status relative to a challenge exam.

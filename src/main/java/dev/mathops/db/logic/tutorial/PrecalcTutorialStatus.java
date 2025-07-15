@@ -1,4 +1,4 @@
-package dev.mathops.db.old.logic;
+package dev.mathops.db.logic.tutorial;
 
 import dev.mathops.db.logic.DateRangeGroups;
 import dev.mathops.db.old.rawrecord.RawAdminHold;

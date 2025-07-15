@@ -1,7 +1,6 @@
 package dev.mathops.db.old.rawrecord;
 
-import dev.mathops.db.old.logic.ChallengeExamLogic;
-import dev.mathops.db.old.rawrecord.RawStchallengeqa;
+import dev.mathops.db.logic.challenge.ChallengeExamLogic;
 import dev.mathops.db.rec.RecBase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package dev.mathops.db.old.logic;
+package dev.mathops.db.logic.tutorial;
 
 import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
@@ -9,6 +9,7 @@ import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.enums.ETermName;
 import dev.mathops.db.logic.DateRange;
 import dev.mathops.db.logic.DateRangeGroups;
+import dev.mathops.db.old.logic.PrerequisiteLogic;
 import dev.mathops.db.old.rawlogic.RawAdminHoldLogic;
 import dev.mathops.db.old.rawlogic.RawMpeCreditLogic;
 import dev.mathops.db.old.rawlogic.RawSpecialStusLogic;

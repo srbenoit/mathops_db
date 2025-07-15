@@ -1,4 +1,4 @@
-package dev.mathops.db.old.logic;
+package dev.mathops.db.logic.course;
 
 import dev.mathops.db.Cache;
 import dev.mathops.db.logic.SystemData;

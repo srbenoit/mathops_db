@@ -164,7 +164,7 @@ public final class PrerequisiteLogic {
      * @param theCourseId the course ID
      * @return true if the student has credit for the course by transfer
      */
-    boolean isCreditByTransferFor(final String theCourseId) {
+    public boolean isCreditByTransferFor(final String theCourseId) {
 
         return this.creditByTransfer.contains(theCourseId);
     }
@@ -176,7 +176,7 @@ public final class PrerequisiteLogic {
      * @param theCourseId the course ID
      * @return true if the student has credit for the course
      */
-    boolean hasCreditFor(final String theCourseId) {
+    public boolean hasCreditFor(final String theCourseId) {
 
         return this.creditFor.contains(theCourseId);
     }

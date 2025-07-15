@@ -107,7 +107,7 @@ public final class Majors {
         final Major mENHR1 = new Major(
                 new int[]{1040, 1041, 1043, 1044},
                 new String[]{"ENHR-BS", "ENHR-LNBZ-BS", "ENHR-NALZ-BS", "ENHR-TURZ-BS"},
-                "Environmental Horticulture",
+                "Environmental Horticulture (General)",
                 MathPlanConstants.PGMS + "environmental-horticulture/",
                 EHowImportantIsMathFirstSemester.IMPORTANT,
                 EEligibility.M_117, EEligibility.M_118, EEligibility.M_124);
@@ -116,7 +116,7 @@ public final class Majors {
         final Major mENH2 = new Major(
                 new int[]{1042},
                 new String[]{"ENHR-LDAZ-BS"},
-                "Environmental Horticulture",
+                "Environmental Horticulture (Landscape Design &amp; Contracting)",
                 MathPlanConstants.PGMS + "environmental-horticulture/",
                 EHowImportantIsMathFirstSemester.IMPORTANT,
                 EEligibility.M_117, EEligibility.M_118, EEligibility.M_125);
@@ -147,7 +147,7 @@ public final class Majors {
                 new int[]{1060, 1061, 1062, 1063, 1065, 1066},
                 new String[]{"HORT-BS", "HORT-FLOZ-BS", "HORT-HBMZ-BS", "HORT-HFCZ-BS", "HORT-HTHZ-BS",
                         "HORT-CEHZ-BS", "HORT-DHBZ-BS"},
-                "Horticulture",
+                "Horticulture (General)",
                 MathPlanConstants.PGMS + "horticulture/",
                 EHowImportantIsMathFirstSemester.IMPORTANT,
                 EEligibility.M_117, EEligibility.M_124, EEligibility.M_124, EEligibility.M_155);
@@ -156,7 +156,7 @@ public final class Majors {
         final Major mHORT2 = new Major(
                 new int[]{1064},
                 new String[]{"HORT-HOSZ-BS"},
-                "Horticulture",
+                "Horticulture (Horticultural Science)",
                 MathPlanConstants.PGMS + "horticulture/",
                 EHowImportantIsMathFirstSemester.IMPORTANT,
                 EEligibility.M_117, EEligibility.M_124, EEligibility.M_124, EEligibility.M_125, EEligibility.M_155);
@@ -479,7 +479,7 @@ public final class Majors {
                 new String[]{"HDFS-BS", "HDFS-ECPZ-BS", "HDFS-HDEZ-BS", "HDFS-PHPZ-BS", "HDFS-PISZ-BS",
                         "HDFS-LADZ-BS", "HDFS-DECZ-BS", "HDFS-DHDZ-BS", "HDFS-DPHZ-BS", "HDFS-DPIZ-BS", "HDFS-DLAZ-BS",
                         "HDFS-DLEZ-BS", "HDFS-LEPZ-BS"},
-                "Human Development and Family Studies",
+                "Human Development &amp; Family Studies (General)",
                 MathPlanConstants.PGMS + "human-development-and-family-studies/",
                 EHowImportantIsMathFirstSemester.IMPORTANT,
                 EEligibility.AUCC);
@@ -488,7 +488,7 @@ public final class Majors {
         final Major mHDFS2 = new Major(
                 new int[]{4074},
                 new String[]{"HDFS-PHPZ-BS"},
-                "Human Development and Family Studies",
+                "Human Development &amp; Family Studies (Health Professions)",
                 MathPlanConstants.PGMS + "human-development-and-family-studies/",
                 EHowImportantIsMathFirstSemester.IMPORTANT,
                 EEligibility.M_117, EEligibility.M_120);
@@ -1192,7 +1192,7 @@ public final class Majors {
         final Major mBIOM1 = new Major(
                 new int[]{8000, 8002, 8003, 8010, 8020},
                 new String[]{"BIOM-BS", "BIOM-EPHZ-BS", "BIOM-MIDZ-BS", "EVHL-BS", "MICR-BS"},
-                "Biomedical Sciences",
+                "Biomedical Sciences (General)",
                 MathPlanConstants.PGMS + "biomedical-sciences/",
                 EHowImportantIsMathFirstSemester.VERY_IMPORTANT,
                 EEligibility.M_118, EEligibility.M_124, EEligibility.M_125, EEligibility.M_126);
@@ -1201,7 +1201,7 @@ public final class Majors {
         final Major mBIOM2 = new Major(
                 new int[]{8001},
                 new String[]{"BIOM-APHZ-BS"},
-                "Biomedical Sciences",
+                "Biomedical Sciences (Anatomy &amp; Physiology)",
                 MathPlanConstants.PGMS + "biomedical-sciences/",
                 EHowImportantIsMathFirstSemester.VERY_IMPORTANT,
                 EEligibility.M_155, EEligibility.M_160);

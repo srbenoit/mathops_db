@@ -1,4 +1,4 @@
-package dev.mathops.db.old.logic;
+package dev.mathops.db.logic.placement;
 
 import dev.mathops.db.logic.DateRangeGroups;
 
