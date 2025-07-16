@@ -1,9 +1,6 @@
 package dev.mathops.db.logic.mathplan;
 
-import dev.mathops.commons.TemporalUtils;
-
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -23,26 +20,26 @@ public final class Major implements Comparable<Major> {
     /** The catalog page URL. */
     public final String catalogPageUrl;
 
-    /** How important it is for students to take math in their first semester. */
-    public final EHowImportantIsMathFirstSemester importance;
-
-    /** The list of courses the student would ideally be eligible for in their first semester. */
-    public final List<EEligibility> idealEligibility;
+    /** The Math requirements for the major. */
+    public final ERequirement requirements;
 
     /**
-     * Constructs a new {@code MajorMathRequirement}.
+     * Constructs a new {@code Major}.
+     *
+     * @param theQuestionNumbers the array of question numbers in the Math Plan that indicate the program is selected
+     * @param theProgramCodes    the array of CIM program codes for the major and concentrations
+     * @param theProgramName     the name of the major (displayed in the major selection page)
+     * @param theCatalogPageUrl  the URL to a descriptive page for the major
+     * @param theRequirements    the  required math courses in the major
      */
     Major(final int[] theQuestionNumbers, final String[] theProgramCodes,
-          final String theProgramName, final String theCatalogPageUrl,
-          final EHowImportantIsMathFirstSemester theImportance,
-          final EEligibility... theIdealEligibility) {
+          final String theProgramName, final String theCatalogPageUrl, final ERequirement theRequirements) {
 
         this.questionNumbers = theQuestionNumbers.clone();
         this.programCodes = Arrays.asList(theProgramCodes);
         this.programName = theProgramName;
         this.catalogPageUrl = theCatalogPageUrl;
-        this.importance = theImportance;
-        this.idealEligibility = List.of(theIdealEligibility);
+        this.requirements = theRequirements;
     }
 
     /**

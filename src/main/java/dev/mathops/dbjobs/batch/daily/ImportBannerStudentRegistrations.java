@@ -12,7 +12,7 @@ import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.enums.EDisciplineActionType;
 import dev.mathops.db.enums.ETermName;
 import dev.mathops.db.logic.course.PaceTrackLogic;
-import dev.mathops.db.old.logic.PrerequisiteLogic;
+import dev.mathops.db.logic.course.PrerequisiteLogic;
 import dev.mathops.db.old.rawlogic.RawAdminHoldLogic;
 import dev.mathops.db.old.rawlogic.RawDisciplineLogic;
 import dev.mathops.db.old.rawlogic.RawDupRegistrLogic;

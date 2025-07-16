@@ -8,7 +8,7 @@ import dev.mathops.db.logic.placement.PlacementLogic;
 import dev.mathops.db.logic.placement.PlacementStatus;
 import dev.mathops.db.logic.tutorial.PrecalcTutorialLogic;
 import dev.mathops.db.logic.tutorial.PrecalcTutorialStatus;
-import dev.mathops.db.old.logic.PrerequisiteLogic;
+import dev.mathops.db.logic.course.PrerequisiteLogic;
 import dev.mathops.db.old.logic.mathplan.MathPlanLogic;
 import dev.mathops.db.old.rawlogic.RawMpeCreditLogic;
 import dev.mathops.db.old.rawrecord.RawCourse;

@@ -5,7 +5,7 @@ import dev.mathops.db.logic.placement.PlacementLogic;
 import dev.mathops.db.logic.placement.PlacementStatus;
 import dev.mathops.db.logic.tutorial.PrecalcTutorialLogic;
 import dev.mathops.db.logic.tutorial.PrecalcTutorialStatus;
-import dev.mathops.db.old.logic.PrerequisiteLogic;
+import dev.mathops.db.logic.course.PrerequisiteLogic;
 import dev.mathops.db.old.rawlogic.RawMpeCreditLogic;
 import dev.mathops.db.old.rawlogic.RawStmathplanLogic;
 import dev.mathops.db.old.rawrecord.RawCourse;
@@ -70,7 +70,7 @@ public final class MathPlanStudentData {
     private final List<Major> majors;
 
     /** The course we will recommend the student try to become eligible for. */
-    public final Set<EEligibility> recommendedEligibility;
+    public final Set<ERequirement> recommendedEligibility;
 
     /** The next step for the student. */
     public final ENextStep nextStep;
@@ -661,7 +661,7 @@ public final class MathPlanStudentData {
     private static List<Major> accumulateMajors(final String declaredProgramCode,
                                                 final Map<Integer, RawStmathplan> curResponses) {
 
-        final Majors majors = Majors.INSTANCE;
+        final MajorsCurrent majors = MajorsCurrent.INSTANCE;
 
         final List<Major> result = new ArrayList<>(10);
 
@@ -691,15 +691,15 @@ public final class MathPlanStudentData {
     /**
      * Determines the course for which it is "ideal" that the student be eligible in their first semester,
      */
-    private Set<EEligibility> determineRecommendedEligibility() {
+    private Set<ERequirement> determineRecommendedEligibility() {
 
-        final Set<EEligibility> set = EnumSet.noneOf(EEligibility.class);
+        final Set<ERequirement> set = EnumSet.noneOf(ERequirement.class);
 
         // Add all that are NOT "AUCC" - if that comes out to zero records, add AUCC at the end
 
         boolean hasPure160 = false;
         for (final Major major : this.majors) {
-            if (major.idealEligibility.size() == 1 && major.idealEligibility.contains(EEligibility.M_160)) {
+            if (major.idealEligibility.size() == 1 && major.idealEligibility.contains(ERequirement.M_160)) {
                 hasPure160 = true;
             }
             set.addAll(major.idealEligibility);
@@ -708,20 +708,20 @@ public final class MathPlanStudentData {
         if (hasPure160) {
             // If there is a major that NEEDS 160 exclusively, treat that as the only Calc requirement for the purpose
             // of making recommendations,
-            set.remove(EEligibility.M_141);
-            set.remove(EEligibility.M_155);
-            set.remove(EEligibility.M_156);
-        } else if (set.contains(EEligibility.M_156)) {
+            set.remove(ERequirement.M_141);
+            set.remove(ERequirement.M_155);
+            set.remove(ERequirement.M_156);
+        } else if (set.contains(ERequirement.M_156)) {
             // 156 only occurs in combination with 160, so if it's here, one selected course had that combination,
             // but if we get here, the student does NOT have an exclusive MATH 160 major selected, so we should base
             // their recommendations on 156 (and possibly 160)
-            set.remove(EEligibility.M_141);
-            set.remove(EEligibility.M_155);
+            set.remove(ERequirement.M_141);
+            set.remove(ERequirement.M_155);
         }
 
-        set.remove(EEligibility.AUCC);
+        set.remove(ERequirement.AUCC);
         if (set.isEmpty()) {
-            set.add(EEligibility.AUCC);
+            set.add(ERequirement.AUCC);
         }
 
         return set;
@@ -734,42 +734,42 @@ public final class MathPlanStudentData {
 
         final ENextStep result;
 
-        if (this.recommendedEligibility.contains(EEligibility.M_160)) {
-            if (this.recommendedEligibility.contains(EEligibility.M_155)) {
+        if (this.recommendedEligibility.contains(ERequirement.M_160)) {
+            if (this.recommendedEligibility.contains(ERequirement.M_155)) {
                 // Base the plan on becoming eligible for MATH 155 or MATH 160.
                 result = makePlan155Or160();
-            } else if (this.recommendedEligibility.contains(EEligibility.M_156)) {
+            } else if (this.recommendedEligibility.contains(ERequirement.M_156)) {
                 // Base the plan on becoming eligible for MATH 156 or MATH 160.
                 result = makePlan156Or160();
             } else {
                 // Base the plan on becoming eligible for MATH 160.
                 result = makePlan160();
             }
-        } else if (this.recommendedEligibility.contains(EEligibility.M_156)) {
+        } else if (this.recommendedEligibility.contains(ERequirement.M_156)) {
             // This catches combinations that have "156 or 155" - we want the student to get ready for 156 to keep
             // all their options open
             result = makePlan156();
-        } else if (this.recommendedEligibility.contains(EEligibility.M_155)) {
+        } else if (this.recommendedEligibility.contains(ERequirement.M_155)) {
             result = makePlan155();
 
             // Below here does not need Calculus (no majors need MATh 141 at the moment)
-        } else if (this.recommendedEligibility.contains(EEligibility.M_126)) {
-            if (this.recommendedEligibility.contains(EEligibility.M_124)) {
+        } else if (this.recommendedEligibility.contains(ERequirement.M_126)) {
+            if (this.recommendedEligibility.contains(ERequirement.M_124)) {
                 result = makePlan124_126();
             } else {
                 result = makePlan126();
             }
-        } else if (this.recommendedEligibility.contains(EEligibility.M_124)) {
-            if (this.recommendedEligibility.contains(EEligibility.M_125)) {
+        } else if (this.recommendedEligibility.contains(ERequirement.M_124)) {
+            if (this.recommendedEligibility.contains(ERequirement.M_125)) {
                 result = makePlan124_125();
             } else {
                 result = makePlan124();
             }
-        } else if (this.recommendedEligibility.contains(EEligibility.M_125)) {
+        } else if (this.recommendedEligibility.contains(ERequirement.M_125)) {
             result = makePlan125();
-        } else if (this.recommendedEligibility.contains(EEligibility.M_118)) {
+        } else if (this.recommendedEligibility.contains(ERequirement.M_118)) {
             result = makePlan118();
-        } else if (this.recommendedEligibility.contains(EEligibility.M_117)) {
+        } else if (this.recommendedEligibility.contains(ERequirement.M_117)) {
             result = makePlan117();
         } else {
             result = ENextStep.MSG_PLACEMENT_NOT_NEEDED;
