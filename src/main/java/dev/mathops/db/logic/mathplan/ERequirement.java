@@ -5,8 +5,8 @@ package dev.mathops.db.logic.mathplan;
  */
 public enum ERequirement {
 
-    /** 3 credits of any AUCC course. */
-    AUCC,
+    /** 3 credits of any core course. */
+    CORE_ONLY,
 
     /** MATH 117 + MATH 101. */
     M_117_101,

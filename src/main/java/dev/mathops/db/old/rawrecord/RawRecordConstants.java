@@ -46,6 +46,24 @@ public enum RawRecordConstants {
     public static final String MATH126 = "MATH 126";
 
     /** A commonly used string. */
+    public static final String MATH120 = "MATH 120";
+
+    /** A commonly used string. */
+    public static final String MATH127 = "MATH 127";
+
+    /** A commonly used string. */
+    public static final String MATH141 = "MATH 141";
+
+    /** A commonly used string. */
+    public static final String MATH155 = "MATH 155";
+
+    /** A commonly used string. */
+    public static final String MATH156 = "MATH 156";
+
+    /** A commonly used string. */
+    public static final String MATH160 = "MATH 160";
+
+    /** A commonly used string. */
     public static final String M127 = "M 127";
 
     /** A commonly used string. */

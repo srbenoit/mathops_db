@@ -269,7 +269,7 @@ public final class MajorsDeactivated {
                 new String[]{"FACS-BS"},
                 "Family and Consumer Sciences",
                 MathPlanConstants.PGMS + "family-consumer-sciences/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mFACS1);
 
         // 4031: FACS-FACZ-BS, Family and Consumer Sciences/Family and Consumer Sciences (DEACTIVATED)
@@ -278,7 +278,7 @@ public final class MajorsDeactivated {
                 new String[]{"FACS-FACZ-BS"},
                 "Family and Consumer Sciences (Family and Consumer Sciences)",
                 MathPlanConstants.PGMS + "family-consumer-sciences/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mFACS2);
 
         // 4032: FACS-FCSZ-BS, Family and Consumer Sciences - Family and Consumer Sciences Education (DEACTIVATED)
@@ -287,7 +287,7 @@ public final class MajorsDeactivated {
                 new String[]{"FACS-FCSZ-BS"},
                 "Family and Consumer Sciences (Family and Consumer Sciences Education)",
                 MathPlanConstants.PGMS + "family-consumer-sciences/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mFACS3);
 
         // 4033: FACS-IDSZ-BS, Family and Consumer Sciences - Interdisciplinary (DEACTIVATED)
@@ -296,7 +296,7 @@ public final class MajorsDeactivated {
                 new String[]{"FACS-IDSZ-BS"},
                 "Family and Consumer Sciences (Interdisciplinary)",
                 MathPlanConstants.PGMS + "family-consumer-sciences/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mFACS4);
 
         // *** Major in Fermentation Science and Technology
@@ -338,7 +338,7 @@ public final class MajorsDeactivated {
                 new String[]{"HDFS-LEPZ-BS"},
                 "Human Development &amp; Family Studies (Leadership and Entrepreneurial Professions)",
                 MathPlanConstants.PGMS + "human-development-and-family-studies/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mHDFS1);
 
         // 4075: HDFS-PISZ-BS, Human Development and Family Studies - Prevention and Intervention Sciences (DEACTIVATED)
@@ -347,7 +347,7 @@ public final class MajorsDeactivated {
                 new String[]{"HDFS-PISZ-BS"},
                 "Human Development &amp; Family Studies (Prevention and Intervention Sciences)",
                 MathPlanConstants.PGMS + "human-development-and-family-studies/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mHDFS2);
 
         // FAKE: HDFS-DECZ-BS, Human Development and Family Studies - ???
@@ -363,7 +363,7 @@ public final class MajorsDeactivated {
                         "HDFS-DLEZ-BS", "HDFS-LEPZ-BS"},
                 "Human Development &amp; Family Studies",
                 MathPlanConstants.PGMS + "human-development-and-family-studies/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mHDFS3);
 
         // *** Major in Interior Architecture and Design
@@ -475,7 +475,7 @@ public final class MajorsDeactivated {
                 new String[]{"ANTH-DD-BA"},
                 "Anthropology",
                 MathPlanConstants.PGMS + "anthropology/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mANTH);
 
         // *** Major in Communication Studies
@@ -486,7 +486,7 @@ public final class MajorsDeactivated {
                 new String[]{"CMST-TCLZ-BA"},
                 "Communication Studies (Speech Teacher Licensure)",
                 MathPlanConstants.PGMS + "communication-studies/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mCMST1);
 
         // FAKE: CMST-DD-BA, Communication Studies - Dual Degree
@@ -495,7 +495,7 @@ public final class MajorsDeactivated {
                 new String[]{"CMST-DD-BA"},
                 "Communication Studies",
                 MathPlanConstants.PGMS + "communication-studies/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mCMST2);
 
         // *** Major in Dance
@@ -507,7 +507,7 @@ public final class MajorsDeactivated {
                 new String[]{"DNC0", "DANC-DEDZ-BF"},
                 "Dance",
                 MathPlanConstants.PGMS + "dance-ba/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mDNCE);
 
         // *** Major in Economics
@@ -529,7 +529,7 @@ public final class MajorsDeactivated {
                 new String[]{"ENGL-LANZ-BA"},
                 "English (Language)",
                 MathPlanConstants.PGMS + "english/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mENGL1);
 
         // *** Major in Journalism and Media Communication
@@ -540,7 +540,7 @@ public final class MajorsDeactivated {
                 new String[]{"JAMC-DD-BA"},
                 "Journalism and Media Communication",
                 MathPlanConstants.PGMS + "journalism-and-media-communication/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mJAMC);
 
         // *** Major in Music
@@ -551,7 +551,7 @@ public final class MajorsDeactivated {
                 new String[]{"MUS0"},
                 "Music",
                 MathPlanConstants.PGMS + "music-ba/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mMUSI);
 
         // *** Major in Political Science
@@ -562,7 +562,7 @@ public final class MajorsDeactivated {
                 new String[]{"POLS-ULPZ-BA"},
                 "Political Science (U.S. Government, Law, and Policy)",
                 MathPlanConstants.PGMS + "political-science/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mPOLS1);
 
         // FAKE: POLS-DD-BA, Political Science - Dual Degree
@@ -571,7 +571,7 @@ public final class MajorsDeactivated {
                 new String[]{"POLS-DD-BA"},
                 "Political Science",
                 MathPlanConstants.PGMS + "political-science/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mPOLS2);
 
         // *** Major in Sociology
@@ -582,7 +582,7 @@ public final class MajorsDeactivated {
                 new String[]{"SOCI-DGSZ-BA"},
                 "Sociology",
                 MathPlanConstants.PGMS + "sociology/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mSOCI);
 
         // *** Major in Theatre
@@ -593,7 +593,7 @@ public final class MajorsDeactivated {
                 new String[]{"THTR-DTHZ-BA"},
                 "Theatre (Design and Technology)",
                 MathPlanConstants.PGMS + "theatre/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mTHTR1);
 
         // 5172: THTR-GTRZ-BA, Theatre/General Theatre (DEACTIVATED)
@@ -602,7 +602,7 @@ public final class MajorsDeactivated {
                 new String[]{"THTR-GTRZ-BA"},
                 "Theatre (General Theatre)",
                 MathPlanConstants.PGMS + "theatre/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mTHTR2);
 
         // FAKE: THR0, Pre-Theatre
@@ -611,7 +611,7 @@ public final class MajorsDeactivated {
                 new String[]{"THR0"},
                 "Theatre",
                 MathPlanConstants.PGMS + "theatre/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mTHTR3);
 
         // *** Major in Interdisciplinary Liberal Arts
@@ -622,7 +622,7 @@ public final class MajorsDeactivated {
                 new String[]{"ILAR-DD-BA"},
                 "Interdisciplinary Liberal Arts",
                 MathPlanConstants.PGMS + "interdisciplinary-liberal-arts/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mILAR);
 
         // ============================
@@ -752,7 +752,7 @@ public final class MajorsDeactivated {
      * @param programCode the program code
      * @return the major; {@code null} if none matches the program code
      */
-    public Major getMajor(final String programCode) {
+    Major getMajor(final String programCode) {
 
         Major result = null;
 
@@ -760,6 +760,33 @@ public final class MajorsDeactivated {
             boolean found = false;
             for (final String code : major.programCodes) {
                 if (code.equals(programCode)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (found) {
+                result = major;
+                break;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Gets the major with a specified numeric code.
+     *
+     * @param numericCode the numeric code
+     * @return the major; {@code null} if none matches the program code
+     */
+    Major getMajor(final int numericCode) {
+
+        Major result = null;
+
+        for (final Major major : this.majors) {
+            boolean found = false;
+            for (final int nbr : major.questionNumbers) {
+                if (nbr == numericCode) {
                     found = true;
                     break;
                 }

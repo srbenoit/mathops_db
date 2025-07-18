@@ -3,7 +3,7 @@ package dev.mathops.db.logic.mathplan;
 /**
  * Possible methods by which the Math Placement requirement can be satisfied.
  */
-public enum EHowSatisfiedPlacement {
+public enum XEHowSatisfiedPlacement {
 
     /** The Math Placement tool was completed. */
     MATH_PLACEMENT_COMPLETED("Math Placement Tool Completed"),
@@ -25,7 +25,7 @@ public enum EHowSatisfiedPlacement {
      *
      * @param theMsg the message
      */
-    EHowSatisfiedPlacement(final String theMsg) {
+    XEHowSatisfiedPlacement(final String theMsg) {
 
         this.msg = theMsg;
     }

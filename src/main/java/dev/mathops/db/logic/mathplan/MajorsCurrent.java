@@ -350,7 +350,7 @@ public final class MajorsCurrent {
                 new String[]{"ECHE-BS"},
                 "Early Childhood Education",
                 MathPlanConstants.PGMS + "early-childhood-education/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mECHE);
 
         // *** Major in Family and Consumer Sciences
@@ -365,7 +365,7 @@ public final class MajorsCurrent {
                 new String[]{"FCSE-BS"},
                 "Family and Consumer Sciences Education",
                 MathPlanConstants.PGMS + "family-consumer-sciences/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mFACS);
 
         // *** Major in Fermentation Science and Technology
@@ -423,7 +423,7 @@ public final class MajorsCurrent {
                 new String[]{"HDFS-BS", "HDFS-ECPZ-BS", "HDFS-HDEZ-BS", "HDFS-PHPZ-BS", "HDFS-LADZ-BS", "HDFS-BMHZ-BS"},
                 "Human Development &amp; Family Studies",
                 MathPlanConstants.PGMS + "human-development-and-family-studies/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mHDFS);
 
         // *** Major in Interior Architecture and Design
@@ -449,7 +449,7 @@ public final class MajorsCurrent {
                 new String[]{"SOWK-BSW", "SOWK-ADSZ-BSW", "SOWK-HOCZ-BSW", "SOWK-ISWC-BSW"},
                 "Social Work",
                 MathPlanConstants.PGMS + "social-work/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mSOWK);
 
         // *** Major in Nutrition Science
@@ -488,7 +488,7 @@ public final class MajorsCurrent {
                 new String[]{"ANTH-BA", "ANTH-ARCZ-BA", "ANTH-BIOZ-BA", "ANTH-CLTZ-BA",},
                 "Anthropology",
                 MathPlanConstants.PGMS + "anthropology/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mANTH);
 
         // *** Major in Art (B.A. and B.F.A combined)
@@ -514,7 +514,7 @@ public final class MajorsCurrent {
                         "ARTM-PRTZ-BF", "ARTM-SCLZ-BF", "ARTM-AREZ-BF"},
                 "Art",
                 MathPlanConstants.PGMS + "art-bfa/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mARTI);
 
         // *** Major in Communication Studies
@@ -525,7 +525,7 @@ public final class MajorsCurrent {
                 new String[]{"CMST-BA"},
                 "Communication Studies",
                 MathPlanConstants.PGMS + "communication-studies/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mCMST);
 
         // *** Major in Dance (BA and BFA)
@@ -535,7 +535,7 @@ public final class MajorsCurrent {
                 new String[]{"DNCE-BA", "DANC-BFA"},
                 "Dance",
                 MathPlanConstants.PGMS + "dance-ba/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mDNCE);
 
         // *** Major in Economics
@@ -563,7 +563,7 @@ public final class MajorsCurrent {
                         "ENGL-IESZ-BA"},
                 "English",
                 MathPlanConstants.PGMS + "english/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mENGL);
 
         // *** Major in Ethnic Studies
@@ -576,7 +576,7 @@ public final class MajorsCurrent {
                 new String[]{"ETST-BA", "ETST-SOTZ-BA", "ETST-COIZ-BA", "ETST-RPRZ-BA"},
                 "Ethnic Studies",
                 MathPlanConstants.PGMS + "ethnic-studies/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mETST);
 
         // *** Major in Geography
@@ -586,7 +586,7 @@ public final class MajorsCurrent {
                 new String[]{"GEOG-BS"},
                 "Geography",
                 MathPlanConstants.PGMS + "geography/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mGEOG);
 
         // *** Major in History
@@ -601,7 +601,7 @@ public final class MajorsCurrent {
                 new String[]{"HIST-BA", "HIST-GENZ-BA", "HIST-LNGZ-BA", "HIST-SBSZ-BA", "HIST-SSTZ-BA", "HIST-DPUZ-BA"},
                 "History",
                 MathPlanConstants.PGMS + "history/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mHIST);
 
         // *** Major in Journalism and Media Communication
@@ -611,7 +611,7 @@ public final class MajorsCurrent {
                 new String[]{"JAMC-BA"},
                 "Journalism and Media Communication",
                 MathPlanConstants.PGMS + "journalism-and-media-communication/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mJAMC);
 
         // *** Major in Languages, Literatures and Cultures
@@ -625,7 +625,7 @@ public final class MajorsCurrent {
                 new String[]{"LLAC-BA", "LLAC-LFRZ-BA", "LLAC-LGEZ-BA", "LLAC-LSPZ-BA", "LLAC-SPPZ-BA"},
                 "Languages, Literatures and Cultures",
                 MathPlanConstants.PGMS + "languages-literatures-and-cultures/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mLLAC);
 
         // *** Major in Music, B.A.
@@ -640,7 +640,7 @@ public final class MajorsCurrent {
                 new String[]{"MUSI-BA", "MUSC-BM", "MUSC-COMZ-BM", "MUSC-MUEZ-BM", "MUSC-MUTZ-BM", "MUSC-PERZ-BM"},
                 "Music",
                 MathPlanConstants.PGMS + "music-ba/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mMUSI);
 
         // *** Major in Philosophy
@@ -653,7 +653,7 @@ public final class MajorsCurrent {
                 new String[]{"PHIL-BA", "PHIL-GNPZ-BA", "PHIL-GPRZ-BA", "PHIL-PSAZ-BA"},
                 "Philosophy",
                 MathPlanConstants.PGMS + "philosophy/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mPHIL);
 
         // *** Major in Political Science
@@ -671,7 +671,7 @@ public final class MajorsCurrent {
                         "POLS-PPSZ-BA"},
                 "Political Science",
                 MathPlanConstants.PGMS + "political-science/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mPOLS);
 
         // *** Major in Sociology
@@ -685,7 +685,7 @@ public final class MajorsCurrent {
                 new String[]{"SOCI-BA", "SOCI-CRCZ-BA", "SOCI-ENSZ-BA", "SOCI-GNSZ-BA"},
                 "Sociology",
                 MathPlanConstants.PGMS + "sociology/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mSOCI);
 
         // *** Major in Theatre
@@ -705,7 +705,7 @@ public final class MajorsCurrent {
                         "THTR-SDTZ-BA", "THTR-CDTZ-BA"},
                 "Theatre",
                 MathPlanConstants.PGMS + "theatre/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mTHTR);
 
         // *** Major in Women's and Gender Studies
@@ -715,7 +715,7 @@ public final class MajorsCurrent {
                 new String[]{"WGST-BA"},
                 "Women's and Gender Studies",
                 MathPlanConstants.PGMS + "womens-and-gender-studies/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mWGST);
 
         // *** Major in International Studies
@@ -730,7 +730,7 @@ public final class MajorsCurrent {
                 new String[]{"INST-BA", "INST-ASTZ-BA", "INST-EUSZ-BA", "INST-LTSZ-BA", "INST-MEAZ-BA", "INST-GBLZ-BA"},
                 "International Studies",
                 MathPlanConstants.PGMS + "international-studies/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mINST);
 
         // *** Major in Interdisciplinary Liberal Arts
@@ -740,7 +740,7 @@ public final class MajorsCurrent {
                 new String[]{"ILAR-BA"},
                 "Interdisciplinary Liberal Arts",
                 MathPlanConstants.PGMS + "interdisciplinary-liberal-arts/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mILAR);
 
         // ============================
@@ -1128,7 +1128,7 @@ public final class MajorsCurrent {
                 new String[]{"EXAD", "EXLA", "EXCO", "USJC", "UNLA"},
                 "Exploratory Studies", // Arts, Humanities, and Design
                 MathPlanConstants.PGMS + "exploratory-studies/",
-                ERequirement.AUCC);
+                ERequirement.CORE_ONLY);
         this.majors.add(mEXAD);
 
         final Major mEXHF = new Major(
@@ -1220,7 +1220,7 @@ public final class MajorsCurrent {
      * @param programCode the program code
      * @return the major; {@code null} if none matches the program code
      */
-    public Major getMajor(final String programCode) {
+    Major getMajor(final String programCode) {
 
         Major result = null;
 
@@ -1228,6 +1228,33 @@ public final class MajorsCurrent {
             boolean found = false;
             for (final String code : major.programCodes) {
                 if (code.equals(programCode)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (found) {
+                result = major;
+                break;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Gets the major with a specified numeric code.
+     *
+     * @param numericCode the numeric code
+     * @return the major; {@code null} if none matches the program code
+     */
+    Major getMajor(final int numericCode) {
+
+        Major result = null;
+
+        for (final Major major : this.majors) {
+            boolean found = false;
+            for (final int nbr : major.questionNumbers) {
+                if (nbr == numericCode) {
                     found = true;
                     break;
                 }

@@ -9,8 +9,8 @@ import dev.mathops.db.ESchema;
 import dev.mathops.db.cfg.DatabaseConfig;
 import dev.mathops.db.cfg.Login;
 import dev.mathops.db.cfg.Profile;
-import dev.mathops.db.old.logic.mathplan.MathPlanLogic;
-import dev.mathops.db.old.logic.mathplan.MathPlanPlacementStatus;
+import dev.mathops.db.logic.mathplan.MathPlanLogic;
+import dev.mathops.db.logic.mathplan.StudentMathPlan;
 import dev.mathops.db.old.rawlogic.RawMpscorequeueLogic;
 import dev.mathops.db.old.rawlogic.RawStmathplanLogic;
 import dev.mathops.db.old.rawlogic.RawStudentLogic;
@@ -151,7 +151,7 @@ public final class BulkUpdateMPLTestScores {
             "SPCL-UG", // Unknown - assume it needs some math...
             "CTED-UG", // Unknown - assume it needs some math...
             "FCST-UG",  // Unknown - assume it needs some math...
-            "SSAS-UG"  // Unknown - assume it needs some math....m
+            "SSAS-UG"  // Unknown - assume it needs some math....
     );
 
     /** Debug flag - true to skip (but print) updates; false to actually perform updates. */
@@ -317,12 +317,12 @@ public final class BulkUpdateMPLTestScores {
                     if (isProgramOnlyAUCC(student, report)) {
                         wantValue = "1";
                     } else {
-                        final MathPlanPlacementStatus status = MathPlanLogic.getMathPlacementStatus(cache, stuId);
+                        final StudentMathPlan plan = MathPlanLogic.queryPlan(cache, stuId);
 
                         if (latest1.containsKey(stuId)) {
-                            if (status.isPlacementComplete) {
+                            if (plan.stuStatus.isPlacementCompleted()) {
                                 wantValue = "1";
-                            } else if (status.isPlacementNeeded) {
+                            } else if (plan.isPlacementNeeded) {
                                 wantValue = "2";
                             } else {
                                 wantValue = "1";

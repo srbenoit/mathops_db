@@ -1,184 +1,87 @@
 package dev.mathops.db.logic.mathplan;
 
-import dev.mathops.commons.CoreConstants;
 import dev.mathops.commons.TemporalUtils;
-import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
-import dev.mathops.db.Contexts;
-import dev.mathops.db.DbConnection;
-import dev.mathops.db.ESchema;
-import dev.mathops.db.cfg.DatabaseConfig;
-import dev.mathops.db.cfg.Login;
-import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.logic.StudentData;
-import dev.mathops.db.logic.placement.PlacementStatus;
-import dev.mathops.db.old.rawlogic.LogicUtils;
-import dev.mathops.db.old.rawlogic.RawFfrTrnsLogic;
 import dev.mathops.db.old.rawlogic.RawStmathplanLogic;
-import dev.mathops.db.old.rawrecord.RawCourse;
-import dev.mathops.db.old.rawrecord.RawFfrTrns;
-import dev.mathops.db.old.rawrecord.RawMpeCredit;
-import dev.mathops.db.old.rawrecord.RawRecordConstants;
 import dev.mathops.db.old.rawrecord.RawStmathplan;
 import dev.mathops.db.old.rawrecord.RawStudent;
-import dev.mathops.db.old.schema.csubanner.ImplLiveCsuCredit;
-import dev.mathops.db.old.schema.csubanner.ImplLiveTransferCredit;
-import dev.mathops.db.rec.LiveCsuCredit;
-import dev.mathops.db.rec.LiveTransferCredit;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 
 /**
- * Business logic for the Math Plan.
+ * Business logic to manage the "Math Plan".  This class is the entry point for all functions in this package.
  */
-public class MathPlanLogic {
+public enum MathPlanLogic {
+    ;
 
-    /** Object on which to synchronize member variable access. */
-    private final Object synch;
-
-    /** The database profile this module will use. */
-    private final Profile profile;
-
-    /** The cached courses. */
-    private Map<String, RawCourse> courses = null;
+    /** A map key. */
+    private static final Integer ONE = Integer.valueOf(1);
 
     /**
-     * Constructs a new {@code MathPlanLogic}.
+     * Constructs a "Math Plan" for a student.
      *
-     * @param theProfile the database profile this module will use
-     */
-    public MathPlanLogic(final Profile theProfile) {
-
-        this.synch = new Object();
-        this.profile = theProfile;
-    }
-
-    /**
-     * Retrieves all completed courses on the student's record.
-     *
+     * @param cache     the data cache
      * @param studentId the student ID
-     * @return the list of transfer credit entries; empty if none
-     */
-    public List<LiveCsuCredit> getCompletedCourses(final String studentId) {
-
-        List<LiveCsuCredit> result;
-
-        if (LogicUtils.isBannerDown()) {
-            result = new ArrayList<>(0);
-        } else {
-            final Login liveLogin = this.profile.getLogin(ESchema.LIVE);
-
-            try {
-                final DbConnection conn = liveLogin.checkOutConnection();
-                try {
-                    result = ImplLiveCsuCredit.INSTANCE.query(conn, studentId);
-                } finally {
-                    liveLogin.checkInConnection(conn);
-                }
-            } catch (final Exception ex) {
-                LogicUtils.indicateBannerDown();
-                Log.warning(ex);
-                result = new ArrayList<>(0);
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Retrieves all transfer credit entries on the student's record.
-     *
-     * @param cache               the data cache
-     * @param studentId           the student ID
-     * @param reconcileLWithLocal if true, records that are found but don't exist in "ffr_trns" are inserted into
-     *                            ffr_trns
-     * @return the list of transfer credit entries; empty if none
+     * @param majors    the student's set of majors of interest
+     * @return the constructed math plan, which is based on student responses to
      * @throws SQLException if there is an error accessing the database
      */
-    public List<LiveTransferCredit> getStudentTransferCredit(final Cache cache, final String studentId,
-                                                             final boolean reconcileLWithLocal) throws SQLException {
+    public static StudentMathPlan generatePlan(final Cache cache, final String studentId,
+                                               final Collection<Major> majors) throws SQLException {
 
-        List<LiveTransferCredit> result;
+        final StudentStatus stuStatus = new StudentStatus(cache, studentId);
+        final MajorSetRequirements requirements = new MajorSetRequirements(majors, stuStatus);
 
-        if (studentId.startsWith("99")) {
-            // The following will return test data - convert to "live" data.
-            final List<RawFfrTrns> list = RawFfrTrnsLogic.queryByStudent(cache, studentId);
-            final int size = list.size();
-            result = new ArrayList<>(size);
+        return new StudentMathPlan(stuStatus, requirements);
+    }
 
-            for (final RawFfrTrns tc : list) {
-                final LiveTransferCredit ltc = new LiveTransferCredit(studentId, null, tc.course, null, null);
-                result.add(ltc);
-            }
-        } else if (LogicUtils.isBannerDown()) {
-            result = new ArrayList<>(0);
+    /**
+     * Determines a student's status with respect to the Math Plan.
+     *
+     * @param cache     the data cache
+     * @param studentId the student ID
+     * @return the student's status
+     * @throws SQLException if there is an error accessing the database
+     */
+    public static EMathPlanStatus getStatus(final Cache cache, final String studentId) throws SQLException {
+
+        final EMathPlanStatus result;
+
+        final StudentData studentData = cache.getStudent(studentId);
+
+        final Map<Integer, RawStmathplan> q1 = studentData.getLatestMathPlanResponsesByPage(
+                MathPlanConstants.MAJORS_PROFILE);
+
+        if (q1.isEmpty()) {
+            result = EMathPlanStatus.NOT_STARTED;
         } else {
-            final Login liveLogin = this.profile.getLogin(ESchema.LIVE);
-            final DbConnection bannerConn = liveLogin.checkOutConnection();
-            try {
-                result = ImplLiveTransferCredit.INSTANCE.query(bannerConn, studentId);
-            } catch (final SQLException ex) {
-                LogicUtils.indicateBannerDown();
-                Log.warning(ex);
-                result = new ArrayList<>(0);
-            } finally {
-                liveLogin.checkInConnection(bannerConn);
-            }
-
-            final Iterator<LiveTransferCredit> iter = result.iterator();
-            while (iter.hasNext()) {
-                final LiveTransferCredit row = iter.next();
-                final String courseId = row.courseId;
-
-                if (!courseId.startsWith("MATH1++")) {
-                    if (courseId.startsWith("MATH") || courseId.startsWith("M ") || "STAT 100".equals(courseId)
-                        || "STAT100".equals(courseId)) {
-                        continue;
-                    }
-                }
-                iter.remove();
-            }
-
-            if (reconcileLWithLocal) {
-                final List<RawFfrTrns> existing = RawFfrTrnsLogic.queryByStudent(cache, studentId);
-
-                for (final LiveTransferCredit live : result) {
-
-                    RawFfrTrns currentRec = null;
-                    for (final RawFfrTrns exist : existing) {
-                        if (exist.course.equals(live.courseId)) {
-                            currentRec = exist;
-                            break;
-                        }
-                    }
-
-                    String recGrade = live.grade;
-                    if (recGrade.startsWith("T")) {
-                        recGrade = recGrade.substring(1);
-                        if (recGrade.length() > 2) {
-                            recGrade = recGrade.substring(0, 2);
-                        }
-                    }
-
-                    if (currentRec == null) {
-                        Log.info("Adding ", live.courseId, " transfer credit for student ", studentId);
-                        final RawFfrTrns toAdd = new RawFfrTrns(live.studentId, live.courseId, "T", LocalDate.now(),
-                                null, recGrade);
-                        RawFfrTrnsLogic.insert(cache, toAdd);
-                    } else if (!Objects.equals(currentRec.grade, recGrade)) {
-                        Log.info("Updating grade in ", live.courseId, " transfer credit for student ", studentId);
-                        RawFfrTrnsLogic.updateGrade(cache, currentRec, recGrade);
+            final Map<Integer, RawStmathplan> q2 = studentData.getLatestMathPlanResponsesByPage(
+                    MathPlanConstants.ONLY_RECOM_PROFILE);
+            if (q2.isEmpty()) {
+                result = EMathPlanStatus.SUBMITTED_MAJORS;
+            } else {
+                final Map<Integer, RawStmathplan> q3 = studentData.getLatestMathPlanResponsesByPage(
+                        MathPlanConstants.EXISTING_PROFILE);
+                if (q3.isEmpty()) {
+                    result = EMathPlanStatus.CHECKED_ONLY_RECOMMENDATION;
+                } else {
+                    final Map<Integer, RawStmathplan> q4 = studentData.getLatestMathPlanResponsesByPage(
+                            MathPlanConstants.INTENTIONS_PROFILE);
+                    if (q4.isEmpty()) {
+                        result = EMathPlanStatus.REVIEWED_EXISTING;
+                    } else if (q4.containsKey(ONE)) {
+                        result = EMathPlanStatus.PLAN_COMPLETED_PLACEMENT_NOT_NEEDED;
+                    } else {
+                        result = EMathPlanStatus.PLAN_COMPLETED_PLACEMENT_NEEDED;
                     }
                 }
             }
@@ -188,269 +91,166 @@ public class MathPlanLogic {
     }
 
     /**
-     * Gets a map from the course numbers used in {@code RawCourse} objects to the corresponding full course objects.
+     * Queries for the list of majors for which a student has expressed interest, adds in the student's current declared
+     * major, and reconstructs the "Math Plan" for a student.
      *
-     * @return the map
+     * @param cache     the data cache
+     * @param studentId the student ID
+     * @return the constructed math plan, which is based on student responses to
+     * @throws SQLException if there is an error accessing the database
      */
-    public Map<String, RawCourse> getCourses() {
+    public static StudentMathPlan queryPlan(final Cache cache, final String studentId) throws SQLException {
 
-        synchronized (this.synch) {
-            if (this.courses == null) {
-                this.courses = new HashMap<>(100);
+        final StudentData studentData = cache.getStudent(studentId);
 
-                // General AUCC-1B courses
+        final Map<Integer, RawStmathplan> planResponses = studentData.getLatestMathPlanResponsesByPage(
+                MathPlanConstants.MAJORS_PROFILE);
 
-                this.courses.put(MathPlanConstants.M_101, new RawCourse(
-                        MathPlanConstants.M_101, MathPlanConstants.ZERO,
-                        "Math in the Social Sciences (3 credits)",
-                        MathPlanConstants.THREE, "N", "MATH 101", null,
-                        "N", "N"));
-                this.courses.put(MathPlanConstants.M_105, new RawCourse(
-                        MathPlanConstants.M_105, MathPlanConstants.ZERO,
-                        "Patterns of Phenomena (3 credits)",
-                        MathPlanConstants.THREE, "N", "MATH 105", null,
-                        "N", "N"));
-                this.courses.put(MathPlanConstants.S_100, new RawCourse(
-                        MathPlanConstants.S_100, MathPlanConstants.ZERO,
-                        "Statistical Literacy (3 credits)",
-                        MathPlanConstants.THREE, "N", "STAT 100", null,
-                        "N", "N"));
-                this.courses.put(MathPlanConstants.S_201, new RawCourse(
-                        MathPlanConstants.S_201, MathPlanConstants.ZERO,
-                        "General Statistics (3 credits)",
-                        MathPlanConstants.THREE, "N", "STAT 201", null,
-                        "N", "N"));
-                this.courses.put(MathPlanConstants.S_204, new RawCourse(
-                        MathPlanConstants.S_204, MathPlanConstants.ZERO,
-                        "Statistics With Business Applications (3 credits)",
-                        MathPlanConstants.THREE, "N", "STAT 204", null,
-                        "N", "N"));
-                this.courses.put(MathPlanConstants.F_200, new RawCourse(
-                        MathPlanConstants.F_200, MathPlanConstants.ZERO,
-                        "Personal Finance and Investing (3 credits)",
-                        MathPlanConstants.THREE, "N", "FIN 200", null,
-                        "N", "N"));
-
-                // Precalculus
-
-                this.courses.put(RawRecordConstants.M116,
-                        new RawCourse(RawRecordConstants.M116, MathPlanConstants.ZERO,
-                                "Precalculus Supplement for Success in Math (1 credit)",
-                                MathPlanConstants.ONE, "N", "MATH 116", null,
-                                "N", "Y"));
-                this.courses.put(RawRecordConstants.M117,
-                        new RawCourse(RawRecordConstants.M117, MathPlanConstants.FOUR,
-                                "College Algebra in Context I (1 credit)",
-                                MathPlanConstants.ONE, "Y", "MATH 117", null,
-                                "N", "Y"));
-                this.courses.put(RawRecordConstants.M118,
-                        new RawCourse(RawRecordConstants.M118, MathPlanConstants.FOUR,
-                                "College Algebra in Context II (1 credit)",
-                                MathPlanConstants.ONE, "Y", "MATH 118", null,
-                                "N", "Y"));
-                this.courses.put(RawRecordConstants.M120,
-                        new RawCourse(RawRecordConstants.M120, MathPlanConstants.ZERO,
-                                "College Algebra (3 credit)",
-                                MathPlanConstants.THREE, "Y", "MATH 120", null,
-                                "N", "N"));
-                this.courses.put(RawRecordConstants.M124,
-                        new RawCourse(RawRecordConstants.M124, MathPlanConstants.FOUR,
-                                "Logarithmic and Exponential Functions (1 credit)",
-                                MathPlanConstants.ONE, "Y", "MATH 124", null,
-                                "N", "Y"));
-                this.courses.put(RawRecordConstants.M125,
-                        new RawCourse(RawRecordConstants.M125, MathPlanConstants.FOUR,
-                                "Numerical Trigonometry (1 credit)",
-                                MathPlanConstants.ONE, "Y", "MATH 125", null,
-                                "N", "Y"));
-                this.courses.put(RawRecordConstants.M126,
-                        new RawCourse(RawRecordConstants.M126, MathPlanConstants.FOUR,
-                                "Analytic Trigonometry (1 credit)",
-                                MathPlanConstants.ONE, "Y", "MATH 126", null,
-                                "N", "Y"));
-                this.courses.put(RawRecordConstants.M127,
-                        new RawCourse(RawRecordConstants.M127, MathPlanConstants.ZERO,
-                                "Precalculus (4 credit)",
-                                MathPlanConstants.FOUR, "Y", "MATH 127", null,
-                                "N", "N"));
-
-                // Other Math courses
-
-                this.courses.put(MathPlanConstants.M_141, new RawCourse(
-                        MathPlanConstants.M_141, MathPlanConstants.ZERO,
-                        "Calculus in Management Sciences (3 credits)",
-                        MathPlanConstants.THREE, "N", "MATH 141", null,
-                        "N", "N"));
-                this.courses.put(MathPlanConstants.M_155, new RawCourse(
-                        MathPlanConstants.M_155, MathPlanConstants.ZERO,
-                        "Calculus for Biological Scientists I (4 credits)",
-                        MathPlanConstants.FOUR, "N", "MATH 155", null,
-                        "N", "N"));
-                this.courses.put(MathPlanConstants.M_156, new RawCourse(
-                        MathPlanConstants.M_156, MathPlanConstants.ZERO,
-                        "Mathematics for Computational Science I (4 credits)",
-                        MathPlanConstants.FOUR, "N", "MATH 156", null,
-                        "N", "N"));
-                this.courses.put(MathPlanConstants.M_160, new RawCourse(
-                        MathPlanConstants.M_160, MathPlanConstants.ZERO,
-                        "Calculus for Physical Scientists I (4 credits)",
-                        MathPlanConstants.FOUR, "N", "MATH 160", null,
-                        "N", "N"));
+        final List<Major> majors = new ArrayList<>(10);
+        for (final Integer key : planResponses.keySet()) {
+            final int code = key.intValue();
+            final Major major = Majors.getMajorByNumericCode(code);
+            if (major != null) {
+                majors.add(major);
             }
-
-            return Collections.unmodifiableMap(this.courses);
         }
+
+        final String declaredCode = studentData.getStudentRecord().programCode;
+        if (declaredCode != null) {
+            final Major declared = Majors.getMajorByProgramCode(declaredCode);
+            if (declared != null && !majors.contains(declared)) {
+                majors.add(declared);
+            }
+        }
+
+        final StudentStatus stuStatus = new StudentStatus(cache, studentId);
+        final MajorSetRequirements requirements = new MajorSetRequirements(majors, stuStatus);
+
+        return new StudentMathPlan(stuStatus, requirements);
     }
 
     /**
-     * Stores a set of profile answers and updates the cached student plan based on the new profile responses.
+     * Stores a set of Math Plan responses.
      *
      * @param cache           the data cache
-     * @param student         the student
-     * @param pageId          the page ID
-     * @param questions       the question numbers
-     * @param answers         the answers
-     * @param now             the date/time to consider "now"
-     * @param loginSessionTag a unique tag for a login session
+     * @param student         the student record
+     * @param version         the page ID or "version" (typically one of the WLCM# IDs)
+     * @param questions       the list of question numbers "survey_nbr"
+     * @param answers         the corresponding list of answers (the same length as {@code questions}
+     * @param now             the current date/time
+     * @param loginSessionTag the login session tag to store in the response records
      * @throws SQLException if there is an error accessing the database
      */
-    public void storeMathPlanResponses(final Cache cache, final RawStudent student, final String pageId,
-                                       final List<Integer> questions, final List<String> answers,
-                                       final ZonedDateTime now, final long loginSessionTag) throws SQLException {
+    public static void storeMathPlanResponses(final Cache cache, final RawStudent student, final String version,
+                                              final List<Integer> questions, final List<String> answers,
+                                              final ZonedDateTime now, final long loginSessionTag) throws SQLException {
 
-        final LocalDateTime when = now.toLocalDateTime();
-        final Integer finishTime = Integer.valueOf(TemporalUtils.minuteOfDay(when));
+        final int numQuestions = questions.size();
+        final int numAnswers = answers.size();
+        final int numResponses = Math.min(numQuestions, numAnswers);
 
-        final String aplnTermStr = student.aplnTerm == null ? null : student.aplnTerm.shortString;
+        final LocalDate examDt = now.toLocalDate();
+        final LocalTime examTm = now.toLocalTime();
+        final int minutes = TemporalUtils.minuteOfDay(examTm);
+        final Integer finish = Integer.valueOf(minutes);
 
-        // Dummy record to test for existing
-        RawStmathplan resp = new RawStmathplan(student.stuId, student.pidm, aplnTermStr, pageId, when.toLocalDate(),
-                MathPlanConstants.ZERO, CoreConstants.EMPTY, finishTime, Long.valueOf(loginSessionTag));
+        final Long tag = Long.valueOf(loginSessionTag);
+        final String appTerm = student.aplnTerm == null ? null : student.aplnTerm.shortString;
 
         // Query for any existing answers with the same date and finish time
-        final List<RawStmathplan> latest = RawStmathplanLogic.queryLatestByStudentPage(cache, student.stuId, pageId);
-        final LocalDate today = now.toLocalDate();
-        final Integer minutes = resp.finishTime;
+        final List<RawStmathplan> latest = RawStmathplanLogic.queryLatestByStudentPage(cache, student.stuId, version);
         final Iterator<RawStmathplan> iter = latest.iterator();
         while (iter.hasNext()) {
             final RawStmathplan test = iter.next();
-            if (today.equals(test.examDt) && minutes.equals(test.finishTime)) {
+            if (examDt.equals(test.examDt) && finish.equals(test.finishTime)) {
                 continue;
             }
             iter.remove();
         }
 
-        final int count = Math.min(questions.size(), answers.size());
-
-        for (int i = 0; i < count; ++i) {
-            final String ans = answers.get(i);
-            final Integer questionNum = questions.get(i);
-
-            resp = new RawStmathplan(student.stuId, student.pidm, aplnTermStr, pageId, when.toLocalDate(), questionNum,
-                    ans, finishTime, Long.valueOf(loginSessionTag));
+        for (int i = 0; i < numResponses; ++i) {
+            final Integer question = questions.get(i);
 
             // See if there is an existing answer at the same time
             RawStmathplan existing = null;
             for (final RawStmathplan test : latest) {
-                if (test.surveyNbr.equals(questionNum)) {
+                if (test.surveyNbr.equals(question)) {
                     existing = test;
                     break;
                 }
             }
 
-            if (ans == null) {
+            final String answer = answers.get(i);
+            if (answer == null) {
                 // Old record had answer, new does not, so delete old record
                 if (existing != null) {
                     RawStmathplanLogic.delete(cache, existing);
                 }
             } else {
-                RawStmathplanLogic.insert(cache, resp);
+                final RawStmathplan rec = new RawStmathplan(student.stuId, student.pidm, appTerm, version, examDt,
+                        question, answer, finish, tag);
+                RawStmathplanLogic.insert(cache, rec);
             }
         }
     }
 
     /**
-     * Main method to gather and print test data.
+     * Records a summary of the plan in the profile response table so advisers can view it quickly without having to
+     * rebuilt it for each advisee.
      *
-     * @param args command-line arguments
+     * @param cache           the data cache
+     * @param plan            the student's math plan
+     * @param now             the date/time to consider "now"
+     * @param loginSessionTag the login session tag
+     * @throws SQLException if there is an error accessing the database
      */
-    public static void main(final String... args) {
+    public static void recordPlan(final Cache cache, final StudentMathPlan plan, final ZonedDateTime now,
+                                  final long loginSessionTag) throws SQLException {
 
-        DbConnection.registerDrivers();
+        // Record only after student has checked the "only a recommendation" box
+        final Map<Integer, RawStmathplan> done = plan.stuStatus.onlyRecResponses;
+        ;
 
-        final DatabaseConfig config = DatabaseConfig.getDefault();
-        final Profile profile = config.getCodeProfile(Contexts.BATCH_PATH);
-        final Cache cache = new Cache(profile);
+        if (!done.isEmpty()) {
+            // NOTE: Historic data has 4 responses (pre-arrival, semester 1, semester 2, beyond).  This has been
+            // simplified to record just what the student should do before arrival to be ready for semester 1
 
-        try {
-            final String stuId = "888888888";
-            final StudentData studentData = cache.getStudent(stuId);
-            final RawStudent stu = studentData.getStudentRecord();
-            final String screenName = stu.getScreenName();
+            final String value1 = plan.nextStep.planText;
+            final String value2 = "(none)";
+            final String value3 = "(none)";
+            final String value4 = "(none)";
 
-            final MathPlanLogic logic = new MathPlanLogic(profile);
-            final ZonedDateTime now = ZonedDateTime.now();
-            final MathPlanStudentData data = new MathPlanStudentData(cache, stu, logic, now, 12345L, false);
+            final Map<Integer, RawStmathplan> existing = plan.stuStatus.planSummaryResponses;
 
-            final PlacementStatus mptStatus = data.placementStatus;
-            final String canUseUnproctored = mptStatus.allowedToUseUnproctored ? "Y" : "N";
-            final String isPlacementAttempted = mptStatus.placementAttempted ? "Y" : "N";
-            final String attemptsUsedStr = Integer.toString(mptStatus.attemptsUsed);
-            final String attemptsRemainingStr = Integer.toString(mptStatus.attemptsRemaining);
-            final String isUnproctoredUsed = mptStatus.unproctoredUsed ? "Y" : "N";
+            final RawStmathplan exist1 = existing.get(MathPlanConstants.ONE);
+            final RawStmathplan exist2 = existing.get(MathPlanConstants.TWO);
+            final RawStmathplan exist3 = existing.get(MathPlanConstants.THREE);
+            final RawStmathplan exist4 = existing.get(MathPlanConstants.FOUR);
 
-            Log.info("Student ", stuId, " (", screenName, ") placement status: ");
-            Log.info("    Available local proctored exams:  ", mptStatus.availableLocalProctoredIds);
-            Log.info("    Available online proctored exams: ", mptStatus.availableOnlineProctoredIds);
-            Log.info("    Available unproctored exams:      ", mptStatus.availableUnproctoredIds);
-            Log.info("    Allowed to use unproctored:       ", canUseUnproctored);
-            Log.info("    Why unproctored allowed:          ", mptStatus.whyUnproctoredAllowed);
-            Log.info("    Why unproctored unavailable:      ", mptStatus.whyUnproctoredUnavailable);
-            Log.info("    Has attempted placement:          ", isPlacementAttempted);
-            Log.info("    Placement attempts used:          ", attemptsUsedStr);
-            Log.info("    Placement attempts remaining:     ", attemptsRemainingStr);
-            Log.info("    Unproctored attempt used:         ", isUnproctoredUsed);
-            Log.info("    Why proctored unavailable:        ", mptStatus.whyProctoredUnavailable);
-            Log.info("    Short why proctored unavailable:  ", mptStatus.shortWhyProctoredUnavailable);
-            Log.info("    Unproctored date range:           ", mptStatus.unproctoredDateRanges);
-            Log.info("    Placed out of:                    ", mptStatus.placedOutOf);
-            Log.info("    Cleared for:                      ", mptStatus.clearedFor);
-            Log.info("    Earned credit for:                ", mptStatus.earnedCreditFor);
+            final boolean shouldInsertNew =
+                    exist1 == null || exist1.stuAnswer == null || !exist1.stuAnswer.equals(value1)
+                    || exist2 == null || exist2.stuAnswer == null || !exist2.stuAnswer.equals(value2)
+                    || exist3 == null || exist3.stuAnswer == null || !exist3.stuAnswer.equals(value3)
+                    || exist4 == null || exist4.stuAnswer == null || !exist4.stuAnswer.equals(value4);
 
-            final String viewedExisting = data.viewedExisting ? "Y" : "N";
-            final String checkedRecommendation = data.checkedOnlyRecommendation ? "Y" : "N";
-            final Map<Integer, RawStmathplan> majorResponses = data.getMajorProfileResponses();
-            final Map<Integer, RawStmathplan> intentions = data.getIntentions();
-            final List<LiveCsuCredit> completed = data.getCompletedCourses();
-            final List<LiveTransferCredit> transferCredit = data.getLiveTransferCredit();
-            final List<RawMpeCredit> placementCred = data.getPlacementCredit();
-            final List<Major> majors = data.getMajors();
-            final Set<String> eligibleFor = data.getCanRegisterFor();
-            final Set<String> eligibleForDoesNotHave = data.getCanRegisterForAndDoesNotHave();
-            final String bOrBetter124 = data.hasBOrBetterIn124() ? "Y" : "N";
-            final String bOrBetter126 = data.hasBOrBetterIn126() ? "Y" : "N";
-            final double creditsOfCoreCompleted = data.getCreditsOfCoreCompleted();
-            final String coreCompleted = Double.toString(creditsOfCoreCompleted);
+            if (shouldInsertNew) {
+                final List<Integer> questions = new ArrayList<>(4);
+                final List<String> answers = new ArrayList<>(4);
 
-            Log.info("Student ", stuId, " (", screenName, ") Math Plan status: ");
-            Log.info("    Major Profile Responses:       ", majorResponses);
-            Log.info("    Viewed existing:               ", viewedExisting);
-            Log.info("    Checked 'only recommendation': ", checkedRecommendation);
-            Log.info("    Stated Intentions:             ", intentions);
-            Log.info("    Completed:                     ", completed);
-            Log.info("    Transfer:                      ", transferCredit);
-            Log.info("    Math Placement credit:         ", placementCred);
-            Log.info("    Majors:                        ", majors);
-            Log.info("    Recommended Eligibility:       ", data.recommendedEligibility);
-            Log.info("    Credits of Core Completed:     ", coreCompleted);
-            Log.info("    Next step:                     ", data.nextStep);
-            Log.info("    Can register for:              ", eligibleFor);
-            Log.info("    Can register for doesn't have: ", eligibleForDoesNotHave);
-            Log.info("    B- or better in MATH 124:      ", bOrBetter124);
-            Log.info("    B- or better in MATH 126:      ", bOrBetter126);
+                questions.add(MathPlanConstants.ONE);
+                questions.add(MathPlanConstants.TWO);
+                questions.add(MathPlanConstants.THREE);
+                questions.add(MathPlanConstants.FOUR);
+                answers.add(value1);
+                answers.add(value2);
+                answers.add(value3);
+                answers.add(value4);
 
-        } catch (final SQLException ex) {
-            Log.warning(ex);
+                final RawStudent student = plan.stuStatus.student;
+
+                storeMathPlanResponses(cache, student, MathPlanConstants.PLAN_PROFILE, questions, answers, now,
+                        loginSessionTag);
+            }
         }
     }
 }

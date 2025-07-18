@@ -34,7 +34,7 @@ import java.util.Set;
  * re-used on subsequent page loads, since this data is unlikely to change rapidly. If an update is made to the data by
  * the site (like the list of majors of interest), the cache is updated at the same time.
  */
-public final class MathPlanStudentData {
+public final class XMathPlanStudentData {
 
     /** Retain data for 60 seconds (adjust as needed). */
     private static final long RETENTION_MS = 60 * 1000;
@@ -158,8 +158,8 @@ public final class MathPlanStudentData {
      *                        a student)
      * @throws SQLException if there is an error accessing the database
      */
-    public MathPlanStudentData(final Cache cache, final RawStudent theStudent, final MathPlanLogic logic,
-                               final ZonedDateTime now, final long loginSessionTag, final boolean writeChanges)
+    public XMathPlanStudentData(final Cache cache, final RawStudent theStudent, final XMathPlanLogic logic,
+                                final ZonedDateTime now, final long loginSessionTag, final boolean writeChanges)
             throws SQLException {
 
         this.expiry = System.currentTimeMillis() + RETENTION_MS;
@@ -228,7 +228,7 @@ public final class MathPlanStudentData {
      * rows with placed='C' in the placement credit list (where dt_cr_refused is null). So we do count such placement
      * records. This avoids the delay that the 550 section can have in getting onto the student's transcript.
      */
-    private void countCoreCredits(final MathPlanLogic logic) {
+    private void countCoreCredits(final XMathPlanLogic logic) {
 
         final List<String> coreCourses = Arrays.asList(MathPlanConstants.M_101, MathPlanConstants.M_105,
                 MathPlanConstants.S_100, MathPlanConstants.M_117, MathPlanConstants.M_118, MathPlanConstants.M_120,
@@ -699,10 +699,11 @@ public final class MathPlanStudentData {
 
         boolean hasPure160 = false;
         for (final Major major : this.majors) {
-            if (major.idealEligibility.size() == 1 && major.idealEligibility.contains(ERequirement.M_160)) {
-                hasPure160 = true;
-            }
-            set.addAll(major.idealEligibility);
+            // FIXME:
+//            if (major.idealEligibility.size() == 1 && major.idealEligibility.contains(ERequirement.M_160)) {
+//                hasPure160 = true;
+//            }
+//            set.addAll(major.idealEligibility);
         }
 
         if (hasPure160) {
@@ -719,9 +720,9 @@ public final class MathPlanStudentData {
             set.remove(ERequirement.M_155);
         }
 
-        set.remove(ERequirement.AUCC);
+        set.remove(ERequirement.CORE_ONLY);
         if (set.isEmpty()) {
-            set.add(ERequirement.AUCC);
+            set.add(ERequirement.CORE_ONLY);
         }
 
         return set;
@@ -753,24 +754,25 @@ public final class MathPlanStudentData {
             result = makePlan155();
 
             // Below here does not need Calculus (no majors need MATh 141 at the moment)
-        } else if (this.recommendedEligibility.contains(ERequirement.M_126)) {
-            if (this.recommendedEligibility.contains(ERequirement.M_124)) {
-                result = makePlan124_126();
-            } else {
-                result = makePlan126();
-            }
-        } else if (this.recommendedEligibility.contains(ERequirement.M_124)) {
-            if (this.recommendedEligibility.contains(ERequirement.M_125)) {
-                result = makePlan124_125();
-            } else {
-                result = makePlan124();
-            }
-        } else if (this.recommendedEligibility.contains(ERequirement.M_125)) {
-            result = makePlan125();
-        } else if (this.recommendedEligibility.contains(ERequirement.M_118)) {
-            result = makePlan118();
-        } else if (this.recommendedEligibility.contains(ERequirement.M_117)) {
-            result = makePlan117();
+            // FIXME
+//        } else if (this.recommendedEligibility.contains(ERequirement.M_126)) {
+//            if (this.recommendedEligibility.contains(ERequirement.M_124)) {
+//                result = makePlan124_126();
+//            } else {
+//                result = makePlan126();
+//            }
+//        } else if (this.recommendedEligibility.contains(ERequirement.M_124)) {
+//            if (this.recommendedEligibility.contains(ERequirement.M_125)) {
+//                result = makePlan124_125();
+//            } else {
+//                result = makePlan124();
+//            }
+//        } else if (this.recommendedEligibility.contains(ERequirement.M_125)) {
+//            result = makePlan125();
+//        } else if (this.recommendedEligibility.contains(ERequirement.M_118)) {
+//            result = makePlan118();
+//        } else if (this.recommendedEligibility.contains(ERequirement.M_117)) {
+//            result = makePlan117();
         } else {
             result = ENextStep.MSG_PLACEMENT_NOT_NEEDED;
         }
@@ -1292,7 +1294,7 @@ public final class MathPlanStudentData {
      * @param loginSessionTag the login session tag
      * @throws SQLException if there is an error accessing the database
      */
-    public void recordPlan(final Cache cache, final MathPlanLogic logic, final ZonedDateTime now,
+    public void recordPlan(final Cache cache, final XMathPlanLogic logic, final ZonedDateTime now,
                            final String stuId, final long loginSessionTag) throws SQLException {
 
         // Record only after student has checked the "only a recommendation" box

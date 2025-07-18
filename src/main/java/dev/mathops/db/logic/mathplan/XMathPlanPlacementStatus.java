@@ -17,7 +17,7 @@ import java.util.Map;
 /**
  * A container for status of Math Placement relative to a Math Plan.
  */
-public class MathPlanPlacementStatus {
+public class XMathPlanPlacementStatus {
 
     /** True if student has completed the Math Plan and plan indicates placement is needed. */
     public final boolean isPlacementNeeded;
@@ -34,7 +34,7 @@ public class MathPlanPlacementStatus {
      *     <li>Placement requirement satisfied by course credit</li>
      * </ul>
      */
-    public final EHowSatisfiedPlacement howSatisfied;
+    public final XEHowSatisfiedPlacement howSatisfied;
 
     /**
      * Constructs a new {@code MathPlanPlacementStatus}
@@ -44,8 +44,8 @@ public class MathPlanPlacementStatus {
      *                           is not needed)
      * @param how                f placement requirement has been satisfied, how.  One of the following
      */
-    public MathPlanPlacementStatus(final boolean placementNeeded, final boolean placementSatisfied,
-                                   final EHowSatisfiedPlacement how) {
+    public XMathPlanPlacementStatus(final boolean placementNeeded, final boolean placementSatisfied,
+                                    final XEHowSatisfiedPlacement how) {
 
         this.isPlacementNeeded = placementNeeded;
         this.isPlacementComplete = placementSatisfied;
@@ -60,7 +60,7 @@ public class MathPlanPlacementStatus {
      * @return the student's math placement status
      * @throws SQLException if there is an error accessing the database
      */
-    public static MathPlanPlacementStatus getMathPlacementStatus(final Cache cache, final String studentId)
+    public static XMathPlanPlacementStatus getMathPlacementStatus(final Cache cache, final String studentId)
             throws SQLException {
 
         boolean planSaysPlacementNeeded;
@@ -68,7 +68,7 @@ public class MathPlanPlacementStatus {
         boolean satisfiedByTransfer = false;
         boolean satisfiedByCourse = false;
 
-        final Map<Integer, RawStmathplan> planResponses = MathPlanStudentData.getMathPlanResponses(cache, studentId,
+        final Map<Integer, RawStmathplan> planResponses = XMathPlanStudentData.getMathPlanResponses(cache, studentId,
                 MathPlanConstants.PLAN_PROFILE);
 
         // See of their latest recommendation was "3 cr. of Core Math*"
@@ -137,17 +137,17 @@ public class MathPlanPlacementStatus {
             }
         }
 
-        final MathPlanPlacementStatus result;
+        final XMathPlanPlacementStatus result;
 
         if (satisfiedByPlacement) {
-            result = new MathPlanPlacementStatus(planSaysPlacementNeeded, true,
-                    EHowSatisfiedPlacement.MATH_PLACEMENT_COMPLETED);
+            result = new XMathPlanPlacementStatus(planSaysPlacementNeeded, true,
+                    XEHowSatisfiedPlacement.MATH_PLACEMENT_COMPLETED);
         } else if (satisfiedByTransfer) {
-            result = new MathPlanPlacementStatus(planSaysPlacementNeeded, true, EHowSatisfiedPlacement.TRANSFER_CREDIT);
+            result = new XMathPlanPlacementStatus(planSaysPlacementNeeded, true, XEHowSatisfiedPlacement.TRANSFER_CREDIT);
         } else if (satisfiedByCourse) {
-            result = new MathPlanPlacementStatus(planSaysPlacementNeeded, true, EHowSatisfiedPlacement.COURSE_CREDIT);
+            result = new XMathPlanPlacementStatus(planSaysPlacementNeeded, true, XEHowSatisfiedPlacement.COURSE_CREDIT);
         } else {
-            result = new MathPlanPlacementStatus(planSaysPlacementNeeded, false, null);
+            result = new XMathPlanPlacementStatus(planSaysPlacementNeeded, false, null);
         }
 
         return result;
