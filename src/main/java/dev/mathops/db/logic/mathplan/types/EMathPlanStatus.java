@@ -1,4 +1,4 @@
-package dev.mathops.db.logic.mathplan;
+package dev.mathops.db.logic.mathplan.types;
 
 /**
  * The status of a student with respect to the Math Plan.

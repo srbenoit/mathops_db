@@ -322,7 +322,7 @@ public final class BulkUpdateMPLTestScores {
                         if (latest1.containsKey(stuId)) {
                             if (plan.stuStatus.isPlacementCompleted()) {
                                 wantValue = "1";
-                            } else if (plan.isPlacementNeeded) {
+                            } else if (plan.nextSteps.placementNeeded) {
                                 wantValue = "2";
                             } else {
                                 wantValue = "1";

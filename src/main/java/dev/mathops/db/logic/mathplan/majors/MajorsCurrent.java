@@ -1,4 +1,7 @@
-package dev.mathops.db.logic.mathplan;
+package dev.mathops.db.logic.mathplan.majors;
+
+import dev.mathops.db.logic.mathplan.types.ERequirement;
+import dev.mathops.db.logic.mathplan.MathPlanConstants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -1220,7 +1223,7 @@ public final class MajorsCurrent {
      * @param programCode the program code
      * @return the major; {@code null} if none matches the program code
      */
-    Major getMajor(final String programCode) {
+    public Major getMajor(final String programCode) {
 
         Major result = null;
 

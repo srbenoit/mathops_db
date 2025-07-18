@@ -1,5 +1,7 @@
 package dev.mathops.db.logic.mathplan;
 
+import dev.mathops.db.logic.mathplan.types.ENextStep;
+
 /**
  * A Math Plan for a single student.
  */
@@ -9,7 +11,7 @@ public class StudentMathPlan {
     public final StudentStatus stuStatus;
 
     /** the collective requirements the student should satisfy based on their selected majors. */
-    public final MajorSetRequirements requirements;
+    public final Requirements requirements;
 
     /**
      * A student's "recommended trajectory" through Mathematics courses to try to satisfy the requirements for any of
@@ -17,11 +19,8 @@ public class StudentMathPlan {
      */
     public final RecommendedTrajectory trajectory;
 
-    /** A flag to indicate Math Placement is needed. */
-    public final boolean isPlacementNeeded;
-
-    /** The student's recommended next step. */
-    public final ENextStep nextStep;
+    /** The student's recommended next steps. */
+    public final NextSteps nextSteps;
 
     /**
      * Constructs a new {@code StudentMathPlan} from a collection of major requirements.  This constructor is used when
@@ -30,19 +29,17 @@ public class StudentMathPlan {
      * @param theStuStatus    the student's current status (completed courses, transfer credit, placement credit)
      * @param theRequirements the collective requirements the student should satisfy based on their selected majors
      */
-    StudentMathPlan(final StudentStatus theStuStatus, final MajorSetRequirements theRequirements) {
+    StudentMathPlan(final StudentStatus theStuStatus, final Requirements theRequirements) {
 
         this.stuStatus = theStuStatus;
         this.requirements = theRequirements;
 
         if (theRequirements.coreOnly) {
             this.trajectory = null;
-            this.isPlacementNeeded = false;
-            this.nextStep = ENextStep.MSG_PLACEMENT_NOT_NEEDED;
+            this.nextSteps = new NextSteps();
         } else {
             this.trajectory = new RecommendedTrajectory(theStuStatus, theRequirements);
-            this.isPlacementNeeded = this.trajectory.isPlacementNeeded();
-            this.nextStep = this.trajectory.computeNextStep();
+            this.nextSteps = new NextSteps(theStuStatus, this.trajectory);
         }
     }
 }

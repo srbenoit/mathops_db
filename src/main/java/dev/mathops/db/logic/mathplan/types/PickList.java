@@ -1,4 +1,4 @@
-package dev.mathops.db.logic.mathplan;
+package dev.mathops.db.logic.mathplan.types;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,7 +13,7 @@ public final class PickList {
     public int numCredits;
 
     /** The courses from which to select. */
-    public final List<EPrecalcCourse> courses;
+    public final List<ECourse> courses;
 
     /**
      * Constructs a new {@code PickList}
@@ -21,7 +21,7 @@ public final class PickList {
      * @param theNumCredits the number of credits
      * @param theCourses    the courses
      */
-    PickList(final int theNumCredits, final EPrecalcCourse... theCourses) {
+    public PickList(final int theNumCredits, final ECourse... theCourses) {
 
         this.numCredits = theNumCredits;
 
@@ -33,10 +33,36 @@ public final class PickList {
     /**
      * Removes a course from the pick list and (if that course was actually in the list), decreases the number of
      * credits remaining to be completed by the number of credits of the removed course.
+     *
+     * @param course the course to remove
      */
-    void remove(final EPrecalcCourse course) {
+    public void remove(final ECourse course) {
+
         if (this.courses.remove(course)) {
             this.numCredits -= course.credits;
         }
+    }
+
+    /**
+     * Gets the "lowest" course in the pick list, using ordinal order in the ECourse enumeration as the metric.
+     *
+     * @return the "lowest" course
+     */
+    public ECourse getLowest() {
+
+        ECourse lowest;
+
+        if (this.courses.isEmpty()) {
+            lowest = ECourse.NONE;
+        } else {
+            lowest = this.courses.getFirst();
+            for (final ECourse test : this.courses) {
+                if (test.ordinal() < lowest.ordinal()) {
+                    lowest = test;
+                }
+            }
+        }
+
+        return lowest;
     }
 }

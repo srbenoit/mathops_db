@@ -1,4 +1,4 @@
-package dev.mathops.db.logic.mathplan;
+package dev.mathops.db.logic.mathplan.majors;
 
 /**
  * A utility class to look up majors.

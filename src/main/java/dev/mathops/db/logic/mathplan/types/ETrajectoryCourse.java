@@ -1,4 +1,4 @@
-package dev.mathops.db.logic.mathplan;
+package dev.mathops.db.logic.mathplan.types;
 
 /**
  * The status if a single course in a course trajectory.

@@ -3,6 +3,9 @@ package dev.mathops.db.logic.mathplan;
 import dev.mathops.commons.TemporalUtils;
 import dev.mathops.db.Cache;
 import dev.mathops.db.logic.StudentData;
+import dev.mathops.db.logic.mathplan.types.EMathPlanStatus;
+import dev.mathops.db.logic.mathplan.majors.Major;
+import dev.mathops.db.logic.mathplan.majors.Majors;
 import dev.mathops.db.old.rawlogic.RawStmathplanLogic;
 import dev.mathops.db.old.rawrecord.RawStmathplan;
 import dev.mathops.db.old.rawrecord.RawStudent;
@@ -39,7 +42,7 @@ public enum MathPlanLogic {
                                                final Collection<Major> majors) throws SQLException {
 
         final StudentStatus stuStatus = new StudentStatus(cache, studentId);
-        final MajorSetRequirements requirements = new MajorSetRequirements(majors, stuStatus);
+        final Requirements requirements = new Requirements(majors, stuStatus);
 
         return new StudentMathPlan(stuStatus, requirements);
     }
@@ -124,7 +127,7 @@ public enum MathPlanLogic {
         }
 
         final StudentStatus stuStatus = new StudentStatus(cache, studentId);
-        final MajorSetRequirements requirements = new MajorSetRequirements(majors, stuStatus);
+        final Requirements requirements = new Requirements(majors, stuStatus);
 
         return new StudentMathPlan(stuStatus, requirements);
     }
@@ -215,7 +218,7 @@ public enum MathPlanLogic {
             // NOTE: Historic data has 4 responses (pre-arrival, semester 1, semester 2, beyond).  This has been
             // simplified to record just what the student should do before arrival to be ready for semester 1
 
-            final String value1 = plan.nextStep.planText;
+            final String value1 = plan.nextSteps.nextStep.planText;
             final String value2 = "(none)";
             final String value3 = "(none)";
             final String value4 = "(none)";

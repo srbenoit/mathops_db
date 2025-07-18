@@ -1,4 +1,4 @@
-package dev.mathops.db.logic.mathplan;
+package dev.mathops.db.logic.mathplan.types;
 
 /**
  * Possible next steps for a student.

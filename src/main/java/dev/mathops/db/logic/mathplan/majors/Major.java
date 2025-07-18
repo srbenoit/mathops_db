@@ -1,4 +1,6 @@
-package dev.mathops.db.logic.mathplan;
+package dev.mathops.db.logic.mathplan.majors;
+
+import dev.mathops.db.logic.mathplan.types.ERequirement;
 
 import java.util.Arrays;
 import java.util.List;
@@ -32,8 +34,8 @@ public final class Major implements Comparable<Major> {
      * @param theCatalogPageUrl  the URL to a descriptive page for the major
      * @param theRequirements    the  required math courses in the major
      */
-    Major(final int[] theQuestionNumbers, final String[] theProgramCodes,
-          final String theProgramName, final String theCatalogPageUrl, final ERequirement theRequirements) {
+    public Major(final int[] theQuestionNumbers, final String[] theProgramCodes,
+                 final String theProgramName, final String theCatalogPageUrl, final ERequirement theRequirements) {
 
         this.questionNumbers = theQuestionNumbers.clone();
         this.programCodes = Arrays.asList(theProgramCodes);

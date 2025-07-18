@@ -1,4 +1,7 @@
-package dev.mathops.db.logic.mathplan;
+package dev.mathops.db.logic.mathplan.majors;
+
+import dev.mathops.db.logic.mathplan.types.ERequirement;
+import dev.mathops.db.logic.mathplan.MathPlanConstants;
 
 import java.util.ArrayList;
 import java.util.List;
