@@ -1,8 +1,8 @@
 package dev.mathops.db.logic.mathplan;
 
+import dev.mathops.db.logic.mathplan.majors.Major;
 import dev.mathops.db.logic.mathplan.types.ECourse;
 import dev.mathops.db.logic.mathplan.types.ERequirement;
-import dev.mathops.db.logic.mathplan.majors.Major;
 import dev.mathops.db.logic.mathplan.types.PickList;
 import dev.mathops.db.old.rawrecord.RawRecordConstants;
 
@@ -34,6 +34,9 @@ public final class Requirements {
     /** A flag indicating the student will need placement or a B- or higher in MATH 124 and 126. */
     boolean needsBMinusIn2426;
 
+    /** The recommended first term eligibility. */
+    public final RecommendedFirstTerm firstTerm;
+
     /**
      * Constructs a {@code Requirements} object that indicates nothing is required.
      */
@@ -46,6 +49,8 @@ public final class Requirements {
         this.namedCalculusRequirement = ECourse.NONE;
         this.pickLists = new ArrayList<>(0);
         this.needsBMinusIn2426 = false;
+
+        this.firstTerm = new RecommendedFirstTerm(new ArrayList<>(0));
     }
 
     /**
@@ -54,7 +59,7 @@ public final class Requirements {
      * @param majors    the collection of majors
      * @param stuStatus the student's current status (used to adjust pick lists based on coursework already completed)
      */
-    Requirements(final Iterable<Major> majors, final StudentStatus stuStatus) {
+    Requirements(final Collection<Major> majors, final StudentStatus stuStatus) {
 
         this.namedPrecalculus = EnumSet.noneOf(ECourse.class);
         this.implicitCourses = EnumSet.noneOf(ECourse.class);
@@ -72,6 +77,8 @@ public final class Requirements {
             this.pickLists = new ArrayList<>(3);
             generatePickLists(majors, stuStatus);
         }
+
+        this.firstTerm = new RecommendedFirstTerm(majors);
     }
 
     /**

@@ -5,6 +5,7 @@ import dev.mathops.db.logic.StudentData;
 import dev.mathops.db.logic.mathplan.types.ECourse;
 import dev.mathops.db.old.rawrecord.RawFfrTrns;
 import dev.mathops.db.old.rawrecord.RawMpeCredit;
+import dev.mathops.db.old.rawrecord.RawRecordConstants;
 import dev.mathops.db.old.rawrecord.RawStcourse;
 import dev.mathops.db.old.rawrecord.RawStmathplan;
 import dev.mathops.db.old.rawrecord.RawStmpe;
@@ -12,6 +13,7 @@ import dev.mathops.db.old.rawrecord.RawStudent;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -140,6 +142,72 @@ public final class StudentStatus {
         }
 
         return completed;
+    }
+
+    /**
+     * Counts the number of credits of AUCC core that have been completed.
+     *
+     * @return the number of credits
+     */
+    public int getCreditsOfCoreCompleted() {
+
+        // FIXME: We are not tracking credit count in FFR_TRNS - sometimes a different number of credits are used
+        //  in transfer courses, and we really need to have that data to do an accurate count here.
+
+        // FIXME: This does not track CSU completions of Calculus courses or non-MATH core courses.
+
+        int credits = 0;
+
+        final EnumSet<ECourse> done = EnumSet.noneOf(ECourse.class);
+
+        for (final RawStcourse course : this.completedCourses) {
+            final ECourse match = findMatch(course.course);
+
+            if (match != null && !done.contains(match)) {
+                credits += match.credits;
+                done.add(match);
+            }
+        }
+
+        for (final RawFfrTrns transfer : this.transferCredit) {
+            final ECourse match = findMatch(transfer.course);
+
+            if (match != null && !done.contains(match)) {
+                credits += match.credits;
+                done.add(match);
+            }
+        }
+
+        return credits;
+    }
+
+    /**
+     * Finds the {@code ECourse} corresponding to a course ID.
+     *
+     * @param id the course ID
+     * @return the {@code ECourse}, null if none found
+     */
+    private static ECourse findMatch(final String id) {
+
+        ECourse match = null;
+
+        if (RawRecordConstants.M117.equals(id)) {
+            match = ECourse.M_117;
+        } else if (RawRecordConstants.M118.equals(id)) {
+            match = ECourse.M_118;
+        } else if (RawRecordConstants.M124.equals(id)) {
+            match = ECourse.M_124;
+        } else if (RawRecordConstants.M125.equals(id)) {
+            match = ECourse.M_125;
+        } else if (RawRecordConstants.M126.equals(id)) {
+            match = ECourse.M_126;
+        } else if (RawRecordConstants.M120.equals(id)) {
+            match = ECourse.M_120;
+        } else if (RawRecordConstants.M127.equals(id)) {
+            match = ECourse.M_127;
+        }
+
+        return match;
     }
 
     /**

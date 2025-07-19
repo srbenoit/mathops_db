@@ -31,6 +31,8 @@ public final class RecommendedTrajectory {
     /** True to include the option to take MATH 120 rather than 117+118+124. */
     public boolean include120Option = false;
 
+
+
     /**
      * Constructs a new {@code RecommendedTrajectory}.
      *

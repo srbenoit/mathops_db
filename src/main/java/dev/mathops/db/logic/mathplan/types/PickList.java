@@ -1,6 +1,7 @@
 package dev.mathops.db.logic.mathplan.types;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -31,16 +32,31 @@ public final class PickList {
     }
 
     /**
+     * Constructs a new {@code PickList}
+     *
+     * @param theNumCredits the number of credits
+     * @param theCourses    the courses
+     */
+    public PickList(final int theNumCredits, final Collection<ECourse> theCourses) {
+
+        this.numCredits = theNumCredits;
+        this.courses = new ArrayList<>(theCourses);
+    }
+
+    /**
      * Removes a course from the pick list and (if that course was actually in the list), decreases the number of
      * credits remaining to be completed by the number of credits of the removed course.
      *
      * @param course the course to remove
+     * @return the number of credits left in the pick list after the removal
      */
-    public void remove(final ECourse course) {
+    public int remove(final ECourse course) {
 
         if (this.courses.remove(course)) {
             this.numCredits -= course.credits;
         }
+
+        return this.numCredits;
     }
 
     /**

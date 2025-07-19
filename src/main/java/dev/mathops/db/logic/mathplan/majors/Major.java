@@ -1,6 +1,7 @@
 package dev.mathops.db.logic.mathplan.majors;
 
 import dev.mathops.db.logic.mathplan.types.ERequirement;
+import dev.mathops.db.logic.mathplan.types.IdealFirstTerm;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,6 +26,9 @@ public final class Major implements Comparable<Major> {
     /** The Math requirements for the major. */
     public final ERequirement requirements;
 
+    /** The "ideal" courses in which a student would enroll in their first term. */
+    public final IdealFirstTerm idealFirstTerm;
+
     /**
      * Constructs a new {@code Major}.
      *
@@ -33,15 +37,18 @@ public final class Major implements Comparable<Major> {
      * @param theProgramName     the name of the major (displayed in the major selection page)
      * @param theCatalogPageUrl  the URL to a descriptive page for the major
      * @param theRequirements    the  required math courses in the major
+     * @param theIdealFirstTerm  the "ideal" courses for which student will be eligible in the first semester
      */
-    public Major(final int[] theQuestionNumbers, final String[] theProgramCodes,
-                 final String theProgramName, final String theCatalogPageUrl, final ERequirement theRequirements) {
+    Major(final int[] theQuestionNumbers, final String[] theProgramCodes, final String theProgramName,
+          final String theCatalogPageUrl, final ERequirement theRequirements,
+          final IdealFirstTerm theIdealFirstTerm) {
 
         this.questionNumbers = theQuestionNumbers.clone();
         this.programCodes = Arrays.asList(theProgramCodes);
         this.programName = theProgramName;
         this.catalogPageUrl = theCatalogPageUrl;
         this.requirements = theRequirements;
+        this.idealFirstTerm = theIdealFirstTerm;
     }
 
     /**

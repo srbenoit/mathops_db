@@ -1,28 +1,31 @@
 package dev.mathops.db.logic.mathplan.majors;
 
-import dev.mathops.db.logic.mathplan.types.ERequirement;
 import dev.mathops.db.logic.mathplan.MathPlanConstants;
+import dev.mathops.db.logic.mathplan.types.ERequirement;
+import dev.mathops.db.logic.mathplan.types.IdealFirstTerm;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * An immutable record of all current majors from the latest catalog.
+ *
+ * <p>
+ * NOTE: as majors are added, if any new "ideal first term" sets are defined, check the logic in "RecommendedFirstTerm"
+ * to ensure combinations are being treated correctly.
  */
-public final class MajorsCurrent {
+public final class MajorsCurrent extends MajorsBase {
 
     /** The single instance. */
     public static final MajorsCurrent INSTANCE = new MajorsCurrent();
-
-    /** The list of all majors. */
-    private final List<Major> majors;
 
     /**
      * Constructs a new {@code MajorsCurrent}.
      */
     private MajorsCurrent() {
 
-        this.majors = new ArrayList<>(150);
+        super(150);
+
+        final List<Major> majors = innerGetMajors();
 
         // *** Last reviewed July 16, 2025, from the 2025-2026 Catalog. ***
 
@@ -40,16 +43,18 @@ public final class MajorsCurrent {
                 new String[]{"AGBU-BS", "AGBU-AECZ-BS"},
                 "Agricultural Business (General or Agricultural Economics)",
                 MathPlanConstants.PGMS + "agricultural-business/",
-                ERequirement.M_117_118_124_141);
-        this.majors.add(mAGBU1);
+                ERequirement.M_117_118_124_141,
+                IdealFirstTerm.IDEAL_171824);
+        majors.add(mAGBU1);
 
         final Major mAGBU2 = new Major(
                 new int[]{1000, 1002, 1003},
                 new String[]{"AGBU-BS", "AGBU-FRCZ-BS", "AGBU-FSSZ-BS"},
                 "Agricultural Business (Farm &amp; Ranch Mgt., Food Systems)",
                 MathPlanConstants.PGMS + "agricultural-business/",
-                ERequirement.M_117_118_124);
-        this.majors.add(mAGBU2);
+                ERequirement.M_117_118_124,
+                IdealFirstTerm.IDEAL_171824);
+        majors.add(mAGBU2);
 
         // *** Major in Agricultural Education
         // 1011: AGED-AGLZ-BS, Agricultural Education - Agricultural Literacy
@@ -60,8 +65,9 @@ public final class MajorsCurrent {
                 new String[]{"AGED-BS", "AGED-AGLZ-BS", "AGED-TDLZ-BS"},
                 "Agricultural Education",
                 MathPlanConstants.PGMS + "agricultural-education/",
-                ERequirement.PICK_3CR_117_118_124_120);
-        this.majors.add(mAGED);
+                ERequirement.PICK_3CR_117_118_124_120,
+                IdealFirstTerm.IDEAL_171824);
+        majors.add(mAGED);
 
         // *** Major in Animal Science
 
@@ -70,8 +76,9 @@ public final class MajorsCurrent {
                 new String[]{"ANIM-BS"},
                 "Animal Science",
                 MathPlanConstants.PGMS + "animal-science/",
-                ERequirement.PICK_3CR_117_118_124_120_125_126_141_155);
-        this.majors.add(mANIM);
+                ERequirement.PICK_3CR_117_118_124_120_125_126_141_155,
+                IdealFirstTerm.IDEAL_171824);
+        majors.add(mANIM);
 
         // *** Major in Environmental and Natural Resource Economics
 
@@ -80,8 +87,9 @@ public final class MajorsCurrent {
                 new String[]{"ENRE-BS"},
                 "Environmental and Natural Resource Economics",
                 MathPlanConstants.PGMS + "environmental-and-natural-resource-economics/",
-                ERequirement.M_117_118_124_141);
-        this.majors.add(mENRE);
+                ERequirement.M_117_118_124_141,
+                IdealFirstTerm.IDEAL_171824);
+        majors.add(mENRE);
 
         // *** Major in Environmental Horticulture
         // 1041: DEACTIVATED
@@ -94,16 +102,18 @@ public final class MajorsCurrent {
                 new String[]{"ENHR-BS", "ENHR-NALZ-BS", "ENHR-TURZ-BS"},
                 "Environmental Horticulture (General)",
                 MathPlanConstants.PGMS + "environmental-horticulture/",
-                ERequirement.M_117_118_124);
-        this.majors.add(mENHR1);
+                ERequirement.M_117_118_124,
+                IdealFirstTerm.IDEAL_171824);
+        majors.add(mENHR1);
 
         final Major mENH2 = new Major(
                 new int[]{1042},
                 new String[]{"ENHR-LDAZ-BS"},
                 "Environmental Horticulture (Landscape Design &amp; Contracting)",
                 MathPlanConstants.PGMS + "environmental-horticulture/",
-                ERequirement.M_117_118_125);
-        this.majors.add(mENH2);
+                ERequirement.M_117_118_125,
+                IdealFirstTerm.IDEAL_171825);
+        majors.add(mENH2);
 
         // *** Major in Equine Science
 
@@ -112,8 +122,9 @@ public final class MajorsCurrent {
                 new String[]{"EQSC-BS"},
                 "Equine Science",
                 MathPlanConstants.PGMS + "equine-science/",
-                ERequirement.PICK_3CR_117_118_124_120_125_126_141_155);
-        this.majors.add(mEQSC);
+                ERequirement.PICK_3CR_117_118_124_120_125_126_141_155,
+                IdealFirstTerm.IDEAL_171824);
+        majors.add(mEQSC);
 
         // *** Major in Horticulture
         // 1061: DEACTIVATED
@@ -128,16 +139,18 @@ public final class MajorsCurrent {
                 new String[]{"HORT-BS", "HORT-HBMZ-BS", "HORT-HFCZ-BS", "HORT-CEHZ-BS"},
                 "Horticulture (General)",
                 MathPlanConstants.PGMS + "horticulture/",
-                ERequirement.M_117_118_124);
-        this.majors.add(mHORT1);
+                ERequirement.M_117_118_124,
+                IdealFirstTerm.IDEAL_171824);
+        majors.add(mHORT1);
 
         final Major mHORT2 = new Major(
                 new int[]{1064},
                 new String[]{"HORT-HOSZ-BS"},
                 "Horticulture (Horticultural Science)",
                 MathPlanConstants.PGMS + "horticulture/",
-                ERequirement.M_124_125_126_155);
-        this.majors.add(mHORT2);
+                ERequirement.M_124_125_126_155,
+                IdealFirstTerm.IDEAL_242526);
+        majors.add(mHORT2);
 
         // *** Major in Landscape Architecture
 
@@ -146,8 +159,9 @@ public final class MajorsCurrent {
                 new String[]{"LDAR-BS"},
                 "Landscape Architecture",
                 MathPlanConstants.PGMS + "landscape-architecture/",
-                ERequirement.M_126);
-        this.majors.add(mLDAR);
+                ERequirement.M_126,
+                IdealFirstTerm.IDEAL_17182526);
+        majors.add(mLDAR);
 
         // *** Major in Livestock Business Management
 
@@ -156,8 +170,9 @@ public final class MajorsCurrent {
                 new String[]{"LSBM-BS", "LSBM-ASCZ-BS", "LSBM-LMTZ-BS"},
                 "Livestock Business Management",
                 MathPlanConstants.PGMS + "livestock-business-management/",
-                ERequirement.M_117_118_124);
-        this.majors.add(mLSBM);
+                ERequirement.M_117_118_124,
+                IdealFirstTerm.IDEAL_171824);
+        majors.add(mLSBM);
 
         // *** Major in Soil and Crop Sciences
         // 1081: DEACTIVATED
@@ -175,21 +190,25 @@ public final class MajorsCurrent {
                 new String[]{"SOCR-BS", "SOCR-PBTZ-BS", "SOCR-SESZ-BS", "SOCR-SAMZ-BS"},
                 "Soil and Crop Sciences",
                 MathPlanConstants.PGMS + "soil-and-crop-sciences/",
-                ERequirement.M_117_118_124);
-        this.majors.add(mSOCR);
+                ERequirement.M_117_118_124,
+                IdealFirstTerm.IDEAL_171824);
+        majors.add(mSOCR);
 
         // *** Major in Agricultural Biology
         // 1091: AGBI-ENTZ-BS, Agricultural Biology - Entomology
         // 1092: AGBI-PLPZ-BS, Agricultural Biology - Plant Pathology
         // 1093: AGBI-WEEZ-BS, Agricultural Biology - Weed Science
 
+        // FIXME: Is the ERequirement correct?  A pick list only?
+
         final Major mAGBI = new Major(
                 new int[]{1090, 1091, 1092, 1093},
                 new String[]{"AGBI-BS", "AGBI-ENTZ-BS", "AGBI-PLPZ-BS", "AGBI-WEEZ-BS"},
                 "Agricultural Biology",
                 MathPlanConstants.PGMS + "agricultural-biology/",
-                ERequirement.PICK_3CR_117_118_124_120_155);
-        this.majors.add(mAGBI);
+                ERequirement.PICK_3CR_117_118_124_120_155,
+                IdealFirstTerm.IDEAL_55);
+        majors.add(mAGBI);
 
         // ===================
         // College of Business
@@ -214,8 +233,9 @@ public final class MajorsCurrent {
                         "BUSA-MKTZ-BS", "BUSA-REAZ-BS", "BUSA-SCMZ-BS", "BUSA-MINZ-BS", "BUSA-SUSZ-BS"},
                 "Business Administration",
                 MathPlanConstants.PGMS + "business-administration/",
-                ERequirement.PICK_3CR_117_118_124_120_125_126_141_155_156_160);
-        this.majors.add(mBUSA);
+                ERequirement.PICK_3CR_117_118_124_120_125_126_141_155_156_160,
+                IdealFirstTerm.IDEAL_PICK_17_TO_41);
+        majors.add(mBUSA);
 
         // ======================
         // College of Engineering
@@ -234,8 +254,9 @@ public final class MajorsCurrent {
                         "CPEG-BMEP-BS"},
                 "Biomedical Engineering, Dual Degree",
                 MathPlanConstants.PGMS + "biomedical-engineering/",
-                ERequirement.M_160);
-        this.majors.add(mCBEGDUAL);
+                ERequirement.M_160,
+                IdealFirstTerm.IDEAL_60);
+        majors.add(mCBEGDUAL);
 
         // *** Major in Chemical and Biological Engineering
 
@@ -244,8 +265,9 @@ public final class MajorsCurrent {
                 new String[]{"CBEG-BS"},
                 "Chemical and Biological Engineering",
                 MathPlanConstants.PGMS + "chemical-biological-engineering/",
-                ERequirement.M_160);
-        this.majors.add(mCBEG);
+                ERequirement.M_160,
+                IdealFirstTerm.IDEAL_60);
+        majors.add(mCBEG);
 
         // *** Major in Civil Engineering
 
@@ -254,8 +276,9 @@ public final class MajorsCurrent {
                 new String[]{"CIVE-BS"},
                 "Civil Engineering",
                 MathPlanConstants.PGMS + "civil-engineering/",
-                ERequirement.M_160);
-        this.majors.add(mCIVE);
+                ERequirement.M_160,
+                IdealFirstTerm.IDEAL_60);
+        majors.add(mCIVE);
 
         // *** Major in Computer Engineering
         // 3031: CPEG-AESZ-BS, Computer Engineering - Aerospace Systems
@@ -268,8 +291,9 @@ public final class MajorsCurrent {
                 new String[]{"CPEG-BS", "CPEG-AESZ-BS", "CPEG-EISZ-BS", "CPEG-NDTZ-BS"},
                 "Computer Engineering",
                 MathPlanConstants.PGMS + "computer-engineering/",
-                ERequirement.M_160);
-        this.majors.add(mCPEG);
+                ERequirement.M_160,
+                IdealFirstTerm.IDEAL_60);
+        majors.add(mCPEG);
 
         // *** Major in Electrical Engineering
         // 3041: ELEG-ELEZ-BS, Electrical Engineering - Electrical Engineering
@@ -281,8 +305,9 @@ public final class MajorsCurrent {
                 new String[]{"ELEG-BS", "ELEG-ELEZ-BS", "ELEG-LOEZ-BS", "ELEG-ASPZ-BS"},
                 "Electrical Engineering",
                 MathPlanConstants.PGMS + "electrical-engineering/",
-                ERequirement.M_160);
-        this.majors.add(mELEG);
+                ERequirement.M_160,
+                IdealFirstTerm.IDEAL_60);
+        majors.add(mELEG);
 
         // *** Major in Environmental Engineering
 
@@ -291,8 +316,9 @@ public final class MajorsCurrent {
                 new String[]{"ENVE-BS"},
                 "Environmental Engineering",
                 MathPlanConstants.PGMS + "environmental-engineering/",
-                ERequirement.M_160);
-        this.majors.add(mENVE);
+                ERequirement.M_160,
+                IdealFirstTerm.IDEAL_60);
+        majors.add(mENVE);
 
         // *** Major in Mechanical Engineering
         // 3081: MECH-ACEZ-BS, Mechanical Engineering - Aerospace Engineering
@@ -303,8 +329,9 @@ public final class MajorsCurrent {
                 new String[]{"MECH-BS", "MECH-ACEZ-BS", "MECH-ADMZ-BS"},
                 "Mechanical Engineering",
                 MathPlanConstants.PGMS + "mechanical-engineering/",
-                ERequirement.M_160);
-        this.majors.add(mMECH);
+                ERequirement.M_160,
+                IdealFirstTerm.IDEAL_60);
+        majors.add(mMECH);
 
         // *** Major in Construction Engineering
 
@@ -313,8 +340,9 @@ public final class MajorsCurrent {
                 new String[]{"CONE-BS"},
                 "Construction Engineering",
                 MathPlanConstants.PGMS + "construction-engineering/",
-                ERequirement.M_160);
-        this.majors.add(mCONE);
+                ERequirement.M_160,
+                IdealFirstTerm.IDEAL_60);
+        majors.add(mCONE);
 
         // ====================================
         // College of Health and Human Sciences
@@ -331,8 +359,9 @@ public final class MajorsCurrent {
                 new String[]{"APAM-BS", "APAM-ADAZ-BS", "APAM-MDSZ-BS", "APAM-PDVZ-BS"},
                 "Apparel and Merchandising",
                 MathPlanConstants.PGMS + "apparel-and-merchandising/",
-                ERequirement.M_117_118_124);
-        this.majors.add(mAPAM);
+                ERequirement.M_117_118_124,
+                IdealFirstTerm.IDEAL_171824);
+        majors.add(mAPAM);
 
         // *** Major in Construction Management
         // Concentrations grouped into major:
@@ -343,8 +372,9 @@ public final class MajorsCurrent {
                 new String[]{"CTMG-BS", "CTM0"},
                 "Construction Management",
                 MathPlanConstants.PGMS + "construction-management/",
-                ERequirement.M_117_118_125);
-        this.majors.add(mCTMG);
+                ERequirement.M_117_118_125,
+                IdealFirstTerm.IDEAL_171825);
+        majors.add(mCTMG);
 
         // *** Major in Early Childhood Education
 
@@ -353,8 +383,9 @@ public final class MajorsCurrent {
                 new String[]{"ECHE-BS"},
                 "Early Childhood Education",
                 MathPlanConstants.PGMS + "early-childhood-education/",
-                ERequirement.CORE_ONLY);
-        this.majors.add(mECHE);
+                ERequirement.CORE_ONLY,
+                IdealFirstTerm.CORE_ONLY);
+        majors.add(mECHE);
 
         // *** Major in Family and Consumer Sciences
         // 4030: DEACTIVATED
@@ -368,8 +399,9 @@ public final class MajorsCurrent {
                 new String[]{"FCSE-BS"},
                 "Family and Consumer Sciences Education",
                 MathPlanConstants.PGMS + "family-consumer-sciences/",
-                ERequirement.CORE_ONLY);
-        this.majors.add(mFACS);
+                ERequirement.CORE_ONLY,
+                IdealFirstTerm.CORE_ONLY);
+        majors.add(mFACS);
 
         // *** Major in Fermentation Science and Technology
 
@@ -378,16 +410,18 @@ public final class MajorsCurrent {
                 new String[]{"FAFS-BS", "FAFS-FSTZ-BS"},
                 "Fermentation and Food Science (General)",
                 MathPlanConstants.PGMS + "fermentation-and-food-science/",
-                ERequirement.M_117_118_124);
-        this.majors.add(mFMST1);
+                ERequirement.M_117_118_124,
+                IdealFirstTerm.IDEAL_171824);
+        majors.add(mFMST1);
 
         final Major mFMST2 = new Major(
                 new int[]{4042},
                 new String[]{"FAFS-FSIZ-BS"},
                 "Fermentation Science and Technology (Food Science Concentration)",
                 MathPlanConstants.PGMS + "fermentation-and-food-science/",
-                ERequirement.M_117_118_124_125_141_OR_155);
-        this.majors.add(mFMST2);
+                ERequirement.M_117_118_124_125_141_OR_155,
+                IdealFirstTerm.IDEAL_17182425);
+        majors.add(mFMST2);
 
         // *** Major in Health and Exercise Science
         // 4051: HAES-HPRZ-BS, Health and Exercise Science - Health Promotion
@@ -399,8 +433,9 @@ public final class MajorsCurrent {
                 new String[]{"HAES-BS", "HAES-HPRZ-BS", "HAES-EXSZ-BS"},
                 "Health and Exercise Science",
                 MathPlanConstants.PGMS + "health-and-exercise-science/",
-                ERequirement.M_118_124_125);
-        this.majors.add(mHAES);
+                ERequirement.M_118_124_125,
+                IdealFirstTerm.IDEAL_182425);
+        majors.add(mHAES);
 
         // *** Major in Hospitality Management
 
@@ -409,8 +444,9 @@ public final class MajorsCurrent {
                 new String[]{"HEMG-BS"},
                 "Hospitality and Event Management",
                 MathPlanConstants.PGMS + "hospitality-event-management/",
-                ERequirement.M_117_101);
-        this.majors.add(mHEMG);
+                ERequirement.M_117_101,
+                IdealFirstTerm.IDEAL_1701);
+        majors.add(mHEMG);
 
         // *** Major in Human Development and Family Studies
         // 4071: HDFS-ECPZ-BS, Human Development and Family Studies - Early Childhood Profession
@@ -426,8 +462,9 @@ public final class MajorsCurrent {
                 new String[]{"HDFS-BS", "HDFS-ECPZ-BS", "HDFS-HDEZ-BS", "HDFS-PHPZ-BS", "HDFS-LADZ-BS", "HDFS-BMHZ-BS"},
                 "Human Development &amp; Family Studies",
                 MathPlanConstants.PGMS + "human-development-and-family-studies/",
-                ERequirement.CORE_ONLY);
-        this.majors.add(mHDFS);
+                ERequirement.CORE_ONLY,
+                IdealFirstTerm.CORE_ONLY);
+        majors.add(mHDFS);
 
         // *** Major in Interior Architecture and Design
         // Concentrations grouped into major:
@@ -440,8 +477,9 @@ public final class MajorsCurrent {
                 new String[]{"IARD-BS", "IARD-IADZ-BS", "IARD-IPRZ-BS"},
                 "Interior Architecture and Design",
                 MathPlanConstants.PGMS + "interior-architecture-and-design/",
-                ERequirement.M_117_118_124);
-        this.majors.add(mIARD);
+                ERequirement.M_117_118_124,
+                IdealFirstTerm.IDEAL_171824);
+        majors.add(mIARD);
 
         // *** Major in Social Work
         // Concentrations grouped into major:
@@ -452,8 +490,9 @@ public final class MajorsCurrent {
                 new String[]{"SOWK-BSW", "SOWK-ADSZ-BSW", "SOWK-HOCZ-BSW", "SOWK-ISWC-BSW"},
                 "Social Work",
                 MathPlanConstants.PGMS + "social-work/",
-                ERequirement.CORE_ONLY);
-        this.majors.add(mSOWK);
+                ERequirement.CORE_ONLY,
+                IdealFirstTerm.CORE_ONLY);
+        majors.add(mSOWK);
 
         // *** Major in Nutrition Science
         // 4110: NUTR-BS, Nutrition Science
@@ -466,16 +505,18 @@ public final class MajorsCurrent {
                 new String[]{"NUTR-BS", "NUTR-DINZ-BS", "NUTR-SNWZ-BS"},
                 "Nutrition Science (General)",
                 MathPlanConstants.PGMS + "nutrition-science/",
-                ERequirement.M_117_118_124);
-        this.majors.add(mNUTR1);
+                ERequirement.M_117_118_124,
+                IdealFirstTerm.IDEAL_171824);
+        majors.add(mNUTR1);
 
         final Major mNUTR2 = new Major(
                 new int[]{4112},
                 new String[]{"NUTR-PHLZ-BS"},
                 "Nutrition Science (Pre-Health Nutrition)",
                 MathPlanConstants.PGMS + "nutrition-science/",
-                ERequirement.M_117_118_124_125);
-        this.majors.add(mNUTR2);
+                ERequirement.M_117_118_124_125,
+                IdealFirstTerm.IDEAL_17182425);
+        majors.add(mNUTR2);
 
         // =======================
         // College of Liberal Arts
@@ -491,8 +532,9 @@ public final class MajorsCurrent {
                 new String[]{"ANTH-BA", "ANTH-ARCZ-BA", "ANTH-BIOZ-BA", "ANTH-CLTZ-BA",},
                 "Anthropology",
                 MathPlanConstants.PGMS + "anthropology/",
-                ERequirement.CORE_ONLY);
-        this.majors.add(mANTH);
+                ERequirement.CORE_ONLY,
+                IdealFirstTerm.CORE_ONLY);
+        majors.add(mANTH);
 
         // *** Major in Art (B.A. and B.F.A combined)
         // 5012: ARTI-ARTZ-BA - Art, B.A. - Art History
@@ -517,8 +559,9 @@ public final class MajorsCurrent {
                         "ARTM-PRTZ-BF", "ARTM-SCLZ-BF", "ARTM-AREZ-BF"},
                 "Art",
                 MathPlanConstants.PGMS + "art-bfa/",
-                ERequirement.CORE_ONLY);
-        this.majors.add(mARTI);
+                ERequirement.CORE_ONLY,
+                IdealFirstTerm.CORE_ONLY);
+        majors.add(mARTI);
 
         // *** Major in Communication Studies
         // 5041: DEACTIVATED
@@ -528,8 +571,9 @@ public final class MajorsCurrent {
                 new String[]{"CMST-BA"},
                 "Communication Studies",
                 MathPlanConstants.PGMS + "communication-studies/",
-                ERequirement.CORE_ONLY);
-        this.majors.add(mCMST);
+                ERequirement.CORE_ONLY,
+                IdealFirstTerm.CORE_ONLY);
+        majors.add(mCMST);
 
         // *** Major in Dance (BA and BFA)
 
@@ -538,8 +582,9 @@ public final class MajorsCurrent {
                 new String[]{"DNCE-BA", "DANC-BFA"},
                 "Dance",
                 MathPlanConstants.PGMS + "dance-ba/",
-                ERequirement.CORE_ONLY);
-        this.majors.add(mDNCE);
+                ERequirement.CORE_ONLY,
+                IdealFirstTerm.CORE_ONLY);
+        majors.add(mDNCE);
 
         // *** Major in Economics
 
@@ -548,8 +593,9 @@ public final class MajorsCurrent {
                 new String[]{"ECON-BA"},
                 "Economics",
                 MathPlanConstants.PGMS + "economics/",
-                ERequirement.M_141_OR_155_OR_160);
-        this.majors.add(mECON);
+                ERequirement.M_141_OR_155_OR_160,
+                IdealFirstTerm.IDEAL_1718);
+        majors.add(mECON);
 
         // *** Major in English
         // 5071: ENGL-CRWZ-BA, English - Creative Writing
@@ -566,8 +612,9 @@ public final class MajorsCurrent {
                         "ENGL-IESZ-BA"},
                 "English",
                 MathPlanConstants.PGMS + "english/",
-                ERequirement.CORE_ONLY);
-        this.majors.add(mENGL);
+                ERequirement.CORE_ONLY,
+                IdealFirstTerm.CORE_ONLY);
+        majors.add(mENGL);
 
         // *** Major in Ethnic Studies
         // 5081: ETST-SOTZ-BA, Ethnic Studies - Social Studies Teaching
@@ -579,8 +626,9 @@ public final class MajorsCurrent {
                 new String[]{"ETST-BA", "ETST-SOTZ-BA", "ETST-COIZ-BA", "ETST-RPRZ-BA"},
                 "Ethnic Studies",
                 MathPlanConstants.PGMS + "ethnic-studies/",
-                ERequirement.CORE_ONLY);
-        this.majors.add(mETST);
+                ERequirement.CORE_ONLY,
+                IdealFirstTerm.CORE_ONLY);
+        majors.add(mETST);
 
         // *** Major in Geography
 
@@ -589,8 +637,9 @@ public final class MajorsCurrent {
                 new String[]{"GEOG-BS"},
                 "Geography",
                 MathPlanConstants.PGMS + "geography/",
-                ERequirement.CORE_ONLY);
-        this.majors.add(mGEOG);
+                ERequirement.CORE_ONLY,
+                IdealFirstTerm.CORE_ONLY);
+        majors.add(mGEOG);
 
         // *** Major in History
         // 5091: HIST-GENZ-BA, History - General History
@@ -604,8 +653,9 @@ public final class MajorsCurrent {
                 new String[]{"HIST-BA", "HIST-GENZ-BA", "HIST-LNGZ-BA", "HIST-SBSZ-BA", "HIST-SSTZ-BA", "HIST-DPUZ-BA"},
                 "History",
                 MathPlanConstants.PGMS + "history/",
-                ERequirement.CORE_ONLY);
-        this.majors.add(mHIST);
+                ERequirement.CORE_ONLY,
+                IdealFirstTerm.CORE_ONLY);
+        majors.add(mHIST);
 
         // *** Major in Journalism and Media Communication
 
@@ -614,8 +664,9 @@ public final class MajorsCurrent {
                 new String[]{"JAMC-BA"},
                 "Journalism and Media Communication",
                 MathPlanConstants.PGMS + "journalism-and-media-communication/",
-                ERequirement.CORE_ONLY);
-        this.majors.add(mJAMC);
+                ERequirement.CORE_ONLY,
+                IdealFirstTerm.CORE_ONLY);
+        majors.add(mJAMC);
 
         // *** Major in Languages, Literatures and Cultures
         // 5111: LLAC-LFRZ-BA, Languages, Literatures and Cultures - French
@@ -628,8 +679,9 @@ public final class MajorsCurrent {
                 new String[]{"LLAC-BA", "LLAC-LFRZ-BA", "LLAC-LGEZ-BA", "LLAC-LSPZ-BA", "LLAC-SPPZ-BA"},
                 "Languages, Literatures and Cultures",
                 MathPlanConstants.PGMS + "languages-literatures-and-cultures/",
-                ERequirement.CORE_ONLY);
-        this.majors.add(mLLAC);
+                ERequirement.CORE_ONLY,
+                IdealFirstTerm.CORE_ONLY);
+        majors.add(mLLAC);
 
         // *** Major in Music, B.A.
         // 5130: MUSC-BM, Music (B.M.)
@@ -643,8 +695,9 @@ public final class MajorsCurrent {
                 new String[]{"MUSI-BA", "MUSC-BM", "MUSC-COMZ-BM", "MUSC-MUEZ-BM", "MUSC-MUTZ-BM", "MUSC-PERZ-BM"},
                 "Music",
                 MathPlanConstants.PGMS + "music-ba/",
-                ERequirement.CORE_ONLY);
-        this.majors.add(mMUSI);
+                ERequirement.CORE_ONLY,
+                IdealFirstTerm.CORE_ONLY);
+        majors.add(mMUSI);
 
         // *** Major in Philosophy
         // 5141: PHIL-GNPZ-BA, Philosophy - General Philosophy
@@ -656,8 +709,9 @@ public final class MajorsCurrent {
                 new String[]{"PHIL-BA", "PHIL-GNPZ-BA", "PHIL-GPRZ-BA", "PHIL-PSAZ-BA"},
                 "Philosophy",
                 MathPlanConstants.PGMS + "philosophy/",
-                ERequirement.CORE_ONLY);
-        this.majors.add(mPHIL);
+                ERequirement.CORE_ONLY,
+                IdealFirstTerm.CORE_ONLY);
+        majors.add(mPHIL);
 
         // *** Major in Political Science
         // Concentrations grouped into major:
@@ -674,8 +728,9 @@ public final class MajorsCurrent {
                         "POLS-PPSZ-BA"},
                 "Political Science",
                 MathPlanConstants.PGMS + "political-science/",
-                ERequirement.CORE_ONLY);
-        this.majors.add(mPOLS);
+                ERequirement.CORE_ONLY,
+                IdealFirstTerm.CORE_ONLY);
+        majors.add(mPOLS);
 
         // *** Major in Sociology
         // Concentrations grouped into major:
@@ -688,8 +743,9 @@ public final class MajorsCurrent {
                 new String[]{"SOCI-BA", "SOCI-CRCZ-BA", "SOCI-ENSZ-BA", "SOCI-GNSZ-BA"},
                 "Sociology",
                 MathPlanConstants.PGMS + "sociology/",
-                ERequirement.CORE_ONLY);
-        this.majors.add(mSOCI);
+                ERequirement.CORE_ONLY,
+                IdealFirstTerm.CORE_ONLY);
+        majors.add(mSOCI);
 
         // *** Major in Theatre
         // 5171: DEACTIVATED
@@ -708,8 +764,9 @@ public final class MajorsCurrent {
                         "THTR-SDTZ-BA", "THTR-CDTZ-BA"},
                 "Theatre",
                 MathPlanConstants.PGMS + "theatre/",
-                ERequirement.CORE_ONLY);
-        this.majors.add(mTHTR);
+                ERequirement.CORE_ONLY,
+                IdealFirstTerm.CORE_ONLY);
+        majors.add(mTHTR);
 
         // *** Major in Women's and Gender Studies
 
@@ -718,8 +775,9 @@ public final class MajorsCurrent {
                 new String[]{"WGST-BA"},
                 "Women's and Gender Studies",
                 MathPlanConstants.PGMS + "womens-and-gender-studies/",
-                ERequirement.CORE_ONLY);
-        this.majors.add(mWGST);
+                ERequirement.CORE_ONLY,
+                IdealFirstTerm.CORE_ONLY);
+        majors.add(mWGST);
 
         // *** Major in International Studies
         // 5191: INST-ASTZ-BA, International Studies - Asian Studies
@@ -733,8 +791,9 @@ public final class MajorsCurrent {
                 new String[]{"INST-BA", "INST-ASTZ-BA", "INST-EUSZ-BA", "INST-LTSZ-BA", "INST-MEAZ-BA", "INST-GBLZ-BA"},
                 "International Studies",
                 MathPlanConstants.PGMS + "international-studies/",
-                ERequirement.CORE_ONLY);
-        this.majors.add(mINST);
+                ERequirement.CORE_ONLY,
+                IdealFirstTerm.CORE_ONLY);
+        majors.add(mINST);
 
         // *** Major in Interdisciplinary Liberal Arts
 
@@ -743,8 +802,9 @@ public final class MajorsCurrent {
                 new String[]{"ILAR-BA"},
                 "Interdisciplinary Liberal Arts",
                 MathPlanConstants.PGMS + "interdisciplinary-liberal-arts/",
-                ERequirement.CORE_ONLY);
-        this.majors.add(mILAR);
+                ERequirement.CORE_ONLY,
+                IdealFirstTerm.CORE_ONLY);
+        majors.add(mILAR);
 
         // ============================
         // College of Natural Resources
@@ -757,8 +817,9 @@ public final class MajorsCurrent {
                 new String[]{"ECSS-BS"},
                 "Ecosystem Science and Sustainability",
                 MathPlanConstants.PGMS + "ecosystem-science-sustainability/",
-                ERequirement.M_155_OR_160);
-        this.majors.add(mECSS);
+                ERequirement.M_155_OR_160,
+                IdealFirstTerm.IDEAL_55_OR_60);
+        majors.add(mECSS);
 
         // *** Major in Fish, Wildlife and Conservation Biology
         // 6011: FWCB-CNVZ-BS, Fish, Wildlife and Conservation Biology - Conservation Biology
@@ -770,8 +831,9 @@ public final class MajorsCurrent {
                 new String[]{"FWCB-BS", "FWCB-CNVZ-BS", "FWCB-FASZ-BS", "FWCB-WDBZ-BS"},
                 "Fish, Wildlife and Conservation Biology",
                 MathPlanConstants.PGMS + "fish-wildlife-and-conservation-biology/",
-                ERequirement.M_155_OR_160);
-        this.majors.add(mFWCB);
+                ERequirement.M_155_OR_160,
+                IdealFirstTerm.IDEAL_17_OR_HIGHER);
+        majors.add(mFWCB);
 
         // *** Major in Forest and Rangeland Stewardship
         // 6081: FRRS-FRBZ-BS, Forest and Rangeland Stewardship - Forest Biology
@@ -785,24 +847,27 @@ public final class MajorsCurrent {
                 new String[]{"FRRS-BS", "FRRS-FRFZ-BS", "FRRS-FMGZ-BS", "FRRS-RFMZ-BS"},
                 "Forest &amp; Rangeland Stewardship",
                 MathPlanConstants.PGMS + "forest-and-rangeland-stewardship/",
-                ERequirement.M_141);
-        this.majors.add(mFRRS1);
+                ERequirement.M_141,
+                IdealFirstTerm.IDEAL_17_OR_HIGHER);
+        majors.add(mFRRS1);
 
         final Major mFRRS2 = new Major(
                 new int[]{6085},
                 new String[]{"FRRS-RCMZ-BS"},
                 "Forest &amp; Rangeland Stewardship (Rangeland Conservation &amp; Management)",
                 MathPlanConstants.PGMS + "forest-and-rangeland-stewardship/",
-                ERequirement.PICK_3CR_117_118_125_141);
-        this.majors.add(mFRRS2);
+                ERequirement.PICK_3CR_117_118_125_141,
+                IdealFirstTerm.IDEAL_17_OR_HIGHER);
+        majors.add(mFRRS2);
 
         final Major mFRRS3 = new Major(
                 new int[]{6081},
                 new String[]{"FRRS-FRBZ-BS"},
                 "Forest &amp; Rangeland Stewardship (Forest Biology)",
                 MathPlanConstants.PGMS + "forest-and-rangeland-stewardship/",
-                ERequirement.M_155);
-        this.majors.add(mFRRS3);
+                ERequirement.M_155,
+                IdealFirstTerm.IDEAL_17_OR_HIGHER);
+        majors.add(mFRRS3);
 
         // *** Major in Geology
         // 6021: GEOL-EVGZ-BS, Geology - Environmental Geology
@@ -815,8 +880,9 @@ public final class MajorsCurrent {
                 new String[]{"GEOL-BS", "GEOL-EVGZ-BS", "GEOL-GEOZ-BS", "GEOL-GPYZ-BS", "GEOL-HYDZ-BS"},
                 "Geology",
                 MathPlanConstants.PGMS + "geology/",
-                ERequirement.M_160);
-        this.majors.add(mGEOL);
+                ERequirement.M_160,
+                IdealFirstTerm.IDEAL_60);
+        majors.add(mGEOL);
 
         // *** Major in Human Dimensions of Natural Resources
 
@@ -825,8 +891,9 @@ public final class MajorsCurrent {
                 new String[]{"HDNR-BS"},
                 "Human Dimensions of Natural Resources",
                 MathPlanConstants.PGMS + "human-dimensions-of-natural-resources/",
-                ERequirement.M_117_118_124);
-        this.majors.add(mHDNR);
+                ERequirement.M_117_118_124,
+                IdealFirstTerm.IDEAL_171824);
+        majors.add(mHDNR);
 
         // *** Major in Natural Resource Tourism
         // 6040: DEACTIVATED
@@ -841,8 +908,9 @@ public final class MajorsCurrent {
                 new String[]{"NRTM-BS", "NRTM-GLTZ-BS", "NRTM-NRTZ-BS"},
                 "Natural Resource Tourism",
                 MathPlanConstants.PGMS + "natural-resource-tourism/",
-                ERequirement.M_117_118_124);
-        this.majors.add(mNRTM);
+                ERequirement.M_117_118_124,
+                IdealFirstTerm.IDEAL_171824);
+        majors.add(mNRTM);
 
         // *** Major in Natural Resources Management
 
@@ -851,8 +919,9 @@ public final class MajorsCurrent {
                 new String[]{"NRMG-BS"},
                 "Natural Resources Management",
                 MathPlanConstants.PGMS + "natural-resources-management/",
-                ERequirement.M_117_118_125);
-        this.majors.add(mNRMG);
+                ERequirement.M_117_118_125,
+                IdealFirstTerm.IDEAL_17_OR_HIGHER);
+        majors.add(mNRMG);
 
         // *** Major in Restoration Ecology
 
@@ -861,8 +930,9 @@ public final class MajorsCurrent {
                 new String[]{"RECO-BS"},
                 "Restoration Ecology",
                 MathPlanConstants.PGMS + "restoration-ecology/",
-                ERequirement.PICK_3CR_117_118_125_141);
-        this.majors.add(mRECO);
+                ERequirement.PICK_3CR_117_118_125_141,
+                IdealFirstTerm.IDEAL_17_OR_HIGHER);
+        majors.add(mRECO);
 
         // *** Major in Watershed Science and Sustainability
         // 6070: DEACTIVATED
@@ -876,16 +946,18 @@ public final class MajorsCurrent {
                 new String[]{"WSSS-WSDZ-BS", "WSSS-WSSZ-BS", "WSSS-BS"},
                 "Watershed Science and Sustainability",
                 MathPlanConstants.PGMS + "watershed-science/",
-                ERequirement.M_155_OR_160);
-        this.majors.add(mWRSC1);
+                ERequirement.M_155_OR_160,
+                IdealFirstTerm.IDEAL_18_OR_HIGHER);
+        majors.add(mWRSC1);
 
         final Major mWRSC2 = new Major(
                 new int[]{6073},
                 new String[]{"WSSS-WSUZ-BS"},
                 "Watershed Science and Sustainability (Watershed Sustainability)",
                 MathPlanConstants.PGMS + "watershed-science/",
-                ERequirement.M_141_OR_155_OR_160);
-        this.majors.add(mWRSC2);
+                ERequirement.M_141_OR_155_OR_160,
+                IdealFirstTerm.IDEAL_18_OR_HIGHER);
+        majors.add(mWRSC2);
 
         // ===========================
         // College of Natural Sciences
@@ -903,8 +975,9 @@ public final class MajorsCurrent {
                 new String[]{"BCHM-BS", "BCHM-HMSZ-BS", "BCHM-PPHZ-BS", "BCHM-ASBZ-BS", "BCHM-DTSZ-BS", "BCHM-GBCZ-BS"},
                 "Biochemistry",
                 MathPlanConstants.PGMS + "biochemistry/",
-                ERequirement.M_155_OR_160);
-        this.majors.add(mBCHM);
+                ERequirement.M_155_OR_160,
+                IdealFirstTerm.IDEAL_55_OR_60);
+        majors.add(mBCHM);
 
         // *** Major in Biological Science
         // 7021: BLSC-BLSZ-BS, Biological Science - Biological Science
@@ -915,8 +988,9 @@ public final class MajorsCurrent {
                 new String[]{"BLSC-BS", "BLSC-BLSZ-BS", "BLSC-BTNZ-BS"},
                 "Biological Science",
                 MathPlanConstants.PGMS + "biology/",
-                ERequirement.M_155_OR_160);
-        this.majors.add(mBLSC);
+                ERequirement.M_155_OR_160,
+                IdealFirstTerm.IDEAL_PICK_17_TO_55);
+        majors.add(mBLSC);
 
         // *** Major in Chemistry
         // 7031: DEACTIVATED
@@ -932,8 +1006,9 @@ public final class MajorsCurrent {
                 new String[]{"CHEM-BS", "CHEM-ECHZ-BS", "CHEM-FCHZ-BS", "CHEM-HSCZ-BS", "CHEM-SCHZ-BS", "CHEM-MTRZ-BS"},
                 "Chemistry",
                 MathPlanConstants.PGMS + "chemistry/",
-                ERequirement.M_155_OR_160);
-        this.majors.add(mCHEM);
+                ERequirement.M_155_OR_160,
+                IdealFirstTerm.IDEAL_55_OR_60);
+        majors.add(mCHEM);
 
         // *** Major in Computer Science
         // 7041: CPSC-CPSZ-BS, Computer Science - Computer Science
@@ -951,8 +1026,9 @@ public final class MajorsCurrent {
                         "CPSC-SEGZ-BS", "CPSC-CSEZ-BS", "CPSC-CFCZ-BS"},
                 "Computer Science",
                 MathPlanConstants.PGMS + "computer-science/",
-                ERequirement.M_156_OR_160);
-        this.majors.add(mCPSC);
+                ERequirement.M_156_OR_160,
+                IdealFirstTerm.IDEAL_56_OR_60);
+        majors.add(mCPSC);
 
         // *** Major in Data Science
         // 7051: DSCI-CSCZ-BS, Data Science - Computer Science
@@ -966,8 +1042,9 @@ public final class MajorsCurrent {
                 new String[]{"DSCI-BS", "DSCI-CSCZ-BS", "DSCI-ECNZ-BS", "DSCI-MATZ-BS", "DSCI-STSZ-BS", "DSCI-NEUZ-BS"},
                 "Data Science",
                 MathPlanConstants.PGMS + "data-science/",
-                ERequirement.M_156);
-        this.majors.add(mDSCI);
+                ERequirement.M_156,
+                IdealFirstTerm.IDEAL_56);
+        majors.add(mDSCI);
 
         // *** Major in Mathematics
         // 7061: MATH-ALSZ-BS, Mathematics - Actuarial Sciences
@@ -981,8 +1058,9 @@ public final class MajorsCurrent {
                 new String[]{"MATH-BS", "MATH-ALSZ-BS", "MATH-AMTZ-BS", "MATH-GNMZ-BS", "MATH-MTEZ-BS", "MATH-CPMZ-BS"},
                 "Mathematics",
                 MathPlanConstants.PGMS + "mathematics/",
-                ERequirement.M_160);
-        this.majors.add(mMATH);
+                ERequirement.M_160,
+                IdealFirstTerm.IDEAL_60);
+        majors.add(mMATH);
 
         // *** Major in Natural Sciences
         // 7071: NSCI-BLEZ-BS, Natural Sciences - Biology Education
@@ -996,16 +1074,18 @@ public final class MajorsCurrent {
                 new String[]{"NSCI-BS", "NSCI-BLEZ-BS", "NSCI-CHEZ-BS", "NSCI-GLEZ-BS", "NSCI-PHSZ-BS"},
                 "Natural Sciences",
                 MathPlanConstants.PGMS + "natural-sciences/",
-                ERequirement.M_155_OR_160);
-        this.majors.add(mNSCI1);
+                ERequirement.M_155_OR_160,
+                IdealFirstTerm.IDEAL_55_OR_60);
+        majors.add(mNSCI1);
 
         final Major mNSCI2 = new Major(
                 new int[]{7075},
                 new String[]{"NSCI-PHEZ-BS"},
                 "Natural Sciences (Physics Education)",
                 MathPlanConstants.PGMS + "natural-sciences/",
-                ERequirement.M_160);
-        this.majors.add(mNSCI2);
+                ERequirement.M_160,
+                IdealFirstTerm.IDEAL_60);
+        majors.add(mNSCI2);
 
         // *** Major in Physics
         // 7081: PHYS-APPZ-BS, Physics - Applied Physics
@@ -1016,8 +1096,9 @@ public final class MajorsCurrent {
                 new String[]{"PHYS-BS", "PHYS-APPZ-BS", "PHYS-PHYZ-BS"},
                 "Physics",
                 MathPlanConstants.PGMS + "physics/",
-                ERequirement.M_160);
-        this.majors.add(mPHYS);
+                ERequirement.M_160,
+                IdealFirstTerm.IDEAL_60);
+        majors.add(mPHYS);
 
         // *** Major in Psychology
         // 7091: PSYC-ADCZ-BS, Psychology - Addictions Counseling
@@ -1032,16 +1113,20 @@ public final class MajorsCurrent {
                 new String[]{"PSYC-BS", "PSYC-ADCZ-BS", "PSYC-CCPZ-BS", "PSYC-GPSZ-BS", "PSYC-IOPZ-BS", "PSYC-AACZ-BS"},
                 "Psychology",
                 MathPlanConstants.PGMS + "psychology/",
-                ERequirement.M_117_118_124);
-        this.majors.add(mPSYC1);
+                ERequirement.M_117_118_124,
+                IdealFirstTerm.IDEAL_17);
+        majors.add(mPSYC1);
+
+        // FIXME: Is the requirement below correct?
 
         final Major mPSYC2 = new Major(
                 new int[]{7095},
                 new String[]{"PSYC-MBBZ-BS"},
                 "Psychology (Mind, Brain, and Behavior)",
                 MathPlanConstants.PGMS + "psychology/",
-                ERequirement.M_117_118_124);
-        this.majors.add(mPSYC2);
+                ERequirement.M_117_118_124,
+                IdealFirstTerm.IDEAL_17);
+        majors.add(mPSYC2);
 
         // *** Major in Statistics
         // 7101: DEACTIVATED
@@ -1052,8 +1137,9 @@ public final class MajorsCurrent {
                 new String[]{"STAT-BS"},
                 "Statistics",
                 MathPlanConstants.PGMS + "statistics/",
-                ERequirement.M_156_OR_160);
-        this.majors.add(mSTAT);
+                ERequirement.M_156_OR_160,
+                IdealFirstTerm.IDEAL_56_OR_60);
+        majors.add(mSTAT);
 
         // *** Major in Zoology
 
@@ -1062,8 +1148,9 @@ public final class MajorsCurrent {
                 new String[]{"ZOOL-BS"},
                 "Zoology",
                 MathPlanConstants.PGMS + "zoology/",
-                ERequirement.M_155_OR_160);
-        this.majors.add(mZOOL);
+                ERequirement.M_155_OR_160,
+                IdealFirstTerm.IDEAL_PICK_17_TO_55);
+        majors.add(mZOOL);
 
         // ======================================================
         // College of Veterinary Medicine and Biomedical Sciences
@@ -1082,16 +1169,18 @@ public final class MajorsCurrent {
                 new String[]{"BIOM-BS", "BIOM-EPHZ-BS", "BIOM-MIDZ-BS"},
                 "Biomedical Sciences (General)",
                 MathPlanConstants.PGMS + "biomedical-sciences/",
-                ERequirement.PICK_3CR_118_124_125_126_155_160);
-        this.majors.add(mBIOM1);
+                ERequirement.PICK_3CR_118_124_125_126_155_160,
+                IdealFirstTerm.IDEAL_PICK_18_TO_60);
+        majors.add(mBIOM1);
 
         final Major mBIOM2 = new Major(
                 new int[]{8001},
                 new String[]{"BIOM-APHZ-BS"},
                 "Biomedical Sciences (Anatomy &amp; Physiology)",
                 MathPlanConstants.PGMS + "biomedical-sciences/",
-                ERequirement.M_155_OR_160);
-        this.majors.add(mBIOM2);
+                ERequirement.M_155_OR_160,
+                IdealFirstTerm.IDEAL_55_OR_60);
+        majors.add(mBIOM2);
 
         // *** Major in Neuroscience
         // Concentrations grouped into major:
@@ -1103,8 +1192,9 @@ public final class MajorsCurrent {
                 new String[]{"NERO-BS", "NERO-BCNZ-BS", "NERO-CMNZ-BS"},
                 "Neuroscience",
                 MathPlanConstants.PGMS + "neuroscience/",
-                ERequirement.M_155);
-        this.majors.add(mNERO);
+                ERequirement.M_155,
+                IdealFirstTerm.IDEAL_55);
+        majors.add(mNERO);
 
         // *** Major in Health Physics
 
@@ -1113,8 +1203,9 @@ public final class MajorsCurrent {
                 new String[]{"HLPH-DD-BS"},
                 "Health Physics",
                 null,
-                ERequirement.M_160);
-        this.majors.add(mHLPH);
+                ERequirement.M_160,
+                IdealFirstTerm.IDEAL_17_OR_HIGHER);
+        majors.add(mHLPH);
 
         // *** Major in Exploratory Studies
 
@@ -1123,72 +1214,81 @@ public final class MajorsCurrent {
                 new String[]{"EXUN"},
                 "Exploratory Studies",
                 MathPlanConstants.PGMS + "exploratory-studies/",
-                ERequirement.PICK_3CR_117_118_124_120);
-        this.majors.add(mEXUN);
+                ERequirement.PICK_3CR_117_118_124_120,
+                IdealFirstTerm.IDEAL_171824);
+        majors.add(mEXUN);
 
         final Major mEXAD = new Major(
                 new int[]{9001},
                 new String[]{"EXAD", "EXLA", "EXCO", "USJC", "UNLA"},
                 "Exploratory Studies", // Arts, Humanities, and Design
                 MathPlanConstants.PGMS + "exploratory-studies/",
-                ERequirement.CORE_ONLY);
-        this.majors.add(mEXAD);
+                ERequirement.PICK_3CR_117_118_124_120,
+                IdealFirstTerm.IDEAL_171824);
+        majors.add(mEXAD);
 
         final Major mEXHF = new Major(
                 new int[]{9002},
                 new String[]{"EXHF"},
                 "Exploratory Studies", // Health, Life, and Food Sciences
                 MathPlanConstants.PGMS + "exploratory-studies/",
-                ERequirement.PICK_3CR_117_118_124_120);
-        this.majors.add(mEXHF);
+                ERequirement.PICK_3CR_117_118_124_120,
+                IdealFirstTerm.IDEAL_171824);
+        majors.add(mEXHF);
 
         final Major mEXTC = new Major(
                 new int[]{9003},
                 new String[]{"EXTC"},
                 "Exploratory Studies", // Education and Teaching
                 MathPlanConstants.PGMS + "exploratory-studies/",
-                ERequirement.PICK_3CR_117_118_124_120);
-        this.majors.add(mEXTC);
+                ERequirement.PICK_3CR_117_118_124_120,
+                IdealFirstTerm.IDEAL_171824);
+        majors.add(mEXTC);
 
         final Major mEXPL = new Major(
                 new int[]{9004},
                 new String[]{"EXPL"},
                 "Exploratory Studies", // Land, Plant, and Animal Sciences
                 MathPlanConstants.PGMS + "exploratory-studies/",
-                ERequirement.PICK_3CR_117_118_124_120);
-        this.majors.add(mEXPL);
+                ERequirement.PICK_3CR_117_118_124_120,
+                IdealFirstTerm.IDEAL_171824);
+        majors.add(mEXPL);
 
         final Major mEXNR = new Major(
                 new int[]{9005},
                 new String[]{"EXNR"},
                 "Exploratory Studies", // Environment and Natural Resources
                 MathPlanConstants.PGMS + "exploratory-studies/",
-                ERequirement.PICK_3CR_117_118_124_120);
-        this.majors.add(mEXNR);
+                ERequirement.PICK_3CR_117_118_124_120,
+                IdealFirstTerm.IDEAL_171824);
+        majors.add(mEXNR);
 
         final Major mEXPE = new Major(
                 new int[]{9006},
                 new String[]{"EXPE", "USEG", "USCS", "ENGO"},
                 "Exploratory Studies", // Physical Sciences and Engineering
                 MathPlanConstants.PGMS + "exploratory-studies/",
-                ERequirement.PICK_3CR_117_118_124_120_125_126);
-        this.majors.add(mEXPE);
+                ERequirement.M_160,
+                IdealFirstTerm.IDEAL_60);
+        majors.add(mEXPE);
 
         final Major mEXGS = new Major(
                 new int[]{9007},
                 new String[]{"EXGS", "EXPO"},
                 "Exploratory Studies", // Global and Social Sciences
                 MathPlanConstants.PGMS + "exploratory-studies/",
-                ERequirement.PICK_3CR_117_118_124_120);
-        this.majors.add(mEXGS);
+                ERequirement.PICK_3CR_117_118_124_120,
+                IdealFirstTerm.IDEAL_171824);
+        majors.add(mEXGS);
 
         final Major mEXBU = new Major(
                 new int[]{9008},
                 new String[]{"EXBU", "USBU", "USBS"},
                 "Exploratory Studies", // Organization, Management, and Enterprise
                 MathPlanConstants.PGMS + "exploratory-studies/",
-                ERequirement.PICK_3CR_117_118_124_120);
-        this.majors.add(mEXBU);
+                ERequirement.PICK_3CR_117_118_124_120,
+                IdealFirstTerm.IDEAL_171824);
+        majors.add(mEXBU);
 
         // Codes that the Math Plan will ignore:
         // IGNORE: FESV-DD-BS, Fire and Emergency Services Administration
@@ -1204,70 +1304,6 @@ public final class MajorsCurrent {
         // IGNORE: FCST-UG
         // IGNORE: SSAS-UG
 
-        this.majors.sort(null);
-    }
-
-    /**
-     * Gets the list of majors.
-     *
-     * @return the list of majors
-     */
-    public List<Major> getMajors() {
-
-        return this.majors;
-    }
-
-    /**
-     * Gets the major with a specified program code.
-     *
-     * @param programCode the program code
-     * @return the major; {@code null} if none matches the program code
-     */
-    public Major getMajor(final String programCode) {
-
-        Major result = null;
-
-        for (final Major major : this.majors) {
-            boolean found = false;
-            for (final String code : major.programCodes) {
-                if (code.equals(programCode)) {
-                    found = true;
-                    break;
-                }
-            }
-            if (found) {
-                result = major;
-                break;
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Gets the major with a specified numeric code.
-     *
-     * @param numericCode the numeric code
-     * @return the major; {@code null} if none matches the program code
-     */
-    Major getMajor(final int numericCode) {
-
-        Major result = null;
-
-        for (final Major major : this.majors) {
-            boolean found = false;
-            for (final int nbr : major.questionNumbers) {
-                if (nbr == numericCode) {
-                    found = true;
-                    break;
-                }
-            }
-            if (found) {
-                result = major;
-                break;
-            }
-        }
-
-        return result;
+        majors.sort(null);
     }
 }
