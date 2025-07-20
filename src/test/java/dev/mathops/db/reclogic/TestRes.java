@@ -18,10 +18,13 @@ final class TestRes extends ResBundle {
     static final String ERR_NO_PGPRIMARY_CONTEXT = key(2);
 
     /** A resource key. */
-    static final String ERR_CANT_QUERY_WHICH_DB = key(3);
+    static final String ERR_NO_IFXPRIMARY_CONTEXT = key(3);
 
     /** A resource key. */
-    static final String ERR_NOT_CONNECTED_TO_TEST = key(4);
+    static final String ERR_CANT_QUERY_WHICH_DB = key(4);
+
+    /** A resource key. */
+    static final String ERR_NOT_CONNECTED_TO_TEST = key(5);
 
     //
 
@@ -30,6 +33,7 @@ final class TestRes extends ResBundle {
 
             {ERR_NO_IFXTEST_PROFILE, "No 'ifxtest' code profile configured."},
             {ERR_NO_PGPRIMARY_CONTEXT, "No primary context in the 'pgtest' code profile."},
+            {ERR_NO_IFXPRIMARY_CONTEXT, "No primary context in the 'ifxtest' code profile."},
             {ERR_CANT_QUERY_WHICH_DB, "Can't query which_db"},
             {ERR_NOT_CONNECTED_TO_TEST, "Connected to {0}rather than TEST database"},
 

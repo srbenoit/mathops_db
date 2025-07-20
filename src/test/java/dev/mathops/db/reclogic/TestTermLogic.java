@@ -1,4 +1,4 @@
-package dev.mathops.db.term;
+package dev.mathops.db.reclogic;
 
 import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
@@ -10,7 +10,6 @@ import dev.mathops.db.cfg.DatabaseConfig;
 import dev.mathops.db.cfg.Facet;
 import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.rec.TermRec;
-import dev.mathops.db.reclogic.TermLogic;
 import dev.mathops.db.type.TermKey;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -124,7 +123,8 @@ final class TestTermLogic {
                     if (rs.next()) {
                         final String which = rs.getString(1);
                         if (which == null || !"TEST".equals(which.trim())) {
-                            throw new IllegalArgumentException(TestRes.fmt(TestRes.ERR_NOT_CONNECTED_TO_TEST,
+                            throw new IllegalArgumentException(
+                                    TestRes.fmt(TestRes.ERR_NOT_CONNECTED_TO_TEST,
                                     which));
                         }
                     } else {
