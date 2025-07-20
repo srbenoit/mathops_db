@@ -3,7 +3,9 @@ package dev.mathops.db.logic.mathplan.majors;
 import dev.mathops.db.logic.mathplan.types.ERequirement;
 import dev.mathops.db.logic.mathplan.types.IdealFirstTerm;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -39,9 +41,9 @@ public final class Major implements Comparable<Major> {
      * @param theRequirements    the  required math courses in the major
      * @param theIdealFirstTerm  the "ideal" courses for which student will be eligible in the first semester
      */
-    Major(final int[] theQuestionNumbers, final String[] theProgramCodes, final String theProgramName,
-          final String theCatalogPageUrl, final ERequirement theRequirements,
-          final IdealFirstTerm theIdealFirstTerm) {
+    public Major(final int[] theQuestionNumbers, final String[] theProgramCodes, final String theProgramName,
+                 final String theCatalogPageUrl, final ERequirement theRequirements,
+                 final IdealFirstTerm theIdealFirstTerm) {
 
         this.questionNumbers = theQuestionNumbers.clone();
         this.programCodes = Arrays.asList(theProgramCodes);
@@ -49,6 +51,40 @@ public final class Major implements Comparable<Major> {
         this.catalogPageUrl = theCatalogPageUrl;
         this.requirements = theRequirements;
         this.idealFirstTerm = theIdealFirstTerm;
+    }
+
+    /**
+     * Constructs a new {@code Major}.
+     *
+     * @param theQuestionNumbers the array of question numbers in the Math Plan that indicate the program is selected
+     * @param theProgramCodes    the array of CIM program codes for the major and concentrations
+     * @param theProgramName     the name of the major (displayed in the major selection page)
+     * @param theCatalogPageUrl  the URL to a descriptive page for the major
+     * @param theRequirements    the  required math courses in the major
+     * @param theIdealFirstTerm  the "ideal" courses for which student will be eligible in the first semester
+     */
+    public Major(final int[] theQuestionNumbers, final Collection<String> theProgramCodes, final String theProgramName,
+                 final String theCatalogPageUrl, final ERequirement theRequirements,
+                 final IdealFirstTerm theIdealFirstTerm) {
+
+        this.questionNumbers = theQuestionNumbers.clone();
+        this.programCodes = new ArrayList<>(theProgramCodes);
+        this.programName = theProgramName;
+        this.catalogPageUrl = theCatalogPageUrl;
+        this.requirements = theRequirements;
+        this.idealFirstTerm = theIdealFirstTerm;
+    }
+
+    /**
+     * Creates a clone of this major with a different program name.
+     *
+     * @param newName the new program name
+     * @return the clone
+     */
+    public Major cloneWithNewName(final String newName) {
+
+        return new Major(this.questionNumbers, this.programCodes, newName,
+                this.catalogPageUrl, this.requirements, this.idealFirstTerm);
     }
 
     /**
