@@ -92,7 +92,7 @@ public final class BulkUpdateStudentInformation {
 
             for (final RawStudent student : allStudents) {
                 final String stuId = student.stuId;
-                if ("888888888".equals(stuId)) {
+                if (RawStudent.TEST_STUDENT_ID.equals(stuId)) {
                     continue;
                 }
 

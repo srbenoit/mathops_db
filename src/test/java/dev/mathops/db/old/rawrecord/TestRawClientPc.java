@@ -1,7 +1,6 @@
 package dev.mathops.db.old.rawrecord;
 
 import dev.mathops.commons.CoreConstants;
-import dev.mathops.db.old.rawrecord.RawClientPc;
 import dev.mathops.db.rec.RecBase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -56,9 +55,6 @@ final class TestRawClientPc {
 
     /** A test field value. */
     private static final Integer TEST_LAST_PING = Integer.valueOf(15800);
-
-    /** A test field value. */
-    private static final String TEST_CURRENT_STU_ID = "888888888";
 
     /** A test field value. */
     private static final String TEST_CURRENT_COURSE = "M 100P";
@@ -484,7 +480,7 @@ final class TestRawClientPc {
         final RawClientPc obj = new RawClientPc(TEST_COMPUTER_ID, TEST_TESTING_CENTER_ID,
                 TEST_STATION_NBR, TEST_COMPUTER_DESC, TEST_ICON_X, TEST_ICON_Y, TEST_PC_USAGE,
                 TEST_CURRENT_STATUS, TEST_DTIME_CREATED, TEST_DTIME_APPROVED, TEST_MAC_ADDRESS,
-                TEST_POWER_STATUS, TEST_POWER_ON_DUE, TEST_LAST_PING, TEST_CURRENT_STU_ID,
+                TEST_POWER_STATUS, TEST_POWER_ON_DUE, TEST_LAST_PING, RawStudent.TEST_STUDENT_ID,
                 TEST_CURRENT_COURSE, TEST_CURRENT_UNIT, TEST_CURRENT_VERSION);
 
         assertEquals(TEST_COMPUTER_ID, obj.computerId, "Invalid computer_id value after constructor");
@@ -501,7 +497,7 @@ final class TestRawClientPc {
         assertEquals(TEST_POWER_STATUS, obj.powerStatus, "Invalid power_status value after constructor");
         assertEquals(TEST_POWER_ON_DUE, obj.powerOnDue, "Invalid power_on_due value after constructor");
         assertEquals(TEST_LAST_PING, obj.lastPing, "Invalid last_ping value after constructor");
-        assertEquals(TEST_CURRENT_STU_ID, obj.currentStuId, "Invalid current_stu_id value after constructor");
+        assertEquals(RawStudent.TEST_STUDENT_ID, obj.currentStuId, "Invalid current_stu_id value after constructor");
         assertEquals(TEST_CURRENT_COURSE, obj.currentCourse, "Invalid current_course value after constructor");
         assertEquals(TEST_CURRENT_UNIT, obj.currentUnit, "Invalid current_unit value after constructor");
         assertEquals(TEST_CURRENT_VERSION, obj.currentVersion, "Invalid current_version value after constructor");
@@ -695,7 +691,7 @@ final class TestRawClientPc {
     void test0030() {
 
         final RawClientPc obj = new RawClientPc(null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null, TEST_CURRENT_STU_ID, null, null, null);
+                null, null, null, null, null, null, RawStudent.TEST_STUDENT_ID, null, null, null);
 
         final String ser = obj.toString();
 
@@ -749,7 +745,7 @@ final class TestRawClientPc {
         final RawClientPc obj = new RawClientPc(TEST_COMPUTER_ID, TEST_TESTING_CENTER_ID,
                 TEST_STATION_NBR, TEST_COMPUTER_DESC, TEST_ICON_X, TEST_ICON_Y, TEST_PC_USAGE,
                 TEST_CURRENT_STATUS, TEST_DTIME_CREATED, TEST_DTIME_APPROVED, TEST_MAC_ADDRESS,
-                TEST_POWER_STATUS, TEST_POWER_ON_DUE, TEST_LAST_PING, TEST_CURRENT_STU_ID,
+                TEST_POWER_STATUS, TEST_POWER_ON_DUE, TEST_LAST_PING, RawStudent.TEST_STUDENT_ID,
                 TEST_CURRENT_COURSE, TEST_CURRENT_UNIT, TEST_CURRENT_VERSION);
 
         final String ser = obj.toString();

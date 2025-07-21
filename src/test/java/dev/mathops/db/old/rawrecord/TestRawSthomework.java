@@ -1,6 +1,5 @@
 package dev.mathops.db.old.rawrecord;
 
-import dev.mathops.db.old.rawrecord.RawSthomework;
 import dev.mathops.db.rec.RecBase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,9 +18,6 @@ final class TestRawSthomework {
 
     /** A field name. */
     private static final String TEST_VERSION = "171H1";
-
-    /** A field name. */
-    private static final String TEST_STU_ID = "888888888";
 
     /** A field name. */
     private static final LocalDate TEST_HW_DT = LocalDate.of(2023, 1, 2);
@@ -98,14 +94,14 @@ final class TestRawSthomework {
     @DisplayName("Constructor")
     void test0001() {
 
-        final RawSthomework obj = new RawSthomework(TEST_SERIAL_NBR, TEST_VERSION, TEST_STU_ID,
+        final RawSthomework obj = new RawSthomework(TEST_SERIAL_NBR, TEST_VERSION, RawStudent.TEST_STUDENT_ID,
                 TEST_HW_DT, TEST_HW_SCORE, TEST_START_TIME, TEST_FINISH_TIME, TEST_TIME_OK, TEST_PASSED,
                 TEST_HW_TYPE, TEST_COURSE, TEST_SECT, TEST_UNIT, TEST_OBJECTIVE, TEST_HW_COUPON,
                 TEST_USED_DT, TEST_USED_SERIAL_NBR);
 
         assertEquals(TEST_SERIAL_NBR, obj.serialNbr, "Invalid serial_nbr value after constructor");
         assertEquals(TEST_VERSION, obj.version, "Invalid version value after constructor");
-        assertEquals(TEST_STU_ID, obj.stuId, "Invalid std_id value after constructor");
+        assertEquals(RawStudent.TEST_STUDENT_ID, obj.stuId, "Invalid std_id value after constructor");
         assertEquals(TEST_HW_DT, obj.hwDt, "Invalid hw_dt value after constructor");
         assertEquals(TEST_HW_SCORE, obj.hwScore, "Invalid hw_score value after constructor");
         assertEquals(TEST_START_TIME, obj.startTime, "Invalid start_time value after constructor");
@@ -127,7 +123,7 @@ final class TestRawSthomework {
     @DisplayName("string serialization")
     void test0098() {
 
-        final RawSthomework obj = new RawSthomework(TEST_SERIAL_NBR, TEST_VERSION, TEST_STU_ID,
+        final RawSthomework obj = new RawSthomework(TEST_SERIAL_NBR, TEST_VERSION, RawStudent.TEST_STUDENT_ID,
                 TEST_HW_DT, TEST_HW_SCORE, TEST_START_TIME, TEST_FINISH_TIME, TEST_TIME_OK, TEST_PASSED,
                 TEST_HW_TYPE, TEST_COURSE, TEST_SECT, TEST_UNIT, TEST_OBJECTIVE, TEST_HW_COUPON,
                 TEST_USED_DT, TEST_USED_SERIAL_NBR);

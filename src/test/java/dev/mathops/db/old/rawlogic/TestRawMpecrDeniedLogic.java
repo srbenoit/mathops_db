@@ -10,6 +10,7 @@ import dev.mathops.db.cfg.Login;
 import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.old.rawrecord.RawMpecrDenied;
 import dev.mathops.db.old.rawrecord.RawRecordConstants;
+import dev.mathops.db.old.rawrecord.RawStudent;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -86,7 +87,7 @@ final class TestRawMpecrDeniedLogic {
             final RawMpecrDenied raw3 = new RawMpecrDenied("123456789", RawRecordConstants.M126, "N",
                     date2, "YD", Long.valueOf(12346L), "MPTTC", "TC");
 
-            final RawMpecrDenied raw4 = new RawMpecrDenied("888888888", RawRecordConstants.M117, "Y",
+            final RawMpecrDenied raw4 = new RawMpecrDenied(RawStudent.TEST_STUDENT_ID, RawRecordConstants.M117, "Y",
                     date3, "EN", Long.valueOf(12347L), "MPTPU", null);
 
             assertTrue(RawMpecrDeniedLogic.insert(cache, raw1), "Failed to insert mpecr_denied");
@@ -153,7 +154,7 @@ final class TestRawMpecrDeniedLogic {
 
                     found3 = true;
 
-                } else if ("888888888".equals(r.stuId)
+                } else if (RawStudent.TEST_STUDENT_ID.equals(r.stuId)
                            && RawRecordConstants.M117.equals(r.course)
                            && "Y".equals(r.examPlaced)
                            && date3.equals(r.examDt)
@@ -363,7 +364,7 @@ final class TestRawMpecrDeniedLogic {
 
                     found3 = true;
 
-                } else if ("888888888".equals(r.stuId)
+                } else if (RawStudent.TEST_STUDENT_ID.equals(r.stuId)
                            && RawRecordConstants.M117.equals(r.course)
                            && "Y".equals(r.examPlaced)
                            && date3.equals(r.examDt)

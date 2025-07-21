@@ -1,6 +1,5 @@
 package dev.mathops.db.old.rawrecord;
 
-import dev.mathops.db.old.rawrecord.RawStmathplan;
 import dev.mathops.db.rec.RecBase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,9 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * Tests for the {@code RawStmathplan} class.
  */
 final class TestRawStmathplan {
-
-    /** A field name. */
-    private static final String TEST_STU_ID = "888888888";
 
     /** A field name. */
     private static final Integer TEST_PIDM = Integer.valueOf(999);
@@ -67,10 +63,10 @@ final class TestRawStmathplan {
     void test0001() {
 
         final RawStmathplan obj =
-                new RawStmathplan(TEST_STU_ID, TEST_PIDM, TEST_APLN_TERM, TEST_VERSION, TEST_EXAM_DT,
+                new RawStmathplan(RawStudent.TEST_STUDENT_ID, TEST_PIDM, TEST_APLN_TERM, TEST_VERSION, TEST_EXAM_DT,
                         TEST_SURVEY_NBR, TEST_STU_ANSWER, TEST_FINISH_TIME, TEST_SESSION);
 
-        assertEquals(TEST_STU_ID, obj.stuId, "Invalid std_id value after constructor");
+        assertEquals(RawStudent.TEST_STUDENT_ID, obj.stuId, "Invalid std_id value after constructor");
         assertEquals(TEST_PIDM, obj.pidm, "Invalid pidm value after constructor");
         assertEquals(TEST_APLN_TERM, obj.aplnTerm, "Invalid apln_term value after constructor");
         assertEquals(TEST_VERSION, obj.version, "Invalid version value after constructor");
@@ -87,7 +83,7 @@ final class TestRawStmathplan {
     void test0098() {
 
         final RawStmathplan obj =
-                new RawStmathplan(TEST_STU_ID, TEST_PIDM, TEST_APLN_TERM, TEST_VERSION, TEST_EXAM_DT,
+                new RawStmathplan(RawStudent.TEST_STUDENT_ID, TEST_PIDM, TEST_APLN_TERM, TEST_VERSION, TEST_EXAM_DT,
                         TEST_SURVEY_NBR, TEST_STU_ANSWER, TEST_FINISH_TIME, TEST_SESSION);
 
         final String ser = obj.toString();

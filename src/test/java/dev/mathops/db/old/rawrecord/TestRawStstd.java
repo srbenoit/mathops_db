@@ -1,6 +1,5 @@
 package dev.mathops.db.old.rawrecord;
 
-import dev.mathops.db.old.rawrecord.RawStstd;
 import dev.mathops.db.rec.RecBase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,9 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * Tests for the {@code RawStstd} class.
  */
 final class TestRawStstd {
-
-    /** A field name. */
-    private static final String TEST_STU_ID = "888888888";
 
     /** A field name. */
     private static final String TEST_STD_ID = "A1.2";
@@ -54,10 +50,10 @@ final class TestRawStstd {
     @DisplayName("Constructor")
     void test0001() {
 
-        final RawStstd obj = new RawStstd(TEST_STU_ID, TEST_STD_ID, TEST_WHEN_PLACED_OUT,
+        final RawStstd obj = new RawStstd(RawStudent.TEST_STUDENT_ID, TEST_STD_ID, TEST_WHEN_PLACED_OUT,
                 TEST_WHEN_MASTERED, TEST_MASTERED_GROUPS, TEST_COMPLETED_STEPS);
 
-        assertEquals(TEST_STU_ID, obj.stuId, "Invalid std_id value after constructor");
+        assertEquals(RawStudent.TEST_STUDENT_ID, obj.stuId, "Invalid std_id value after constructor");
         assertEquals(TEST_STD_ID, obj.stdId, "Invalid std_id value after constructor");
         assertEquals(TEST_WHEN_PLACED_OUT, obj.whenPlacedOut, "Invalid when_placed_out value after constructor");
         assertEquals(TEST_WHEN_MASTERED, obj.whenMastered, "Invalid when_mastered value after constructor");
@@ -70,7 +66,7 @@ final class TestRawStstd {
     @DisplayName("string serialization")
     void test0098() {
 
-        final RawStstd obj = new RawStstd(TEST_STU_ID, TEST_STD_ID, TEST_WHEN_PLACED_OUT,
+        final RawStstd obj = new RawStstd(RawStudent.TEST_STUDENT_ID, TEST_STD_ID, TEST_WHEN_PLACED_OUT,
                 TEST_WHEN_MASTERED, TEST_MASTERED_GROUPS, TEST_COMPLETED_STEPS);
 
         final String ser = obj.toString();

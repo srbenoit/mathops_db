@@ -219,6 +219,7 @@ public class PlacementLogic {
 
             // Count used attempts
             int numUnproctored = 0;
+            int numProctored = 0;
             int numAttempts = 0;
             int numCountedAttempts = 0;
 
@@ -244,11 +245,13 @@ public class PlacementLogic {
                            || PROCTORED_MPT_PROCTORU_ID.equals(attempt.version)
                            || PROCTORED_MPT_RAMWORK.equals(attempt.version)) {
                     ++numAttempts;
+                    ++numProctored;
                     ++numCountedAttempts;
                 }
             }
 
             this.status.unproctoredUsed = numUnproctored >= MAX_UNPROCTORED_PLACEMENT_ATTEMPTS;
+            this.status.proctoredAttempted = numProctored > 0;
             this.status.attemptsUsed = numAttempts;
 
             if (numCountedAttempts >= maxTries) {
@@ -512,8 +515,8 @@ public class PlacementLogic {
 
             final ZonedDateTime now = ZonedDateTime.now();
             try {
-                final PlacementLogic logic = new PlacementLogic(cache, "888888888", new TermKey(ETermName.SPRING, 2025),
-                        now);
+                final PlacementLogic logic = new PlacementLogic(cache, RawStudent.TEST_STUDENT_ID,
+                        new TermKey(ETermName.SPRING, 2025), now);
 
                 mainPrintStatus(logic.status);
             } catch (final SQLException ex) {

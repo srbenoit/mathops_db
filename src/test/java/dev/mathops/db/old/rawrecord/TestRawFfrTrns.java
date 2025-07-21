@@ -1,6 +1,5 @@
 package dev.mathops.db.old.rawrecord;
 
-import dev.mathops.db.old.rawrecord.RawFfrTrns;
 import dev.mathops.db.rec.RecBase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,9 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * Tests for the {@code RawFfrTrns} class.
  */
 final class TestRawFfrTrns {
-
-    /** A field name. */
-    private static final String TEST_STU_ID = "888888888";
 
     /** A field name. */
     private static final String TEST_COURSE = "M 117";
@@ -54,10 +50,10 @@ final class TestRawFfrTrns {
     @DisplayName("Constructor")
     void test0001() {
 
-        final RawFfrTrns obj = new RawFfrTrns(TEST_STU_ID, TEST_COURSE, TEST_EXAM_PLACED,
+        final RawFfrTrns obj = new RawFfrTrns(RawStudent.TEST_STUDENT_ID, TEST_COURSE, TEST_EXAM_PLACED,
                 TEST_EXAM_DT, TEST_DT_CR_REFUSED, TEST_GRADE);
 
-        assertEquals(TEST_STU_ID, obj.stuId, "Invalid stu_id value after constructor");
+        assertEquals(RawStudent.TEST_STUDENT_ID, obj.stuId, "Invalid stu_id value after constructor");
         assertEquals(TEST_COURSE, obj.course, "Invalid course value after constructor");
         assertEquals(TEST_EXAM_PLACED, obj.examPlaced, "Invalid exam_placed value after constructor");
         assertEquals(TEST_EXAM_DT, obj.examDt, "Invalid exam_dt value after constructor");
@@ -70,7 +66,7 @@ final class TestRawFfrTrns {
     @DisplayName("string serialization")
     void test0098() {
 
-        final RawFfrTrns obj = new RawFfrTrns(TEST_STU_ID, TEST_COURSE, TEST_EXAM_PLACED,
+        final RawFfrTrns obj = new RawFfrTrns(RawStudent.TEST_STUDENT_ID, TEST_COURSE, TEST_EXAM_PLACED,
                 TEST_EXAM_DT, TEST_DT_CR_REFUSED, TEST_GRADE);
 
         final String ser = obj.toString();

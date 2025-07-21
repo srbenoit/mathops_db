@@ -59,7 +59,7 @@ public enum DeleteTestUserData {
     ;
 
     /** The list of test student IDs whose data to clear. */
-    private static final List<String> TEST_STUS = Arrays.asList("111223333", "888888888", "823251213");
+    private static final List<String> TEST_STUS = Arrays.asList("111223333", RawStudent.TEST_STUDENT_ID, "823251213");
 
     /** The prefix for bulk test student IDs. */
     private static final String TEST_PREFIX = "99";

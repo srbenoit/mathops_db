@@ -68,6 +68,9 @@ public final class PlacementStatus {
     /** Flag indicating the student has used their unproctored attempt. */
     public boolean unproctoredUsed;
 
+    /** Flag indicating the student has attempted the exam in a proctored setting. */
+    public boolean proctoredAttempted;
+
     /**
      * The reason this format of the tool is not available ({@code null} if {@code availableLocalProctoredIds} contains
      * at least one entry; populated if {@code availableLocalProctoredIds} is empty).

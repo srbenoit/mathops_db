@@ -1,6 +1,5 @@
 package dev.mathops.db.old.rawrecord;
 
-import dev.mathops.db.old.rawrecord.RawSpecialStus;
 import dev.mathops.db.rec.RecBase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,9 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * Tests for the {@code RawSpecialStus} class.
  */
 final class TestRawSpecialStus {
-
-    /** A field name. */
-    private static final String TEST_STU_ID = "888888888";
 
     /** A field name. */
     private static final String TEST_STU_TYPE = "ADM";
@@ -46,9 +42,10 @@ final class TestRawSpecialStus {
     @DisplayName("Constructor")
     void test0001() {
 
-        final RawSpecialStus obj = new RawSpecialStus(TEST_STU_ID, TEST_STU_TYPE, TEST_START_DT, TEST_END_DT);
+        final RawSpecialStus obj = new RawSpecialStus(RawStudent.TEST_STUDENT_ID, TEST_STU_TYPE, TEST_START_DT,
+                TEST_END_DT);
 
-        assertEquals(TEST_STU_ID, obj.stuId, "Invalid stu_id value after constructor");
+        assertEquals(RawStudent.TEST_STUDENT_ID, obj.stuId, "Invalid stu_id value after constructor");
         assertEquals(TEST_STU_TYPE, obj.stuType, "Invalid stu_type value after constructor");
         assertEquals(TEST_START_DT, obj.startDt, "Invalid start_dt value after constructor");
         assertEquals(TEST_END_DT, obj.endDt, "Invalid end_dt value after constructor");
@@ -59,8 +56,8 @@ final class TestRawSpecialStus {
     @DisplayName("string serialization")
     void test0098() {
 
-        final RawSpecialStus obj =
-                new RawSpecialStus(TEST_STU_ID, TEST_STU_TYPE, TEST_START_DT, TEST_END_DT);
+        final RawSpecialStus obj = new RawSpecialStus(RawStudent.TEST_STUDENT_ID, TEST_STU_TYPE, TEST_START_DT,
+                TEST_END_DT);
 
         final String ser = obj.toString();
 

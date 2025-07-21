@@ -1,6 +1,5 @@
 package dev.mathops.db.old.rawrecord;
 
-import dev.mathops.db.old.rawrecord.RawLogins;
 import dev.mathops.db.rec.RecBase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,9 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * Tests for the {@code RawLogins} class.
  */
 final class TestRawLogins {
-
-    /** A field name. */
-    private static final String TEST_USER_ID = "888888888";
 
     /** A field name. */
     private static final String TEST_USER_TYPE = "STU";
@@ -79,11 +75,11 @@ final class TestRawLogins {
     void test0001() {
 
         final RawLogins obj =
-                new RawLogins(TEST_USER_ID, TEST_USER_TYPE, TEST_USER_NAME, TEST_STORED_KEY,
+                new RawLogins(RawStudent.TEST_STUDENT_ID, TEST_USER_TYPE, TEST_USER_NAME, TEST_STORED_KEY,
                         TEST_SERVER_KEY, TEST_DTIME_CREATED, TEST_DTIME_EXPIRES, TEST_DTIME_LAST_LOGIN,
                         TEST_FORCE_PW_CHANGE, TEST_EMAIL, TEST_SALT, TEST_NBR_INVALID_ATMPTS);
 
-        assertEquals(TEST_USER_ID, obj.userId, "Invalid user_id value after constructor");
+        assertEquals(RawStudent.TEST_STUDENT_ID, obj.userId, "Invalid user_id value after constructor");
         assertEquals(TEST_USER_TYPE, obj.userType, "Invalid user_type value after constructor");
         assertEquals(TEST_USER_NAME, obj.userName, "Invalid user_name value after constructor");
         assertEquals(TEST_STORED_KEY, obj.storedKey, "Invalid stored_key value after constructor");
@@ -104,7 +100,7 @@ final class TestRawLogins {
     void test0098() {
 
         final RawLogins obj =
-                new RawLogins(TEST_USER_ID, TEST_USER_TYPE, TEST_USER_NAME, TEST_STORED_KEY,
+                new RawLogins(RawStudent.TEST_STUDENT_ID, TEST_USER_TYPE, TEST_USER_NAME, TEST_STORED_KEY,
                         TEST_SERVER_KEY, TEST_DTIME_CREATED, TEST_DTIME_EXPIRES, TEST_DTIME_LAST_LOGIN,
                         TEST_FORCE_PW_CHANGE, TEST_EMAIL, TEST_SALT, TEST_NBR_INVALID_ATMPTS);
 

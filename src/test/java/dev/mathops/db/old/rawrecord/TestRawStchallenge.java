@@ -15,9 +15,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 final class TestRawStchallenge {
 
     /** A field name. */
-    private static final String TEST_STU_ID = "888888888";
-
-    /** A field name. */
     private static final String TEST_COURSE = "M 117";
 
     /** A field name. */
@@ -90,12 +87,12 @@ final class TestRawStchallenge {
     @DisplayName("Constructor")
     void test0001() {
 
-        final RawStchallenge obj = new RawStchallenge(TEST_STU_ID, TEST_COURSE, TEST_VERSION,
+        final RawStchallenge obj = new RawStchallenge(RawStudent.TEST_STUDENT_ID, TEST_COURSE, TEST_VERSION,
                 TEST_ACADEMIC_YR, TEST_EXAM_DT, TEST_START_TIME, TEST_FINISH_TIME, TEST_LAST_NAME,
                 TEST_FIRST_NAME, TEST_MIDDLE_INITIAL, TEST_SEQ_NBR, TEST_SERIAL_NBR, TEST_SCORE,
                 TEST_PASSED, TEST_HOW_VALIDATED);
 
-        assertEquals(TEST_STU_ID, obj.stuId, "Invalid term value after constructor");
+        assertEquals(RawStudent.TEST_STUDENT_ID, obj.stuId, "Invalid term value after constructor");
         assertEquals(TEST_COURSE, obj.course, "Invalid course value after constructor");
         assertEquals(TEST_VERSION, obj.version, "Invalid version value after constructor");
         assertEquals(TEST_ACADEMIC_YR, obj.academicYr, "Invalid academic_yr value after constructor");
@@ -117,7 +114,7 @@ final class TestRawStchallenge {
     @DisplayName("string serialization")
     void test0098() {
 
-        final RawStchallenge obj = new RawStchallenge(TEST_STU_ID, TEST_COURSE, TEST_VERSION,
+        final RawStchallenge obj = new RawStchallenge(RawStudent.TEST_STUDENT_ID, TEST_COURSE, TEST_VERSION,
                 TEST_ACADEMIC_YR, TEST_EXAM_DT, TEST_START_TIME, TEST_FINISH_TIME, TEST_LAST_NAME,
                 TEST_FIRST_NAME, TEST_MIDDLE_INITIAL, TEST_SEQ_NBR, TEST_SERIAL_NBR, TEST_SCORE,
                 TEST_PASSED, TEST_HOW_VALIDATED);

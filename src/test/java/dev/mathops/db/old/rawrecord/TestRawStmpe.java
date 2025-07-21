@@ -1,6 +1,5 @@
 package dev.mathops.db.old.rawrecord;
 
-import dev.mathops.db.old.rawrecord.RawStmpe;
 import dev.mathops.db.rec.RecBase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,9 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * Tests for the {@code RawStmpe} class.
  */
 final class TestRawStmpe {
-
-    /** A field name. */
-    private static final String TEST_STU_ID = "888888888";
 
     /** A field name. */
     private static final String TEST_VERSION = "MPTTC";
@@ -106,12 +102,12 @@ final class TestRawStmpe {
     @DisplayName("Constructor")
     void test0001() {
 
-        final RawStmpe obj = new RawStmpe(TEST_STU_ID, TEST_VERSION, TEST_ACADEMIC_YR, TEST_EXAM_DT,
+        final RawStmpe obj = new RawStmpe(RawStudent.TEST_STUDENT_ID, TEST_VERSION, TEST_ACADEMIC_YR, TEST_EXAM_DT,
                 TEST_START_TIME, TEST_FINISH_TIME, TEST_LAST_NAME, TEST_FIRST_NAME, TEST_MIDDLE_INITIAL,
                 TEST_SEQ_NBR, TEST_SERIAL_NBR, TEST_STS_A, TEST_STS_117, TEST_STS_118, TEST_STS_124,
                 TEST_STS_125, TEST_STS_126, TEST_PLACED, TEST_HOW_VALIDATED);
 
-        assertEquals(TEST_STU_ID, obj.stuId, "Invalid std_id value after constructor");
+        assertEquals(RawStudent.TEST_STUDENT_ID, obj.stuId, "Invalid std_id value after constructor");
         assertEquals(TEST_VERSION, obj.version, "Invalid version value after constructor");
         assertEquals(TEST_ACADEMIC_YR, obj.academicYr, "Invalid academic_yr value after constructor");
         assertEquals(TEST_EXAM_DT, obj.examDt, "Invalid exam_dt value after constructor");
@@ -137,7 +133,7 @@ final class TestRawStmpe {
     @DisplayName("string serialization")
     void test0098() {
 
-        final RawStmpe obj = new RawStmpe(TEST_STU_ID, TEST_VERSION, TEST_ACADEMIC_YR, TEST_EXAM_DT,
+        final RawStmpe obj = new RawStmpe(RawStudent.TEST_STUDENT_ID, TEST_VERSION, TEST_ACADEMIC_YR, TEST_EXAM_DT,
                 TEST_START_TIME, TEST_FINISH_TIME, TEST_LAST_NAME, TEST_FIRST_NAME, TEST_MIDDLE_INITIAL,
                 TEST_SEQ_NBR, TEST_SERIAL_NBR, TEST_STS_A, TEST_STS_117, TEST_STS_118, TEST_STS_124,
                 TEST_STS_125, TEST_STS_126, TEST_PLACED, TEST_HOW_VALIDATED);

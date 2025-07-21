@@ -1,7 +1,6 @@
 package dev.mathops.db.old.rawrecord;
 
 import dev.mathops.db.enums.ETermName;
-import dev.mathops.db.old.rawrecord.RawGradeRoll;
 import dev.mathops.db.rec.RecBase;
 import dev.mathops.db.type.TermKey;
 import org.junit.jupiter.api.DisplayName;
@@ -16,9 +15,6 @@ final class TestRawGradeRoll {
 
     /** A field name. */
     private static final TermKey TEST_TERM = new TermKey(ETermName.FALL, 2022);
-
-    /** A field name. */
-    private static final String TEST_STU_ID = "888888888";
 
     /** A field name. */
     private static final String TEST_COURSE = "M 117";
@@ -54,11 +50,11 @@ final class TestRawGradeRoll {
     @DisplayName("Constructor")
     void test0001() {
 
-        final RawGradeRoll obj = new RawGradeRoll(TEST_TERM, TEST_STU_ID, TEST_COURSE, TEST_SECT,
+        final RawGradeRoll obj = new RawGradeRoll(TEST_TERM, RawStudent.TEST_STUDENT_ID, TEST_COURSE, TEST_SECT,
                 TEST_FULLNAME, TEST_GRADE_OPT);
 
         assertEquals(TEST_TERM, obj.termKey, "Invalid term_key value after constructor");
-        assertEquals(TEST_STU_ID, obj.stuId, "Invalid stu_id value after constructor");
+        assertEquals(RawStudent.TEST_STUDENT_ID, obj.stuId, "Invalid stu_id value after constructor");
         assertEquals(TEST_COURSE, obj.course, "Invalid course value after constructor");
         assertEquals(TEST_SECT, obj.sect, "Invalid sect value after constructor");
         assertEquals(TEST_FULLNAME, obj.fullname, "Invalid fullname value after constructor");
@@ -70,7 +66,7 @@ final class TestRawGradeRoll {
     @DisplayName("string serialization")
     void test0098() {
 
-        final RawGradeRoll obj = new RawGradeRoll(TEST_TERM, TEST_STU_ID, TEST_COURSE, TEST_SECT,
+        final RawGradeRoll obj = new RawGradeRoll(TEST_TERM, RawStudent.TEST_STUDENT_ID, TEST_COURSE, TEST_SECT,
                 TEST_FULLNAME, TEST_GRADE_OPT);
 
         final String ser = obj.toString();

@@ -1,7 +1,6 @@
 package dev.mathops.db.old.rawrecord;
 
 import dev.mathops.db.enums.ETermName;
-import dev.mathops.db.old.rawrecord.RawExceptStu;
 import dev.mathops.db.rec.RecBase;
 import dev.mathops.db.type.TermKey;
 import org.junit.jupiter.api.DisplayName;
@@ -16,9 +15,6 @@ final class TestRawExceptStu {
 
     /** A field name. */
     private static final TermKey TEST_TERM = new TermKey(ETermName.FALL, 2022);
-
-    /** A field name. */
-    private static final String TEST_STU_ID = "888888888";
 
     /** A field name. */
     private static final String TEST_COURSE = "M 117";
@@ -62,11 +58,11 @@ final class TestRawExceptStu {
     @DisplayName("Constructor")
     void test0001() {
 
-        final RawExceptStu obj = new RawExceptStu(TEST_TERM, TEST_STU_ID, TEST_COURSE, TEST_UNIT,
+        final RawExceptStu obj = new RawExceptStu(TEST_TERM, RawStudent.TEST_STUDENT_ID, TEST_COURSE, TEST_UNIT,
                 TEST_COURSE_ENROLL, TEST_HWORK_STATUS, TEST_SECT, TEST_SECT_ENROLL);
 
         assertEquals(TEST_TERM, obj.termKey, "Invalid term value after constructor");
-        assertEquals(TEST_STU_ID, obj.stuId, "Invalid stu_id value after constructor");
+        assertEquals(RawStudent.TEST_STUDENT_ID, obj.stuId, "Invalid stu_id value after constructor");
         assertEquals(TEST_COURSE, obj.course, "Invalid course value after constructor");
         assertEquals(TEST_UNIT, obj.unit, "Invalid unit value after constructor");
         assertEquals(TEST_COURSE_ENROLL, obj.courseEnroll, "Invalid course_enroll value after constructor");
@@ -80,7 +76,7 @@ final class TestRawExceptStu {
     @DisplayName("string serialization")
     void test0098() {
 
-        final RawExceptStu obj = new RawExceptStu(TEST_TERM, TEST_STU_ID, TEST_COURSE, TEST_UNIT,
+        final RawExceptStu obj = new RawExceptStu(TEST_TERM, RawStudent.TEST_STUDENT_ID, TEST_COURSE, TEST_UNIT,
                 TEST_COURSE_ENROLL, TEST_HWORK_STATUS, TEST_SECT, TEST_SECT_ENROLL);
 
         final String ser = obj.toString();

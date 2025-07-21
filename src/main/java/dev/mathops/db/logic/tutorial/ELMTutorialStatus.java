@@ -237,8 +237,8 @@ public final class ELMTutorialStatus {
 //                final Cache cache = new Cache(dbProfile, conn);
 //
 //                try {
-//                    final HoldsStatus holds = HoldsStatus.of(cache, "888888888");
-//                    final ELMTutorialStatus status = of(cache, "888888888", now, holds);
+//                    final HoldsStatus holds = HoldsStatus.of(cache, RawStudent.TEST_STUDENT_ID);
+//                    final ELMTutorialStatus status = of(cache, RawStudent.TEST_STUDENT_ID, now, holds);
 //
 //                    mainPrintResult(status);
 //                } finally {

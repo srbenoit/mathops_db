@@ -1,7 +1,6 @@
 package dev.mathops.db.old.rawrecord;
 
 import dev.mathops.db.enums.ETermName;
-import dev.mathops.db.old.rawrecord.RawStmilestone;
 import dev.mathops.db.rec.RecBase;
 import dev.mathops.db.type.TermKey;
 import org.junit.jupiter.api.DisplayName;
@@ -18,9 +17,6 @@ final class TestRawStmilestone {
 
     /** A field name. */
     private static final TermKey TEST_TERM = new TermKey(ETermName.FALL, 2022);
-
-    /** A field name. */
-    private static final String TEST_STU_ID = "888888888";
 
     /** A field name. */
     private static final String TEST_PACE_TRACK = "A";
@@ -63,11 +59,11 @@ final class TestRawStmilestone {
     @DisplayName("Constructor")
     void test0001() {
 
-        final RawStmilestone obj = new RawStmilestone(TEST_TERM, TEST_STU_ID, TEST_PACE_TRACK,
+        final RawStmilestone obj = new RawStmilestone(TEST_TERM, RawStudent.TEST_STUDENT_ID, TEST_PACE_TRACK,
                 TEST_MS_NBR, TEST_MS_TYPE, TEST_MS_DATE, TEST_NBR_ATMPTS_ALLOW);
 
         assertEquals(TEST_TERM, obj.termKey, "Invalid term value after constructor");
-        assertEquals(TEST_STU_ID, obj.stuId, "Invalid std_id value after constructor");
+        assertEquals(RawStudent.TEST_STUDENT_ID, obj.stuId, "Invalid std_id value after constructor");
         assertEquals(TEST_PACE_TRACK, obj.paceTrack, "Invalid pace_track value after constructor");
         assertEquals(TEST_MS_NBR, obj.msNbr, "Invalid ms_nbr value after constructor");
         assertEquals(TEST_MS_TYPE, obj.msType, "Invalid ms_type value after constructor");
@@ -80,7 +76,7 @@ final class TestRawStmilestone {
     @DisplayName("string serialization")
     void test0098() {
 
-        final RawStmilestone obj = new RawStmilestone(TEST_TERM, TEST_STU_ID, TEST_PACE_TRACK,
+        final RawStmilestone obj = new RawStmilestone(TEST_TERM, RawStudent.TEST_STUDENT_ID, TEST_PACE_TRACK,
                 TEST_MS_NBR, TEST_MS_TYPE, TEST_MS_DATE, TEST_NBR_ATMPTS_ALLOW);
 
         final String ser = obj.toString();

@@ -1,6 +1,5 @@
 package dev.mathops.db.old.rawrecord;
 
-import dev.mathops.db.old.rawrecord.RawStsurveyqa;
 import dev.mathops.db.rec.RecBase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,9 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * Tests for the {@code RawStsurveyqa} class.
  */
 final class TestRawStsurveyqa {
-
-    /** A field name. */
-    private static final String TEST_STU_ID = "888888888";
 
     /** A field name. */
     private static final String TEST_VERSION = "UOOOO";
@@ -54,10 +50,10 @@ final class TestRawStsurveyqa {
     @DisplayName("Constructor")
     void test0001() {
 
-        final RawStsurveyqa obj = new RawStsurveyqa(TEST_STU_ID, TEST_VERSION, TEST_EXAM_DT,
+        final RawStsurveyqa obj = new RawStsurveyqa(RawStudent.TEST_STUDENT_ID, TEST_VERSION, TEST_EXAM_DT,
                 TEST_SURVEY_NBR, TEST_STU_ANSWER, TEST_FINISH_TIME);
 
-        assertEquals(TEST_STU_ID, obj.stuId, "Invalid std_id value after constructor");
+        assertEquals(RawStudent.TEST_STUDENT_ID, obj.stuId, "Invalid std_id value after constructor");
         assertEquals(TEST_VERSION, obj.version, "Invalid version value after constructor");
         assertEquals(TEST_EXAM_DT, obj.examDt, "Invalid exam_dt value after constructor");
         assertEquals(TEST_SURVEY_NBR, obj.surveyNbr, "Invalid survey_nbr value after constructor");
@@ -70,7 +66,7 @@ final class TestRawStsurveyqa {
     @DisplayName("string serialization")
     void test0098() {
 
-        final RawStsurveyqa obj = new RawStsurveyqa(TEST_STU_ID, TEST_VERSION, TEST_EXAM_DT,
+        final RawStsurveyqa obj = new RawStsurveyqa(RawStudent.TEST_STUDENT_ID, TEST_VERSION, TEST_EXAM_DT,
                 TEST_SURVEY_NBR, TEST_STU_ANSWER, TEST_FINISH_TIME);
 
         final String ser = obj.toString();

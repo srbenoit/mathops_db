@@ -1,6 +1,5 @@
 package dev.mathops.db.old.rawrecord;
 
-import dev.mathops.db.old.rawrecord.RawMpecrDenied;
 import dev.mathops.db.rec.RecBase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,9 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * Tests for the {@code RawMpecrDenied} class.
  */
 final class TestRawMpecrDenied {
-
-    /** A field name. */
-    private static final String TEST_STU_ID = "888888888";
 
     /** A field name. */
     private static final String TEST_COURSE = "M 117";
@@ -62,10 +58,10 @@ final class TestRawMpecrDenied {
     @DisplayName("Constructor")
     void test0001() {
 
-        final RawMpecrDenied obj = new RawMpecrDenied(TEST_STU_ID, TEST_COURSE, TEST_EXAM_PLACED,
+        final RawMpecrDenied obj = new RawMpecrDenied(RawStudent.TEST_STUDENT_ID, TEST_COURSE, TEST_EXAM_PLACED,
                 TEST_EXAM_DT, TEST_WHY_DENIED, TEST_SERIAL_NBR, TEST_VERSION, TEST_EXAM_SOURCE);
 
-        assertEquals(TEST_STU_ID, obj.stuId, "Invalid stu_id value after constructor");
+        assertEquals(RawStudent.TEST_STUDENT_ID, obj.stuId, "Invalid stu_id value after constructor");
         assertEquals(TEST_COURSE, obj.course, "Invalid course value after constructor");
         assertEquals(TEST_EXAM_PLACED, obj.examPlaced, "Invalid exam_placed value after constructor");
         assertEquals(TEST_EXAM_DT, obj.examDt, "Invalid exam_dt value after constructor");
@@ -80,7 +76,7 @@ final class TestRawMpecrDenied {
     @DisplayName("string serialization")
     void test0098() {
 
-        final RawMpecrDenied obj = new RawMpecrDenied(TEST_STU_ID, TEST_COURSE, TEST_EXAM_PLACED,
+        final RawMpecrDenied obj = new RawMpecrDenied(RawStudent.TEST_STUDENT_ID, TEST_COURSE, TEST_EXAM_PLACED,
                 TEST_EXAM_DT, TEST_WHY_DENIED, TEST_SERIAL_NBR, TEST_VERSION, TEST_EXAM_SOURCE);
 
         final String ser = obj.toString();

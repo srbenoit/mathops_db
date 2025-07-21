@@ -1,6 +1,5 @@
 package dev.mathops.db.old.rawrecord;
 
-import dev.mathops.db.old.rawrecord.RawMpeLog;
 import dev.mathops.db.rec.RecBase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,9 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * Tests for the {@code RawMpeLog} class.
  */
 final class TestRawMpeLog {
-
-    /** A field name. */
-    private static final String TEST_STU_ID = "888888888";
 
     /** A field name. */
     private static final String TEST_ACADEMIC_YR = "2021";
@@ -71,10 +67,10 @@ final class TestRawMpeLog {
     void test0001() {
 
         final RawMpeLog obj =
-                new RawMpeLog(TEST_STU_ID, TEST_ACADEMIC_YR, TEST_COURSE, TEST_VERSION, TEST_START_DT,
+                new RawMpeLog(RawStudent.TEST_STUDENT_ID, TEST_ACADEMIC_YR, TEST_COURSE, TEST_VERSION, TEST_START_DT,
                         TEST_EXAM_DT, TEST_RECOVER_DT, TEST_SERIAL_NBR, TEST_START_TIME, TEST_CALC_NBR);
 
-        assertEquals(TEST_STU_ID, obj.stuId, "Invalid stu_id value after constructor");
+        assertEquals(RawStudent.TEST_STUDENT_ID, obj.stuId, "Invalid stu_id value after constructor");
         assertEquals(TEST_ACADEMIC_YR, obj.academicYr, "Invalid academic_yr value after constructor");
         assertEquals(TEST_COURSE, obj.course, "Invalid course value after constructor");
         assertEquals(TEST_VERSION, obj.version, "Invalid version value after constructor");
@@ -92,7 +88,7 @@ final class TestRawMpeLog {
     void test0098() {
 
         final RawMpeLog obj =
-                new RawMpeLog(TEST_STU_ID, TEST_ACADEMIC_YR, TEST_COURSE, TEST_VERSION, TEST_START_DT,
+                new RawMpeLog(RawStudent.TEST_STUDENT_ID, TEST_ACADEMIC_YR, TEST_COURSE, TEST_VERSION, TEST_START_DT,
                         TEST_EXAM_DT, TEST_RECOVER_DT, TEST_SERIAL_NBR, TEST_START_TIME, TEST_CALC_NBR);
 
         final String ser = obj.toString();

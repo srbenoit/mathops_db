@@ -438,7 +438,7 @@ public enum RawStudentLogic {
         }
 
         if (liveRefreshes && !LogicUtils.isBannerDown() && stuId.length() == 9
-            && stuId.charAt(0) == '8' && !"888888888".equals(stuId)) {
+            && (int) stuId.charAt(0) == (int) '8' && !RawStudent.TEST_STUDENT_ID.equals(stuId)) {
 
             final Long when = LIVE_QUERIED_STUDENTS.get(stuId);
             final long now = System.currentTimeMillis();

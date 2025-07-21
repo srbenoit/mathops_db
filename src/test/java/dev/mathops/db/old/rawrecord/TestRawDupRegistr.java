@@ -1,7 +1,6 @@
 package dev.mathops.db.old.rawrecord;
 
 import dev.mathops.db.enums.ETermName;
-import dev.mathops.db.old.rawrecord.RawDupRegistr;
 import dev.mathops.db.rec.RecBase;
 import dev.mathops.db.type.TermKey;
 import org.junit.jupiter.api.DisplayName;
@@ -17,10 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 final class TestRawDupRegistr {
 
     /** A field name. */
-    private static final TermKey TEST_TERM = new TermKey(ETermName.FALL, 2022); // $NON-NLS-1$
-
-    /** A field name. */
-    private static final String TEST_STU_ID = "888888888";
+    private static final TermKey TEST_TERM = new TermKey(ETermName.FALL, 2022);
 
     /** A field name. */
     private static final String TEST_COURSE = "M 117";
@@ -144,7 +140,7 @@ final class TestRawDupRegistr {
     @DisplayName("Constructor")
     void test0001() {
 
-        final RawDupRegistr obj = new RawDupRegistr(TEST_TERM, TEST_STU_ID, TEST_COURSE, TEST_SECT,
+        final RawDupRegistr obj = new RawDupRegistr(TEST_TERM, RawStudent.TEST_STUDENT_ID, TEST_COURSE, TEST_SECT,
                 TEST_PACE_ORDER, TEST_OPEN_STATUS, TEST_GRADING_OPTION, TEST_COMPLETED, TEST_SCORE,
                 TEST_COURSE_GRADE, TEST_PREREQ_SATIS, TEST_INIT_CLASS_ROLL, TEST_STU_PROVIDED,
                 TEST_FINAL_CLASS_ROLL, TEST_EXAM_PLACED, TEST_ZERO_UNIT, TEST_TIMEOUT_FACTOR,
@@ -153,7 +149,7 @@ final class TestRawDupRegistr {
                 TEST_LAST_CLASS_ROLL_DT, TEST_I_TERM, TEST_I_DEADLINE_DT);
 
         assertEquals(TEST_TERM, obj.termKey, "Invalid term value after constructor");
-        assertEquals(TEST_STU_ID, obj.stuId, "Invalid term value after constructor");
+        assertEquals(RawStudent.TEST_STUDENT_ID, obj.stuId, "Invalid term value after constructor");
         assertEquals(TEST_COURSE, obj.course, "Invalid course value after constructor");
         assertEquals(TEST_SECT, obj.sect, "Invalid sect value after constructor");
         assertEquals(TEST_PACE_ORDER, obj.paceOrder, "Invalid pace_order value after constructor");
@@ -189,7 +185,7 @@ final class TestRawDupRegistr {
     @DisplayName("string serialization")
     void test0098() {
 
-        final RawDupRegistr obj = new RawDupRegistr(TEST_TERM, TEST_STU_ID, TEST_COURSE, TEST_SECT,
+        final RawDupRegistr obj = new RawDupRegistr(TEST_TERM, RawStudent.TEST_STUDENT_ID, TEST_COURSE, TEST_SECT,
                 TEST_PACE_ORDER, TEST_OPEN_STATUS, TEST_GRADING_OPTION, TEST_COMPLETED, TEST_SCORE,
                 TEST_COURSE_GRADE, TEST_PREREQ_SATIS, TEST_INIT_CLASS_ROLL, TEST_STU_PROVIDED,
                 TEST_FINAL_CLASS_ROLL, TEST_EXAM_PLACED, TEST_ZERO_UNIT, TEST_TIMEOUT_FACTOR,

@@ -10,6 +10,7 @@ import dev.mathops.db.cfg.Login;
 import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.old.rawrecord.RawClientPc;
 import dev.mathops.db.old.rawrecord.RawRecordConstants;
+import dev.mathops.db.old.rawrecord.RawStudent;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -86,8 +87,8 @@ final class TestRawClientPcLogic {
 
             final RawClientPc raw1 = new RawClientPc("Computer 1", "CENTER 1", "Station A", "A good computer",
                     Integer.valueOf(100), Integer.valueOf(200), "P", Integer.valueOf(1), date1, date2,
-                    "001122334455", RawClientPc.POWER_OFF, Integer.valueOf(50), Integer.valueOf(51), "888888888",
-                    RawRecordConstants.M117, Integer.valueOf(1), "171UE");
+                    "001122334455", RawClientPc.POWER_OFF, Integer.valueOf(50), Integer.valueOf(51),
+                    RawStudent.TEST_STUDENT_ID, RawRecordConstants.M117, Integer.valueOf(1), "171UE");
 
             final RawClientPc raw2 = new RawClientPc("Computer 2", "CENTER 2", "Station B", "A lousy computer",
                     Integer.valueOf(150), Integer.valueOf(250), "O", Integer.valueOf(2), date3, date4,
@@ -142,7 +143,7 @@ final class TestRawClientPcLogic {
                     && RawClientPc.POWER_OFF.equals(r.powerStatus)
                     && Integer.valueOf(50).equals(r.powerOnDue)
                     && Integer.valueOf(51).equals(r.lastPing)
-                    && "888888888".equals(r.currentStuId)
+                    && RawStudent.TEST_STUDENT_ID.equals(r.currentStuId)
                     && RawRecordConstants.M117.equals(r.currentCourse)
                     && Integer.valueOf(1).equals(r.currentUnit)
                     && "171UE".equals(r.currentVersion)) {
@@ -328,7 +329,7 @@ final class TestRawClientPcLogic {
             assertEquals(date2, r.dtimeApproved, "Bad approval date");
             assertEquals("001122334455", r.macAddress, "Bad MAC address");
             assertEquals(RawClientPc.POWER_OFF, r.powerStatus, "Bad power status");
-            assertEquals("888888888", r.currentStuId, "Bad current student");
+            assertEquals(RawStudent.TEST_STUDENT_ID, r.currentStuId, "Bad current student");
             assertEquals(RawRecordConstants.M117, r.currentCourse, "Bad current course");
             assertEquals(Integer.valueOf(1), r.currentUnit, "Bad current unit");
             assertEquals("171UE", r.currentVersion, "Bad current version");
@@ -483,8 +484,8 @@ final class TestRawClientPcLogic {
         try {
             final RawClientPc raw1 = new RawClientPc("Computer 1", "CENTER 1", "Station A", "A good computer",
                     Integer.valueOf(100), Integer.valueOf(200), "P", Integer.valueOf(1), date1, date2,
-                    "001122334455", RawClientPc.POWER_OFF, null, null, "888888888", RawRecordConstants.M117,
-                    Integer.valueOf(1), "171UE");
+                    "001122334455", RawClientPc.POWER_OFF, null, null, RawStudent.TEST_STUDENT_ID,
+                    RawRecordConstants.M117, Integer.valueOf(1), "171UE");
 
             final boolean result = RawClientPcLogic.delete(cache, raw1);
             assertTrue(result, "delete returned false");

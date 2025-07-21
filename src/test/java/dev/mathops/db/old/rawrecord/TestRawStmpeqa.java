@@ -1,6 +1,5 @@
 package dev.mathops.db.old.rawrecord;
 
-import dev.mathops.db.old.rawrecord.RawStmpeqa;
 import dev.mathops.db.rec.RecBase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,9 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * Tests for the {@code RawStmpeqa} class.
  */
 final class TestRawStmpeqa {
-
-    /** A field name. */
-    private static final String TEST_STU_ID = "888888888";
 
     /** A field name. */
     private static final String TEST_VERSION = "MPTTC";
@@ -67,10 +63,10 @@ final class TestRawStmpeqa {
     void test0001() {
 
         final RawStmpeqa obj =
-                new RawStmpeqa(TEST_STU_ID, TEST_VERSION, TEST_EXAM_DT, TEST_FINISH_TIME,
+                new RawStmpeqa(RawStudent.TEST_STUDENT_ID, TEST_VERSION, TEST_EXAM_DT, TEST_FINISH_TIME,
                         TEST_QUESTION_NBR, TEST_STU_ANSWER, TEST_ANS_CORRECT, TEST_SUBTEST, TEST_TREE_REF);
 
-        assertEquals(TEST_STU_ID, obj.stuId, "Invalid std_id value after constructor");
+        assertEquals(RawStudent.TEST_STUDENT_ID, obj.stuId, "Invalid std_id value after constructor");
         assertEquals(TEST_VERSION, obj.version, "Invalid version value after constructor");
         assertEquals(TEST_EXAM_DT, obj.examDt, "Invalid exam_dt value after constructor");
         assertEquals(TEST_FINISH_TIME, obj.finishTime, "Invalid finish_time value after constructor");
@@ -87,7 +83,7 @@ final class TestRawStmpeqa {
     void test0098() {
 
         final RawStmpeqa obj =
-                new RawStmpeqa(TEST_STU_ID, TEST_VERSION, TEST_EXAM_DT, TEST_FINISH_TIME,
+                new RawStmpeqa(RawStudent.TEST_STUDENT_ID, TEST_VERSION, TEST_EXAM_DT, TEST_FINISH_TIME,
                         TEST_QUESTION_NBR, TEST_STU_ANSWER, TEST_ANS_CORRECT, TEST_SUBTEST, TEST_TREE_REF);
 
         final String ser = obj.toString();

@@ -9,6 +9,7 @@ import dev.mathops.db.cfg.DatabaseConfig;
 import dev.mathops.db.cfg.Login;
 import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.old.rawrecord.RawAdminHold;
+import dev.mathops.db.old.rawrecord.RawStudent;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -92,7 +93,7 @@ final class TestRawAdminHoldLogic {
             }
             conn.commit();
 
-            final RawAdminHold raw1 = new RawAdminHold("888888888", "06", "F", Integer.valueOf(1), date1);
+            final RawAdminHold raw1 = new RawAdminHold(RawStudent.TEST_STUDENT_ID, "06", "F", Integer.valueOf(1), date1);
             final RawAdminHold raw2 = new RawAdminHold("888888889", "01", "N", Integer.valueOf(2), date2);
             final RawAdminHold raw3 = new RawAdminHold("888888889", "02", "N", Integer.valueOf(3), date3);
 
@@ -125,7 +126,7 @@ final class TestRawAdminHoldLogic {
 
             for (final RawAdminHold test : all) {
 
-                if ("888888888".equals(test.stuId)
+                if (RawStudent.TEST_STUDENT_ID.equals(test.stuId)
                     && "06".equals(test.holdId)
                     && "F".equals(test.sevAdminHold)
                     && Integer.valueOf(1).equals(test.timesDisplay)
@@ -205,7 +206,7 @@ final class TestRawAdminHoldLogic {
         try {
             assertFalse(RawAdminHoldLogic.hasFatalHold(cache, "888888887"),
                     "hasFatalHold was incorrect when no hold present");
-            assertTrue(RawAdminHoldLogic.hasFatalHold(cache, "888888888"),
+            assertTrue(RawAdminHoldLogic.hasFatalHold(cache, RawStudent.TEST_STUDENT_ID),
                     "hasFatalHold was incorrect when fatal hold present");
             assertFalse(RawAdminHoldLogic.hasFatalHold(cache, "888888889"),
                     "hasFatalHold was incorrect when fatal hold not present");
@@ -248,11 +249,12 @@ final class TestRawAdminHoldLogic {
         final Cache cache = new Cache(profile);
 
         try {
-            final RawAdminHold toUpdate = new RawAdminHold("888888888", "06", "F", Integer.valueOf(1), date4);
+            final RawAdminHold toUpdate = new RawAdminHold(RawStudent.TEST_STUDENT_ID, "06", "F", Integer.valueOf(1),
+                    date4);
 
             assertTrue(RawAdminHoldLogic.updateAdminHoldDate(cache, toUpdate), "Update of admin_hold failed");
 
-            final RawAdminHold test = RawAdminHoldLogic.query(cache, "888888888", "06");
+            final RawAdminHold test = RawAdminHoldLogic.query(cache, RawStudent.TEST_STUDENT_ID, "06");
 
             assertNotNull(test, "Query after update of admin_hold returned no record");
 

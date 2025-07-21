@@ -694,7 +694,7 @@ public final class AuditBannerTestScores {
             }
         }
 
-        studentIds.remove("888888888");
+        studentIds.remove(RawStudent.TEST_STUDENT_ID);
         studentIds.remove("823251213");
 
         return studentIds;

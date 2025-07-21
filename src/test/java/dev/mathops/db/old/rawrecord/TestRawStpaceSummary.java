@@ -1,7 +1,6 @@
 package dev.mathops.db.old.rawrecord;
 
 import dev.mathops.db.enums.ETermName;
-import dev.mathops.db.old.rawrecord.RawStpaceSummary;
 import dev.mathops.db.rec.RecBase;
 import dev.mathops.db.type.TermKey;
 import org.junit.jupiter.api.DisplayName;
@@ -18,9 +17,6 @@ final class TestRawStpaceSummary {
 
     /** A field name. */
     private static final TermKey TEST_TERM = new TermKey(ETermName.FALL, 2022); // $NON-NLS-1$
-
-    /** A field name. */
-    private static final String TEST_STU_ID = "888888888";
 
     /** A field name. */
     private static final String TEST_COURSE = "M 117";
@@ -88,12 +84,12 @@ final class TestRawStpaceSummary {
     @DisplayName("Constructor")
     void test0001() {
 
-        final RawStpaceSummary obj = new RawStpaceSummary(TEST_TERM, TEST_STU_ID, TEST_COURSE,
+        final RawStpaceSummary obj = new RawStpaceSummary(TEST_TERM, RawStudent.TEST_STUDENT_ID, TEST_COURSE,
                 TEST_SECT, TEST_I_IN_PROGRESS, TEST_PACE, TEST_PACE_TRACK, TEST_PACE_ORDER, TEST_MS_NBR,
                 TEST_MS_UNIT, TEST_MS_DATE, TEST_NEW_MS_DATE, TEST_EXAM_DT, TEST_RE_POINTS);
 
         assertEquals(TEST_TERM, obj.termKey, "Invalid term value after constructor");
-        assertEquals(TEST_STU_ID, obj.stuId, "Invalid term value after constructor");
+        assertEquals(RawStudent.TEST_STUDENT_ID, obj.stuId, "Invalid term value after constructor");
         assertEquals(TEST_COURSE, obj.course, "Invalid course value after constructor");
         assertEquals(TEST_SECT, obj.sect, "Invalid sect value after constructor");
         assertEquals(TEST_I_IN_PROGRESS, obj.iInProgress, "Invalid i_in_progress value after constructor");
@@ -113,7 +109,7 @@ final class TestRawStpaceSummary {
     @DisplayName("string serialization")
     void test0098() {
 
-        final RawStpaceSummary obj = new RawStpaceSummary(TEST_TERM, TEST_STU_ID, TEST_COURSE,
+        final RawStpaceSummary obj = new RawStpaceSummary(TEST_TERM, RawStudent.TEST_STUDENT_ID, TEST_COURSE,
                 TEST_SECT, TEST_I_IN_PROGRESS, TEST_PACE, TEST_PACE_TRACK, TEST_PACE_ORDER, TEST_MS_NBR,
                 TEST_MS_UNIT, TEST_MS_DATE, TEST_NEW_MS_DATE, TEST_EXAM_DT, TEST_RE_POINTS);
 

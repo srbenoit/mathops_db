@@ -1,7 +1,6 @@
 package dev.mathops.db.old.rawrecord;
 
 import dev.mathops.db.enums.ETermName;
-import dev.mathops.db.old.rawrecord.RawUsers;
 import dev.mathops.db.rec.RecBase;
 import dev.mathops.db.type.TermKey;
 import org.junit.jupiter.api.DisplayName;
@@ -18,9 +17,6 @@ final class TestRawUsers {
 
     /** A field name. */
     private static final TermKey TEST_TERM = new TermKey(ETermName.FALL, 2022);
-
-    /** A field name. */
-    private static final String TEST_STU_ID = "888888888";
 
     /** A field name. */
     private static final Long TEST_SERIAL_NBR = Long.valueOf(987654321L);
@@ -64,11 +60,11 @@ final class TestRawUsers {
     @DisplayName("Constructor")
     void test0001() {
 
-        final RawUsers obj = new RawUsers(TEST_TERM, TEST_STU_ID, TEST_SERIAL_NBR, TEST_VERSION,
+        final RawUsers obj = new RawUsers(TEST_TERM, RawStudent.TEST_STUDENT_ID, TEST_SERIAL_NBR, TEST_VERSION,
                 TEST_EXAM_DT, TEST_EXAM_SCORE, TEST_CALC_COURSE, TEST_PASSED);
 
         assertEquals(TEST_TERM, obj.termKey, "Invalid term value after constructor");
-        assertEquals(TEST_STU_ID, obj.stuId, "Invalid stu_id value after constructor");
+        assertEquals(RawStudent.TEST_STUDENT_ID, obj.stuId, "Invalid stu_id value after constructor");
         assertEquals(TEST_SERIAL_NBR, obj.serialNbr, "Invalid serial_nbr value after constructor");
         assertEquals(TEST_VERSION, obj.version, "Invalid version value after constructor");
         assertEquals(TEST_EXAM_DT, obj.examDt, "Invalid exam_dt value after constructor");
@@ -82,7 +78,7 @@ final class TestRawUsers {
     @DisplayName("string serialization")
     void test0098() {
 
-        final RawUsers obj = new RawUsers(TEST_TERM, TEST_STU_ID, TEST_SERIAL_NBR, TEST_VERSION,
+        final RawUsers obj = new RawUsers(TEST_TERM, RawStudent.TEST_STUDENT_ID, TEST_SERIAL_NBR, TEST_VERSION,
                 TEST_EXAM_DT, TEST_EXAM_SCORE, TEST_CALC_COURSE, TEST_PASSED);
 
         final String ser = obj.toString();

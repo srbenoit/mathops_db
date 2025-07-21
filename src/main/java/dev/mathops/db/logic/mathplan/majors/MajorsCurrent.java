@@ -349,7 +349,6 @@ public final class MajorsCurrent extends MajorsBase {
         // ====================================
 
         // *** Major in Apparel and Merchandising (with three concentrations)
-        // Concentrations grouped into major:
         // 4001: APAM-ADAZ-BS, Apparel and Merchandising - Apparel Design and Production
         // 4002: APAM-MDSZ-BS, Apparel and Merchandising - Merchandising
         // 4003: APAM-PDVZ-BS, Apparel and Merchandising - Product Development
@@ -364,7 +363,6 @@ public final class MajorsCurrent extends MajorsBase {
         majors.add(mAPAM);
 
         // *** Major in Construction Management
-        // Concentrations grouped into major:
         // FAKE: CTM0, "Pre-Construction Management
 
         final Major mCTMG = new Major(
@@ -417,7 +415,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mFMST2 = new Major(
                 new int[]{4042},
                 new String[]{"FAFS-FSIZ-BS"},
-                "Fermentation Science and Technology (Food Science Concentration)",
+                "Fermentation Science and Technology (Food Science)",
                 MathPlanConstants.PGMS + "fermentation-and-food-science/",
                 ERequirement.M_117_118_124_125_141_OR_155,
                 IdealFirstTerm.IDEAL_17182425);
@@ -467,7 +465,6 @@ public final class MajorsCurrent extends MajorsBase {
         majors.add(mHDFS);
 
         // *** Major in Interior Architecture and Design
-        // Concentrations grouped into major:
         // 4081: IARD-BS, Interior Architecture and Design
         // 4082: IARD-IADZ-BS, Interior Architecture and Design - Interior Architecture
         // 4083: IARD-IPRZ-BS, Interior Architecture and Design - Interior Products and Retailing
@@ -482,7 +479,6 @@ public final class MajorsCurrent extends MajorsBase {
         majors.add(mIARD);
 
         // *** Major in Social Work
-        // Concentrations grouped into major:
         // 4101: SOWK-ADSZ-BSW, Social Work - Addictions Counseling
 
         final Major mSOWK = new Major(
@@ -714,7 +710,6 @@ public final class MajorsCurrent extends MajorsBase {
         majors.add(mPHIL);
 
         // *** Major in Political Science
-        // Concentrations grouped into major:
         // 5151: POLS-EPAZ-BA, Political Science - Environmental Politics and Policy
         // 5152: POLS-GPPZ-BA, Political Science - Global Politics and Policy
         // 5153: DEACTIVATED
@@ -733,7 +728,6 @@ public final class MajorsCurrent extends MajorsBase {
         majors.add(mPOLS);
 
         // *** Major in Sociology
-        // Concentrations grouped into major:
         // 5161: SOCI-CRCZ-BA, Sociology - Criminology and Criminal Justice
         // 5162: SOCI-ENSZ-BA, Sociology - Environmental Sociology
         // 5163: SOCI-GNSZ-BA, Sociology - General Sociology
@@ -1157,7 +1151,6 @@ public final class MajorsCurrent extends MajorsBase {
         // ======================================================
 
         // *** Major in Biomedical Sciences
-        // Concentrations (and older major codes) grouped into major:
         // 8001: BIOM-APHZ-BS, Biomedical Sciences - Anatomy and Physiology
         // 8002: BIOM-EPHZ-BS, Biomedical Sciences - Environmental Public Health
         // 8003: BIOM-MIDZ-BS, Biomedical Sciences - Microbiology and Infectious Disease
@@ -1183,7 +1176,6 @@ public final class MajorsCurrent extends MajorsBase {
         majors.add(mBIOM2);
 
         // *** Major in Neuroscience
-        // Concentrations grouped into major:
         // 8031: NERO-BCNZ-BS, Neuroscience - Behavioral and Cognitive Neuroscience
         // 8032: NERO-CMNZ-BS, Neuroscience - Cell and Molecular Neuroscience
 

@@ -1,6 +1,5 @@
 package dev.mathops.db.old.rawrecord;
 
-import dev.mathops.db.old.rawrecord.RawStvisit;
 import dev.mathops.db.rec.RecBase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,9 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * Tests for the {@code RawStvisit} class.
  */
 final class TestRawStvisit {
-
-    /** A field name. */
-    private static final String TEST_STU_ID = "888888888";
 
     /** A field name. */
     private static final LocalDateTime TEST_WHEN_STARTED = LocalDateTime.of(2022, 12, 31, 23, 50, 45);
@@ -50,10 +46,10 @@ final class TestRawStvisit {
     @DisplayName("Constructor")
     void test0001() {
 
-        final RawStvisit obj = new RawStvisit(TEST_STU_ID, TEST_WHEN_STARTED, TEST_WHEN_ENDED, TEST_LOCATION,
+        final RawStvisit obj = new RawStvisit(RawStudent.TEST_STUDENT_ID, TEST_WHEN_STARTED, TEST_WHEN_ENDED, TEST_LOCATION,
                 TEST_SEAT);
 
-        assertEquals(TEST_STU_ID, obj.stuId, "Invalid std_id value after constructor");
+        assertEquals(RawStudent.TEST_STUDENT_ID, obj.stuId, "Invalid std_id value after constructor");
         assertEquals(TEST_WHEN_STARTED, obj.whenStarted, "Invalid when_started value after constructor");
         assertEquals(TEST_WHEN_ENDED, obj.whenEnded, "Invalid when_ended value after constructor");
         assertEquals(TEST_LOCATION, obj.location, "Invalid location value after constructor");
@@ -65,7 +61,7 @@ final class TestRawStvisit {
     @DisplayName("string serialization")
     void test0098() {
 
-        final RawStvisit obj = new RawStvisit(TEST_STU_ID, TEST_WHEN_STARTED, TEST_WHEN_ENDED, TEST_LOCATION,
+        final RawStvisit obj = new RawStvisit(RawStudent.TEST_STUDENT_ID, TEST_WHEN_STARTED, TEST_WHEN_ENDED, TEST_LOCATION,
                 TEST_SEAT);
 
         final String ser = obj.toString();

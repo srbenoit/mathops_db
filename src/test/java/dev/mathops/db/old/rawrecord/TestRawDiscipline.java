@@ -1,6 +1,5 @@
 package dev.mathops.db.old.rawrecord;
 
-import dev.mathops.db.old.rawrecord.RawDiscipline;
 import dev.mathops.db.rec.RecBase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,9 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * Tests for the {@code RawDiscipline} class.
  */
 final class TestRawDiscipline {
-
-    /** A field name. */
-    private static final String TEST_STU_ID = "888888888";
 
     /** A field name. */
     private static final LocalDate TEST_DT_INCIDENT = LocalDate.of(2023, 1, 2);
@@ -70,11 +66,11 @@ final class TestRawDiscipline {
     @DisplayName("Constructor")
     void test0001() {
 
-        final RawDiscipline obj = new RawDiscipline(TEST_STU_ID, TEST_DT_INCIDENT,
+        final RawDiscipline obj = new RawDiscipline(RawStudent.TEST_STUDENT_ID, TEST_DT_INCIDENT,
                 TEST_INCIDENT_TYPE, TEST_COURSE, TEST_UNIT, TEST_CHEAT_DESC, TEST_ACTION_TYPE,
                 TEST_ACTION_COMMENT, TEST_INTERVIEWER, TEST_PROCTOR);
 
-        assertEquals(TEST_STU_ID, obj.stuId, "Invalid stu_id value after constructor");
+        assertEquals(RawStudent.TEST_STUDENT_ID, obj.stuId, "Invalid stu_id value after constructor");
         assertEquals(TEST_DT_INCIDENT, obj.dtIncident, "Invalid dt_incident value after constructor");
         assertEquals(TEST_INCIDENT_TYPE, obj.incidentType, "Invalid incident_type value after constructor");
         assertEquals(TEST_COURSE, obj.course, "Invalid course value after constructor");
@@ -91,7 +87,7 @@ final class TestRawDiscipline {
     @DisplayName("string serialization")
     void test0098() {
 
-        final RawDiscipline obj = new RawDiscipline(TEST_STU_ID, TEST_DT_INCIDENT,
+        final RawDiscipline obj = new RawDiscipline(RawStudent.TEST_STUDENT_ID, TEST_DT_INCIDENT,
                 TEST_INCIDENT_TYPE, TEST_COURSE, TEST_UNIT, TEST_CHEAT_DESC, TEST_ACTION_TYPE,
                 TEST_ACTION_COMMENT, TEST_INTERVIEWER, TEST_PROCTOR);
 

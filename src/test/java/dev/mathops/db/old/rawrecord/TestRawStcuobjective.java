@@ -1,6 +1,5 @@
 package dev.mathops.db.old.rawrecord;
 
-import dev.mathops.db.old.rawrecord.RawStcuobjective;
 import dev.mathops.db.rec.RecBase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,9 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * Tests for the {@code RawStcuobjective} class.
  */
 final class TestRawStcuobjective {
-
-    /** A field name. */
-    private static final String TEST_STU_ID = "888888888";
 
     /** A field name. */
     private static final String TEST_COURSE = "M 117";
@@ -58,10 +54,10 @@ final class TestRawStcuobjective {
     @DisplayName("Constructor")
     void test0001() {
 
-        final RawStcuobjective obj = new RawStcuobjective(TEST_STU_ID, TEST_COURSE, TEST_UNIT,
+        final RawStcuobjective obj = new RawStcuobjective(RawStudent.TEST_STUDENT_ID, TEST_COURSE, TEST_UNIT,
                 TEST_OBJECTIVE, TEST_LECTURE_VIEWED_DT, TEST_SEED, TEST_LAST_COMPONENT_FINISHED);
 
-        assertEquals(TEST_STU_ID, obj.stuId, "Invalid term value after constructor");
+        assertEquals(RawStudent.TEST_STUDENT_ID, obj.stuId, "Invalid term value after constructor");
         assertEquals(TEST_COURSE, obj.course, "Invalid course value after constructor");
         assertEquals(TEST_UNIT, obj.unit, "Invalid version value after constructor");
         assertEquals(TEST_OBJECTIVE, obj.objective, "Invalid academic_yr value after constructor");
@@ -76,7 +72,7 @@ final class TestRawStcuobjective {
     @DisplayName("string serialization")
     void test0098() {
 
-        final RawStcuobjective obj = new RawStcuobjective(TEST_STU_ID, TEST_COURSE, TEST_UNIT,
+        final RawStcuobjective obj = new RawStcuobjective(RawStudent.TEST_STUDENT_ID, TEST_COURSE, TEST_UNIT,
                 TEST_OBJECTIVE, TEST_LECTURE_VIEWED_DT, TEST_SEED, TEST_LAST_COMPONENT_FINISHED);
 
         final String ser = obj.toString();

@@ -1,7 +1,6 @@
 package dev.mathops.db.old.rawrecord;
 
 import dev.mathops.db.enums.ETermName;
-import dev.mathops.db.old.rawrecord.RawStudent;
 import dev.mathops.db.rec.RecBase;
 import dev.mathops.db.type.TermKey;
 import org.junit.jupiter.api.DisplayName;
@@ -15,9 +14,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * Tests for the {@code RawStudent} class.
  */
 final class TestRawStudent {
-
-    /** A field name. */
-    private static final String TEST_STU_ID = "888888888";
 
     /** A field name. */
     private static final Integer TEST_PIDM = Integer.valueOf(9876);
@@ -192,7 +188,7 @@ final class TestRawStudent {
     @DisplayName("Constructor")
     void test0001() {
 
-        final RawStudent obj = new RawStudent(TEST_STU_ID, TEST_PIDM, TEST_LAST_NAME,
+        final RawStudent obj = new RawStudent(RawStudent.TEST_STUDENT_ID, TEST_PIDM, TEST_LAST_NAME,
                 TEST_FIRST_NAME, TEST_PREF_NAME, TEST_MIDDLE_INITIAL, TEST_APLN_TERM, TEST_CLASS,
                 TEST_COLLEGE, TEST_DEPT, TEST_PROGRAM_CODE, TEST_MINOR, TEST_EST_GRADUATION,
                 TEST_TR_CREDITS, TEST_HS_CODE, TEST_HS_GPA, TEST_HS_CLASS_RANK, TEST_HS_SIZE_CLASS,
@@ -202,7 +198,7 @@ final class TestRawStudent {
                 TEST_ADVISER_EMAIL, TEST_PASSWORD, TEST_ADMIT_TYPE, TEST_ORDER_ENFORCE,
                 TEST_PACING_STRUCTURE, TEST_CREATE_DT, TEST_EXTENSION_DAYS, TEST_CANVAS_ID);
 
-        assertEquals(TEST_STU_ID, obj.stuId, "Invalid std_id value after constructor");
+        assertEquals(RawStudent.TEST_STUDENT_ID, obj.stuId, "Invalid std_id value after constructor");
         assertEquals(TEST_PIDM, obj.pidm, "Invalid pidm value after constructor");
         assertEquals(TEST_LAST_NAME, obj.lastName, "Invalid last_name value after constructor");
         assertEquals(TEST_FIRST_NAME, obj.firstName, "Invalid first_name value after constructor");
@@ -249,7 +245,7 @@ final class TestRawStudent {
     @DisplayName("string serialization")
     void test0098() {
 
-        final RawStudent obj = new RawStudent(TEST_STU_ID, TEST_PIDM, TEST_LAST_NAME,
+        final RawStudent obj = new RawStudent(RawStudent.TEST_STUDENT_ID, TEST_PIDM, TEST_LAST_NAME,
                 TEST_FIRST_NAME, TEST_PREF_NAME, TEST_MIDDLE_INITIAL, TEST_APLN_TERM, TEST_CLASS,
                 TEST_COLLEGE, TEST_DEPT, TEST_PROGRAM_CODE, TEST_MINOR, TEST_EST_GRADUATION,
                 TEST_TR_CREDITS, TEST_HS_CODE, TEST_HS_GPA, TEST_HS_CLASS_RANK, TEST_HS_SIZE_CLASS,

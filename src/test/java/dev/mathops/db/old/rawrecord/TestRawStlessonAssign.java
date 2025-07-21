@@ -1,6 +1,5 @@
 package dev.mathops.db.old.rawrecord;
 
-import dev.mathops.db.old.rawrecord.RawStlessonAssign;
 import dev.mathops.db.rec.RecBase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,9 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * Tests for the {@code RawStlessonAssign} class.
  */
 final class TestRawStlessonAssign {
-
-    /** A field name. */
-    private static final String TEST_STU_ID = "888888888";
 
     /** A field name. */
     private static final String TEST_COURSE_ID = "M 117";
@@ -70,11 +66,11 @@ final class TestRawStlessonAssign {
     @DisplayName("Constructor")
     void test0001() {
 
-        final RawStlessonAssign obj = new RawStlessonAssign(TEST_STU_ID, TEST_COURSE_ID,
+        final RawStlessonAssign obj = new RawStlessonAssign(RawStudent.TEST_STUDENT_ID, TEST_COURSE_ID,
                 TEST_LESSON_ID, TEST_WHEN_SHOWN, TEST_WHEN_OPEN, TEST_WHEN_CLOSED, TEST_WHEN_HIDDEN,
                 TEST_WHEN_STARTED, TEST_WHEN_FINISHED, TEST_SCORE_TENTHS);
 
-        assertEquals(TEST_STU_ID, obj.stuId, "Invalid std_id value after constructor");
+        assertEquals(RawStudent.TEST_STUDENT_ID, obj.stuId, "Invalid std_id value after constructor");
         assertEquals(TEST_COURSE_ID, obj.course, "Invalid course_id value after constructor");
         assertEquals(TEST_LESSON_ID, obj.lessonId, "Invalid lesson_id value after constructor");
         assertEquals(TEST_WHEN_SHOWN, obj.whenShown, "Invalid when_shown value after constructor");
@@ -91,7 +87,7 @@ final class TestRawStlessonAssign {
     @DisplayName("string serialization")
     void test0098() {
 
-        final RawStlessonAssign obj = new RawStlessonAssign(TEST_STU_ID, TEST_COURSE_ID,
+        final RawStlessonAssign obj = new RawStlessonAssign(RawStudent.TEST_STUDENT_ID, TEST_COURSE_ID,
                 TEST_LESSON_ID, TEST_WHEN_SHOWN, TEST_WHEN_OPEN, TEST_WHEN_CLOSED, TEST_WHEN_HIDDEN,
                 TEST_WHEN_STARTED, TEST_WHEN_FINISHED, TEST_SCORE_TENTHS);
 

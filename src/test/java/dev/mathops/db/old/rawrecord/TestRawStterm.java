@@ -1,7 +1,6 @@
 package dev.mathops.db.old.rawrecord;
 
 import dev.mathops.db.enums.ETermName;
-import dev.mathops.db.old.rawrecord.RawStterm;
 import dev.mathops.db.rec.RecBase;
 import dev.mathops.db.type.TermKey;
 import org.junit.jupiter.api.DisplayName;
@@ -16,9 +15,6 @@ final class TestRawStterm {
 
     /** A field name. */
     private static final TermKey TEST_TERM = new TermKey(ETermName.FALL, 2022); // $NON-NLS-1$
-
-    /** A field name. */
-    private static final String TEST_STU_ID = "888888888";
 
     /** A field name. */
     private static final Integer TEST_PACE = Integer.valueOf(4);
@@ -62,11 +58,11 @@ final class TestRawStterm {
     @DisplayName("Constructor")
     void test0001() {
 
-        final RawStterm obj = new RawStterm(TEST_TERM, TEST_STU_ID, TEST_PACE, TEST_PACE_TRACK,
+        final RawStterm obj = new RawStterm(TEST_TERM, RawStudent.TEST_STUDENT_ID, TEST_PACE, TEST_PACE_TRACK,
                 TEST_FIRST_COURSE, TEST_COHORT, TEST_URGENCY, TEST_DO_NOT_DISTURB);
 
         assertEquals(TEST_TERM, obj.termKey, "Invalid term value after constructor");
-        assertEquals(TEST_STU_ID, obj.stuId, "Invalid std_id value after constructor");
+        assertEquals(RawStudent.TEST_STUDENT_ID, obj.stuId, "Invalid std_id value after constructor");
         assertEquals(TEST_PACE, obj.pace, "Invalid pace value after constructor");
         assertEquals(TEST_PACE_TRACK, obj.paceTrack, "Invalid pace_track value after constructor");
         assertEquals(TEST_FIRST_COURSE, obj.firstCourse, "Invalid first_course value after constructor");
@@ -80,7 +76,7 @@ final class TestRawStterm {
     @DisplayName("string serialization")
     void test0098() {
 
-        final RawStterm obj = new RawStterm(TEST_TERM, TEST_STU_ID, TEST_PACE, TEST_PACE_TRACK,
+        final RawStterm obj = new RawStterm(TEST_TERM, RawStudent.TEST_STUDENT_ID, TEST_PACE, TEST_PACE_TRACK,
                 TEST_FIRST_COURSE, TEST_COHORT, TEST_URGENCY, TEST_DO_NOT_DISTURB);
 
         final String ser = obj.toString();

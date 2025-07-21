@@ -61,7 +61,7 @@ enum StudentReconciliation {
 
         int insertCount = 0;
         for (final RawStudent rec : newStudents.values()) {
-            if ("888888888".equals(rec.stuId)) {
+            if (RawStudent.TEST_STUDENT_ID.equals(rec.stuId)) {
                 continue;
             }
 
@@ -111,7 +111,7 @@ enum StudentReconciliation {
 
         int updateCount = 0;
         for (final RawStudent rec : newStudents.values()) {
-            if ("888888888".equals(rec.stuId)) {
+            if (RawStudent.TEST_STUDENT_ID.equals(rec.stuId)) {
                 continue;
             }
 

@@ -1,6 +1,5 @@
 package dev.mathops.db.old.rawrecord;
 
-import dev.mathops.db.old.rawrecord.RawStresource;
 import dev.mathops.db.rec.RecBase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,9 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * Tests for the {@code RawStresource} class.
  */
 final class TestRawStresource {
-
-    /** A field name. */
-    private static final String TEST_STU_ID = "888888888";
 
     /** A field name. */
     private static final String TEST_RESOURCE_ID = "C99";
@@ -67,10 +63,10 @@ final class TestRawStresource {
     void test0001() {
 
         final RawStresource obj =
-                new RawStresource(TEST_STU_ID, TEST_RESOURCE_ID, TEST_LOAN_DT, TEST_START_TIME,
+                new RawStresource(RawStudent.TEST_STUDENT_ID, TEST_RESOURCE_ID, TEST_LOAN_DT, TEST_START_TIME,
                         TEST_DUE_DT, TEST_RETURN_DT, TEST_FINISH_TIME, TEST_TIMES_DISPLAY, TEST_CREATE_DT);
 
-        assertEquals(TEST_STU_ID, obj.stuId, "Invalid std_id value after constructor");
+        assertEquals(RawStudent.TEST_STUDENT_ID, obj.stuId, "Invalid std_id value after constructor");
         assertEquals(TEST_RESOURCE_ID, obj.resourceId, "Invalid resource_id value after constructor");
         assertEquals(TEST_LOAN_DT, obj.loanDt, "Invalid loan_dt value after constructor");
         assertEquals(TEST_START_TIME, obj.startTime, "Invalid start_time value after constructor");
@@ -87,7 +83,7 @@ final class TestRawStresource {
     void test0098() {
 
         final RawStresource obj =
-                new RawStresource(TEST_STU_ID, TEST_RESOURCE_ID, TEST_LOAN_DT, TEST_START_TIME,
+                new RawStresource(RawStudent.TEST_STUDENT_ID, TEST_RESOURCE_ID, TEST_LOAN_DT, TEST_START_TIME,
                         TEST_DUE_DT, TEST_RETURN_DT, TEST_FINISH_TIME, TEST_TIMES_DISPLAY, TEST_CREATE_DT);
 
         final String ser = obj.toString();

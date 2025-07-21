@@ -10,6 +10,7 @@ import dev.mathops.db.cfg.Login;
 import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.old.rawrecord.RawMpeLog;
 import dev.mathops.db.old.rawrecord.RawRecordConstants;
+import dev.mathops.db.old.rawrecord.RawStudent;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -98,7 +99,7 @@ final class TestRawMpeLogLogic {
             final RawMpeLog raw2 = new RawMpeLog("123456789", "2021", RawRecordConstants.M100P, "MPTTC",
                     date4, date5, null, Long.valueOf(67890L), Integer.valueOf(900), "456");
 
-            final RawMpeLog raw3 = new RawMpeLog("888888888", "2122", RawRecordConstants.M100P, "MPTUN",
+            final RawMpeLog raw3 = new RawMpeLog(RawStudent.TEST_STUDENT_ID, "2122", RawRecordConstants.M100P, "MPTUN",
                     date6, null, null, Long.valueOf(98989L), Integer.valueOf(800), null);
 
             assertTrue(RawMpeLogLogic.insert(cache, raw1), "Failed to insert mpe_log");
@@ -157,7 +158,7 @@ final class TestRawMpeLogLogic {
 
                     found2 = true;
 
-                } else if ("888888888".equals(r.stuId)
+                } else if (RawStudent.TEST_STUDENT_ID.equals(r.stuId)
                            && "2122".equals(r.academicYr)
                            && RawRecordConstants.M100P.equals(r.course)
                            && "MPTUN".equals(r.version)
@@ -202,20 +203,17 @@ final class TestRawMpeLogLogic {
         final Cache cache = new Cache(profile);
 
         try {
-            assertTrue(RawMpeLogLogic.indicateFinished(cache, //
-                            "888888888", date6, Integer.valueOf(800),
-                            date7, date8),
-                    "indicateFinished failed");
+            assertTrue(RawMpeLogLogic.indicateFinished(cache, RawStudent.TEST_STUDENT_ID, date6, Integer.valueOf(800),
+                    date7, date8), "indicateFinished failed");
 
             final List<RawMpeLog> all = RawMpeLogLogic.queryAll(cache);
 
-            assertEquals(3, all.size(), //
-                    "Incorrect record count from queryAll");
+            assertEquals(3, all.size(), "Incorrect record count from queryAll");
 
             boolean found = false;
 
             for (final RawMpeLog r : all) {
-                if ("888888888".equals(r.stuId)
+                if (RawStudent.TEST_STUDENT_ID.equals(r.stuId)
                     && "2122".equals(r.academicYr)
                     && RawRecordConstants.M100P.equals(r.course)
                     && "MPTUN".equals(r.version)
@@ -234,8 +232,7 @@ final class TestRawMpeLogLogic {
             assertTrue(found, "mpe_log was not updated");
         } catch (final SQLException ex) {
             Log.warning(ex);
-            fail("Exception while updating mpe_log row: "
-                 + ex.getMessage());
+            fail("Exception while updating mpe_log row: " + ex.getMessage());
         }
     }
 
@@ -247,7 +244,7 @@ final class TestRawMpeLogLogic {
         final Cache cache = new Cache(profile);
 
         try {
-            final RawMpeLog raw3 = new RawMpeLog("888888888", "2122", RawRecordConstants.M100P, "MPTUN",
+            final RawMpeLog raw3 = new RawMpeLog(RawStudent.TEST_STUDENT_ID, "2122", RawRecordConstants.M100P, "MPTUN",
                     date6, null, null, Long.valueOf(98989L), Integer.valueOf(800), null);
 
             final boolean result = RawMpeLogLogic.delete(cache, raw3);
@@ -255,8 +252,7 @@ final class TestRawMpeLogLogic {
 
             final List<RawMpeLog> all = RawMpeLogLogic.queryAll(cache);
 
-            assertEquals(2, all.size(), //
-                    "Incorrect record count from queryAll after delete");
+            assertEquals(2, all.size(), "Incorrect record count from queryAll after delete");
 
             boolean found1 = false;
             boolean found2 = false;

@@ -1,6 +1,5 @@
 package dev.mathops.db.old.rawrecord;
 
-import dev.mathops.db.old.rawrecord.RawStmsg;
 import dev.mathops.db.rec.RecBase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,9 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * Tests for the {@code RawStmsg} class.
  */
 final class TestRawStmsg {
-
-    /** A field name. */
-    private static final String TEST_STU_ID = "888888888";
 
     /** A field name. */
     private static final LocalDate TEST_MSG_DT = LocalDate.of(2023, 1, 2);
@@ -58,10 +54,10 @@ final class TestRawStmsg {
     @DisplayName("Constructor")
     void test0001() {
 
-        final RawStmsg obj = new RawStmsg(TEST_STU_ID, TEST_MSG_DT, TEST_PACE, TEST_COURSE_INDEX,
+        final RawStmsg obj = new RawStmsg(RawStudent.TEST_STUDENT_ID, TEST_MSG_DT, TEST_PACE, TEST_COURSE_INDEX,
                 TEST_TOUCH_POINT, TEST_MSG_CODE, TEST_SENDER);
 
-        assertEquals(TEST_STU_ID, obj.stuId, "Invalid std_id value after constructor");
+        assertEquals(RawStudent.TEST_STUDENT_ID, obj.stuId, "Invalid std_id value after constructor");
         assertEquals(TEST_MSG_DT, obj.msgDt, "Invalid msg_dt value after constructor");
         assertEquals(TEST_PACE, obj.pace, "Invalid pace value after constructor");
         assertEquals(TEST_COURSE_INDEX, obj.courseIndex, "Invalid course_index value after constructor");
@@ -75,7 +71,7 @@ final class TestRawStmsg {
     @DisplayName("string serialization")
     void test0098() {
 
-        final RawStmsg obj = new RawStmsg(TEST_STU_ID, TEST_MSG_DT, TEST_PACE, TEST_COURSE_INDEX,
+        final RawStmsg obj = new RawStmsg(RawStudent.TEST_STUDENT_ID, TEST_MSG_DT, TEST_PACE, TEST_COURSE_INDEX,
                 TEST_TOUCH_POINT, TEST_MSG_CODE, TEST_SENDER);
 
         final String ser = obj.toString();

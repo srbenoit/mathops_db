@@ -2,7 +2,6 @@ package dev.mathops.db.old.rawrecord;
 
 import dev.mathops.commons.CoreConstants;
 import dev.mathops.db.enums.ETermName;
-import dev.mathops.db.old.rawrecord.RawApplicant;
 import dev.mathops.db.rec.RecBase;
 import dev.mathops.db.type.TermKey;
 import org.junit.jupiter.api.DisplayName;
@@ -16,9 +15,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * Tests for the {@code RawApplicant} class.
  */
 final class TestRawApplicant {
-
-    /** A field name. */
-    private static final String TEST_STU_ID = "888888888";
 
     /** A field name. */
     private static final String TEST_FIRST_NAME = "Steve";
@@ -573,13 +569,13 @@ final class TestRawApplicant {
     @DisplayName("Constructor")
     void test0001() {
 
-        final RawApplicant obj = new RawApplicant(TEST_STU_ID, TEST_FIRST_NAME, TEST_LAST_NAME,
+        final RawApplicant obj = new RawApplicant(RawStudent.TEST_STUDENT_ID, TEST_FIRST_NAME, TEST_LAST_NAME,
                 TEST_BIRTHDATE, TEST_ETHNICITY, TEST_GENDER, TEST_COLLEGE, TEST_PROG_STUDY,
                 TEST_HS_CODE, TEST_TR_CREDITS, TEST_RESIDENT, TEST_RESIDENT_STATE, TEST_RESIDENT_COUNTY,
                 TEST_HS_GPA, TEST_HS_CLASS_RANK, TEST_HS_SIZE_CLASS, TEST_ACT_SCORE, TEST_SAT_SCORE,
                 TEST_PIDM, TEST_APLN_TERM);
 
-        assertEquals(TEST_STU_ID, obj.stuId, "Invalid std_id value after constructor");
+        assertEquals(RawStudent.TEST_STUDENT_ID, obj.stuId, "Invalid std_id value after constructor");
         assertEquals(TEST_FIRST_NAME, obj.firstName, "Invalid first_name value after constructor");
         assertEquals(TEST_LAST_NAME, obj.lastName, "Invalid last_name value after constructor");
         assertEquals(TEST_BIRTHDATE, obj.birthdate, "Invalid birthdate value after constructor");
@@ -606,7 +602,7 @@ final class TestRawApplicant {
     @DisplayName("string serialization")
     void test0002() {
 
-        final RawApplicant obj = new RawApplicant(TEST_STU_ID, null, null, null, null, null, null,
+        final RawApplicant obj = new RawApplicant(RawStudent.TEST_STUDENT_ID, null, null, null, null, null, null,
                 null, null, null, null, null, null, null, null, null, null, null, null, null);
 
         final String ser = obj.toString();
@@ -867,7 +863,7 @@ final class TestRawApplicant {
     @DisplayName("string serialization")
     void test0098() {
 
-        final RawApplicant obj = new RawApplicant(TEST_STU_ID, TEST_FIRST_NAME, TEST_LAST_NAME,
+        final RawApplicant obj = new RawApplicant(RawStudent.TEST_STUDENT_ID, TEST_FIRST_NAME, TEST_LAST_NAME,
                 TEST_BIRTHDATE, TEST_ETHNICITY, TEST_GENDER, TEST_COLLEGE, TEST_PROG_STUDY,
                 TEST_HS_CODE, TEST_TR_CREDITS, TEST_RESIDENT, TEST_RESIDENT_STATE, TEST_RESIDENT_COUNTY,
                 TEST_HS_GPA, TEST_HS_CLASS_RANK, TEST_HS_SIZE_CLASS, TEST_ACT_SCORE, TEST_SAT_SCORE,

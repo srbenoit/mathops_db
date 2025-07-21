@@ -1,6 +1,5 @@
 package dev.mathops.db.old.rawrecord;
 
-import dev.mathops.db.old.rawrecord.RawStexam;
 import dev.mathops.db.rec.RecBase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,9 +18,6 @@ final class TestRawStexam {
 
     /** A field name. */
     private static final String TEST_VERSION = "171UE";
-
-    /** A field name. */
-    private static final String TEST_STU_ID = "888888888";
 
     /** A field name. */
     private static final LocalDate TEST_EXAM_DT = LocalDate.of(2023, 1, 2);
@@ -98,14 +94,14 @@ final class TestRawStexam {
     @DisplayName("Constructor")
     void test0001() {
 
-        final RawStexam obj = new RawStexam(TEST_SERIAL_NBR, TEST_VERSION, TEST_STU_ID,
+        final RawStexam obj = new RawStexam(TEST_SERIAL_NBR, TEST_VERSION, RawStudent.TEST_STUDENT_ID,
                 TEST_EXAM_DT, TEST_EXAM_SCORE, TEST_MASTERY_SCORE, TEST_START_TIME, TEST_FINISH_TIME,
                 TEST_TIME_OK, TEST_PASSED, TEST_SEQ_NBR, TEST_COURSE, TEST_UNIT, TEST_EXAM_TYPE,
                 TEST_IS_FIRST_PASSED, TEST_EXAM_SOURCE, TEST_CALC_NBR);
 
         assertEquals(TEST_SERIAL_NBR, obj.serialNbr, "Invalid serial_nbr value after constructor");
         assertEquals(TEST_VERSION, obj.version, "Invalid version value after constructor");
-        assertEquals(TEST_STU_ID, obj.stuId, "Invalid std_id value after constructor");
+        assertEquals(RawStudent.TEST_STUDENT_ID, obj.stuId, "Invalid std_id value after constructor");
         assertEquals(TEST_EXAM_DT, obj.examDt, "Invalid exam_dt value after constructor");
         assertEquals(TEST_EXAM_SCORE, obj.examScore, "Invalid exam_score value after constructor");
         assertEquals(TEST_MASTERY_SCORE, obj.masteryScore, "Invalid masery_score value after constructor");
@@ -127,7 +123,7 @@ final class TestRawStexam {
     @DisplayName("string serialization")
     void test0098() {
 
-        final RawStexam obj = new RawStexam(TEST_SERIAL_NBR, TEST_VERSION, TEST_STU_ID,
+        final RawStexam obj = new RawStexam(TEST_SERIAL_NBR, TEST_VERSION, RawStudent.TEST_STUDENT_ID,
                 TEST_EXAM_DT, TEST_EXAM_SCORE, TEST_MASTERY_SCORE, TEST_START_TIME, TEST_FINISH_TIME,
                 TEST_TIME_OK, TEST_PASSED, TEST_SEQ_NBR, TEST_COURSE, TEST_UNIT, TEST_EXAM_TYPE,
                 TEST_IS_FIRST_PASSED, TEST_EXAM_SOURCE, TEST_CALC_NBR);

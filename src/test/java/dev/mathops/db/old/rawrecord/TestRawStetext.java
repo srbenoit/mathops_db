@@ -1,6 +1,5 @@
 package dev.mathops.db.old.rawrecord;
 
-import dev.mathops.db.old.rawrecord.RawStetext;
 import dev.mathops.db.rec.RecBase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,9 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * Tests for the {@code RawStetext} class.
  */
 final class TestRawStetext {
-
-    /** A field name. */
-    private static final String TEST_STU_ID = "888888888";
 
     /** A field name. */
     private static final String TEST_ETEXT_ID = "PACe";
@@ -62,11 +58,10 @@ final class TestRawStetext {
     @DisplayName("Constructor")
     void test0001() {
 
-        final RawStetext obj =
-                new RawStetext(TEST_STU_ID, TEST_ETEXT_ID, TEST_ACTIVE_DT, TEST_ETEXT_KEY,
-                        TEST_EXPIRATION_DT, TEST_REFUND_DEADLINE_DT, TEST_REFUND_DT, TEST_REFUND_REASON);
+        final RawStetext obj = new RawStetext(RawStudent.TEST_STUDENT_ID, TEST_ETEXT_ID, TEST_ACTIVE_DT, TEST_ETEXT_KEY,
+                TEST_EXPIRATION_DT, TEST_REFUND_DEADLINE_DT, TEST_REFUND_DT, TEST_REFUND_REASON);
 
-        assertEquals(TEST_STU_ID, obj.stuId, "Invalid std_id value after constructor");
+        assertEquals(RawStudent.TEST_STUDENT_ID, obj.stuId, "Invalid std_id value after constructor");
         assertEquals(TEST_ETEXT_ID, obj.etextId, "Invalid etext_id value after constructor");
         assertEquals(TEST_ACTIVE_DT, obj.activeDt, "Invalid active_dt value after constructor");
         assertEquals(TEST_ETEXT_KEY, obj.etextKey, "Invalid etext_key value after constructor");
@@ -83,7 +78,7 @@ final class TestRawStetext {
     void test0098() {
 
         final RawStetext obj =
-                new RawStetext(TEST_STU_ID, TEST_ETEXT_ID, TEST_ACTIVE_DT, TEST_ETEXT_KEY,
+                new RawStetext(RawStudent.TEST_STUDENT_ID, TEST_ETEXT_ID, TEST_ACTIVE_DT, TEST_ETEXT_KEY,
                         TEST_EXPIRATION_DT, TEST_REFUND_DEADLINE_DT, TEST_REFUND_DT, TEST_REFUND_REASON);
 
         final String ser = obj.toString();

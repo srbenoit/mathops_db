@@ -15,9 +15,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 final class TestRawStchallengeqa {
 
     /** A field name. */
-    private static final String TEST_STU_ID = "888888888";
-
-    /** A field name. */
     private static final String TEST_COURSE = "M 117";
 
     /** A field name. */
@@ -62,10 +59,10 @@ final class TestRawStchallengeqa {
     @DisplayName("Constructor")
     void test0001() {
 
-        final RawStchallengeqa obj = new RawStchallengeqa(TEST_STU_ID, TEST_COURSE, TEST_VERSION,
+        final RawStchallengeqa obj = new RawStchallengeqa(RawStudent.TEST_STUDENT_ID, TEST_COURSE, TEST_VERSION,
                 TEST_EXAM_DT, TEST_FINISH_TIME, TEST_QUESTION_NBR, TEST_STU_ANSWER, TEST_ANS_CORRECT);
 
-        assertEquals(TEST_STU_ID, obj.stuId, "Invalid stu_id value after constructor");
+        assertEquals(RawStudent.TEST_STUDENT_ID, obj.stuId, "Invalid stu_id value after constructor");
         assertEquals(TEST_COURSE, obj.course, "Invalid course value after constructor");
         assertEquals(TEST_VERSION, obj.version, "Invalid version value after constructor");
         assertEquals(TEST_EXAM_DT, obj.examDt, "Invalid exam_dt value after constructor");
@@ -80,7 +77,7 @@ final class TestRawStchallengeqa {
     @DisplayName("string serialization")
     void test0098() {
 
-        final RawStchallengeqa obj = new RawStchallengeqa(TEST_STU_ID, TEST_COURSE, TEST_VERSION,
+        final RawStchallengeqa obj = new RawStchallengeqa(RawStudent.TEST_STUDENT_ID, TEST_COURSE, TEST_VERSION,
                 TEST_EXAM_DT, TEST_FINISH_TIME, TEST_QUESTION_NBR, TEST_STU_ANSWER, TEST_ANS_CORRECT);
 
         final String ser = obj.toString();

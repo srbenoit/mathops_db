@@ -1,6 +1,7 @@
 package dev.mathops.dbjobs.batch;
 
 import dev.mathops.commons.log.Log;
+import dev.mathops.db.old.rawrecord.RawStudent;
 
 import java.io.File;
 
@@ -101,9 +102,8 @@ final class ExamXmlFileHarvester {
 
                     if (name.length() == 9) {
 
-                        if ("888888888".equals(name)
-                                || "823251213".equals(name)
-                                || "111223333".equals(name)) {
+                        if (RawStudent.TEST_STUDENT_ID.equals(name)
+                            || "823251213".equals(name) || "111223333".equals(name)) {
 
                             final String fullName = termDirName + "/" + name;
                             Log.warning("Skipping student directory: ", fullName);
