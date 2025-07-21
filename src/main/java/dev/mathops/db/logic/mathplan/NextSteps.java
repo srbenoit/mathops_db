@@ -18,11 +18,13 @@ public final class NextSteps {
     public final boolean placementNeeded;
 
     /**
-     * Constructs a new {@code NextSteps} that indicates placement is not needed.
+     * Constructs a new {@code NextSteps} with a specified next step in which placement is not needed.
+     *
+     * @param theNextStep the next step
      */
-    NextSteps() {
+    NextSteps(final ENextStep theNextStep) {
 
-        this.nextStep = ENextStep.MSG_PLACEMENT_NOT_NEEDED;
+        this.nextStep = theNextStep;
         this.placementNeeded = false;
     }
 

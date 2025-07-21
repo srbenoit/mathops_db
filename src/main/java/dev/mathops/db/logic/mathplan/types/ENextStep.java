@@ -5,6 +5,9 @@ package dev.mathops.db.logic.mathplan.types;
  */
 public enum ENextStep {
 
+    /** Next steps cannot be determined. */
+    UNDETERMINED("(Undetermined)"),
+
     /** Student just needs 1B - Placement is not needed. */
     MSG_PLACEMENT_NOT_NEEDED("(AUCC 1B only)"),
 

@@ -43,26 +43,27 @@ public final class RecommendedFirstTerm {
     RecommendedFirstTerm(final Collection<Major> majors) {
 
         if (majors == null || majors.isEmpty()) {
-            throw new IllegalArgumentException("List of majors may not be null or empty.");
-        }
-
-        boolean coreOnly = true;
-        for (final Major major : majors) {
-            if (major.idealFirstTerm.type != EIdealFirstTermType.CORE_ONLY) {
-                coreOnly = false;
-                break;
-            }
-        }
-
-        if (coreOnly) {
-            this.firstTermNamed = IdealFirstTerm.CORE_ONLY;
-            this.firstTermPick = IdealFirstTerm.CORE_ONLY;
+            this.firstTermNamed = IdealFirstTerm.UNDETERMINED;
+            this.firstTermPick = IdealFirstTerm.UNDETERMINED;
         } else {
-            final EnumSet<ECourse> namedCourses = gatherNamedCourses(majors);
-            final PickList pickCourses = gatherPickCourses(namedCourses, majors);
+            boolean coreOnly = true;
+            for (final Major major : majors) {
+                if (major.idealFirstTerm.type != EIdealFirstTermType.CORE_ONLY) {
+                    coreOnly = false;
+                    break;
+                }
+            }
 
-            this.firstTermNamed = new IdealFirstTerm(EIdealFirstTermType.NAMED_LIST, namedCourses);
-            this.firstTermPick = new IdealFirstTerm(EIdealFirstTermType.PICK_LIST, pickCourses.courses);
+            if (coreOnly) {
+                this.firstTermNamed = IdealFirstTerm.CORE_ONLY;
+                this.firstTermPick = IdealFirstTerm.CORE_ONLY;
+            } else {
+                final EnumSet<ECourse> namedCourses = gatherNamedCourses(majors);
+                final PickList pickCourses = gatherPickCourses(namedCourses, majors);
+
+                this.firstTermNamed = new IdealFirstTerm(EIdealFirstTermType.NAMED_LIST, namedCourses);
+                this.firstTermPick = new IdealFirstTerm(EIdealFirstTermType.PICK_LIST, pickCourses.courses);
+            }
         }
     }
 

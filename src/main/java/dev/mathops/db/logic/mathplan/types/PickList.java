@@ -1,5 +1,7 @@
 package dev.mathops.db.logic.mathplan.types;
 
+import dev.mathops.text.builder.HtmlBuilder;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -80,5 +82,27 @@ public final class PickList {
         }
 
         return lowest;
+    }
+
+    /**
+     * Generates the string representation of the pick list.
+     *
+     * @return the string representation
+     */
+    public String toString() {
+
+        final HtmlBuilder htm = new HtmlBuilder(100);
+
+        htm.add("Choose ");
+        htm.add(this.numCredits);
+        htm.add(" credits from:");
+        boolean comma = false;
+        for (final ECourse course : this.courses) {
+            htm.add(comma ? ", " : " ");
+            htm.add(course.label);
+            comma = true;
+        }
+
+        return htm.toString();
     }
 }

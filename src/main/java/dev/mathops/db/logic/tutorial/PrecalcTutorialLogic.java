@@ -237,7 +237,7 @@ public class PrecalcTutorialLogic {
             next = RawRecordConstants.M1250;
         } else if (okFor118 && !doneWith118) {
             next = RawRecordConstants.M1180;
-        } else if (okFor117 && !doneWith117 || hasPlacement) {
+        } else if (!doneWith117 && (okFor117 || hasPlacement)) {
             next = RawRecordConstants.M1170;
         }
 
@@ -366,7 +366,7 @@ public class PrecalcTutorialLogic {
 
         try {
             final LocalDate today = LocalDate.now();
-            final String stuId = "837165351";
+            final String stuId = "837726352";
 
             final RawStudent student = RawStudentLogic.query(cache, stuId, false);
             final PrerequisiteLogic prereq = new PrerequisiteLogic(cache, stuId);

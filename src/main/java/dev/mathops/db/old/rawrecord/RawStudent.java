@@ -146,6 +146,9 @@ public final class RawStudent extends RecBase implements Comparable<RawStudent> 
     /** The ID of a test student. */
     public static final String TEST_STUDENT_ID = "888888888";
 
+    /** The PIDM of a test student. */
+    public static final int TEST_STUDENT_INTERNAL_ID = 10567708;
+
     /** The 'stu_id' field value. */
     public String stuId;
 
@@ -585,45 +588,45 @@ public final class RawStudent extends RecBase implements Comparable<RawStudent> 
     public int hashCode() {
 
         return Objects.hashCode(this.stuId)
-                + Objects.hashCode(this.pidm)
-                + Objects.hashCode(this.lastName)
-                + Objects.hashCode(this.firstName)
-                + Objects.hashCode(this.prefName)
-                + Objects.hashCode(this.middleInitial)
-                + Objects.hashCode(this.aplnTerm)
-                + Objects.hashCode(this.clazz)
-                + Objects.hashCode(this.college)
-                + Objects.hashCode(this.dept)
-                + Objects.hashCode(this.programCode)
-                + Objects.hashCode(this.minor)
-                + Objects.hashCode(this.estGraduation)
-                + Objects.hashCode(this.trCredits)
-                + Objects.hashCode(this.hsCode)
-                + Objects.hashCode(this.hsGpa)
-                + Objects.hashCode(this.hsClassRank)
-                + Objects.hashCode(this.hsSizeClass)
-                + Objects.hashCode(this.actScore)
-                + Objects.hashCode(this.satScore)
-                + Objects.hashCode(this.apScore)
-                + Objects.hashCode(this.resident)
-                + Objects.hashCode(this.birthdate)
-                + Objects.hashCode(this.ethnicity)
-                + Objects.hashCode(this.gender)
-                + Objects.hashCode(this.discipHistory)
-                + Objects.hashCode(this.discipStatus)
-                + Objects.hashCode(this.sevAdminHold)
-                + Objects.hashCode(this.timelimitFactor)
-                + Objects.hashCode(this.licensed)
-                + Objects.hashCode(this.campus)
-                + Objects.hashCode(this.stuEmail)
-                + Objects.hashCode(this.adviserEmail)
-                + Objects.hashCode(this.password)
-                + Objects.hashCode(this.admitType)
-                + Objects.hashCode(this.orderEnforce)
-                + Objects.hashCode(this.pacingStructure)
-                + Objects.hashCode(this.createDt)
-                + Objects.hashCode(this.extensionDays)
-                + Objects.hashCode(this.canvasId);
+               + Objects.hashCode(this.pidm)
+               + Objects.hashCode(this.lastName)
+               + Objects.hashCode(this.firstName)
+               + Objects.hashCode(this.prefName)
+               + Objects.hashCode(this.middleInitial)
+               + Objects.hashCode(this.aplnTerm)
+               + Objects.hashCode(this.clazz)
+               + Objects.hashCode(this.college)
+               + Objects.hashCode(this.dept)
+               + Objects.hashCode(this.programCode)
+               + Objects.hashCode(this.minor)
+               + Objects.hashCode(this.estGraduation)
+               + Objects.hashCode(this.trCredits)
+               + Objects.hashCode(this.hsCode)
+               + Objects.hashCode(this.hsGpa)
+               + Objects.hashCode(this.hsClassRank)
+               + Objects.hashCode(this.hsSizeClass)
+               + Objects.hashCode(this.actScore)
+               + Objects.hashCode(this.satScore)
+               + Objects.hashCode(this.apScore)
+               + Objects.hashCode(this.resident)
+               + Objects.hashCode(this.birthdate)
+               + Objects.hashCode(this.ethnicity)
+               + Objects.hashCode(this.gender)
+               + Objects.hashCode(this.discipHistory)
+               + Objects.hashCode(this.discipStatus)
+               + Objects.hashCode(this.sevAdminHold)
+               + Objects.hashCode(this.timelimitFactor)
+               + Objects.hashCode(this.licensed)
+               + Objects.hashCode(this.campus)
+               + Objects.hashCode(this.stuEmail)
+               + Objects.hashCode(this.adviserEmail)
+               + Objects.hashCode(this.password)
+               + Objects.hashCode(this.admitType)
+               + Objects.hashCode(this.orderEnforce)
+               + Objects.hashCode(this.pacingStructure)
+               + Objects.hashCode(this.createDt)
+               + Objects.hashCode(this.extensionDays)
+               + Objects.hashCode(this.canvasId);
     }
 
     /**
@@ -699,7 +702,7 @@ public final class RawStudent extends RecBase implements Comparable<RawStudent> 
          * @param o1 the first object
          * @param o2 the second object
          * @return a negative integer, zero, or a positive integer as the first argument is less than, equal to, or
-         * greater than the second
+         *         greater than the second
          */
         public int compare(final RawStudent o1, final RawStudent o2) {
 

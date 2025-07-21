@@ -9,6 +9,9 @@ import java.util.EnumSet;
  */
 public final class IdealFirstTerm {
 
+    /** The math plan has not yet been determined. */
+    public static final IdealFirstTerm UNDETERMINED = new IdealFirstTerm(EIdealFirstTermType.UNDETERMINED);
+
     /** An ideal registrations object for majors that require only core courses. */
     public static final IdealFirstTerm CORE_ONLY = new IdealFirstTerm(EIdealFirstTermType.CORE_ONLY);
 
@@ -104,7 +107,11 @@ public final class IdealFirstTerm {
         this.type = theType;
         this.courses = EnumSet.noneOf(ECourse.class);
 
-        if (theType == EIdealFirstTermType.CORE_ONLY) {
+        if (theType == EIdealFirstTermType.UNDETERMINED) {
+            if (theCourses != null && theCourses.length > 0) {
+                throw new IllegalArgumentException("When type is UNDETERMINED, a course list is not allowed");
+            }
+        } else if (theType == EIdealFirstTermType.CORE_ONLY) {
             if (theCourses != null && theCourses.length > 0) {
                 throw new IllegalArgumentException("When type is CORE_ONLY, listed first-term courses are not allowed");
             }
@@ -153,9 +160,6 @@ public final class IdealFirstTerm {
                         throw new IllegalArgumentException(
                                 "When type is COURSE_OR_HIGHER, exactly 1 course must be provided");
                     }
-                } else if (count == 0) {
-                    throw new IllegalArgumentException("At least one first-term course must be provided");
-
                 }
                 this.courses.addAll(theCourses);
             }

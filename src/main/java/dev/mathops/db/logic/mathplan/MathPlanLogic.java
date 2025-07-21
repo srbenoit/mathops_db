@@ -1,6 +1,7 @@
 package dev.mathops.db.logic.mathplan;
 
 import dev.mathops.commons.TemporalUtils;
+import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
 import dev.mathops.db.logic.StudentData;
 import dev.mathops.db.logic.mathplan.types.EMathPlanStatus;
@@ -44,7 +45,7 @@ public enum MathPlanLogic {
         final StudentStatus stuStatus = new StudentStatus(cache, studentId);
         final Requirements requirements = new Requirements(majors, stuStatus);
 
-        return new StudentMathPlan(stuStatus, requirements);
+        return new StudentMathPlan(majors, stuStatus, requirements);
     }
 
     /**
@@ -113,7 +114,10 @@ public enum MathPlanLogic {
         for (final Integer key : planResponses.keySet()) {
             final int code = key.intValue();
             final Major major = Majors.getMajorByNumericCode(code);
-            if (major != null) {
+            if (major == null) {
+                Log.warning("No major found with code ", code);
+            } else {
+                Log.warning("Found Major response with code ", code, " (", major.programName, ")");
                 majors.add(major);
             }
         }
@@ -127,9 +131,9 @@ public enum MathPlanLogic {
         }
 
         final StudentStatus stuStatus = new StudentStatus(cache, studentId);
-        final Requirements requirements = new Requirements(majors, stuStatus);
+        final Requirements requirements = majors.isEmpty() ? new Requirements() : new Requirements(majors, stuStatus);
 
-        return new StudentMathPlan(stuStatus, requirements);
+        return new StudentMathPlan(majors, stuStatus, requirements);
     }
 
     /**

@@ -5,6 +5,9 @@ package dev.mathops.db.logic.mathplan.types;
  */
 public enum EIdealFirstTermType {
 
+    /** Math Plan has not yet been completed. */
+    UNDETERMINED,
+
     /** Student only needs core courses. */
     CORE_ONLY,
 

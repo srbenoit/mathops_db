@@ -1,5 +1,6 @@
 package dev.mathops.db.logic.mathplan;
 
+import dev.mathops.commons.log.Log;
 import dev.mathops.db.logic.mathplan.majors.Major;
 import dev.mathops.db.logic.mathplan.types.ECourse;
 import dev.mathops.db.logic.mathplan.types.ERequirement;
@@ -26,13 +27,13 @@ public final class Requirements {
     public final EnumSet<ECourse> namedPrecalculus;
 
     /** Courses that are implicitly required to meet prerequisites of named courses. */
-    final EnumSet<ECourse> implicitCourses;
+    public final EnumSet<ECourse> implicitCourses;
 
     /** Pick lists that the student should meet. */
-    final List<PickList> pickLists;
+    public final List<PickList> pickLists;
 
     /** A flag indicating the student will need placement or a B- or higher in MATH 124 and 126. */
-    boolean needsBMinusIn2426;
+    public boolean needsBMinusIn2426;
 
     /** The recommended first term eligibility. */
     public final RecommendedFirstTerm firstTerm;
@@ -76,9 +77,22 @@ public final class Requirements {
 
             this.pickLists = new ArrayList<>(3);
             generatePickLists(majors, stuStatus);
+            for (final PickList pick : this.pickLists) {
+                Log.info("Requirements have a pick list: " + pick);
+            }
         }
 
         this.firstTerm = new RecommendedFirstTerm(majors);
+    }
+
+    /**
+     * Tests whether no requirements are indicated.
+     *
+     * @return the lsit of requirements is empty
+     */
+    public boolean isEmpty() {
+
+        return this.namedCalculusRequirement == ECourse.NONE && this.pickLists.isEmpty();
     }
 
     /**
@@ -284,6 +298,8 @@ public final class Requirements {
         final Collection<String> completed = stuStatus.getCompleted();
 
         for (final Major major : majors) {
+            Log.info("Scanning ", major.programName, " for pick lists: ", major.requirements);
+
             if (major.requirements == ERequirement.PICK_3CR_117_118_124_120) {
 
                 addPickList(completed, ECourse.M_117, ECourse.M_118, ECourse.M_124, ECourse.M_120);
@@ -368,27 +384,33 @@ public final class Requirements {
      * removed.  If any credits are still needed, a {@code PickList} object is created with the number of credits
      * remaining and the set of allowed courses that are not already named.
      *
-     * @param completed the set of courses for which the student already has credit
-     * @param courses   the list of acceptable courses
+     * @param completed         the set of courses for which the student already has credit
+     * @param acceptableCourses the list of acceptable courses
      */
-    private void addPickList(final Iterable<String> completed, final ECourse... courses) {
+    private void addPickList(final Iterable<String> completed, final ECourse... acceptableCourses) {
 
-        final PickList pick = new PickList(3, courses);
+        final PickList pick = new PickList(3, acceptableCourses);
 
         // Remove courses for which the student already has credit
         for (final String courseId : completed) {
             if (RawRecordConstants.M117.equals(courseId) || RawRecordConstants.MATH117.equals(courseId)) {
+                Log.info("Removing 117 because completed");
                 pick.remove(ECourse.M_117);
             } else if (RawRecordConstants.M118.equals(courseId) || RawRecordConstants.MATH118.equals(courseId)) {
+                Log.info("Removing 118 because completed");
                 pick.remove(ECourse.M_118);
             } else if (RawRecordConstants.M124.equals(courseId) || RawRecordConstants.MATH124.equals(courseId)) {
+                Log.info("Removing 124 because completed");
                 pick.remove(ECourse.M_124);
             } else if (RawRecordConstants.M125.equals(courseId) || RawRecordConstants.MATH125.equals(courseId)) {
+                Log.info("Removing 125 because completed");
                 pick.remove(ECourse.M_125);
             } else if (RawRecordConstants.M126.equals(courseId) || RawRecordConstants.MATH126.equals(courseId)) {
+                Log.info("Removing 126 because completed");
                 pick.remove(ECourse.M_126);
             } else if (RawRecordConstants.M120.equals(courseId) || RawRecordConstants.MATH120.equals(courseId)
                        || RawRecordConstants.M127.equals(courseId) || RawRecordConstants.MATH127.equals(courseId)) {
+                Log.info("Removing 120 because completed");
                 // Assume 127 will get counted like 120 (none of our pick lists are greater than 3 credits, so the
                 // credit difference will not matter)
                 pick.remove(ECourse.M_120);
@@ -396,11 +418,13 @@ public final class Requirements {
         }
 
         // Remove courses that are "named" in precalculus requirements
-        for (final ECourse course : courses) {
+        for (final ECourse course : this.namedPrecalculus) {
+            Log.info("Removing ", course.label, " because named");
             pick.remove(course);
         }
 
         if (pick.numCredits > 0) {
+            Log.info("Adding pick list ", pick);
             this.pickLists.add(pick);
         }
     }

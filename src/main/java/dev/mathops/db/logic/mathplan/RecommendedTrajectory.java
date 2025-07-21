@@ -1,8 +1,12 @@
 package dev.mathops.db.logic.mathplan;
 
+import dev.mathops.commons.log.Log;
 import dev.mathops.db.logic.mathplan.types.ECourse;
 import dev.mathops.db.logic.mathplan.types.ETrajectoryCourse;
 import dev.mathops.db.logic.mathplan.types.PickList;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A student's "recommended trajectory" through Mathematics courses to try to satisfy the requirements for any of their
@@ -14,24 +18,22 @@ public final class RecommendedTrajectory {
     public final Requirements requirements;
 
     /** Trajectory status for MATH 117. */
-    ETrajectoryCourse math117 = ETrajectoryCourse.NOT_NEEDED;
+    public ETrajectoryCourse math117 = ETrajectoryCourse.NOT_NEEDED;
 
     /** Trajectory status for MATH 118. */
-    ETrajectoryCourse math118 = ETrajectoryCourse.NOT_NEEDED;
+    public ETrajectoryCourse math118 = ETrajectoryCourse.NOT_NEEDED;
 
     /** Trajectory status for MATH 124. */
-    ETrajectoryCourse math124 = ETrajectoryCourse.NOT_NEEDED;
+    public ETrajectoryCourse math124 = ETrajectoryCourse.NOT_NEEDED;
 
     /** Trajectory status for MATH 125. */
-    ETrajectoryCourse math125 = ETrajectoryCourse.NOT_NEEDED;
+    public ETrajectoryCourse math125 = ETrajectoryCourse.NOT_NEEDED;
 
     /** Trajectory status for MATH 126. */
-    ETrajectoryCourse math126 = ETrajectoryCourse.NOT_NEEDED;
+    public ETrajectoryCourse math126 = ETrajectoryCourse.NOT_NEEDED;
 
     /** True to include the option to take MATH 120 rather than 117+118+124. */
     public boolean include120Option = false;
-
-
 
     /**
      * Constructs a new {@code RecommendedTrajectory}.
@@ -40,6 +42,8 @@ public final class RecommendedTrajectory {
      * @param theRequirements the requirements for the set of majors that were selected
      */
     RecommendedTrajectory(final StudentStatus stuStatus, final Requirements theRequirements) {
+
+        Log.info("Building a recommended trajectory with " + theRequirements.pickLists.size() + " pick lists");
 
         this.requirements = theRequirements;
 
@@ -51,7 +55,9 @@ public final class RecommendedTrajectory {
         // Make sure the trajectory will satisfy all pick lists, and if not, add courses from pick lists (lowest
         // to highest) until they are satisfied.
         for (final PickList pick : theRequirements.pickLists) {
+            Log.info("Trajectory processing pick list: ", pick);
             processPickList(pick, stuStatus);
+            Log.info("After processing: ", pick);
         }
 
         this.include120Option = canAllow120 && this.math117 != ETrajectoryCourse.NOT_NEEDED
@@ -73,17 +79,18 @@ public final class RecommendedTrajectory {
         for (final ECourse named : this.requirements.namedPrecalculus) {
             if (named == ECourse.M_117) {
                 this.math117 = compute117Status(stuStatus);
+                named171824 = true;
             } else if (named == ECourse.M_118) {
+                named171824 = true;
                 this.math118 = compute118Status(stuStatus);
             } else if (named == ECourse.M_124) {
+                named171824 = true;
                 this.math124 = compute124Status(stuStatus, this.requirements.needsBMinusIn2426);
             } else if (named == ECourse.M_125) {
                 this.math125 = compute125Status(stuStatus);
             } else if (named == ECourse.M_126) {
                 this.math126 = compute126Status(stuStatus, this.requirements.needsBMinusIn2426);
             }
-
-            named171824 = named171824 || named == ECourse.M_117 || named == ECourse.M_118 || named == ECourse.M_124;
         }
 
         return named171824;
@@ -108,6 +115,50 @@ public final class RecommendedTrajectory {
                 this.math118 = compute125Status(stuStatus);
             } else if (implicit == ECourse.M_126 && this.math126 == ETrajectoryCourse.NOT_NEEDED) {
                 this.math118 = compute126Status(stuStatus, this.requirements.needsBMinusIn2426);
+            }
+        }
+
+        if (this.requirements.namedCalculusRequirement == ECourse.M_160
+            || this.requirements.namedCalculusRequirement == ECourse.M_156
+            || this.requirements.namedCalculusRequirement == ECourse.M_156_OR_160) {
+
+            if (this.math117 == ETrajectoryCourse.NOT_NEEDED) {
+                this.math117 = compute117Status(stuStatus);
+            }
+            if (this.math118 == ETrajectoryCourse.NOT_NEEDED) {
+                this.math118 = compute118Status(stuStatus);
+            }
+            if (this.math124 == ETrajectoryCourse.NOT_NEEDED) {
+                this.math124 = compute124Status(stuStatus, true);
+            }
+            if (this.math125 == ETrajectoryCourse.NOT_NEEDED) {
+                this.math125 = compute125Status(stuStatus);
+            }
+            if (this.math126 == ETrajectoryCourse.NOT_NEEDED) {
+                this.math126 = compute126Status(stuStatus, true);
+            }
+        } else if (this.requirements.namedCalculusRequirement == ECourse.M_155
+                   || this.requirements.namedCalculusRequirement == ECourse.M_155_OR_160) {
+            if (this.math117 == ETrajectoryCourse.NOT_NEEDED) {
+                this.math117 = compute117Status(stuStatus);
+            }
+            if (this.math118 == ETrajectoryCourse.NOT_NEEDED) {
+                this.math118 = compute118Status(stuStatus);
+            }
+            if (this.math124 == ETrajectoryCourse.NOT_NEEDED) {
+                this.math124 = compute124Status(stuStatus, false);
+            }
+            if (this.math125 == ETrajectoryCourse.NOT_NEEDED) {
+                this.math125 = compute125Status(stuStatus);
+            }
+        } else if (this.requirements.namedCalculusRequirement == ECourse.M_141
+                   || this.requirements.namedCalculusRequirement == ECourse.M_141_OR_155
+                   || this.requirements.namedCalculusRequirement == ECourse.M_141_OR_155_OR_160) {
+            if (this.math117 == ETrajectoryCourse.NOT_NEEDED) {
+                this.math117 = compute117Status(stuStatus);
+            }
+            if (this.math118 == ETrajectoryCourse.NOT_NEEDED) {
+                this.math118 = compute118Status(stuStatus);
             }
         }
     }
@@ -215,52 +266,54 @@ public final class RecommendedTrajectory {
      */
     private void processPickList(final PickList pick, final StudentStatus stuStatus) {
 
+        final PickList play = new PickList(pick.numCredits, pick.courses);
+
         // NOTE: No pick lists currently include MATH 101
 
         if (this.math117 != ETrajectoryCourse.NOT_NEEDED) {
-            pick.remove(ECourse.M_117);
+            play.remove(ECourse.M_117);
         }
         if (this.math118 != ETrajectoryCourse.NOT_NEEDED) {
-            pick.remove(ECourse.M_118);
+            play.remove(ECourse.M_118);
         }
         if (this.math124 != ETrajectoryCourse.NOT_NEEDED) {
-            pick.remove(ECourse.M_124);
+            play.remove(ECourse.M_124);
         }
         if (this.math125 != ETrajectoryCourse.NOT_NEEDED) {
-            pick.remove(ECourse.M_125);
+            play.remove(ECourse.M_125);
         }
         if (this.math126 != ETrajectoryCourse.NOT_NEEDED) {
-            pick.remove(ECourse.M_126);
+            play.remove(ECourse.M_126);
         }
 
         // NOTE: We don't remove 120 because 120 is only allowed when 117+118+124 are allowed, and we have already
         // counted their removal
 
         // Make sure the trajectory meets the pick list
-        if (pick.numCredits > 0 && pick.courses.contains(ECourse.M_117)
+        if (play.numCredits > 0 && play.courses.contains(ECourse.M_117)
             && this.math117 == ETrajectoryCourse.NOT_NEEDED) {
             this.math117 = compute117Status(stuStatus);
-            pick.remove(ECourse.M_117);
+            play.remove(ECourse.M_117);
         }
-        if (pick.numCredits > 0 && pick.courses.contains(ECourse.M_118)
+        if (play.numCredits > 0 && play.courses.contains(ECourse.M_118)
             && this.math118 == ETrajectoryCourse.NOT_NEEDED) {
             this.math118 = compute118Status(stuStatus);
-            pick.remove(ECourse.M_118);
+            play.remove(ECourse.M_118);
         }
-        if (pick.numCredits > 0 && pick.courses.contains(ECourse.M_124)
+        if (play.numCredits > 0 && play.courses.contains(ECourse.M_124)
             && this.math124 == ETrajectoryCourse.NOT_NEEDED) {
             this.math124 = compute124Status(stuStatus, this.requirements.needsBMinusIn2426);
-            pick.remove(ECourse.M_124);
+            play.remove(ECourse.M_124);
         }
-        if (pick.numCredits > 0 && pick.courses.contains(ECourse.M_125)
+        if (play.numCredits > 0 && play.courses.contains(ECourse.M_125)
             && this.math125 == ETrajectoryCourse.NOT_NEEDED) {
             this.math125 = compute125Status(stuStatus);
-            pick.remove(ECourse.M_125);
+            play.remove(ECourse.M_125);
         }
-        if (pick.numCredits > 0 && pick.courses.contains(ECourse.M_126)
+        if (play.numCredits > 0 && play.courses.contains(ECourse.M_126)
             && this.math126 == ETrajectoryCourse.NOT_NEEDED) {
             this.math126 = compute126Status(stuStatus, this.requirements.needsBMinusIn2426);
-            pick.remove(ECourse.M_126);
+            play.remove(ECourse.M_126);
         }
     }
 }

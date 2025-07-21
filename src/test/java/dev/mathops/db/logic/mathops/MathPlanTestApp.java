@@ -2,6 +2,7 @@ package dev.mathops.db.logic.mathops;
 
 import com.formdev.flatlaf.FlatLightLaf;
 import dev.mathops.commons.CoreConstants;
+import dev.mathops.commons.TemporalUtils;
 import dev.mathops.commons.log.Log;
 import dev.mathops.commons.ui.UIUtilities;
 import dev.mathops.commons.ui.layout.StackedBorderLayout;
@@ -11,22 +12,35 @@ import dev.mathops.db.DbConnection;
 import dev.mathops.db.cfg.DatabaseConfig;
 import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.logic.StudentData;
+import dev.mathops.db.logic.mathplan.MathPlanConstants;
 import dev.mathops.db.logic.mathplan.MathPlanLogic;
+import dev.mathops.db.logic.mathplan.NextSteps;
+import dev.mathops.db.logic.mathplan.RecommendedFirstTerm;
+import dev.mathops.db.logic.mathplan.RecommendedTrajectory;
+import dev.mathops.db.logic.mathplan.Requirements;
 import dev.mathops.db.logic.mathplan.StudentMathPlan;
 import dev.mathops.db.logic.mathplan.StudentStatus;
 import dev.mathops.db.logic.mathplan.majors.Major;
 import dev.mathops.db.logic.mathplan.majors.Majors;
 import dev.mathops.db.logic.mathplan.majors.MajorsCurrent;
+import dev.mathops.db.logic.mathplan.types.ECourse;
+import dev.mathops.db.logic.mathplan.types.EIdealFirstTermType;
+import dev.mathops.db.logic.mathplan.types.ENextStep;
 import dev.mathops.db.logic.mathplan.types.ERequirement;
+import dev.mathops.db.logic.mathplan.types.ETrajectoryCourse;
 import dev.mathops.db.logic.mathplan.types.IdealFirstTerm;
+import dev.mathops.db.logic.mathplan.types.PickList;
 import dev.mathops.db.logic.placement.PlacementLogic;
 import dev.mathops.db.logic.placement.PlacementStatus;
+import dev.mathops.db.old.rawlogic.RawStmathplanLogic;
 import dev.mathops.db.old.rawrecord.RawFfrTrns;
 import dev.mathops.db.old.rawrecord.RawRecordConstants;
 import dev.mathops.db.old.rawrecord.RawStcourse;
 import dev.mathops.db.old.rawrecord.RawStmathplan;
 import dev.mathops.db.old.rawrecord.RawStudent;
+import dev.mathops.text.builder.HtmlBuilder;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -37,13 +51,18 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
+import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,12 +82,18 @@ public final class MathPlanTestApp implements Runnable, ActionListener {
     /** A zero-length array used to convert a list to an array. */
     private static final Major[] EMPTY_MAJOR_ARRAY = new Major[0];
 
+    /** A color for labels showing the generated Math Plan. */
+    private static final Color PLAN_FG = new Color(150, 0, 0);
+
     /** A fake major to indicate "None" declared. */
     private static final Major NO_MAJOR = new Major(new int[]{-1}, new String[]{"NONE"}, "(None)", CoreConstants.EMPTY,
             ERequirement.CORE_ONLY, IdealFirstTerm.CORE_ONLY);
 
     /** The database profile through which to access the database. */
     private final Profile profile;
+
+    /** The data cache. */
+    private final Cache cache;
 
     /** The frame. */
     private JFrame frame;
@@ -148,6 +173,18 @@ public final class MathPlanTestApp implements Runnable, ActionListener {
     /** A set of checkboxes to indicate selected majors. */
     private Map<Major, JCheckBox> majorCheckboxes;
 
+    /** A panel in which majors of interest will be summarized. */
+    private JPanel majorsOfInterestPane;
+
+    /** A panel in which the merged requirements used to craft the plan are summarized. */
+    private JPanel mergedRequirementsPane;
+
+    /** A panel in which the recommended trajectory is summarized. */
+    private JPanel trajectoryPane;
+
+    /** A panel in which the next steps are shown. */
+    private JPanel nextStepsPane;
+
     /**
      * Private constructor to prevent instantiation.
      */
@@ -155,6 +192,7 @@ public final class MathPlanTestApp implements Runnable, ActionListener {
 
         final DatabaseConfig config = DatabaseConfig.getDefault();
         this.profile = config.getCodeProfile(Contexts.BATCH_PATH);
+        this.cache = new Cache(this.profile);
     }
 
     /**
@@ -372,6 +410,39 @@ public final class MathPlanTestApp implements Runnable, ActionListener {
         final JPanel planPanel = new JPanel(new StackedBorderLayout());
         planPanel.setBorder(new TitledBorder("Generated Math Plan"));
         content.add(planPanel, StackedBorderLayout.CENTER);
+        final Border pad = BorderFactory.createEmptyBorder(0, 16, 0, 6);
+
+        final JLabel lbl31a = new JLabel("Majors contributing to the Math Plan:");
+        final JPanel flow31 = new JPanel(new FlowLayout(FlowLayout.LEADING, 6, 2));
+        flow31.add(lbl31a);
+        planPanel.add(flow31, StackedBorderLayout.NORTH);
+        this.majorsOfInterestPane = new JPanel(new StackedBorderLayout());
+        this.majorsOfInterestPane.setBorder(pad);
+        planPanel.add(this.majorsOfInterestPane, StackedBorderLayout.NORTH);
+
+        final JLabel lbl32a = new JLabel("Merged Requirements:");
+        final JPanel flow32 = new JPanel(new FlowLayout(FlowLayout.LEADING, 6, 2));
+        flow32.add(lbl32a);
+        planPanel.add(flow32, StackedBorderLayout.NORTH);
+        this.mergedRequirementsPane = new JPanel(new StackedBorderLayout());
+        this.mergedRequirementsPane.setBorder(pad);
+        planPanel.add(this.mergedRequirementsPane, StackedBorderLayout.NORTH);
+
+        final JLabel lbl33a = new JLabel("Recommended Precalculus Trajectory:");
+        final JPanel flow33 = new JPanel(new FlowLayout(FlowLayout.LEADING, 6, 2));
+        flow33.add(lbl33a);
+        planPanel.add(flow33, StackedBorderLayout.NORTH);
+        this.trajectoryPane = new JPanel(new StackedBorderLayout());
+        this.trajectoryPane.setBorder(pad);
+        planPanel.add(this.trajectoryPane, StackedBorderLayout.NORTH);
+
+        final JLabel lbl34a = new JLabel("Recommended Next Steps:");
+        final JPanel flow34 = new JPanel(new FlowLayout(FlowLayout.LEADING, 6, 2));
+        flow34.add(lbl34a);
+        planPanel.add(flow34, StackedBorderLayout.NORTH);
+        this.nextStepsPane = new JPanel(new StackedBorderLayout());
+        this.nextStepsPane.setBorder(pad);
+        planPanel.add(this.nextStepsPane, StackedBorderLayout.NORTH);
 
         updateStatus();
 
@@ -385,9 +456,9 @@ public final class MathPlanTestApp implements Runnable, ActionListener {
     private void updateStatus() {
 
         try {
-            final Cache cache = new Cache(this.profile);
+            final StudentData studentData = this.cache.getStudent(RawStudent.TEST_STUDENT_ID);
+            studentData.forgetMathPlanResponses();
 
-            final StudentData studentData = cache.getStudent(RawStudent.TEST_STUDENT_ID);
             final RawStudent student = studentData.getStudentRecord();
             final String appTermStr;
             final Major declared;
@@ -413,7 +484,7 @@ public final class MathPlanTestApp implements Runnable, ActionListener {
 
             if (student != null) {
                 final ZonedDateTime now = ZonedDateTime.now();
-                final PlacementLogic placement = new PlacementLogic(cache, RawStudent.TEST_STUDENT_ID,
+                final PlacementLogic placement = new PlacementLogic(this.cache, RawStudent.TEST_STUDENT_ID,
                         student.aplnTerm, now);
                 final PlacementStatus status = placement.status;
 
@@ -442,7 +513,7 @@ public final class MathPlanTestApp implements Runnable, ActionListener {
             this.place125.setSelected(has125);
             this.place126.setSelected(has126);
 
-            final StudentMathPlan plan = MathPlanLogic.queryPlan(cache, RawStudent.TEST_STUDENT_ID);
+            final StudentMathPlan plan = MathPlanLogic.queryPlan(this.cache, RawStudent.TEST_STUDENT_ID);
             final StudentStatus stuStatus = plan.stuStatus;
 
             boolean x002 = false;
@@ -540,7 +611,7 @@ public final class MathPlanTestApp implements Runnable, ActionListener {
             this.xferAUCC.setSelected(xCore);
 
             // Gather the list of selected majors
-            final List<Major> markedMajors = new ArrayList<>(10);
+            final Collection<Major> markedMajors = new ArrayList<>(10);
             final Map<Integer, RawStmathplan> majorsResponses = stuStatus.majorsResponses;
             for (final Integer numeric : majorsResponses.keySet()) {
                 final int code = numeric.intValue();
@@ -559,6 +630,170 @@ public final class MathPlanTestApp implements Runnable, ActionListener {
                 final boolean marked = markedMajors.contains(major);
                 box.setSelected(marked);
             }
+
+            // Below here is generated plan data...
+
+            // Populate the list of selected majors (including the declared major)
+            this.majorsOfInterestPane.removeAll();
+            boolean unspecified = true;
+            final List<Major> ofInterest = plan.majorsOfInterest;
+            for (final Major major : ofInterest) {
+                final String txt = major.programName + " (Requires " + major.requirements.name()
+                                   + "), ideal first term is " + major.idealFirstTerm;
+                final JLabel label = new JLabel(txt);
+                this.majorsOfInterestPane.add(label, StackedBorderLayout.NORTH);
+                unspecified = false;
+            }
+            if (unspecified) {
+                final JLabel label = new JLabel("(No majors selected)");
+                label.setForeground(PLAN_FG);
+                this.majorsOfInterestPane.add(label, StackedBorderLayout.NORTH);
+            }
+
+            this.mergedRequirementsPane.removeAll();
+            final Requirements merged = plan.requirements;
+            if (merged.coreOnly) {
+                final JLabel label = new JLabel("3 Credits of AUCC 1B Core.");
+                label.setForeground(PLAN_FG);
+                this.mergedRequirementsPane.add(label, StackedBorderLayout.NORTH);
+            } else {
+                final HtmlBuilder builder = new HtmlBuilder(100);
+                boolean undeterminedMerged = true;
+                if (merged.namedCalculusRequirement != ECourse.NONE) {
+                    final JLabel label = new JLabel("Calculus Requirement: " + merged.namedCalculusRequirement.label);
+                    label.setForeground(PLAN_FG);
+                    this.mergedRequirementsPane.add(label, StackedBorderLayout.NORTH);
+                    undeterminedMerged = false;
+                }
+
+                if (!merged.namedPrecalculus.isEmpty()) {
+                    builder.add("Named Precalculus Requirements:");
+                    for (final ECourse course : merged.namedPrecalculus) {
+                        builder.add(" ", course.label);
+                    }
+                    final JLabel label = new JLabel(builder.toString());
+                    label.setForeground(PLAN_FG);
+                    this.mergedRequirementsPane.add(label, StackedBorderLayout.NORTH);
+                    builder.reset();
+                    undeterminedMerged = false;
+                }
+                if (!merged.implicitCourses.isEmpty()) {
+                    builder.add("Implicit Precalculus Requirement:");
+                    for (final ECourse course : merged.implicitCourses) {
+                        builder.add(" ", course.label);
+                    }
+                    final JLabel label = new JLabel(builder.toString());
+                    label.setForeground(PLAN_FG);
+                    this.mergedRequirementsPane.add(label, StackedBorderLayout.NORTH);
+                    builder.reset();
+                    undeterminedMerged = false;
+                }
+                for (final PickList pick : merged.pickLists) {
+                    final JLabel label = new JLabel(pick.toString());
+                    label.setForeground(PLAN_FG);
+                    this.mergedRequirementsPane.add(label, StackedBorderLayout.NORTH);
+                    builder.reset();
+                    undeterminedMerged = false;
+                }
+                if (merged.needsBMinusIn2426) {
+                    final JLabel label = new JLabel("(Needs a B- or higher in MATH 124 and MATH 126)");
+                    label.setForeground(PLAN_FG);
+                    this.mergedRequirementsPane.add(label, StackedBorderLayout.NORTH);
+                    undeterminedMerged = false;
+                }
+
+                final RecommendedFirstTerm firstTerm = merged.firstTerm;
+                if (firstTerm.firstTermNamed.type != EIdealFirstTermType.UNDETERMINED
+                    && !firstTerm.firstTermNamed.courses.isEmpty()) {
+                    final JLabel label = new JLabel("Merged ideal first term named courses: " + firstTerm.firstTermNamed);
+                    label.setForeground(PLAN_FG);
+                    this.mergedRequirementsPane.add(label, StackedBorderLayout.NORTH);
+                    undeterminedMerged = false;
+                }
+                if (firstTerm.firstTermPick.type != EIdealFirstTermType.UNDETERMINED
+                    && !firstTerm.firstTermPick.courses.isEmpty()) {
+                    final JLabel label = new JLabel("Merged ideal first term choose from: " + firstTerm.firstTermPick);
+                    label.setForeground(PLAN_FG);
+                    this.mergedRequirementsPane.add(label, StackedBorderLayout.NORTH);
+                    undeterminedMerged = false;
+                }
+                if (undeterminedMerged) {
+                    final JLabel label = new JLabel("(No requirements generated)");
+                    label.setForeground(PLAN_FG);
+                    this.mergedRequirementsPane.add(label, StackedBorderLayout.NORTH);
+                }
+            }
+
+            this.trajectoryPane.removeAll();
+            final RecommendedTrajectory trajectory = plan.trajectory;
+            if (trajectory == null) {
+                final JLabel label = new JLabel("(No trajectory generated)");
+                label.setForeground(PLAN_FG);
+                this.trajectoryPane.add(label, StackedBorderLayout.NORTH);
+            } else {
+                boolean undeterminedTrajectory = true;
+                if (trajectory.math117 != ETrajectoryCourse.NOT_NEEDED) {
+                    final JLabel label = new JLabel("MATH 117: " + trajectory.math117);
+                    label.setForeground(PLAN_FG);
+                    this.trajectoryPane.add(label, StackedBorderLayout.NORTH);
+                    undeterminedTrajectory = false;
+                }
+                if (trajectory.math118 != ETrajectoryCourse.NOT_NEEDED) {
+                    final JLabel label = new JLabel("MATH 118: " + trajectory.math118);
+                    label.setForeground(PLAN_FG);
+                    this.trajectoryPane.add(label, StackedBorderLayout.NORTH);
+                    undeterminedTrajectory = false;
+                }
+                if (trajectory.math124 != ETrajectoryCourse.NOT_NEEDED) {
+                    final JLabel label = new JLabel("MATH 124: " + trajectory.math124);
+                    label.setForeground(PLAN_FG);
+                    this.trajectoryPane.add(label, StackedBorderLayout.NORTH);
+                    undeterminedTrajectory = false;
+                }
+                if (trajectory.math125 != ETrajectoryCourse.NOT_NEEDED) {
+                    final JLabel label = new JLabel("MATH 125: " + trajectory.math125);
+                    label.setForeground(PLAN_FG);
+                    this.trajectoryPane.add(label, StackedBorderLayout.NORTH);
+                    undeterminedTrajectory = false;
+                }
+                if (trajectory.math126 != ETrajectoryCourse.NOT_NEEDED) {
+                    final JLabel label = new JLabel("MATH 126: " + trajectory.math126);
+                    label.setForeground(PLAN_FG);
+                    this.trajectoryPane.add(label, StackedBorderLayout.NORTH);
+                    undeterminedTrajectory = false;
+                }
+                if (trajectory.include120Option) {
+                    final JLabel label = new JLabel("(MATH 120 is an option)");
+                    label.setForeground(PLAN_FG);
+                    this.trajectoryPane.add(label, StackedBorderLayout.NORTH);
+                    undeterminedTrajectory = false;
+                }
+                if (undeterminedTrajectory) {
+                    final JLabel label = new JLabel("(No trajectory generated)");
+                    label.setForeground(PLAN_FG);
+                    this.trajectoryPane.add(label, StackedBorderLayout.NORTH);
+                }
+            }
+
+            this.nextStepsPane.removeAll();
+            final NextSteps next = plan.nextSteps;
+            if (next.nextStep == ENextStep.UNDETERMINED) {
+                final JLabel label = new JLabel("(No next steps generated)");
+                label.setForeground(PLAN_FG);
+                this.nextStepsPane.add(label, StackedBorderLayout.NORTH);
+            } else {
+                final JLabel label1 = new JLabel("Next step: " + next.nextStep.planText);
+                label1.setForeground(PLAN_FG);
+                this.nextStepsPane.add(label1, StackedBorderLayout.NORTH);
+                final JLabel label2 = new JLabel("Placement Needed: " + next.placementNeeded);
+                label2.setForeground(PLAN_FG);
+                this.nextStepsPane.add(label2, StackedBorderLayout.NORTH);
+            }
+
+            this.frame.invalidate();
+            this.frame.revalidate();
+            this.frame.pack();
+            this.frame.repaint();
         } catch (final SQLException ex) {
             Log.warning(ex);
             final String[] msg = {"Failed to update student status:", ex.getLocalizedMessage()};
@@ -579,7 +814,50 @@ public final class MathPlanTestApp implements Runnable, ActionListener {
         if (CMD_UPDATE_STUDENT.equals(cmd)) {
             Log.info("Updating student data");
         } else if (CMD_UPDATE_MAJORS.equals(cmd)) {
-            Log.info("Updating majors");
+            updateMajors();
+        }
+    }
+
+    /**
+     * Updates majors.
+     */
+    private void updateMajors() {
+
+        final StudentData studentData = this.cache.getStudent(RawStudent.TEST_STUDENT_ID);
+
+        try {
+            final RawStudent student = studentData.getStudentRecord();
+            final String appTerm = student.aplnTerm == null ? CoreConstants.EMPTY : student.aplnTerm.shortString;
+            final LocalDate today = LocalDate.now();
+            final LocalTime now = LocalTime.now();
+            final Integer nowMinutes = Integer.valueOf(TemporalUtils.minuteOfDay(now));
+            final long sessionValue = System.currentTimeMillis();
+            final Long session = Long.valueOf(sessionValue);
+            final ZonedDateTime zonedNow = ZonedDateTime.now();
+
+            RawStmathplanLogic.deleteAllForPage(this.cache, RawStudent.TEST_STUDENT_ID,
+                    MathPlanConstants.MAJORS_PROFILE);
+
+            final Collection<Major> majors = new ArrayList<>(10);
+            for (final Map.Entry<Major, JCheckBox> entry : this.majorCheckboxes.entrySet()) {
+                final JCheckBox box = entry.getValue();
+                if (box.isSelected()) {
+                    final Major toAdd = entry.getKey();
+                    majors.add(toAdd);
+
+                    final Integer q = Integer.valueOf(toAdd.questionNumbers[0]);
+                    final RawStmathplan newRow = new RawStmathplan(RawStudent.TEST_STUDENT_ID, student.pidm,
+                            appTerm, MathPlanConstants.MAJORS_PROFILE, today, q, "Y", nowMinutes, session);
+                    RawStmathplanLogic.insert(this.cache, newRow);
+                }
+            }
+
+            final StudentMathPlan plan = MathPlanLogic.generatePlan(this.cache, RawStudent.TEST_STUDENT_ID, majors);
+            MathPlanLogic.recordPlan(this.cache, plan, zonedNow, sessionValue);
+
+            updateStatus();
+        } catch (final SQLException ex) {
+            Log.warning(ex);
         }
     }
 

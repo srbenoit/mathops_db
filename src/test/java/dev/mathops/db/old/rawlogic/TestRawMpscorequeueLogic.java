@@ -10,6 +10,7 @@ import dev.mathops.db.cfg.Login;
 import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.old.rawrecord.RawMpscorequeue;
 import dev.mathops.db.old.rawrecord.RawRecordConstants;
+import dev.mathops.db.old.rawrecord.RawStudent;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
@@ -240,7 +241,7 @@ final class TestRawMpscorequeueLogic {
     @DisplayName("postChallengeCredit results with Banner down")
     void test0007() {
 
-        final Integer pidm = Integer.valueOf(10567708);
+        final Integer pidm = Integer.valueOf(RawStudent.TEST_STUDENT_INTERNAL_ID);
 
         final LocalDateTime nowWithMs = LocalDateTime.now();
         final LocalDateTime now = LocalDateTime.of(nowWithMs.getYear(), nowWithMs.getMonth(), nowWithMs.getDayOfMonth(),
@@ -345,7 +346,7 @@ final class TestRawMpscorequeueLogic {
     @DisplayName("postPlacementToolResult results with Banner down")
     void test0009() {
 
-        final Integer pidm = Integer.valueOf(10567708);
+        final Integer pidm = Integer.valueOf(RawStudent.TEST_STUDENT_INTERNAL_ID);
 
         final LocalDateTime nowWithMs = LocalDateTime.now();
         final LocalDateTime now = LocalDateTime.of(nowWithMs.getYear(), nowWithMs.getMonth(), nowWithMs.getDayOfMonth(),
@@ -560,7 +561,7 @@ final class TestRawMpscorequeueLogic {
     @DisplayName("postPrecalcTutorialResult results with Banner down")
     void test0011() {
 
-        final Integer pidm = Integer.valueOf(10567708);
+        final Integer pidm = Integer.valueOf(RawStudent.TEST_STUDENT_INTERNAL_ID);
 
         final LocalDateTime nowWithMs = LocalDateTime.now();
         final LocalDateTime now = LocalDateTime.of(nowWithMs.getYear(), nowWithMs.getMonth(), nowWithMs.getDayOfMonth(),
@@ -665,7 +666,7 @@ final class TestRawMpscorequeueLogic {
     @DisplayName("postELMTutorialResult results with Banner down")
     void test0013() {
 
-        final Integer pidm = Integer.valueOf(10567708);
+        final Integer pidm = Integer.valueOf(RawStudent.TEST_STUDENT_INTERNAL_ID);
 
         final LocalDateTime nowWithMs = LocalDateTime.now();
         final LocalDateTime now =
@@ -770,7 +771,7 @@ final class TestRawMpscorequeueLogic {
     @DisplayName("postELMUnit3ReviewPassed results with Banner down")
     void test0015() {
 
-        final Integer pidm = Integer.valueOf(10567708);
+        final Integer pidm = Integer.valueOf(RawStudent.TEST_STUDENT_INTERNAL_ID);
 
         final LocalDateTime nowWithMs = LocalDateTime.now();
         final LocalDateTime now = LocalDateTime.of(nowWithMs.getYear(), nowWithMs.getMonth(), nowWithMs.getDayOfMonth(),
