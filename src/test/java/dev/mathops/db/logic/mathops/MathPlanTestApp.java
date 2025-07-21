@@ -24,6 +24,7 @@ import dev.mathops.db.logic.placement.PlacementStatus;
 import dev.mathops.db.old.rawrecord.RawFfrTrns;
 import dev.mathops.db.old.rawrecord.RawRecordConstants;
 import dev.mathops.db.old.rawrecord.RawStcourse;
+import dev.mathops.db.old.rawrecord.RawStmathplan;
 import dev.mathops.db.old.rawrecord.RawStudent;
 
 import javax.swing.JButton;
@@ -42,6 +43,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -537,8 +539,26 @@ public final class MathPlanTestApp implements Runnable, ActionListener {
             this.xfer160.setSelected(x160);
             this.xferAUCC.setSelected(xCore);
 
-            // TODO: Populate selected majors
+            // Gather the list of selected majors
+            final List<Major> markedMajors = new ArrayList<>(10);
+            final Map<Integer, RawStmathplan> majorsResponses = stuStatus.majorsResponses;
+            for (final Integer numeric : majorsResponses.keySet()) {
+                final int code = numeric.intValue();
+                final Major major = Majors.getMajorByNumericCode(code);
+                if (major == null) {
+                    Log.warning("Invalid major code: ", numeric);
+                } else {
+                    markedMajors.add(major);
+                }
+            }
 
+            // Set the state of majors checkboxes
+            for (final Map.Entry<Major, JCheckBox> entry : this.majorCheckboxes.entrySet()) {
+                final Major major = entry.getKey();
+                final JCheckBox box = entry.getValue();
+                final boolean marked = markedMajors.contains(major);
+                box.setSelected(marked);
+            }
         } catch (final SQLException ex) {
             Log.warning(ex);
             final String[] msg = {"Failed to update student status:", ex.getLocalizedMessage()};
