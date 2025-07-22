@@ -1,12 +1,17 @@
 package dev.mathops.db.logic.mathplan.majors;
 
+import dev.mathops.db.logic.mathplan.types.EMajorTrack;
 import dev.mathops.db.logic.mathplan.types.ERequirement;
 import dev.mathops.db.logic.mathplan.types.IdealFirstTerm;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 /**
  * A math requirement associated with a major (major or major/concentration).
@@ -18,6 +23,9 @@ public final class Major implements Comparable<Major> {
 
     /** The program codes from CIM (like 'MAJR-CONC-BS'). */
     public final List<String> programCodes;
+
+    /** The major tracks in which the major participates. */
+    public final EnumSet<EMajorTrack> majorTracks;
 
     /** The program name. */
     public final String programName;
@@ -36,17 +44,22 @@ public final class Major implements Comparable<Major> {
      *
      * @param theQuestionNumbers the array of question numbers in the Math Plan that indicate the program is selected
      * @param theProgramCodes    the array of CIM program codes for the major and concentrations
+     * @param theMajorTracks     the major tracks in which the major participates
      * @param theProgramName     the name of the major (displayed in the major selection page)
      * @param theCatalogPageUrl  the URL to a descriptive page for the major
      * @param theRequirements    the  required math courses in the major
      * @param theIdealFirstTerm  the "ideal" courses for which student will be eligible in the first semester
      */
-    public Major(final int[] theQuestionNumbers, final String[] theProgramCodes, final String theProgramName,
-                 final String theCatalogPageUrl, final ERequirement theRequirements,
+    public Major(final int[] theQuestionNumbers, final String[] theProgramCodes, final EMajorTrack[] theMajorTracks,
+                 final String theProgramName, final String theCatalogPageUrl, final ERequirement theRequirements,
                  final IdealFirstTerm theIdealFirstTerm) {
 
         this.questionNumbers = theQuestionNumbers.clone();
         this.programCodes = Arrays.asList(theProgramCodes);
+        this.majorTracks = EnumSet.noneOf(EMajorTrack.class);
+        if (theMajorTracks != null && theMajorTracks.length > 0) {
+            Collections.addAll(this.majorTracks, theMajorTracks);
+        }
         this.programName = theProgramName;
         this.catalogPageUrl = theCatalogPageUrl;
         this.requirements = theRequirements;
@@ -58,17 +71,20 @@ public final class Major implements Comparable<Major> {
      *
      * @param theQuestionNumbers the array of question numbers in the Math Plan that indicate the program is selected
      * @param theProgramCodes    the array of CIM program codes for the major and concentrations
+     * @param theMajorTracks     the major tracks in which the major participates
      * @param theProgramName     the name of the major (displayed in the major selection page)
      * @param theCatalogPageUrl  the URL to a descriptive page for the major
      * @param theRequirements    the  required math courses in the major
      * @param theIdealFirstTerm  the "ideal" courses for which student will be eligible in the first semester
      */
-    public Major(final int[] theQuestionNumbers, final Collection<String> theProgramCodes, final String theProgramName,
-                 final String theCatalogPageUrl, final ERequirement theRequirements,
-                 final IdealFirstTerm theIdealFirstTerm) {
+    private Major(final int[] theQuestionNumbers, final Collection<String> theProgramCodes,
+                  final Collection<EMajorTrack> theMajorTracks, final String theProgramName,
+                  final String theCatalogPageUrl, final ERequirement theRequirements,
+                  final IdealFirstTerm theIdealFirstTerm) {
 
         this.questionNumbers = theQuestionNumbers.clone();
         this.programCodes = new ArrayList<>(theProgramCodes);
+        this.majorTracks = EnumSet.copyOf(theMajorTracks);
         this.programName = theProgramName;
         this.catalogPageUrl = theCatalogPageUrl;
         this.requirements = theRequirements;
@@ -83,7 +99,7 @@ public final class Major implements Comparable<Major> {
      */
     public Major cloneWithNewName(final String newName) {
 
-        return new Major(this.questionNumbers, this.programCodes, newName,
+        return new Major(this.questionNumbers, this.programCodes, this.majorTracks, newName,
                 this.catalogPageUrl, this.requirements, this.idealFirstTerm);
     }
 
@@ -140,7 +156,11 @@ public final class Major implements Comparable<Major> {
     @Override
     public int compareTo(final Major other) {
 
-        int result = this.programName.compareTo(other.programName);
+        // Uppercase so "Environmental and Natural..." sorts before "Environmental Horticulture"
+        final String myName = this.programName.toUpperCase(Locale.ROOT);
+        final String otherName = other.programName.toUpperCase(Locale.ROOT);
+
+        int result = myName.compareTo(otherName);
 
         if (result == 0) {
             final String first = this.programCodes.getFirst();

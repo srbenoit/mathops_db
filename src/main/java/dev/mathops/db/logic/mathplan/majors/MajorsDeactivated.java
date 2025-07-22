@@ -1,6 +1,7 @@
 package dev.mathops.db.logic.mathplan.majors;
 
 import dev.mathops.db.logic.mathplan.MathPlanConstants;
+import dev.mathops.db.logic.mathplan.types.EMajorTrack;
 import dev.mathops.db.logic.mathplan.types.ERequirement;
 import dev.mathops.db.logic.mathplan.types.IdealFirstTerm;
 
@@ -18,6 +19,9 @@ public final class MajorsDeactivated extends MajorsBase {
 
     /** The single instance. */
     public static final MajorsDeactivated INSTANCE = new MajorsDeactivated();
+
+    /** An empty track array. */
+    private static final EMajorTrack[] EMPTY_TRACK_ARRAY = {};
 
     /**
      * Constructs a new {@code MajorsDeactivated}.
@@ -40,6 +44,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mAGBU = new Major(
                 new int[]{-1},
                 new String[]{"AGBU-DD-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Agricultural Business",
                 MathPlanConstants.PGMS + "agricultural-business/",
                 ERequirement.M_117_118_124,
@@ -52,6 +57,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mENRE = new Major(
                 new int[]{-1},
                 new String[]{"ENRE-DD-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Environmental and Natural Resource Economics",
                 MathPlanConstants.PGMS + "environmental-and-natural-resource-economics/",
                 ERequirement.M_117_118_124_141,
@@ -64,6 +70,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mENHR = new Major(
                 new int[]{1041},
                 new String[]{"ENHR-LNBZ-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Environmental Horticulture (Landscape Business)",
                 MathPlanConstants.PGMS + "environmental-horticulture/",
                 ERequirement.M_117_118_124,
@@ -76,6 +83,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mHORT1 = new Major(
                 new int[]{1061},
                 new String[]{"HORT-FLOZ-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Horticulture (Floriculture)",
                 MathPlanConstants.PGMS + "horticulture/",
                 ERequirement.M_117_118_124,
@@ -86,6 +94,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mHORT2 = new Major(
                 new int[]{1065},
                 new String[]{"HORT-HTHZ-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Horticulture (Horticultural Therapy)",
                 MathPlanConstants.PGMS + "horticulture/",
                 ERequirement.M_117_118_124,
@@ -97,6 +106,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mHORT3 = new Major(
                 new int[]{-1},
                 new String[]{"HORT-DHBZ-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Horticulture",
                 MathPlanConstants.PGMS + "horticulture/",
                 ERequirement.M_117_118_124,
@@ -109,6 +119,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mSOCR1 = new Major(
                 new int[]{1081},
                 new String[]{"SOCR-APMZ-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Soil and Crop Sciences (Agronomic Production Management)",
                 MathPlanConstants.PGMS + "soil-and-crop-sciences/",
                 ERequirement.M_117_118_124,
@@ -119,6 +130,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mSOCR2 = new Major(
                 new int[]{1082},
                 new String[]{"SOCR-APIZ-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Soil and Crop Sciences (Applied Information Technology)",
                 MathPlanConstants.PGMS + "soil-and-crop-sciences/",
                 ERequirement.M_117_118_124,
@@ -129,6 +141,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mSOCR3 = new Major(
                 new int[]{1083},
                 new String[]{"SOCR-ISCZ-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Soil and Crop Sciences (International Soil and Crop Sciences)",
                 MathPlanConstants.PGMS + "soil-and-crop-sciences/",
                 ERequirement.M_117_118_124,
@@ -139,6 +152,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mSOCR4 = new Major(
                 new int[]{1084},
                 new String[]{"SOCR-PBGZ-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Soil and Crop Sciences (Plant Biotechnology, Genetics and Breeding)",
                 MathPlanConstants.PGMS + "soil-and-crop-sciences/",
                 ERequirement.M_117_118_124,
@@ -149,6 +163,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mSOCR5 = new Major(
                 new int[]{1085},
                 new String[]{"SOCR-SOEZ-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Soil and Crop Sciences (Soil Ecology)",
                 MathPlanConstants.PGMS + "soil-and-crop-sciences/",
                 ERequirement.M_117_118_124,
@@ -159,6 +174,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mSOCR6 = new Major(
                 new int[]{1086},
                 new String[]{"SOCR-SRNZ-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Soil and Crop Sciences (Soil Restoration and Conservation)",
                 MathPlanConstants.PGMS + "soil-and-crop-sciences/",
                 ERequirement.M_117_118_124,
@@ -169,6 +185,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mSOCR7 = new Major(
                 new int[]{-1},
                 new String[]{"SOCR-DSAZ-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Soil and Crop Sciences",
                 MathPlanConstants.PGMS + "soil-and-crop-sciences/",
                 ERequirement.M_117_118_124,
@@ -184,6 +201,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mBUSA1 = new Major(
                 new int[]{2007},
                 new String[]{"BUSA-OIMZ-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Business Administration (Organization and Innovation Management)",
                 MathPlanConstants.PGMS + "business-administration/",
                 ERequirement.PICK_3CR_117_118_124_120_125_126_141_155_156_160,
@@ -195,6 +213,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mBUSA2 = new Major(
                 new int[]{-1, -1},
                 new String[]{"BUSA-DACZ-BS", "BUSA-OIMZ-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Business Administration",
                 MathPlanConstants.PGMS + "business-administration/",
                 ERequirement.PICK_3CR_117_118_124_120_125_126_141_155_156_160,
@@ -211,6 +230,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mCPEG = new Major(
                 new int[]{3034},
                 new String[]{"CPEG-VICZ-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Computer Engineering (VLSI and Integrated Circuits)",
                 MathPlanConstants.PGMS + "computer-engineering/",
                 ERequirement.M_160,
@@ -223,6 +243,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mEGSC1 = new Major(
                 new int[]{3051},
                 new String[]{"EGSC-EGPZ-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Engineering Science (Engineering Physics)",
                 MathPlanConstants.PGMS,
                 ERequirement.M_160,
@@ -233,6 +254,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mEGSC2 = new Major(
                 new int[]{3052},
                 new String[]{"EGSC-SPEZ-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Engineering Science (Space Engineering)",
                 MathPlanConstants.PGMS,
                 ERequirement.M_160,
@@ -243,6 +265,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mEGSC3 = new Major(
                 new int[]{3053},
                 new String[]{"EGSC-TCEZ-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Engineering Science (Teacher Education)",
                 MathPlanConstants.PGMS,
                 ERequirement.M_160,
@@ -255,6 +278,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mEGIS = new Major(
                 new int[]{3060},
                 new String[]{"EGIS-DUAL"},
+                EMPTY_TRACK_ARRAY,
                 "Engineering Science (Dual Degree)",
                 MathPlanConstants.PGMS,
                 ERequirement.M_160,
@@ -265,6 +289,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mEGIS2 = new Major(
                 new int[]{3061},
                 new String[]{"ILES-BA"},
+                EMPTY_TRACK_ARRAY,
                 "Engineering Science (Dual Degree - With Interdisciplinary Liberal Arts)",
                 MathPlanConstants.PGMS,
                 ERequirement.M_160,
@@ -275,6 +300,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mEGIS3 = new Major(
                 new int[]{3062},
                 new String[]{"ILES-BA"},
+                EMPTY_TRACK_ARRAY,
                 "Engineering Science (Dual Degree - With International Studies)",
                 MathPlanConstants.PGMS,
                 ERequirement.M_160,
@@ -291,6 +317,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mFACS1 = new Major(
                 new int[]{4030},
                 new String[]{"FACS-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Family and Consumer Sciences",
                 MathPlanConstants.PGMS + "family-consumer-sciences/",
                 ERequirement.CORE_ONLY,
@@ -301,6 +328,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mFACS2 = new Major(
                 new int[]{4031},
                 new String[]{"FACS-FACZ-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Family and Consumer Sciences (Family and Consumer Sciences)",
                 MathPlanConstants.PGMS + "family-consumer-sciences/",
                 ERequirement.CORE_ONLY,
@@ -311,6 +339,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mFACS3 = new Major(
                 new int[]{4032},
                 new String[]{"FACS-FCSZ-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Family and Consumer Sciences (Family and Consumer Sciences Education)",
                 MathPlanConstants.PGMS + "family-consumer-sciences/",
                 ERequirement.CORE_ONLY,
@@ -321,6 +350,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mFACS4 = new Major(
                 new int[]{4033},
                 new String[]{"FACS-IDSZ-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Family and Consumer Sciences (Interdisciplinary)",
                 MathPlanConstants.PGMS + "family-consumer-sciences/",
                 ERequirement.CORE_ONLY,
@@ -332,6 +362,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mFMST = new Major(
                 new int[]{4040},
                 new String[]{"FMST-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Fermentation and Food Science",
                 MathPlanConstants.PGMS + "fermentation-and-food-science/",
                 ERequirement.M_117_118_124,
@@ -344,6 +375,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mHAES = new Major(
                 new int[]{4052},
                 new String[]{"HAES-SPMZ-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Health and Exercise Science (Sports Medicine)",
                 MathPlanConstants.PGMS + "health-and-exercise-science/",
                 ERequirement.M_118_124_125,
@@ -355,6 +387,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mHSMG = new Major(
                 new int[]{4060},
                 new String[]{"HSMG-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Hospitality and Event Management",
                 MathPlanConstants.PGMS + "hospitality-event-management/",
                 ERequirement.M_117_101,
@@ -367,6 +400,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mHDFS1 = new Major(
                 new int[]{4073},
                 new String[]{"HDFS-LEPZ-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Human Development &amp; Family Studies (Leadership and Entrepreneurial Professions)",
                 MathPlanConstants.PGMS + "human-development-and-family-studies/",
                 ERequirement.CORE_ONLY,
@@ -377,6 +411,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mHDFS2 = new Major(
                 new int[]{4075},
                 new String[]{"HDFS-PISZ-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Human Development &amp; Family Studies (Prevention and Intervention Sciences)",
                 MathPlanConstants.PGMS + "human-development-and-family-studies/",
                 ERequirement.CORE_ONLY,
@@ -394,6 +429,7 @@ public final class MajorsDeactivated extends MajorsBase {
                 new int[]{-1, -1, -1, -1, -1, -1, -1},
                 new String[]{"HDFS-DECZ-BS", "HDFS-DHDZ-BS", "HDFS-DPHZ-BS", "HDFS-DPIZ-BS", "HDFS-DLAZ-BS",
                         "HDFS-DLEZ-BS", "HDFS-LEPZ-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Human Development &amp; Family Studies",
                 MathPlanConstants.PGMS + "human-development-and-family-studies/",
                 ERequirement.CORE_ONLY,
@@ -406,6 +442,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mINTD = new Major(
                 new int[]{4080},
                 new String[]{"INTD-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Interior Design",
                 MathPlanConstants.PGMS + "interior-architecture-and-design/",
                 ERequirement.M_117_118_124,
@@ -418,6 +455,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mNAFS1 = new Major(
                 new int[]{4090},
                 new String[]{"NAFS-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Nutrition and Food Science",
                 MathPlanConstants.PGMS + "nutrition-science/",
                 ERequirement.M_117_118_124,
@@ -428,6 +466,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mNAFS2 = new Major(
                 new int[]{4091},
                 new String[]{"NAFS-DNMZ-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Nutrition and Food Science (Dietetics and Nutrition Management)",
                 MathPlanConstants.PGMS + "nutrition-science/",
                 ERequirement.M_117_118_124,
@@ -438,6 +477,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mNAFS3 = new Major(
                 new int[]{4092},
                 new String[]{"NAFS-FSNZ-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Nutrition and Food Science (Food Safety and Nutrition)",
                 MathPlanConstants.PGMS + "nutrition-science/",
                 ERequirement.M_117_118_124,
@@ -448,6 +488,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mNAFS4 = new Major(
                 new int[]{4093},
                 new String[]{"NAFS-NFTZ-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Nutrition and Food Science (Nutrition and Fitness)",
                 MathPlanConstants.PGMS + "nutrition-science/",
                 ERequirement.M_117_118_124,
@@ -458,6 +499,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mNAFS5 = new Major(
                 new int[]{4094},
                 new String[]{"NAFS-NUSZ-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Nutrition and Food Science",
                 MathPlanConstants.PGMS + "nutrition-science/",
                 ERequirement.M_117_118_124,
@@ -468,6 +510,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mNAFS6 = new Major(
                 new int[]{4095},
                 new String[]{"NAFS-FSYZ-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Nutrition and Food Science (Food Systems)",
                 MathPlanConstants.PGMS + "nutrition-science/",
                 ERequirement.M_117_118_124,
@@ -478,6 +521,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mNAFS7 = new Major(
                 new int[]{4096},
                 new String[]{"NAFS-FSCZ-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Nutrition and Food Science (Food Science)",
                 MathPlanConstants.PGMS + "nutrition-science/",
                 ERequirement.M_117_118_124,
@@ -488,6 +532,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mNAFS8 = new Major(
                 new int[]{4097},
                 new String[]{"NAFS-PHNZ-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Nutrition and Food Science (Pre-Health Nutrition)",
                 MathPlanConstants.PGMS + "nutrition-science/",
                 ERequirement.M_117_118_124,
@@ -501,6 +546,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mNAFS9 = new Major(
                 new int[]{-1, -1, -1, -1},
                 new String[]{"NAFS-DNRZ-BS", "NAFS-GLTZ-BS", "NAFS-NRTZ-BS", "NAFS-CPSY-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Nutrition and Food Science",
                 MathPlanConstants.PGMS + "nutrition-science/",
                 ERequirement.M_117_118_124,
@@ -517,6 +563,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mANTH = new Major(
                 new int[]{-1},
                 new String[]{"ANTH-DD-BA"},
+                EMPTY_TRACK_ARRAY,
                 "Anthropology",
                 MathPlanConstants.PGMS + "anthropology/",
                 ERequirement.CORE_ONLY,
@@ -529,6 +576,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mCMST1 = new Major(
                 new int[]{5041},
                 new String[]{"CMST-TCLZ-BA"},
+                EMPTY_TRACK_ARRAY,
                 "Communication Studies (Speech Teacher Licensure)",
                 MathPlanConstants.PGMS + "communication-studies/",
                 ERequirement.CORE_ONLY,
@@ -539,6 +587,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mCMST2 = new Major(
                 new int[]{-1},
                 new String[]{"CMST-DD-BA"},
+                EMPTY_TRACK_ARRAY,
                 "Communication Studies",
                 MathPlanConstants.PGMS + "communication-studies/",
                 ERequirement.CORE_ONLY,
@@ -552,6 +601,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mDNCE = new Major(
                 new int[]{-1, 01},
                 new String[]{"DNC0", "DANC-DEDZ-BF"},
+                EMPTY_TRACK_ARRAY,
                 "Dance",
                 MathPlanConstants.PGMS + "dance-ba/",
                 ERequirement.CORE_ONLY,
@@ -564,6 +614,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mECON = new Major(
                 new int[]{-1},
                 new String[]{"ECON-DD-BA"},
+                EMPTY_TRACK_ARRAY,
                 "Economics",
                 MathPlanConstants.PGMS + "economics/",
                 ERequirement.M_141_OR_155_OR_160,
@@ -576,6 +627,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mENGL1 = new Major(
                 new int[]{5073},
                 new String[]{"ENGL-LANZ-BA"},
+                EMPTY_TRACK_ARRAY,
                 "English (Language)",
                 MathPlanConstants.PGMS + "english/",
                 ERequirement.CORE_ONLY,
@@ -588,6 +640,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mJAMC = new Major(
                 new int[]{-1},
                 new String[]{"JAMC-DD-BA"},
+                EMPTY_TRACK_ARRAY,
                 "Journalism and Media Communication",
                 MathPlanConstants.PGMS + "journalism-and-media-communication/",
                 ERequirement.CORE_ONLY,
@@ -600,6 +653,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mMUSI = new Major(
                 new int[]{01},
                 new String[]{"MUS0"},
+                EMPTY_TRACK_ARRAY,
                 "Music",
                 MathPlanConstants.PGMS + "music-ba/",
                 ERequirement.CORE_ONLY,
@@ -612,6 +666,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mPOLS1 = new Major(
                 new int[]{5153},
                 new String[]{"POLS-ULPZ-BA"},
+                EMPTY_TRACK_ARRAY,
                 "Political Science (U.S. Government, Law, and Policy)",
                 MathPlanConstants.PGMS + "political-science/",
                 ERequirement.CORE_ONLY,
@@ -622,6 +677,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mPOLS2 = new Major(
                 new int[]{-1},
                 new String[]{"POLS-DD-BA"},
+                EMPTY_TRACK_ARRAY,
                 "Political Science",
                 MathPlanConstants.PGMS + "political-science/",
                 ERequirement.CORE_ONLY,
@@ -634,6 +690,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mSOCI = new Major(
                 new int[]{-1},
                 new String[]{"SOCI-DGSZ-BA"},
+                EMPTY_TRACK_ARRAY,
                 "Sociology",
                 MathPlanConstants.PGMS + "sociology/",
                 ERequirement.CORE_ONLY,
@@ -646,6 +703,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mTHTR1 = new Major(
                 new int[]{5171},
                 new String[]{"THTR-DTHZ-BA"},
+                EMPTY_TRACK_ARRAY,
                 "Theatre (Design and Technology)",
                 MathPlanConstants.PGMS + "theatre/",
                 ERequirement.CORE_ONLY,
@@ -656,6 +714,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mTHTR2 = new Major(
                 new int[]{5172},
                 new String[]{"THTR-GTRZ-BA"},
+                EMPTY_TRACK_ARRAY,
                 "Theatre (General Theatre)",
                 MathPlanConstants.PGMS + "theatre/",
                 ERequirement.CORE_ONLY,
@@ -666,6 +725,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mTHTR3 = new Major(
                 new int[]{-1},
                 new String[]{"THR0"},
+                EMPTY_TRACK_ARRAY,
                 "Theatre",
                 MathPlanConstants.PGMS + "theatre/",
                 ERequirement.CORE_ONLY,
@@ -678,6 +738,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mILAR = new Major(
                 new int[]{-1},
                 new String[]{"ILAR-DD-BA"},
+                EMPTY_TRACK_ARRAY,
                 "Interdisciplinary Liberal Arts",
                 MathPlanConstants.PGMS + "interdisciplinary-liberal-arts/",
                 ERequirement.CORE_ONLY,
@@ -694,6 +755,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mWRSC = new Major(
                 new int[]{6070},
                 new String[]{"WRSC-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Watershed Science and Sustainability",
                 MathPlanConstants.PGMS + "watershed-science/",
                 ERequirement.M_155_OR_160,
@@ -708,6 +770,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mNRRT = new Major(
                 new int[]{6040, 6041, 6042},
                 new String[]{"NRRT-BS", "NRRT-GLTZ-BS", "NRRT-NRTZ-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Natural Resource Tourism",
                 MathPlanConstants.PGMS + "natural-resource-tourism/",
                 ERequirement.M_117_118_124,
@@ -725,6 +788,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mCHEM = new Major(
                 new int[]{7031, 7032},
                 new String[]{"CHEM-ACSZ-BS", "CHEM-NACZ-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Chemistry",
                 MathPlanConstants.PGMS + "chemistry/",
                 ERequirement.M_155_OR_160,
@@ -743,6 +807,7 @@ public final class MajorsDeactivated extends MajorsBase {
                 new int[]{-1, -1, -1, -1, -1, -1},
                 new String[]{"CPSC-DAIZ-BS", "CPSC-DCSZ-BS", "CPSC-DCYZ-BS", "CPSC-DHCZ-BS", "CPSC-DNSZ-BS",
                         "CPSC-DSEZ-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Computer Science",
                 MathPlanConstants.PGMS + "computer-science/",
                 ERequirement.M_156_OR_160,
@@ -755,6 +820,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mPSYC = new Major(
                 new int[]{-1},
                 new String[]{"PSYC-GDSZ-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Psychology",
                 MathPlanConstants.PGMS + "psychology/",
                 ERequirement.M_117_118_124,
@@ -768,6 +834,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mSTAT = new Major(
                 new int[]{7101, 7102},
                 new String[]{"STAT-GSTZ-BS", "STAT-MSTZ-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Statistics",
                 MathPlanConstants.PGMS + "statistics/",
                 ERequirement.M_156_OR_160,
@@ -784,6 +851,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mBIOM1 = new Major(
                 new int[]{-1},
                 new String[]{"EVHL-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Biomedical Sciences (Environmental Health)",
                 MathPlanConstants.PGMS + "biomedical-sciences/",
                 ERequirement.PICK_3CR_118_124_125_126_155_160,
@@ -794,6 +862,7 @@ public final class MajorsDeactivated extends MajorsBase {
         final Major mBIOM2 = new Major(
                 new int[]{-1},
                 new String[]{"MICR-BS"},
+                EMPTY_TRACK_ARRAY,
                 "Biomedical Sciences (Microbiology)",
                 MathPlanConstants.PGMS + "biomedical-sciences/",
                 ERequirement.PICK_3CR_118_124_125_126_155_160,

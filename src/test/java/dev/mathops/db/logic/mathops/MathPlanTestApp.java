@@ -25,6 +25,7 @@ import dev.mathops.db.logic.mathplan.majors.Majors;
 import dev.mathops.db.logic.mathplan.majors.MajorsCurrent;
 import dev.mathops.db.logic.mathplan.types.ECourse;
 import dev.mathops.db.logic.mathplan.types.EIdealFirstTermType;
+import dev.mathops.db.logic.mathplan.types.EMajorTrack;
 import dev.mathops.db.logic.mathplan.types.ENextStep;
 import dev.mathops.db.logic.mathplan.types.ERequirement;
 import dev.mathops.db.logic.mathplan.types.ETrajectoryCourse;
@@ -63,6 +64,7 @@ import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,8 +88,8 @@ public final class MathPlanTestApp implements Runnable, ActionListener {
     private static final Color PLAN_FG = new Color(150, 0, 0);
 
     /** A fake major to indicate "None" declared. */
-    private static final Major NO_MAJOR = new Major(new int[]{-1}, new String[]{"NONE"}, "(None)", CoreConstants.EMPTY,
-            ERequirement.CORE_ONLY, IdealFirstTerm.CORE_ONLY);
+    private static final Major NO_MAJOR = new Major(new int[]{-1}, new String[]{"NONE"}, new EMajorTrack[]{},
+            "(None)", CoreConstants.EMPTY, ERequirement.CORE_ONLY, IdealFirstTerm.CORE_ONLY);
 
     /** The database profile through which to access the database. */
     private final Profile profile;
@@ -705,7 +707,8 @@ public final class MathPlanTestApp implements Runnable, ActionListener {
                 final RecommendedFirstTerm firstTerm = merged.firstTerm;
                 if (firstTerm.firstTermNamed.type != EIdealFirstTermType.UNDETERMINED
                     && !firstTerm.firstTermNamed.courses.isEmpty()) {
-                    final JLabel label = new JLabel("Merged ideal first term named courses: " + firstTerm.firstTermNamed);
+                    final JLabel label = new JLabel(
+                            "Merged ideal first term named courses: " + firstTerm.firstTermNamed);
                     label.setForeground(PLAN_FG);
                     this.mergedRequirementsPane.add(label, StackedBorderLayout.NORTH);
                     undeterminedMerged = false;

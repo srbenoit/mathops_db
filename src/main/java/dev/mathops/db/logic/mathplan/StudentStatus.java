@@ -1,5 +1,6 @@
 package dev.mathops.db.logic.mathplan;
 
+import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
 import dev.mathops.db.logic.StudentData;
 import dev.mathops.db.logic.mathplan.types.ECourse;
@@ -83,12 +84,25 @@ public final class StudentStatus {
         this.numPlacementAttempts = placementAttempts.size();
 
         this.majorsResponses = studentData.getLatestMathPlanResponsesByPage(MathPlanConstants.MAJORS_PROFILE);
+        Log.info("  Found ", majorsResponses.size(), " selected majors");
+
         this.planSummaryResponses = studentData.getLatestMathPlanResponsesByPage(MathPlanConstants.PLAN_PROFILE);
+        Log.info("  Found ", planSummaryResponses.size(), " profile responses");
+
         this.onlyRecResponses = studentData.getLatestMathPlanResponsesByPage(MathPlanConstants.ONLY_RECOM_PROFILE);
+        Log.info("  Found ", onlyRecResponses.size(), " 'only recommendation' responses");
+
         this.existingWorkResponses = studentData.getLatestMathPlanResponsesByPage(MathPlanConstants.EXISTING_PROFILE);
+        Log.info("  Found ", existingWorkResponses.size(), " existing work responses");
+
         this.intentionsResponses = studentData.getLatestMathPlanResponsesByPage(MathPlanConstants.INTENTIONS_PROFILE);
+        Log.info("  Found ", intentionsResponses.size(), " intentions responses");
+
         this.reviewedResponses = studentData.getLatestMathPlanResponsesByPage(MathPlanConstants.REVIEWED_PROFILE);
+        Log.info("  Found ", reviewedResponses.size(), " reviewed responses");
+
         this.resultsResponses = studentData.getLatestMathPlanResponsesByPage(MathPlanConstants.CHECKED_RESULTS_PROFILE);
+        Log.info("  Found ", resultsResponses.size(), " checked results responses");
     }
 
     /**

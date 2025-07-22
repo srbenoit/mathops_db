@@ -43,8 +43,6 @@ public final class RecommendedTrajectory {
      */
     RecommendedTrajectory(final StudentStatus stuStatus, final Requirements theRequirements) {
 
-        Log.info("Building a recommended trajectory with " + theRequirements.pickLists.size() + " pick lists");
-
         this.requirements = theRequirements;
 
         // All named or implicit precalculus requirements are part of the trajectory, but if 117/118/124 are only
@@ -55,9 +53,7 @@ public final class RecommendedTrajectory {
         // Make sure the trajectory will satisfy all pick lists, and if not, add courses from pick lists (lowest
         // to highest) until they are satisfied.
         for (final PickList pick : theRequirements.pickLists) {
-            Log.info("Trajectory processing pick list: ", pick);
             processPickList(pick, stuStatus);
-            Log.info("After processing: ", pick);
         }
 
         this.include120Option = canAllow120 && this.math117 != ETrajectoryCourse.NOT_NEEDED

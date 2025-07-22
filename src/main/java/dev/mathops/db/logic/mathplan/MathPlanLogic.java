@@ -82,10 +82,9 @@ public enum MathPlanLogic {
                             MathPlanConstants.INTENTIONS_PROFILE);
                     if (q4.isEmpty()) {
                         result = EMathPlanStatus.REVIEWED_EXISTING;
-                    } else if (q4.containsKey(ONE)) {
-                        result = EMathPlanStatus.PLAN_COMPLETED_PLACEMENT_NOT_NEEDED;
                     } else {
-                        result = EMathPlanStatus.PLAN_COMPLETED_PLACEMENT_NEEDED;
+                        result = q4.containsKey(ONE) ? EMathPlanStatus.PLAN_COMPLETED_PLACEMENT_NOT_NEEDED
+                                : EMathPlanStatus.PLAN_COMPLETED_PLACEMENT_NEEDED;
                     }
                 }
             }
@@ -100,40 +99,72 @@ public enum MathPlanLogic {
      *
      * @param cache     the data cache
      * @param studentId the student ID
-     * @return the constructed math plan, which is based on student responses to
-     * @throws SQLException if there is an error accessing the database
+     * @return the constructed math plan, which is based on student responses to (null if unable to construct a plan)
      */
-    public static StudentMathPlan queryPlan(final Cache cache, final String studentId) throws SQLException {
+    public static StudentMathPlan queryPlan(final Cache cache, final String studentId) {
 
         final StudentData studentData = cache.getStudent(studentId);
 
-        final Map<Integer, RawStmathplan> planResponses = studentData.getLatestMathPlanResponsesByPage(
-                MathPlanConstants.MAJORS_PROFILE);
+        Log.info("Querying Math Plan for ", studentId);
 
         final List<Major> majors = new ArrayList<>(10);
-        for (final Integer key : planResponses.keySet()) {
-            final int code = key.intValue();
-            final Major major = Majors.getMajorByNumericCode(code);
-            if (major == null) {
-                Log.warning("No major found with code ", code);
-            } else {
-                Log.warning("Found Major response with code ", code, " (", major.programName, ")");
-                majors.add(major);
+        boolean good = true;
+
+        try {
+            final Map<Integer, RawStmathplan> planResponses = studentData.getLatestMathPlanResponsesByPage(
+                    MathPlanConstants.MAJORS_PROFILE);
+
+            Log.info("  Found ", planResponses.size(), " majors selected");
+
+            for (final Integer key : planResponses.keySet()) {
+                final int code = key.intValue();
+                final Major major = Majors.getMajorByNumericCode(code);
+                if (major == null) {
+                    final String codeStr = Integer.toString(code);
+                    Log.warning("No major found with code ", codeStr);
+                } else {
+                    majors.add(major);
+                }
+            }
+        } catch (final SQLException ex) {
+            Log.warning("Failed to query Math Plan 'majors' responses.", ex);
+            good = false;
+        }
+
+        try {
+            final RawStudent student = studentData.getStudentRecord();
+            if (student != null) {
+                final String declaredCode = student.programCode;
+                if (declaredCode != null) {
+                    final Major declared = Majors.getMajorByProgramCode(declaredCode);
+                    if (declared == null) {
+                        Log.warning("Failed to identify declared major '", declaredCode, "' for student ", studentId);
+                    } else if (!majors.contains(declared)) {
+                        majors.add(declared);
+                    }
+                }
+            }
+        } catch (final SQLException ex) {
+            Log.warning("Failed to look up declared major.", ex);
+            good = false;
+        }
+
+        StudentMathPlan result = null;
+
+        if (good) {
+            try {
+                final StudentStatus stuStatus = new StudentStatus(cache, studentId);
+                final Requirements requirements = majors.isEmpty() ? new Requirements() : new Requirements(majors,
+                        stuStatus);
+
+                result = new StudentMathPlan(majors, stuStatus, requirements);
+            } catch (final SQLException ex) {
+                Log.warning("Failed to calculate student status.", ex);
+                good = false;
             }
         }
 
-        final String declaredCode = studentData.getStudentRecord().programCode;
-        if (declaredCode != null) {
-            final Major declared = Majors.getMajorByProgramCode(declaredCode);
-            if (declared != null && !majors.contains(declared)) {
-                majors.add(declared);
-            }
-        }
-
-        final StudentStatus stuStatus = new StudentStatus(cache, studentId);
-        final Requirements requirements = majors.isEmpty() ? new Requirements() : new Requirements(majors, stuStatus);
-
-        return new StudentMathPlan(majors, stuStatus, requirements);
+        return result;
     }
 
     /**
@@ -197,6 +228,9 @@ public enum MathPlanLogic {
                 final RawStmathplan rec = new RawStmathplan(student.stuId, student.pidm, appTerm, version, examDt,
                         question, answer, finish, tag);
                 RawStmathplanLogic.insert(cache, rec);
+
+                final StudentData studentData = cache.getStudent(student.stuId);
+                studentData.forgetMathPlanResponses();
             }
         }
     }
@@ -214,11 +248,15 @@ public enum MathPlanLogic {
     public static void recordPlan(final Cache cache, final StudentMathPlan plan, final ZonedDateTime now,
                                   final long loginSessionTag) throws SQLException {
 
+        Log.info("Request to record Math Plan summary for ", plan.stuStatus.student.stuId);
+
         // Record only after student has checked the "only a recommendation" box
         final Map<Integer, RawStmathplan> done = plan.stuStatus.onlyRecResponses;
-        ;
+        Log.info("  Plan has " + done.size() + " 'only recommendation' responses");
 
         if (!done.isEmpty()) {
+            Log.info("Found 'only recommendation' response on record.");
+
             // NOTE: Historic data has 4 responses (pre-arrival, semester 1, semester 2, beyond).  This has been
             // simplified to record just what the student should do before arrival to be ready for semester 1
 
@@ -228,6 +266,7 @@ public enum MathPlanLogic {
             final String value4 = "(none)";
 
             final Map<Integer, RawStmathplan> existing = plan.stuStatus.planSummaryResponses;
+            Log.info("  Found " + existing.size() + " existing rows");
 
             final RawStmathplan exist1 = existing.get(MathPlanConstants.ONE);
             final RawStmathplan exist2 = existing.get(MathPlanConstants.TWO);
@@ -241,6 +280,8 @@ public enum MathPlanLogic {
                     || exist4 == null || exist4.stuAnswer == null || !exist4.stuAnswer.equals(value4);
 
             if (shouldInsertNew) {
+                Log.info("Inserting new.");
+
                 final List<Integer> questions = new ArrayList<>(4);
                 final List<String> answers = new ArrayList<>(4);
 

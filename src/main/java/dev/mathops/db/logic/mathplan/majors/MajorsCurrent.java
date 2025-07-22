@@ -1,6 +1,7 @@
 package dev.mathops.db.logic.mathplan.majors;
 
 import dev.mathops.db.logic.mathplan.MathPlanConstants;
+import dev.mathops.db.logic.mathplan.types.EMajorTrack;
 import dev.mathops.db.logic.mathplan.types.ERequirement;
 import dev.mathops.db.logic.mathplan.types.IdealFirstTerm;
 
@@ -41,6 +42,8 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mAGBU1 = new Major(
                 new int[]{1000, 1001},
                 new String[]{"AGBU-BS", "AGBU-AECZ-BS"},
+                new EMajorTrack[]{EMajorTrack.LAND_PLANT_ANIMAL_SCIENCES,
+                        EMajorTrack.ORGANIZATION_MANAGEMENT_ENTERPRISE},
                 "Agricultural Business (General or Agricultural Economics)",
                 MathPlanConstants.PGMS + "agricultural-business/",
                 ERequirement.M_117_118_124_141,
@@ -48,8 +51,9 @@ public final class MajorsCurrent extends MajorsBase {
         majors.add(mAGBU1);
 
         final Major mAGBU2 = new Major(
-                new int[]{1000, 1002, 1003},
-                new String[]{"AGBU-BS", "AGBU-FRCZ-BS", "AGBU-FSSZ-BS"},
+                new int[]{1002, 1003},
+                new String[]{"AGBU-FRCZ-BS", "AGBU-FSSZ-BS"},
+                new EMajorTrack[]{EMajorTrack.LAND_PLANT_ANIMAL_SCIENCES},
                 "Agricultural Business (Farm &amp; Ranch Mgt., Food Systems)",
                 MathPlanConstants.PGMS + "agricultural-business/",
                 ERequirement.M_117_118_124,
@@ -63,6 +67,8 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mAGED = new Major(
                 new int[]{1010, 1011, 1012},
                 new String[]{"AGED-BS", "AGED-AGLZ-BS", "AGED-TDLZ-BS"},
+                new EMajorTrack[]{EMajorTrack.EDUCATION_TEACHING, EMajorTrack.HEALTH_LIFE_FOOD_SCIENCES,
+                        EMajorTrack.LAND_PLANT_ANIMAL_SCIENCES},
                 "Agricultural Education",
                 MathPlanConstants.PGMS + "agricultural-education/",
                 ERequirement.PICK_3CR_117_118_124_120,
@@ -74,6 +80,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mANIM = new Major(
                 new int[]{1020},
                 new String[]{"ANIM-BS"},
+                new EMajorTrack[]{EMajorTrack.HEALTH_LIFE_FOOD_SCIENCES, EMajorTrack.LAND_PLANT_ANIMAL_SCIENCES},
                 "Animal Science",
                 MathPlanConstants.PGMS + "animal-science/",
                 ERequirement.PICK_3CR_117_118_124_120_125_126_141_155,
@@ -85,6 +92,8 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mENRE = new Major(
                 new int[]{1030},
                 new String[]{"ENRE-BS"},
+                new EMajorTrack[]{EMajorTrack.ENVIRONMENTAL_NATURAL_RESOURCES, EMajorTrack.LAND_PLANT_ANIMAL_SCIENCES,
+                        EMajorTrack.ORGANIZATION_MANAGEMENT_ENTERPRISE},
                 "Environmental and Natural Resource Economics",
                 MathPlanConstants.PGMS + "environmental-and-natural-resource-economics/",
                 ERequirement.M_117_118_124_141,
@@ -100,6 +109,8 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mENHR1 = new Major(
                 new int[]{1040, 1043, 1044},
                 new String[]{"ENHR-BS", "ENHR-NALZ-BS", "ENHR-TURZ-BS"},
+                new EMajorTrack[]{EMajorTrack.ARTS_HUMANITIES_DESIGN, EMajorTrack.ENVIRONMENTAL_NATURAL_RESOURCES,
+                        EMajorTrack.LAND_PLANT_ANIMAL_SCIENCES},
                 "Environmental Horticulture (General)",
                 MathPlanConstants.PGMS + "environmental-horticulture/",
                 ERequirement.M_117_118_124,
@@ -109,6 +120,8 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mENH2 = new Major(
                 new int[]{1042},
                 new String[]{"ENHR-LDAZ-BS"},
+                new EMajorTrack[]{EMajorTrack.ARTS_HUMANITIES_DESIGN, EMajorTrack.ENVIRONMENTAL_NATURAL_RESOURCES,
+                        EMajorTrack.LAND_PLANT_ANIMAL_SCIENCES},
                 "Environmental Horticulture (Landscape Design &amp; Contracting)",
                 MathPlanConstants.PGMS + "environmental-horticulture/",
                 ERequirement.M_117_118_125,
@@ -120,6 +133,8 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mEQSC = new Major(
                 new int[]{1050},
                 new String[]{"EQSC-BS"},
+                new EMajorTrack[]{EMajorTrack.LAND_PLANT_ANIMAL_SCIENCES,
+                        EMajorTrack.ORGANIZATION_MANAGEMENT_ENTERPRISE},
                 "Equine Science",
                 MathPlanConstants.PGMS + "equine-science/",
                 ERequirement.PICK_3CR_117_118_124_120_125_126_141_155,
@@ -137,6 +152,8 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mHORT1 = new Major(
                 new int[]{1060, 1062, 1063, 1066},
                 new String[]{"HORT-BS", "HORT-HBMZ-BS", "HORT-HFCZ-BS", "HORT-CEHZ-BS"},
+                new EMajorTrack[]{EMajorTrack.HEALTH_LIFE_FOOD_SCIENCES, EMajorTrack.LAND_PLANT_ANIMAL_SCIENCES,
+                        EMajorTrack.ORGANIZATION_MANAGEMENT_ENTERPRISE},
                 "Horticulture (General)",
                 MathPlanConstants.PGMS + "horticulture/",
                 ERequirement.M_117_118_124,
@@ -146,6 +163,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mHORT2 = new Major(
                 new int[]{1064},
                 new String[]{"HORT-HOSZ-BS"},
+                new EMajorTrack[]{EMajorTrack.HEALTH_LIFE_FOOD_SCIENCES, EMajorTrack.LAND_PLANT_ANIMAL_SCIENCES},
                 "Horticulture (Horticultural Science)",
                 MathPlanConstants.PGMS + "horticulture/",
                 ERequirement.M_124_125_126_155,
@@ -157,6 +175,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mLDAR = new Major(
                 new int[]{1070},
                 new String[]{"LDAR-BS"},
+                new EMajorTrack[]{EMajorTrack.ARTS_HUMANITIES_DESIGN, EMajorTrack.LAND_PLANT_ANIMAL_SCIENCES},
                 "Landscape Architecture",
                 MathPlanConstants.PGMS + "landscape-architecture/",
                 ERequirement.M_126,
@@ -168,6 +187,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mLSBM = new Major(
                 new int[]{1075, 1076, 1077},
                 new String[]{"LSBM-BS", "LSBM-ASCZ-BS", "LSBM-LMTZ-BS"},
+                new EMajorTrack[]{EMajorTrack.ORGANIZATION_MANAGEMENT_ENTERPRISE},
                 "Livestock Business Management",
                 MathPlanConstants.PGMS + "livestock-business-management/",
                 ERequirement.M_117_118_124,
@@ -188,6 +208,8 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mSOCR = new Major(
                 new int[]{1080, 1087, 1088, 1089},
                 new String[]{"SOCR-BS", "SOCR-PBTZ-BS", "SOCR-SESZ-BS", "SOCR-SAMZ-BS"},
+                new EMajorTrack[]{EMajorTrack.ENVIRONMENTAL_NATURAL_RESOURCES, EMajorTrack.HEALTH_LIFE_FOOD_SCIENCES,
+                        EMajorTrack.LAND_PLANT_ANIMAL_SCIENCES},
                 "Soil and Crop Sciences",
                 MathPlanConstants.PGMS + "soil-and-crop-sciences/",
                 ERequirement.M_117_118_124,
@@ -199,11 +221,10 @@ public final class MajorsCurrent extends MajorsBase {
         // 1092: AGBI-PLPZ-BS, Agricultural Biology - Plant Pathology
         // 1093: AGBI-WEEZ-BS, Agricultural Biology - Weed Science
 
-        // FIXME: Is the ERequirement correct?  A pick list only?
-
         final Major mAGBI = new Major(
                 new int[]{1090, 1091, 1092, 1093},
                 new String[]{"AGBI-BS", "AGBI-ENTZ-BS", "AGBI-PLPZ-BS", "AGBI-WEEZ-BS"},
+                new EMajorTrack[]{EMajorTrack.LAND_PLANT_ANIMAL_SCIENCES},
                 "Agricultural Biology",
                 MathPlanConstants.PGMS + "agricultural-biology/",
                 ERequirement.PICK_3CR_117_118_124_120_155,
@@ -231,6 +252,7 @@ public final class MajorsCurrent extends MajorsBase {
                 new int[]{2000, 2001, 2002, 2003, 2004, 2005, 2006, 2008, 2009, 2010, 2011},
                 new String[]{"BUSA-BS", "BUSA-ACCZ-BS", "BUSA-FINZ-BS", "BUSA-FPLZ-BS", "BUSA-HRMZ-BS", "BUSA-INSZ-BS",
                         "BUSA-MKTZ-BS", "BUSA-REAZ-BS", "BUSA-SCMZ-BS", "BUSA-MINZ-BS", "BUSA-SUSZ-BS"},
+                new EMajorTrack[]{EMajorTrack.GLOBAL_SOCIAL_SCIENCES, EMajorTrack.ORGANIZATION_MANAGEMENT_ENTERPRISE},
                 "Business Administration",
                 MathPlanConstants.PGMS + "business-administration/",
                 ERequirement.PICK_3CR_117_118_124_120_125_126_141_155_156_160,
@@ -252,6 +274,7 @@ public final class MajorsCurrent extends MajorsBase {
                 new int[]{3000, 3001, 3002, 3003, 3004, 3005},
                 new String[]{"CBEG-DUAL", "CBEG-BMEC-BS", "ELEG-BMEE-BS", "ELEG-BMEL-BS", "MECH-BMEM-BS",
                         "CPEG-BMEP-BS"},
+                new EMajorTrack[]{EMajorTrack.HEALTH_LIFE_FOOD_SCIENCES},
                 "Biomedical Engineering, Dual Degree",
                 MathPlanConstants.PGMS + "biomedical-engineering/",
                 ERequirement.M_160,
@@ -263,6 +286,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mCBEG = new Major(
                 new int[]{3010},
                 new String[]{"CBEG-BS"},
+                new EMajorTrack[]{EMajorTrack.MATH_PHYSICAL_SCIENCES_ENGINEERING},
                 "Chemical and Biological Engineering",
                 MathPlanConstants.PGMS + "chemical-biological-engineering/",
                 ERequirement.M_160,
@@ -274,6 +298,8 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mCIVE = new Major(
                 new int[]{3020},
                 new String[]{"CIVE-BS"},
+                new EMajorTrack[]{EMajorTrack.ENVIRONMENTAL_NATURAL_RESOURCES,
+                        EMajorTrack.MATH_PHYSICAL_SCIENCES_ENGINEERING},
                 "Civil Engineering",
                 MathPlanConstants.PGMS + "civil-engineering/",
                 ERequirement.M_160,
@@ -289,6 +315,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mCPEG = new Major(
                 new int[]{3030, 3032, 3032, 3033},
                 new String[]{"CPEG-BS", "CPEG-AESZ-BS", "CPEG-EISZ-BS", "CPEG-NDTZ-BS"},
+                new EMajorTrack[]{EMajorTrack.MATH_PHYSICAL_SCIENCES_ENGINEERING},
                 "Computer Engineering",
                 MathPlanConstants.PGMS + "computer-engineering/",
                 ERequirement.M_160,
@@ -303,6 +330,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mELEG = new Major(
                 new int[]{3040, 3041, 3042, 3043},
                 new String[]{"ELEG-BS", "ELEG-ELEZ-BS", "ELEG-LOEZ-BS", "ELEG-ASPZ-BS"},
+                new EMajorTrack[]{EMajorTrack.MATH_PHYSICAL_SCIENCES_ENGINEERING},
                 "Electrical Engineering",
                 MathPlanConstants.PGMS + "electrical-engineering/",
                 ERequirement.M_160,
@@ -314,6 +342,8 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mENVE = new Major(
                 new int[]{3070},
                 new String[]{"ENVE-BS"},
+                new EMajorTrack[]{EMajorTrack.ENVIRONMENTAL_NATURAL_RESOURCES,
+                        EMajorTrack.MATH_PHYSICAL_SCIENCES_ENGINEERING},
                 "Environmental Engineering",
                 MathPlanConstants.PGMS + "environmental-engineering/",
                 ERequirement.M_160,
@@ -327,6 +357,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mMECH = new Major(
                 new int[]{3080, 3081, 3082},
                 new String[]{"MECH-BS", "MECH-ACEZ-BS", "MECH-ADMZ-BS"},
+                new EMajorTrack[]{EMajorTrack.MATH_PHYSICAL_SCIENCES_ENGINEERING},
                 "Mechanical Engineering",
                 MathPlanConstants.PGMS + "mechanical-engineering/",
                 ERequirement.M_160,
@@ -338,6 +369,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mCONE = new Major(
                 new int[]{3090},
                 new String[]{"CONE-BS"},
+                new EMajorTrack[]{EMajorTrack.MATH_PHYSICAL_SCIENCES_ENGINEERING},
                 "Construction Engineering",
                 MathPlanConstants.PGMS + "construction-engineering/",
                 ERequirement.M_160,
@@ -356,6 +388,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mAPAM = new Major(
                 new int[]{4000, 4001, 4002, 4003},
                 new String[]{"APAM-BS", "APAM-ADAZ-BS", "APAM-MDSZ-BS", "APAM-PDVZ-BS"},
+                new EMajorTrack[]{EMajorTrack.ARTS_HUMANITIES_DESIGN, EMajorTrack.ORGANIZATION_MANAGEMENT_ENTERPRISE},
                 "Apparel and Merchandising",
                 MathPlanConstants.PGMS + "apparel-and-merchandising/",
                 ERequirement.M_117_118_124,
@@ -368,6 +401,8 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mCTMG = new Major(
                 new int[]{4010},
                 new String[]{"CTMG-BS", "CTM0"},
+                new EMajorTrack[]{EMajorTrack.ORGANIZATION_MANAGEMENT_ENTERPRISE,
+                        EMajorTrack.MATH_PHYSICAL_SCIENCES_ENGINEERING},
                 "Construction Management",
                 MathPlanConstants.PGMS + "construction-management/",
                 ERequirement.M_117_118_125,
@@ -379,6 +414,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mECHE = new Major(
                 new int[]{4020},
                 new String[]{"ECHE-BS"},
+                new EMajorTrack[]{EMajorTrack.GLOBAL_SOCIAL_SCIENCES, EMajorTrack.EDUCATION_TEACHING},
                 "Early Childhood Education",
                 MathPlanConstants.PGMS + "early-childhood-education/",
                 ERequirement.CORE_ONLY,
@@ -395,6 +431,8 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mFACS = new Major(
                 new int[]{4034},
                 new String[]{"FCSE-BS"},
+                new EMajorTrack[]{EMajorTrack.EDUCATION_TEACHING, EMajorTrack.GLOBAL_SOCIAL_SCIENCES,
+                        EMajorTrack.ORGANIZATION_MANAGEMENT_ENTERPRISE},
                 "Family and Consumer Sciences Education",
                 MathPlanConstants.PGMS + "family-consumer-sciences/",
                 ERequirement.CORE_ONLY,
@@ -406,6 +444,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mFMST1 = new Major(
                 new int[]{4041, 4043},
                 new String[]{"FAFS-BS", "FAFS-FSTZ-BS"},
+                new EMajorTrack[]{EMajorTrack.HEALTH_LIFE_FOOD_SCIENCES},
                 "Fermentation and Food Science (General)",
                 MathPlanConstants.PGMS + "fermentation-and-food-science/",
                 ERequirement.M_117_118_124,
@@ -415,6 +454,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mFMST2 = new Major(
                 new int[]{4042},
                 new String[]{"FAFS-FSIZ-BS"},
+                new EMajorTrack[]{EMajorTrack.HEALTH_LIFE_FOOD_SCIENCES},
                 "Fermentation Science and Technology (Food Science)",
                 MathPlanConstants.PGMS + "fermentation-and-food-science/",
                 ERequirement.M_117_118_124_125_141_OR_155,
@@ -429,6 +469,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mHAES = new Major(
                 new int[]{4050, 4051, 4053},
                 new String[]{"HAES-BS", "HAES-HPRZ-BS", "HAES-EXSZ-BS"},
+                new EMajorTrack[]{EMajorTrack.HEALTH_LIFE_FOOD_SCIENCES},
                 "Health and Exercise Science",
                 MathPlanConstants.PGMS + "health-and-exercise-science/",
                 ERequirement.M_118_124_125,
@@ -440,6 +481,8 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mHEMG = new Major(
                 new int[]{4061},
                 new String[]{"HEMG-BS"},
+                new EMajorTrack[]{EMajorTrack.HEALTH_LIFE_FOOD_SCIENCES,
+                        EMajorTrack.ORGANIZATION_MANAGEMENT_ENTERPRISE},
                 "Hospitality and Event Management",
                 MathPlanConstants.PGMS + "hospitality-event-management/",
                 ERequirement.M_117_101,
@@ -458,6 +501,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mHDFS = new Major(
                 new int[]{4070, 4071, 4072, 4074, 4076, 4077},
                 new String[]{"HDFS-BS", "HDFS-ECPZ-BS", "HDFS-HDEZ-BS", "HDFS-PHPZ-BS", "HDFS-LADZ-BS", "HDFS-BMHZ-BS"},
+                new EMajorTrack[]{EMajorTrack.GLOBAL_SOCIAL_SCIENCES, EMajorTrack.HEALTH_LIFE_FOOD_SCIENCES},
                 "Human Development &amp; Family Studies",
                 MathPlanConstants.PGMS + "human-development-and-family-studies/",
                 ERequirement.CORE_ONLY,
@@ -472,6 +516,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mIARD = new Major(
                 new int[]{4081, 4082, 4083},
                 new String[]{"IARD-BS", "IARD-IADZ-BS", "IARD-IPRZ-BS"},
+                new EMajorTrack[]{EMajorTrack.ARTS_HUMANITIES_DESIGN},
                 "Interior Architecture and Design",
                 MathPlanConstants.PGMS + "interior-architecture-and-design/",
                 ERequirement.M_117_118_124,
@@ -484,6 +529,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mSOWK = new Major(
                 new int[]{4100, 4101, 4102, 4103},
                 new String[]{"SOWK-BSW", "SOWK-ADSZ-BSW", "SOWK-HOCZ-BSW", "SOWK-ISWC-BSW"},
+                new EMajorTrack[]{EMajorTrack.GLOBAL_SOCIAL_SCIENCES},
                 "Social Work",
                 MathPlanConstants.PGMS + "social-work/",
                 ERequirement.CORE_ONLY,
@@ -499,6 +545,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mNUTR1 = new Major(
                 new int[]{4110, 4111, 4113},
                 new String[]{"NUTR-BS", "NUTR-DINZ-BS", "NUTR-SNWZ-BS"},
+                new EMajorTrack[]{EMajorTrack.HEALTH_LIFE_FOOD_SCIENCES},
                 "Nutrition Science (General)",
                 MathPlanConstants.PGMS + "nutrition-science/",
                 ERequirement.M_117_118_124,
@@ -508,6 +555,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mNUTR2 = new Major(
                 new int[]{4112},
                 new String[]{"NUTR-PHLZ-BS"},
+                new EMajorTrack[]{EMajorTrack.HEALTH_LIFE_FOOD_SCIENCES},
                 "Nutrition Science (Pre-Health Nutrition)",
                 MathPlanConstants.PGMS + "nutrition-science/",
                 ERequirement.M_117_118_124_125,
@@ -526,6 +574,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mANTH = new Major(
                 new int[]{5000, 5001, 5002, 5003},
                 new String[]{"ANTH-BA", "ANTH-ARCZ-BA", "ANTH-BIOZ-BA", "ANTH-CLTZ-BA",},
+                new EMajorTrack[]{EMajorTrack.GLOBAL_SOCIAL_SCIENCES},
                 "Anthropology",
                 MathPlanConstants.PGMS + "anthropology/",
                 ERequirement.CORE_ONLY,
@@ -553,6 +602,7 @@ public final class MajorsCurrent extends MajorsBase {
                 new String[]{"ARTI-BA", "ARTI-ARTZ-BA", "ARTI-IVSZ-BA", "ARTM-BFA", "ARTM-DRAZ-BF", "ARTM-ELAZ-BF",
                         "ARTM-FIBZ-BF", "ARTM-GRDZ-BF", "ARTM-METZ-BF", "ARTM-PNTZ-BF", "ARTM-PHIZ-BF", "ARTM-POTZ-BF",
                         "ARTM-PRTZ-BF", "ARTM-SCLZ-BF", "ARTM-AREZ-BF"},
+                new EMajorTrack[]{EMajorTrack.ARTS_HUMANITIES_DESIGN, EMajorTrack.EDUCATION_TEACHING},
                 "Art",
                 MathPlanConstants.PGMS + "art-bfa/",
                 ERequirement.CORE_ONLY,
@@ -565,6 +615,8 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mCMST = new Major(
                 new int[]{5040},
                 new String[]{"CMST-BA"},
+                new EMajorTrack[]{EMajorTrack.ARTS_HUMANITIES_DESIGN, EMajorTrack.GLOBAL_SOCIAL_SCIENCES,
+                        EMajorTrack.ORGANIZATION_MANAGEMENT_ENTERPRISE},
                 "Communication Studies",
                 MathPlanConstants.PGMS + "communication-studies/",
                 ERequirement.CORE_ONLY,
@@ -576,6 +628,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mDNCE = new Major(
                 new int[]{5050, 5055},
                 new String[]{"DNCE-BA", "DANC-BFA"},
+                new EMajorTrack[]{EMajorTrack.ARTS_HUMANITIES_DESIGN, EMajorTrack.EDUCATION_TEACHING},
                 "Dance",
                 MathPlanConstants.PGMS + "dance-ba/",
                 ERequirement.CORE_ONLY,
@@ -587,6 +640,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mECON = new Major(
                 new int[]{5060},
                 new String[]{"ECON-BA"},
+                new EMajorTrack[]{EMajorTrack.GLOBAL_SOCIAL_SCIENCES, EMajorTrack.ORGANIZATION_MANAGEMENT_ENTERPRISE},
                 "Economics",
                 MathPlanConstants.PGMS + "economics/",
                 ERequirement.M_141_OR_155_OR_160,
@@ -606,6 +660,8 @@ public final class MajorsCurrent extends MajorsBase {
                 new int[]{5070, 5071, 5072, 5074, 5075, 5076},
                 new String[]{"ENGL-BA", "ENGL-CRWZ-BA", "ENGL-ENEZ-BA", "ENGL-LITZ-BA", "ENGL-WRLZ-BA", "ENGL-LINZ-BA",
                         "ENGL-IESZ-BA"},
+                new EMajorTrack[]{EMajorTrack.ARTS_HUMANITIES_DESIGN, EMajorTrack.EDUCATION_TEACHING,
+                        EMajorTrack.GLOBAL_SOCIAL_SCIENCES},
                 "English",
                 MathPlanConstants.PGMS + "english/",
                 ERequirement.CORE_ONLY,
@@ -620,6 +676,8 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mETST = new Major(
                 new int[]{5080, 5081, 5082, 5083},
                 new String[]{"ETST-BA", "ETST-SOTZ-BA", "ETST-COIZ-BA", "ETST-RPRZ-BA"},
+                new EMajorTrack[]{EMajorTrack.ARTS_HUMANITIES_DESIGN, EMajorTrack.GLOBAL_SOCIAL_SCIENCES,
+                        EMajorTrack.EDUCATION_TEACHING},
                 "Ethnic Studies",
                 MathPlanConstants.PGMS + "ethnic-studies/",
                 ERequirement.CORE_ONLY,
@@ -631,6 +689,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mGEOG = new Major(
                 new int[]{5085},
                 new String[]{"GEOG-BS"},
+                new EMajorTrack[]{EMajorTrack.GLOBAL_SOCIAL_SCIENCES},
                 "Geography",
                 MathPlanConstants.PGMS + "geography/",
                 ERequirement.CORE_ONLY,
@@ -647,6 +706,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mHIST = new Major(
                 new int[]{5090, 5091, 5092, 5093, 5094, 5095},
                 new String[]{"HIST-BA", "HIST-GENZ-BA", "HIST-LNGZ-BA", "HIST-SBSZ-BA", "HIST-SSTZ-BA", "HIST-DPUZ-BA"},
+                new EMajorTrack[]{EMajorTrack.EDUCATION_TEACHING, EMajorTrack.GLOBAL_SOCIAL_SCIENCES},
                 "History",
                 MathPlanConstants.PGMS + "history/",
                 ERequirement.CORE_ONLY,
@@ -658,6 +718,8 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mJAMC = new Major(
                 new int[]{5100},
                 new String[]{"JAMC-BA"},
+                new EMajorTrack[]{EMajorTrack.ARTS_HUMANITIES_DESIGN, EMajorTrack.GLOBAL_SOCIAL_SCIENCES,
+                        EMajorTrack.ORGANIZATION_MANAGEMENT_ENTERPRISE},
                 "Journalism and Media Communication",
                 MathPlanConstants.PGMS + "journalism-and-media-communication/",
                 ERequirement.CORE_ONLY,
@@ -673,6 +735,8 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mLLAC = new Major(
                 new int[]{5110, 5111, 5112, 5113, 5114},
                 new String[]{"LLAC-BA", "LLAC-LFRZ-BA", "LLAC-LGEZ-BA", "LLAC-LSPZ-BA", "LLAC-SPPZ-BA"},
+                new EMajorTrack[]{EMajorTrack.ARTS_HUMANITIES_DESIGN, EMajorTrack.EDUCATION_TEACHING,
+                        EMajorTrack.GLOBAL_SOCIAL_SCIENCES},
                 "Languages, Literatures and Cultures",
                 MathPlanConstants.PGMS + "languages-literatures-and-cultures/",
                 ERequirement.CORE_ONLY,
@@ -689,6 +753,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mMUSI = new Major(
                 new int[]{5120, 5130, 5131, 5132, 5133, 5134},
                 new String[]{"MUSI-BA", "MUSC-BM", "MUSC-COMZ-BM", "MUSC-MUEZ-BM", "MUSC-MUTZ-BM", "MUSC-PERZ-BM"},
+                new EMajorTrack[]{EMajorTrack.ARTS_HUMANITIES_DESIGN, EMajorTrack.EDUCATION_TEACHING},
                 "Music",
                 MathPlanConstants.PGMS + "music-ba/",
                 ERequirement.CORE_ONLY,
@@ -703,6 +768,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mPHIL = new Major(
                 new int[]{5140, 5141, 5142, 5143},
                 new String[]{"PHIL-BA", "PHIL-GNPZ-BA", "PHIL-GPRZ-BA", "PHIL-PSAZ-BA"},
+                new EMajorTrack[]{EMajorTrack.ARTS_HUMANITIES_DESIGN},
                 "Philosophy",
                 MathPlanConstants.PGMS + "philosophy/",
                 ERequirement.CORE_ONLY,
@@ -721,6 +787,8 @@ public final class MajorsCurrent extends MajorsBase {
                 new int[]{5150, 5151, 5152, 5154, 5155, 5156},
                 new String[]{"POLS-BA", "POLS-EPAZ-BA", "POLS-GPPZ-BA", "POLS-LPGZ-BA", " POLS-PJDZ-BA",
                         "POLS-PPSZ-BA"},
+                new EMajorTrack[]{EMajorTrack.ENVIRONMENTAL_NATURAL_RESOURCES, EMajorTrack.GLOBAL_SOCIAL_SCIENCES,
+                        EMajorTrack.ORGANIZATION_MANAGEMENT_ENTERPRISE},
                 "Political Science",
                 MathPlanConstants.PGMS + "political-science/",
                 ERequirement.CORE_ONLY,
@@ -735,6 +803,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mSOCI = new Major(
                 new int[]{5160, 5161, 5162, 5163},
                 new String[]{"SOCI-BA", "SOCI-CRCZ-BA", "SOCI-ENSZ-BA", "SOCI-GNSZ-BA"},
+                new EMajorTrack[]{EMajorTrack.ENVIRONMENTAL_NATURAL_RESOURCES, EMajorTrack.GLOBAL_SOCIAL_SCIENCES},
                 "Sociology",
                 MathPlanConstants.PGMS + "sociology/",
                 ERequirement.CORE_ONLY,
@@ -756,6 +825,7 @@ public final class MajorsCurrent extends MajorsBase {
                 new int[]{5170, 5173, 5174, 5175, 5176, 5177, 5178, 5179},
                 new String[]{"THTR-BA", "THTR-PRFZ-BA", "THTR-LDTZ-BA", "THTR-MUSZ-BA", "THTR-PDTZ-BA", "THTR-SDSZ-BA",
                         "THTR-SDTZ-BA", "THTR-CDTZ-BA"},
+                new EMajorTrack[]{EMajorTrack.ARTS_HUMANITIES_DESIGN},
                 "Theatre",
                 MathPlanConstants.PGMS + "theatre/",
                 ERequirement.CORE_ONLY,
@@ -767,6 +837,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mWGST = new Major(
                 new int[]{5180},
                 new String[]{"WGST-BA"},
+                new EMajorTrack[]{EMajorTrack.GLOBAL_SOCIAL_SCIENCES},
                 "Women's and Gender Studies",
                 MathPlanConstants.PGMS + "womens-and-gender-studies/",
                 ERequirement.CORE_ONLY,
@@ -783,6 +854,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mINST = new Major(
                 new int[]{5190, 5191, 5192, 5193, 5194, 5195},
                 new String[]{"INST-BA", "INST-ASTZ-BA", "INST-EUSZ-BA", "INST-LTSZ-BA", "INST-MEAZ-BA", "INST-GBLZ-BA"},
+                new EMajorTrack[]{EMajorTrack.GLOBAL_SOCIAL_SCIENCES},
                 "International Studies",
                 MathPlanConstants.PGMS + "international-studies/",
                 ERequirement.CORE_ONLY,
@@ -794,6 +866,8 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mILAR = new Major(
                 new int[]{5200},
                 new String[]{"ILAR-BA"},
+                new EMajorTrack[]{EMajorTrack.ARTS_HUMANITIES_DESIGN, EMajorTrack.ENVIRONMENTAL_NATURAL_RESOURCES,
+                        EMajorTrack.GLOBAL_SOCIAL_SCIENCES, EMajorTrack.ORGANIZATION_MANAGEMENT_ENTERPRISE},
                 "Interdisciplinary Liberal Arts",
                 MathPlanConstants.PGMS + "interdisciplinary-liberal-arts/",
                 ERequirement.CORE_ONLY,
@@ -809,6 +883,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mECSS = new Major(
                 new int[]{6000},
                 new String[]{"ECSS-BS"},
+                new EMajorTrack[]{EMajorTrack.ENVIRONMENTAL_NATURAL_RESOURCES},
                 "Ecosystem Science and Sustainability",
                 MathPlanConstants.PGMS + "ecosystem-science-sustainability/",
                 ERequirement.M_155_OR_160,
@@ -823,6 +898,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mFWCB = new Major(
                 new int[]{6010, 6011, 6012, 6013},
                 new String[]{"FWCB-BS", "FWCB-CNVZ-BS", "FWCB-FASZ-BS", "FWCB-WDBZ-BS"},
+                new EMajorTrack[]{EMajorTrack.ENVIRONMENTAL_NATURAL_RESOURCES, EMajorTrack.LAND_PLANT_ANIMAL_SCIENCES},
                 "Fish, Wildlife and Conservation Biology",
                 MathPlanConstants.PGMS + "fish-wildlife-and-conservation-biology/",
                 ERequirement.M_155_OR_160,
@@ -839,7 +915,9 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mFRRS1 = new Major(
                 new int[]{6080, 6082, 6083, 6084},
                 new String[]{"FRRS-BS", "FRRS-FRFZ-BS", "FRRS-FMGZ-BS", "FRRS-RFMZ-BS"},
-                "Forest &amp; Rangeland Stewardship",
+                new EMajorTrack[]{EMajorTrack.ENVIRONMENTAL_NATURAL_RESOURCES,
+                        EMajorTrack.ORGANIZATION_MANAGEMENT_ENTERPRISE},
+                "Forest &amp; Rangeland Stewardship (General)",
                 MathPlanConstants.PGMS + "forest-and-rangeland-stewardship/",
                 ERequirement.M_141,
                 IdealFirstTerm.IDEAL_17_OR_HIGHER);
@@ -848,6 +926,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mFRRS2 = new Major(
                 new int[]{6085},
                 new String[]{"FRRS-RCMZ-BS"},
+                new EMajorTrack[]{EMajorTrack.ENVIRONMENTAL_NATURAL_RESOURCES},
                 "Forest &amp; Rangeland Stewardship (Rangeland Conservation &amp; Management)",
                 MathPlanConstants.PGMS + "forest-and-rangeland-stewardship/",
                 ERequirement.PICK_3CR_117_118_125_141,
@@ -857,6 +936,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mFRRS3 = new Major(
                 new int[]{6081},
                 new String[]{"FRRS-FRBZ-BS"},
+                new EMajorTrack[]{EMajorTrack.ENVIRONMENTAL_NATURAL_RESOURCES},
                 "Forest &amp; Rangeland Stewardship (Forest Biology)",
                 MathPlanConstants.PGMS + "forest-and-rangeland-stewardship/",
                 ERequirement.M_155,
@@ -872,6 +952,8 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mGEOL = new Major(
                 new int[]{6020, 6021, 6022, 6023, 6024},
                 new String[]{"GEOL-BS", "GEOL-EVGZ-BS", "GEOL-GEOZ-BS", "GEOL-GPYZ-BS", "GEOL-HYDZ-BS"},
+                new EMajorTrack[]{EMajorTrack.ENVIRONMENTAL_NATURAL_RESOURCES,
+                        EMajorTrack.MATH_PHYSICAL_SCIENCES_ENGINEERING},
                 "Geology",
                 MathPlanConstants.PGMS + "geology/",
                 ERequirement.M_160,
@@ -883,6 +965,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mHDNR = new Major(
                 new int[]{6030},
                 new String[]{"HDNR-BS"},
+                new EMajorTrack[]{EMajorTrack.ENVIRONMENTAL_NATURAL_RESOURCES},
                 "Human Dimensions of Natural Resources",
                 MathPlanConstants.PGMS + "human-dimensions-of-natural-resources/",
                 ERequirement.M_117_118_124,
@@ -900,6 +983,8 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mNRTM = new Major(
                 new int[]{6043, 6044, 6045},
                 new String[]{"NRTM-BS", "NRTM-GLTZ-BS", "NRTM-NRTZ-BS"},
+                new EMajorTrack[]{EMajorTrack.ENVIRONMENTAL_NATURAL_RESOURCES,
+                        EMajorTrack.ORGANIZATION_MANAGEMENT_ENTERPRISE},
                 "Natural Resource Tourism",
                 MathPlanConstants.PGMS + "natural-resource-tourism/",
                 ERequirement.M_117_118_124,
@@ -911,6 +996,8 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mNRMG = new Major(
                 new int[]{6050},
                 new String[]{"NRMG-BS"},
+                new EMajorTrack[]{EMajorTrack.ENVIRONMENTAL_NATURAL_RESOURCES,
+                        EMajorTrack.ORGANIZATION_MANAGEMENT_ENTERPRISE},
                 "Natural Resources Management",
                 MathPlanConstants.PGMS + "natural-resources-management/",
                 ERequirement.M_117_118_125,
@@ -922,6 +1009,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mRECO = new Major(
                 new int[]{6060},
                 new String[]{"RECO-BS"},
+                new EMajorTrack[]{EMajorTrack.ENVIRONMENTAL_NATURAL_RESOURCES},
                 "Restoration Ecology",
                 MathPlanConstants.PGMS + "restoration-ecology/",
                 ERequirement.PICK_3CR_117_118_125_141,
@@ -938,6 +1026,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mWRSC1 = new Major(
                 new int[]{6071, 6072, 6074},
                 new String[]{"WSSS-WSDZ-BS", "WSSS-WSSZ-BS", "WSSS-BS"},
+                new EMajorTrack[]{EMajorTrack.ENVIRONMENTAL_NATURAL_RESOURCES},
                 "Watershed Science and Sustainability",
                 MathPlanConstants.PGMS + "watershed-science/",
                 ERequirement.M_155_OR_160,
@@ -947,6 +1036,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mWRSC2 = new Major(
                 new int[]{6073},
                 new String[]{"WSSS-WSUZ-BS"},
+                new EMajorTrack[]{EMajorTrack.ENVIRONMENTAL_NATURAL_RESOURCES},
                 "Watershed Science and Sustainability (Watershed Sustainability)",
                 MathPlanConstants.PGMS + "watershed-science/",
                 ERequirement.M_141_OR_155_OR_160,
@@ -967,6 +1057,8 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mBCHM = new Major(
                 new int[]{7010, 7012, 7013, 7014, 7015},
                 new String[]{"BCHM-BS", "BCHM-HMSZ-BS", "BCHM-PPHZ-BS", "BCHM-ASBZ-BS", "BCHM-DTSZ-BS", "BCHM-GBCZ-BS"},
+                new EMajorTrack[]{EMajorTrack.HEALTH_LIFE_FOOD_SCIENCES, EMajorTrack.LAND_PLANT_ANIMAL_SCIENCES,
+                        EMajorTrack.MATH_PHYSICAL_SCIENCES_ENGINEERING},
                 "Biochemistry",
                 MathPlanConstants.PGMS + "biochemistry/",
                 ERequirement.M_155_OR_160,
@@ -980,6 +1072,8 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mBLSC = new Major(
                 new int[]{7020, 7021, 7022},
                 new String[]{"BLSC-BS", "BLSC-BLSZ-BS", "BLSC-BTNZ-BS"},
+                new EMajorTrack[]{EMajorTrack.ENVIRONMENTAL_NATURAL_RESOURCES, EMajorTrack.HEALTH_LIFE_FOOD_SCIENCES,
+                        EMajorTrack.LAND_PLANT_ANIMAL_SCIENCES},
                 "Biological Science",
                 MathPlanConstants.PGMS + "biology/",
                 ERequirement.M_155_OR_160,
@@ -998,6 +1092,8 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mCHEM = new Major(
                 new int[]{7030, 7033, 7034, 7035, 7036, 7037},
                 new String[]{"CHEM-BS", "CHEM-ECHZ-BS", "CHEM-FCHZ-BS", "CHEM-HSCZ-BS", "CHEM-SCHZ-BS", "CHEM-MTRZ-BS"},
+                new EMajorTrack[]{EMajorTrack.ENVIRONMENTAL_NATURAL_RESOURCES, EMajorTrack.HEALTH_LIFE_FOOD_SCIENCES,
+                        EMajorTrack.MATH_PHYSICAL_SCIENCES_ENGINEERING},
                 "Chemistry",
                 MathPlanConstants.PGMS + "chemistry/",
                 ERequirement.M_155_OR_160,
@@ -1018,6 +1114,7 @@ public final class MajorsCurrent extends MajorsBase {
                 new int[]{7040, 7041, 7042, 7043, 7044, 7045, 7046, 7047},
                 new String[]{"CPSC-BS", "CPSC-CPSZ-BS", "CPSC-HCCZ-BS", "CPSC-AIMZ-BS", "CPSC-CSYZ-BS", "CPSC-NSCZ-BS",
                         "CPSC-SEGZ-BS", "CPSC-CSEZ-BS", "CPSC-CFCZ-BS"},
+                new EMajorTrack[]{EMajorTrack.MATH_PHYSICAL_SCIENCES_ENGINEERING, EMajorTrack.EDUCATION_TEACHING},
                 "Computer Science",
                 MathPlanConstants.PGMS + "computer-science/",
                 ERequirement.M_156_OR_160,
@@ -1034,6 +1131,8 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mDSCI = new Major(
                 new int[]{7050, 7051, 7052, 7053, 7054, 7055},
                 new String[]{"DSCI-BS", "DSCI-CSCZ-BS", "DSCI-ECNZ-BS", "DSCI-MATZ-BS", "DSCI-STSZ-BS", "DSCI-NEUZ-BS"},
+                new EMajorTrack[]{EMajorTrack.GLOBAL_SOCIAL_SCIENCES, EMajorTrack.HEALTH_LIFE_FOOD_SCIENCES,
+                        EMajorTrack.MATH_PHYSICAL_SCIENCES_ENGINEERING, EMajorTrack.ORGANIZATION_MANAGEMENT_ENTERPRISE},
                 "Data Science",
                 MathPlanConstants.PGMS + "data-science/",
                 ERequirement.M_156,
@@ -1050,6 +1149,8 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mMATH = new Major(
                 new int[]{7060, 7061, 7062, 7063, 7064, 7065, 7066},
                 new String[]{"MATH-BS", "MATH-ALSZ-BS", "MATH-AMTZ-BS", "MATH-GNMZ-BS", "MATH-MTEZ-BS", "MATH-CPMZ-BS"},
+                new EMajorTrack[]{EMajorTrack.ARTS_HUMANITIES_DESIGN, EMajorTrack.EDUCATION_TEACHING,
+                        EMajorTrack.MATH_PHYSICAL_SCIENCES_ENGINEERING, EMajorTrack.ORGANIZATION_MANAGEMENT_ENTERPRISE},
                 "Mathematics",
                 MathPlanConstants.PGMS + "mathematics/",
                 ERequirement.M_160,
@@ -1066,6 +1167,8 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mNSCI1 = new Major(
                 new int[]{7070, 7071, 7072, 7073, 7074},
                 new String[]{"NSCI-BS", "NSCI-BLEZ-BS", "NSCI-CHEZ-BS", "NSCI-GLEZ-BS", "NSCI-PHSZ-BS"},
+                new EMajorTrack[]{EMajorTrack.EDUCATION_TEACHING, EMajorTrack.GLOBAL_SOCIAL_SCIENCES,
+                        EMajorTrack.GLOBAL_SOCIAL_SCIENCES, EMajorTrack.MATH_PHYSICAL_SCIENCES_ENGINEERING},
                 "Natural Sciences",
                 MathPlanConstants.PGMS + "natural-sciences/",
                 ERequirement.M_155_OR_160,
@@ -1075,6 +1178,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mNSCI2 = new Major(
                 new int[]{7075},
                 new String[]{"NSCI-PHEZ-BS"},
+                new EMajorTrack[]{EMajorTrack.EDUCATION_TEACHING},
                 "Natural Sciences (Physics Education)",
                 MathPlanConstants.PGMS + "natural-sciences/",
                 ERequirement.M_160,
@@ -1088,6 +1192,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mPHYS = new Major(
                 new int[]{7080, 7081, 7082},
                 new String[]{"PHYS-BS", "PHYS-APPZ-BS", "PHYS-PHYZ-BS"},
+                new EMajorTrack[]{EMajorTrack.MATH_PHYSICAL_SCIENCES_ENGINEERING},
                 "Physics",
                 MathPlanConstants.PGMS + "physics/",
                 ERequirement.M_160,
@@ -1105,20 +1210,22 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mPSYC1 = new Major(
                 new int[]{7090, 7091, 7092, 7093, 7094, 7096},
                 new String[]{"PSYC-BS", "PSYC-ADCZ-BS", "PSYC-CCPZ-BS", "PSYC-GPSZ-BS", "PSYC-IOPZ-BS", "PSYC-AACZ-BS"},
+                new EMajorTrack[]{EMajorTrack.GLOBAL_SOCIAL_SCIENCES, EMajorTrack.HEALTH_LIFE_FOOD_SCIENCES,
+                        EMajorTrack.ORGANIZATION_MANAGEMENT_ENTERPRISE},
                 "Psychology",
                 MathPlanConstants.PGMS + "psychology/",
                 ERequirement.M_117_118_124,
                 IdealFirstTerm.IDEAL_17);
         majors.add(mPSYC1);
 
-        // FIXME: Is the requirement below correct?
-
         final Major mPSYC2 = new Major(
                 new int[]{7095},
                 new String[]{"PSYC-MBBZ-BS"},
+                new EMajorTrack[]{EMajorTrack.GLOBAL_SOCIAL_SCIENCES, EMajorTrack.HEALTH_LIFE_FOOD_SCIENCES,
+                        EMajorTrack.ORGANIZATION_MANAGEMENT_ENTERPRISE},
                 "Psychology (Mind, Brain, and Behavior)",
                 MathPlanConstants.PGMS + "psychology/",
-                ERequirement.M_117_118_124,
+                ERequirement.PICK_3CR_117_118_124_120_125_126,
                 IdealFirstTerm.IDEAL_17);
         majors.add(mPSYC2);
 
@@ -1129,6 +1236,8 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mSTAT = new Major(
                 new int[]{7100},
                 new String[]{"STAT-BS"},
+                new EMajorTrack[]{EMajorTrack.ENVIRONMENTAL_NATURAL_RESOURCES, EMajorTrack.HEALTH_LIFE_FOOD_SCIENCES,
+                        EMajorTrack.MATH_PHYSICAL_SCIENCES_ENGINEERING},
                 "Statistics",
                 MathPlanConstants.PGMS + "statistics/",
                 ERequirement.M_156_OR_160,
@@ -1140,6 +1249,8 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mZOOL = new Major(
                 new int[]{7110},
                 new String[]{"ZOOL-BS"},
+                new EMajorTrack[]{EMajorTrack.ENVIRONMENTAL_NATURAL_RESOURCES, EMajorTrack.HEALTH_LIFE_FOOD_SCIENCES,
+                        EMajorTrack.LAND_PLANT_ANIMAL_SCIENCES},
                 "Zoology",
                 MathPlanConstants.PGMS + "zoology/",
                 ERequirement.M_155_OR_160,
@@ -1160,6 +1271,8 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mBIOM1 = new Major(
                 new int[]{8000, 8002, 8003},
                 new String[]{"BIOM-BS", "BIOM-EPHZ-BS", "BIOM-MIDZ-BS"},
+                new EMajorTrack[]{EMajorTrack.ENVIRONMENTAL_NATURAL_RESOURCES, EMajorTrack.HEALTH_LIFE_FOOD_SCIENCES,
+                        EMajorTrack.MATH_PHYSICAL_SCIENCES_ENGINEERING},
                 "Biomedical Sciences (General)",
                 MathPlanConstants.PGMS + "biomedical-sciences/",
                 ERequirement.PICK_3CR_118_124_125_126_155_160,
@@ -1169,6 +1282,8 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mBIOM2 = new Major(
                 new int[]{8001},
                 new String[]{"BIOM-APHZ-BS"},
+                new EMajorTrack[]{EMajorTrack.HEALTH_LIFE_FOOD_SCIENCES,
+                        EMajorTrack.MATH_PHYSICAL_SCIENCES_ENGINEERING},
                 "Biomedical Sciences (Anatomy &amp; Physiology)",
                 MathPlanConstants.PGMS + "biomedical-sciences/",
                 ERequirement.M_155_OR_160,
@@ -1182,28 +1297,33 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mNERO = new Major(
                 new int[]{8030, 8031, 8032},
                 new String[]{"NERO-BS", "NERO-BCNZ-BS", "NERO-CMNZ-BS"},
+                new EMajorTrack[]{EMajorTrack.HEALTH_LIFE_FOOD_SCIENCES,
+                        EMajorTrack.MATH_PHYSICAL_SCIENCES_ENGINEERING},
                 "Neuroscience",
                 MathPlanConstants.PGMS + "neuroscience/",
                 ERequirement.M_155,
                 IdealFirstTerm.IDEAL_55);
         majors.add(mNERO);
 
-        // *** Major in Health Physics
+        // *** Major in Health Physics (CSU Online only)
 
-        final Major mHLPH = new Major(
-                new int[]{8040},
-                new String[]{"HLPH-DD-BS"},
-                "Health Physics",
-                null,
-                ERequirement.M_160,
-                IdealFirstTerm.IDEAL_17_OR_HIGHER);
-        majors.add(mHLPH);
+//        final Major mHLPH = new Major(
+//                new int[]{8040},
+//                new String[]{"HLPH-DD-BS"},
+//                new EMajorTrack[]{EMajorTrack.HEALTH_LIFE_FOOD_SCIENCES,
+//                        EMajorTrack.MATH_PHYSICAL_SCIENCES_ENGINEERING},
+//                "Health Physics",
+//                null,
+//                ERequirement.M_160,
+//                IdealFirstTerm.IDEAL_17_OR_HIGHER);
+//        majors.add(mHLPH);
 
         // *** Major in Exploratory Studies
 
         final Major mEXUN = new Major(
                 new int[]{9000},
                 new String[]{"EXUN"},
+                new EMajorTrack[]{},
                 "Exploratory Studies",
                 MathPlanConstants.PGMS + "exploratory-studies/",
                 ERequirement.PICK_3CR_117_118_124_120,
@@ -1213,6 +1333,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mEXAD = new Major(
                 new int[]{9001},
                 new String[]{"EXAD", "EXLA", "EXCO", "USJC", "UNLA"},
+                new EMajorTrack[]{EMajorTrack.ARTS_HUMANITIES_DESIGN},
                 "Exploratory Studies", // Arts, Humanities, and Design
                 MathPlanConstants.PGMS + "exploratory-studies/",
                 ERequirement.PICK_3CR_117_118_124_120,
@@ -1222,6 +1343,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mEXHF = new Major(
                 new int[]{9002},
                 new String[]{"EXHF"},
+                new EMajorTrack[]{EMajorTrack.HEALTH_LIFE_FOOD_SCIENCES},
                 "Exploratory Studies", // Health, Life, and Food Sciences
                 MathPlanConstants.PGMS + "exploratory-studies/",
                 ERequirement.PICK_3CR_117_118_124_120,
@@ -1231,6 +1353,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mEXTC = new Major(
                 new int[]{9003},
                 new String[]{"EXTC"},
+                new EMajorTrack[]{EMajorTrack.EDUCATION_TEACHING},
                 "Exploratory Studies", // Education and Teaching
                 MathPlanConstants.PGMS + "exploratory-studies/",
                 ERequirement.PICK_3CR_117_118_124_120,
@@ -1240,6 +1363,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mEXPL = new Major(
                 new int[]{9004},
                 new String[]{"EXPL"},
+                new EMajorTrack[]{EMajorTrack.LAND_PLANT_ANIMAL_SCIENCES},
                 "Exploratory Studies", // Land, Plant, and Animal Sciences
                 MathPlanConstants.PGMS + "exploratory-studies/",
                 ERequirement.PICK_3CR_117_118_124_120,
@@ -1249,6 +1373,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mEXNR = new Major(
                 new int[]{9005},
                 new String[]{"EXNR"},
+                new EMajorTrack[]{EMajorTrack.ENVIRONMENTAL_NATURAL_RESOURCES},
                 "Exploratory Studies", // Environment and Natural Resources
                 MathPlanConstants.PGMS + "exploratory-studies/",
                 ERequirement.PICK_3CR_117_118_124_120,
@@ -1258,6 +1383,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mEXPE = new Major(
                 new int[]{9006},
                 new String[]{"EXPE", "USEG", "USCS", "ENGO"},
+                new EMajorTrack[]{EMajorTrack.MATH_PHYSICAL_SCIENCES_ENGINEERING},
                 "Exploratory Studies", // Physical Sciences and Engineering
                 MathPlanConstants.PGMS + "exploratory-studies/",
                 ERequirement.M_160,
@@ -1267,6 +1393,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mEXGS = new Major(
                 new int[]{9007},
                 new String[]{"EXGS", "EXPO"},
+                new EMajorTrack[]{EMajorTrack.GLOBAL_SOCIAL_SCIENCES},
                 "Exploratory Studies", // Global and Social Sciences
                 MathPlanConstants.PGMS + "exploratory-studies/",
                 ERequirement.PICK_3CR_117_118_124_120,
@@ -1276,6 +1403,7 @@ public final class MajorsCurrent extends MajorsBase {
         final Major mEXBU = new Major(
                 new int[]{9008},
                 new String[]{"EXBU", "USBU", "USBS"},
+                new EMajorTrack[]{EMajorTrack.ORGANIZATION_MANAGEMENT_ENTERPRISE},
                 "Exploratory Studies", // Organization, Management, and Enterprise
                 MathPlanConstants.PGMS + "exploratory-studies/",
                 ERequirement.PICK_3CR_117_118_124_120,
