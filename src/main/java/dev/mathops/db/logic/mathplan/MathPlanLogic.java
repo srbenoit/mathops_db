@@ -228,11 +228,11 @@ public enum MathPlanLogic {
                 final RawStmathplan rec = new RawStmathplan(student.stuId, student.pidm, appTerm, version, examDt,
                         question, answer, finish, tag);
                 RawStmathplanLogic.insert(cache, rec);
-
-                final StudentData studentData = cache.getStudent(student.stuId);
-                studentData.forgetMathPlanResponses();
             }
         }
+
+        final StudentData studentData = cache.getStudent(student.stuId);
+        studentData.forgetMathPlanResponses();
     }
 
     /**

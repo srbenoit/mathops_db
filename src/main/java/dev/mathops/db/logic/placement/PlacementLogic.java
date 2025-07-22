@@ -423,6 +423,7 @@ public class PlacementLogic {
         cleared.add("STAT 100");
         cleared.add("STAT 201");
         cleared.add("STAT 204");
+        cleared.add("FIN 200");
 
         for (final RawMpeCredit cred : this.allPlacementCredit) {
             final String course = cred.course;

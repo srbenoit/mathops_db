@@ -854,6 +854,7 @@ public final class MathPlanTestApp implements Runnable, ActionListener {
                     RawStmathplanLogic.insert(this.cache, newRow);
                 }
             }
+            studentData.forgetMathPlanResponses();
 
             final StudentMathPlan plan = MathPlanLogic.generatePlan(this.cache, RawStudent.TEST_STUDENT_ID, majors);
             MathPlanLogic.recordPlan(this.cache, plan, zonedNow, sessionValue);
