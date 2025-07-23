@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -26,6 +27,10 @@ import java.util.Map;
  */
 public enum MathPlanLogic {
     ;
+
+    /** Program codes for majors that are ignored. */
+    private static final List<String> IGNORED_MAJORS = Arrays.asList("GUES-CEUG", "FESV-DD-BS", "CSPH-MA", "GRAD-UG",
+            "CTED-UG", "DRVM-DVM", "CSOR", "N2CP-CPST-UG", "N2IE-SI", "N2EG-ENGX-UG", "SPCL-UG", "FCST-UG", "SSAS-UG");
 
     /** A map key. */
     private static final Integer ONE = Integer.valueOf(1);
@@ -105,8 +110,6 @@ public enum MathPlanLogic {
 
         final StudentData studentData = cache.getStudent(studentId);
 
-        Log.info("Querying Math Plan for ", studentId);
-
         final List<Major> majors = new ArrayList<>(10);
         boolean good = true;
 
@@ -114,15 +117,13 @@ public enum MathPlanLogic {
             final Map<Integer, RawStmathplan> planResponses = studentData.getLatestMathPlanResponsesByPage(
                     MathPlanConstants.MAJORS_PROFILE);
 
-            Log.info("  Found ", planResponses.size(), " majors selected");
-
             for (final Integer key : planResponses.keySet()) {
                 final int code = key.intValue();
                 final Major major = Majors.getMajorByNumericCode(code);
                 if (major == null) {
                     final String codeStr = Integer.toString(code);
-                    Log.warning("No major found with code ", codeStr);
-                } else {
+                    Log.warning("No major found with code ", codeStr, " (student ", studentId, ")");
+                } else if (!majors.contains(major)) {
                     majors.add(major);
                 }
             }
@@ -136,11 +137,14 @@ public enum MathPlanLogic {
             if (student != null) {
                 final String declaredCode = student.programCode;
                 if (declaredCode != null) {
-                    final Major declared = Majors.getMajorByProgramCode(declaredCode);
-                    if (declared == null) {
-                        Log.warning("Failed to identify declared major '", declaredCode, "' for student ", studentId);
-                    } else if (!majors.contains(declared)) {
-                        majors.add(declared);
+                    if (!IGNORED_MAJORS.contains(declaredCode)) {
+                        final Major declared = Majors.getMajorByProgramCode(declaredCode);
+                        if (declared == null) {
+                            Log.warning("Failed to identify declared major '", declaredCode, "' for student ",
+                                    studentId);
+                        } else if (!majors.contains(declared)) {
+                            majors.add(declared);
+                        }
                     }
                 }
             }
@@ -248,15 +252,10 @@ public enum MathPlanLogic {
     public static void recordPlan(final Cache cache, final StudentMathPlan plan, final ZonedDateTime now,
                                   final long loginSessionTag) throws SQLException {
 
-        Log.info("Request to record Math Plan summary for ", plan.stuStatus.student.stuId);
-
         // Record only after student has checked the "only a recommendation" box
         final Map<Integer, RawStmathplan> done = plan.stuStatus.onlyRecResponses;
-        Log.info("  Plan has " + done.size() + " 'only recommendation' responses");
 
         if (!done.isEmpty()) {
-            Log.info("Found 'only recommendation' response on record.");
-
             // NOTE: Historic data has 4 responses (pre-arrival, semester 1, semester 2, beyond).  This has been
             // simplified to record just what the student should do before arrival to be ready for semester 1
 
@@ -266,7 +265,6 @@ public enum MathPlanLogic {
             final String value4 = "(none)";
 
             final Map<Integer, RawStmathplan> existing = plan.stuStatus.planSummaryResponses;
-            Log.info("  Found " + existing.size() + " existing rows");
 
             final RawStmathplan exist1 = existing.get(MathPlanConstants.ONE);
             final RawStmathplan exist2 = existing.get(MathPlanConstants.TWO);
@@ -280,8 +278,6 @@ public enum MathPlanLogic {
                     || exist4 == null || exist4.stuAnswer == null || !exist4.stuAnswer.equals(value4);
 
             if (shouldInsertNew) {
-                Log.info("Inserting new.");
-
                 final List<Integer> questions = new ArrayList<>(4);
                 final List<String> answers = new ArrayList<>(4);
 

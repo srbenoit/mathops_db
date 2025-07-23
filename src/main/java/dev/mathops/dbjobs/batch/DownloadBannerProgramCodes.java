@@ -75,7 +75,7 @@ public final class DownloadBannerProgramCodes {
      */
     private void execute(final Cache cache, final Collection<? super String> report) throws SQLException {
 
-        final String sql = SimpleBuilder.concat( //
+        final String sql = SimpleBuilder.concat(
                 "SELECT DISTINCT n.sgbstdn_program_1,n.sgbstdn_coll_code_1,n.sgbstdn_majr_code_1,n.sgbstdn_degc_code_1",
                 "  FROM sgbstdn n",
                 " WHERE n.sgbstdn_program_1 IS NOT NULL",

@@ -11,6 +11,9 @@ public enum ENextStep {
     /** Student just needs 1B - Placement is not needed. */
     MSG_PLACEMENT_NOT_NEEDED("(AUCC 1B only)"),
 
+    /** Student has already completed math first-semester requirements. */
+    MSG_ALREADY_COMPLETE("(completed)"),
+
     /** Student needs more than just 1B, but is already eligible. */
     MSG_ALREADY_ELIGIBLE("(eligible)"),
 

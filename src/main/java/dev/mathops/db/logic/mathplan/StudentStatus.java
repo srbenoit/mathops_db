@@ -130,13 +130,15 @@ public final class StudentStatus {
         final Collection<String> completed = new HashSet<>(6);
         for (final RawFfrTrns transfer : this.transferCredit) {
             final String grade = transfer.grade;
-            if (grade.startsWith("A") || grade.startsWith("B") || grade.startsWith("TA") || grade.startsWith("TB")) {
+            if (grade == null || grade.startsWith("A") || grade.startsWith("B")
+                || grade.startsWith("TA") || grade.startsWith("TB")) {
                 completed.add(transfer.course);
             }
         }
         for (final RawStcourse finished : this.completedCourses) {
             final String grade = finished.courseGrade;
-            if (grade.startsWith("A") || grade.startsWith("B") || grade.startsWith("TA") || grade.startsWith("TB")) {
+            if (grade == null || grade.startsWith("A") || grade.startsWith("B")
+                || grade.startsWith("TA") || grade.startsWith("TB")) {
                 completed.add(finished.course);
             }
         }

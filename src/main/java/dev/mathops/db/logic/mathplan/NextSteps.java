@@ -39,6 +39,7 @@ public final class NextSteps {
         this.nextStep = computeNextStep(stuStatus, trajectory);
 
         this.placementNeeded = !(this.nextStep == ENextStep.MSG_PLACEMENT_NOT_NEEDED
+                                 || this.nextStep == ENextStep.MSG_ALREADY_COMPLETE
                                  || this.nextStep == ENextStep.MSG_ALREADY_ELIGIBLE);
     }
 
@@ -86,9 +87,10 @@ public final class NextSteps {
                 } else if (firstNamed == ECourse.M_156 || firstNamed == ECourse.M_156_OR_160
                            || firstNamed == ECourse.M_160) {
                     result = makeNextStep160(stuStatus, trajectory);
+                } else if (req.pickLists.isEmpty()) {
+                    // No named courses, no pick lists, so all requirements must already be met
+                    result = ENextStep.MSG_ALREADY_COMPLETE;
                 } else {
-                    // There is no first named course, but we're not in the "just core" situation, so there must be
-                    // pick lists.
                     result = processPickLists(stuStatus, trajectory);
                 }
             }
@@ -115,7 +117,7 @@ public final class NextSteps {
             // This should never occur
             Log.warning("Determining Math Plan next steps for ", stuStatus.student.stuId,
                     "; there were no named courses and no pick lists");
-            result = ENextStep.MSG_PLACEMENT_NOT_NEEDED;
+            result = ENextStep.MSG_ALREADY_COMPLETE;
         } else {
             final PickList firstPickList = requirements.pickLists.getFirst();
             ECourse lowest = firstPickList.getLowest();
@@ -137,7 +139,7 @@ public final class NextSteps {
                 result = makeNextStep124(trajectory);
             } else if (lowest == ECourse.M_118) {
                 result = makeNextStep118(trajectory);
-            } else if (lowest == ECourse.M_117) {
+            } else if (lowest == ECourse.M_117 || lowest == ECourse.M_120) {
                 result = makeNextStep117(trajectory);
             } else {
                 Log.warning("Determining Math Plan next steps for ", stuStatus.student.stuId,

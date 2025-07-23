@@ -11,6 +11,8 @@ import dev.mathops.db.cfg.Login;
 import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.logic.mathplan.MathPlanLogic;
 import dev.mathops.db.logic.mathplan.StudentMathPlan;
+import dev.mathops.db.logic.mathplan.types.EMathPlanStatus;
+import dev.mathops.db.logic.mathplan.types.ENextStep;
 import dev.mathops.db.old.rawlogic.RawMpscorequeueLogic;
 import dev.mathops.db.old.rawlogic.RawStmathplanLogic;
 import dev.mathops.db.old.rawlogic.RawStudentLogic;
@@ -155,7 +157,7 @@ public final class BulkUpdateMPLTestScores {
     );
 
     /** Debug flag - true to skip (but print) updates; false to actually perform updates. */
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     /** The test code. */
     private static final String TEST_CODE = "MPL";
@@ -284,6 +286,7 @@ public final class BulkUpdateMPLTestScores {
             int count2 = 0;
 
             for (final String stuId : stuIds) {
+
                 RawStudent student = RawStudentLogic.query(cache, stuId, false);
                 if (student == null) {
                     final String msg = HtmlBuilder.concat("   WARNING: Student ", stuId, " needed to be retrieved");
@@ -314,18 +317,23 @@ public final class BulkUpdateMPLTestScores {
                     }
 
                     String wantValue = null;
+                    String wantNote = null;
                     if (isProgramOnlyAUCC(student, report)) {
                         wantValue = "1";
+                        wantNote = " (not needed, AUCC only)";
                     } else {
                         final StudentMathPlan plan = MathPlanLogic.queryPlan(cache, stuId);
 
                         if (latest1.containsKey(stuId)) {
                             if (plan.stuStatus.isPlacementCompleted()) {
+                                wantNote = " (not needed, already done)";
                                 wantValue = "1";
                             } else if (plan.nextSteps.placementNeeded) {
                                 wantValue = "2";
+                                wantNote = " (placement needed)";
                             } else {
                                 wantValue = "1";
+                                wantNote = " (not needed)";
                             }
                         }
                     }
@@ -350,13 +358,13 @@ public final class BulkUpdateMPLTestScores {
                     if (doInsert) {
                         // Score has changed - insert a new score
                         if (DEBUG) {
-                            final String msg = HtmlBuilder.concat("   Need to insert MPL=", wantValue,
-                                    " test score " + "for ", stuId);
+                            final String msg = HtmlBuilder.concat("   Need to insert MPL=", wantValue, wantNote,
+                                    " test score for ", stuId);
                             Log.fine(msg);
                             report.add(msg);
                         } else {
-                            final String msg = HtmlBuilder.concat("   Inserting MPL=", wantValue, " test score for ",
-                                    stuId);
+                            final String msg = HtmlBuilder.concat("   Inserting MPL=", wantValue, wantNote,
+                                    " test score for ", stuId);
                             Log.fine(msg);
                             report.add(msg);
 
@@ -379,12 +387,13 @@ public final class BulkUpdateMPLTestScores {
             }
 
             final String count1Str = Integer.toString(count1);
-            final String msg6 = HtmlBuilder.concat("    Found ", count1Str, " to update to score 1");
+            final String msg6 = HtmlBuilder.concat("    Found ", count1Str,
+                    " to update to score 1 (placement not needed)");
             Log.fine(msg6);
             report.add(msg6);
 
             final String count2Str = Integer.toString(count2);
-            final String msg7 = HtmlBuilder.concat("    Found ", count2Str, " to update to score 2");
+            final String msg7 = HtmlBuilder.concat("    Found ", count2Str, " to update to score 2 (placement needed)");
             Log.fine(msg7);
             report.add(msg7);
         } finally {

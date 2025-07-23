@@ -282,10 +282,14 @@ public final class MajorsCurrent extends MajorsBase {
         majors.add(mCBEGDUAL);
 
         // *** Major in Chemical and Biological Engineering
+        // 3011: Chemical and Biological Engineering – Advanced Materials Concentration (CBEG-AVMZ-BS)
+        // 3012: Chemical and Biological Engineering – Biomanufacturing Concentration (CBEG-BIMZ-BS)
+        // 3013: Chemical and Biological Engineering – Molecular Medicine Concentration (CBEG-MLMZ-BS)
+        // 3014: Chemical and Biological Engineering – Sustainable Engineering Concentration (CBEG-SSEZ-BS)
 
         final Major mCBEG = new Major(
-                new int[]{3010},
-                new String[]{"CBEG-BS"},
+                new int[]{3010, 3011, 3012, 3013, 3014},
+                new String[]{"CBEG-BS", "CBEG-AVMZ-BS", "CBEG-BIMZ-BS", "CBEG-MLMZ-BS", "CBEG-SSEZ-BS"},
                 new EMajorTrack[]{EMajorTrack.MATH_PHYSICAL_SCIENCES_ENGINEERING},
                 "Chemical and Biological Engineering",
                 MathPlanConstants.PGMS + "chemical-biological-engineering/",
@@ -313,7 +317,7 @@ public final class MajorsCurrent extends MajorsBase {
         // 3034: DEACRIVATED
 
         final Major mCPEG = new Major(
-                new int[]{3030, 3032, 3032, 3033},
+                new int[]{3030, 3031, 3032, 3033},
                 new String[]{"CPEG-BS", "CPEG-AESZ-BS", "CPEG-EISZ-BS", "CPEG-NDTZ-BS"},
                 new EMajorTrack[]{EMajorTrack.MATH_PHYSICAL_SCIENCES_ENGINEERING},
                 "Computer Engineering",
@@ -582,6 +586,7 @@ public final class MajorsCurrent extends MajorsBase {
         majors.add(mANTH);
 
         // *** Major in Art (B.A. and B.F.A combined)
+        // 5011: DEACTIVATED
         // 5012: ARTI-ARTZ-BA - Art, B.A. - Art History
         // 5013: ARTI-IVSZ-BA, Art, B.A. - Integrated Visual Studies
         // 5020: ARTM-BFA, Art, B.F.A.
@@ -785,7 +790,7 @@ public final class MajorsCurrent extends MajorsBase {
 
         final Major mPOLS = new Major(
                 new int[]{5150, 5151, 5152, 5154, 5155, 5156},
-                new String[]{"POLS-BA", "POLS-EPAZ-BA", "POLS-GPPZ-BA", "POLS-LPGZ-BA", " POLS-PJDZ-BA",
+                new String[]{"POLS-BA", "POLS-EPAZ-BA", "POLS-GPPZ-BA", "POLS-LPGZ-BA", "POLS-PJDZ-BA",
                         "POLS-PPSZ-BA"},
                 new EMajorTrack[]{EMajorTrack.ENVIRONMENTAL_NATURAL_RESOURCES, EMajorTrack.GLOBAL_SOCIAL_SCIENCES,
                         EMajorTrack.ORGANIZATION_MANAGEMENT_ENTERPRISE},
@@ -1382,7 +1387,7 @@ public final class MajorsCurrent extends MajorsBase {
 
         final Major mEXPE = new Major(
                 new int[]{9006},
-                new String[]{"EXPE", "USEG", "USCS", "ENGO"},
+                new String[]{"EXPE", "USEG", "USCS", "ENGO", "EGOP"},
                 new EMajorTrack[]{EMajorTrack.MATH_PHYSICAL_SCIENCES_ENGINEERING},
                 "Exploratory Studies", // Physical Sciences and Engineering
                 MathPlanConstants.PGMS + "exploratory-studies/",
@@ -1402,27 +1407,13 @@ public final class MajorsCurrent extends MajorsBase {
 
         final Major mEXBU = new Major(
                 new int[]{9008},
-                new String[]{"EXBU", "USBU", "USBS"},
+                new String[]{"EXOM", "EXBU", "USBU", "USBS"},
                 new EMajorTrack[]{EMajorTrack.ORGANIZATION_MANAGEMENT_ENTERPRISE},
                 "Exploratory Studies", // Organization, Management, and Enterprise
                 MathPlanConstants.PGMS + "exploratory-studies/",
                 ERequirement.PICK_3CR_117_118_124_120,
                 IdealFirstTerm.IDEAL_171824);
         majors.add(mEXBU);
-
-        // Codes that the Math Plan will ignore:
-        // IGNORE: FESV-DD-BS, Fire and Emergency Services Administration
-        // IGNORE: IAD0
-        // IGNORE: EGOP
-        // IGNORE: CSOR
-        // IGNORE: N2IE-SI
-        // IGNORE: GUES-CEUG
-        // IGNORE: N2EG-ENGX-UG
-        // IGNORE: GRAD-UG
-        // IGNORE: SPCL-UG
-        // IGNORE: CTED-UG
-        // IGNORE: FCST-UG
-        // IGNORE: SSAS-UG
 
         majors.sort(null);
     }

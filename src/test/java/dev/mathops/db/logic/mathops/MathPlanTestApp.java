@@ -64,7 +64,6 @@ import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,6 +76,9 @@ public final class MathPlanTestApp implements Runnable, ActionListener {
 
     /** An action command to update student data. */
     private static final String CMD_UPDATE_STUDENT = "UPD_STU";
+
+    /** An action command to update student data. */
+    private static final String CMD_CHANGE_STUDENT = "CHG_STU";
 
     /** An action command to update major selections. */
     private static final String CMD_UPDATE_MAJORS = "UPD_MAJ";
@@ -99,6 +101,9 @@ public final class MathPlanTestApp implements Runnable, ActionListener {
 
     /** The frame. */
     private JFrame frame;
+
+    /** The titled border whose title includes the student ID. */
+    private TitledBorder studentIdBorder;
 
     /** The field that shows the application term. */
     private JTextField applicationTermField;
@@ -175,6 +180,9 @@ public final class MathPlanTestApp implements Runnable, ActionListener {
     /** A set of checkboxes to indicate selected majors. */
     private Map<Major, JCheckBox> majorCheckboxes;
 
+    /** The field that shows the application term. */
+    private JTextField newStuedntId;
+
     /** A panel in which majors of interest will be summarized. */
     private JPanel majorsOfInterestPane;
 
@@ -187,6 +195,9 @@ public final class MathPlanTestApp implements Runnable, ActionListener {
     /** A panel in which the next steps are shown. */
     private JPanel nextStepsPane;
 
+    /** The current student ID. */
+    private String studentId;
+
     /**
      * Private constructor to prevent instantiation.
      */
@@ -195,6 +206,8 @@ public final class MathPlanTestApp implements Runnable, ActionListener {
         final DatabaseConfig config = DatabaseConfig.getDefault();
         this.profile = config.getCodeProfile(Contexts.BATCH_PATH);
         this.cache = new Cache(this.profile);
+
+        this.studentId = RawStudent.TEST_STUDENT_ID;
     }
 
     /**
@@ -214,7 +227,8 @@ public final class MathPlanTestApp implements Runnable, ActionListener {
         // Status data pane
 
         final JPanel statusPanel = new JPanel(new StackedBorderLayout());
-        statusPanel.setBorder(new TitledBorder("Test Student (888888888) Status"));
+        this.studentIdBorder = new TitledBorder("Test Student (888888888) Status");
+        statusPanel.setBorder(this.studentIdBorder);
         content.add(statusPanel, StackedBorderLayout.NORTH);
 
         final List<Major> majors = MajorsCurrent.INSTANCE.getMajors();
@@ -349,8 +363,17 @@ public final class MathPlanTestApp implements Runnable, ActionListener {
         final JButton updateStuButton = new JButton("Update Test Student Information");
         updateStuButton.setActionCommand(CMD_UPDATE_STUDENT);
         updateStuButton.addActionListener(this);
+        updateStuButton.setEnabled(false);
+        final JLabel changeStudentLbl = new JLabel("          Change student: ");
+        this.newStuedntId = new JTextField(9);
+        final JButton changeStuButton = new JButton("Change");
+        changeStuButton.setActionCommand(CMD_CHANGE_STUDENT);
+        changeStuButton.addActionListener(this);
         final JPanel flow14 = new JPanel(new FlowLayout(FlowLayout.LEADING, 6, 2));
         flow14.add(updateStuButton);
+        flow14.add(changeStudentLbl);
+        flow14.add(this.newStuedntId);
+        flow14.add(changeStuButton);
         statusPanel.add(flow14, StackedBorderLayout.SOUTH);
 
         // Majors pane
@@ -458,7 +481,7 @@ public final class MathPlanTestApp implements Runnable, ActionListener {
     private void updateStatus() {
 
         try {
-            final StudentData studentData = this.cache.getStudent(RawStudent.TEST_STUDENT_ID);
+            final StudentData studentData = this.cache.getStudent(this.studentId);
             studentData.forgetMathPlanResponses();
 
             final RawStudent student = studentData.getStudentRecord();
@@ -486,8 +509,7 @@ public final class MathPlanTestApp implements Runnable, ActionListener {
 
             if (student != null) {
                 final ZonedDateTime now = ZonedDateTime.now();
-                final PlacementLogic placement = new PlacementLogic(this.cache, RawStudent.TEST_STUDENT_ID,
-                        student.aplnTerm, now);
+                final PlacementLogic placement = new PlacementLogic(this.cache, this.studentId, student.aplnTerm, now);
                 final PlacementStatus status = placement.status;
 
                 usedUnproctored = status.unproctoredUsed;
@@ -515,7 +537,7 @@ public final class MathPlanTestApp implements Runnable, ActionListener {
             this.place125.setSelected(has125);
             this.place126.setSelected(has126);
 
-            final StudentMathPlan plan = MathPlanLogic.queryPlan(this.cache, RawStudent.TEST_STUDENT_ID);
+            final StudentMathPlan plan = MathPlanLogic.queryPlan(this.cache, this.studentId);
             final StudentStatus stuStatus = plan.stuStatus;
 
             boolean x002 = false;
@@ -818,6 +840,24 @@ public final class MathPlanTestApp implements Runnable, ActionListener {
             Log.info("Updating student data");
         } else if (CMD_UPDATE_MAJORS.equals(cmd)) {
             updateMajors();
+        } else if (CMD_CHANGE_STUDENT.equals(cmd)) {
+            final String newStu = this.newStuedntId.getText();
+            final StudentData stu = this.cache.getStudent(newStu);
+            try {
+                if (stu.getStudentRecord() != null) {
+                    this.studentId = newStu;
+                    final String name = stu.getStudentRecord().getScreenName();
+                    if (RawStudent.TEST_STUDENT_ID.equals(newStu)) {
+                        this.studentIdBorder.setTitle("Test Student (888888888) Status");
+                    } else {
+                        this.studentIdBorder.setTitle(
+                                "Student (" + newStu + ": " + name + ") Status (no updates allowed)");
+                    }
+                    updateStatus();
+                }
+            } catch (final SQLException ex) {
+                Log.warning("Failed to query student", ex);
+            }
         }
     }
 
@@ -826,42 +866,45 @@ public final class MathPlanTestApp implements Runnable, ActionListener {
      */
     private void updateMajors() {
 
-        final StudentData studentData = this.cache.getStudent(RawStudent.TEST_STUDENT_ID);
+        if (RawStudent.TEST_STUDENT_ID.equals(this.studentId)) {
+            final StudentData studentData = this.cache.getStudent(this.studentId);
 
-        try {
-            final RawStudent student = studentData.getStudentRecord();
-            final String appTerm = student.aplnTerm == null ? CoreConstants.EMPTY : student.aplnTerm.shortString;
-            final LocalDate today = LocalDate.now();
-            final LocalTime now = LocalTime.now();
-            final Integer nowMinutes = Integer.valueOf(TemporalUtils.minuteOfDay(now));
-            final long sessionValue = System.currentTimeMillis();
-            final Long session = Long.valueOf(sessionValue);
-            final ZonedDateTime zonedNow = ZonedDateTime.now();
+            try {
+                final RawStudent student = studentData.getStudentRecord();
+                final String appTerm = student.aplnTerm == null ? CoreConstants.EMPTY : student.aplnTerm.shortString;
+                final LocalDate today = LocalDate.now();
+                final LocalTime now = LocalTime.now();
+                final Integer nowMinutes = Integer.valueOf(TemporalUtils.minuteOfDay(now));
+                final long sessionValue = System.currentTimeMillis();
+                final Long session = Long.valueOf(sessionValue);
+                final ZonedDateTime zonedNow = ZonedDateTime.now();
 
-            RawStmathplanLogic.deleteAllForPage(this.cache, RawStudent.TEST_STUDENT_ID,
-                    MathPlanConstants.MAJORS_PROFILE);
+                RawStmathplanLogic.deleteAllForPage(this.cache, this.studentId, MathPlanConstants.MAJORS_PROFILE);
 
-            final Collection<Major> majors = new ArrayList<>(10);
-            for (final Map.Entry<Major, JCheckBox> entry : this.majorCheckboxes.entrySet()) {
-                final JCheckBox box = entry.getValue();
-                if (box.isSelected()) {
-                    final Major toAdd = entry.getKey();
-                    majors.add(toAdd);
+                final Collection<Major> majors = new ArrayList<>(10);
+                for (final Map.Entry<Major, JCheckBox> entry : this.majorCheckboxes.entrySet()) {
+                    final JCheckBox box = entry.getValue();
+                    if (box.isSelected()) {
+                        final Major toAdd = entry.getKey();
+                        majors.add(toAdd);
 
-                    final Integer q = Integer.valueOf(toAdd.questionNumbers[0]);
-                    final RawStmathplan newRow = new RawStmathplan(RawStudent.TEST_STUDENT_ID, student.pidm,
-                            appTerm, MathPlanConstants.MAJORS_PROFILE, today, q, "Y", nowMinutes, session);
-                    RawStmathplanLogic.insert(this.cache, newRow);
+                        final Integer q = Integer.valueOf(toAdd.questionNumbers[0]);
+                        final RawStmathplan newRow = new RawStmathplan(this.studentId, student.pidm,
+                                appTerm, MathPlanConstants.MAJORS_PROFILE, today, q, "Y", nowMinutes, session);
+                        RawStmathplanLogic.insert(this.cache, newRow);
+                    }
                 }
+                studentData.forgetMathPlanResponses();
+
+                final StudentMathPlan plan = MathPlanLogic.generatePlan(this.cache, this.studentId, majors);
+                MathPlanLogic.recordPlan(this.cache, plan, zonedNow, sessionValue);
+
+                updateStatus();
+            } catch (final SQLException ex) {
+                Log.warning(ex);
             }
-            studentData.forgetMathPlanResponses();
-
-            final StudentMathPlan plan = MathPlanLogic.generatePlan(this.cache, RawStudent.TEST_STUDENT_ID, majors);
-            MathPlanLogic.recordPlan(this.cache, plan, zonedNow, sessionValue);
-
-            updateStatus();
-        } catch (final SQLException ex) {
-            Log.warning(ex);
+        } else {
+            Log.warning("Not updating data for a non-test student!");
         }
     }
 

@@ -239,6 +239,17 @@ public final class MajorsDeactivated extends MajorsBase {
 
         // *** Major in Engineering Science
 
+        // 3050: EGSC-EGPZ-BS, Engineering Science (DEACTIVATED)
+        final Major mEGSC = new Major(
+                new int[]{3050},
+                new String[]{"EGSC-BS"},
+                EMPTY_TRACK_ARRAY,
+                "Engineering Science",
+                MathPlanConstants.PGMS,
+                ERequirement.M_160,
+                IdealFirstTerm.IDEAL_60);
+        majors.add(mEGSC);
+
         // 3051: EGSC-EGPZ-BS, Engineering Science - Engineering Physics (DEACTIVATED)
         final Major mEGSC1 = new Major(
                 new int[]{3051},
@@ -440,8 +451,8 @@ public final class MajorsDeactivated extends MajorsBase {
         // 4080: INTD-BS, Interior Architecture and Design (DEACTIVATED)
 
         final Major mINTD = new Major(
-                new int[]{4080},
-                new String[]{"INTD-BS"},
+                new int[]{4080, -1},
+                new String[]{"INTD-BS", "IAD0"},
                 EMPTY_TRACK_ARRAY,
                 "Interior Design",
                 MathPlanConstants.PGMS + "interior-architecture-and-design/",
@@ -569,6 +580,19 @@ public final class MajorsDeactivated extends MajorsBase {
                 ERequirement.CORE_ONLY,
                 IdealFirstTerm.CORE_ONLY);
         majors.add(mANTH);
+
+        // *** Major in Art (B.A. and B.F.A combined)
+        // 5011: ARTI-AREZ-BA - Art B.A. - Art Education (Deactivated)
+
+        final Major mARTI = new Major(
+                new int[]{5011},
+                new String[]{"ARTI-ARTZ-BA"},
+                new EMajorTrack[]{EMajorTrack.ARTS_HUMANITIES_DESIGN, EMajorTrack.EDUCATION_TEACHING},
+                "Art (Art Education)",
+                MathPlanConstants.PGMS + "art-ba/",
+                ERequirement.CORE_ONLY,
+                IdealFirstTerm.CORE_ONLY);
+        majors.add(mARTI);
 
         // *** Major in Communication Studies
 
@@ -814,6 +838,20 @@ public final class MajorsDeactivated extends MajorsBase {
                 IdealFirstTerm.IDEAL_56_OR_60);
         majors.add(mCPSC);
 
+        // *** Major in Data Science
+        // 7051: DSCI-DCMZ-BS, Data Science - Computer Science (old program code)
+
+        final Major mDSCI = new Major(
+                new int[]{7051},
+                new String[]{"DSCI-DCMZ-BS"},
+                new EMajorTrack[]{EMajorTrack.GLOBAL_SOCIAL_SCIENCES, EMajorTrack.HEALTH_LIFE_FOOD_SCIENCES,
+                        EMajorTrack.MATH_PHYSICAL_SCIENCES_ENGINEERING, EMajorTrack.ORGANIZATION_MANAGEMENT_ENTERPRISE},
+                "Data Science",
+                MathPlanConstants.PGMS + "data-science/",
+                ERequirement.M_156,
+                IdealFirstTerm.IDEAL_56);
+        majors.add(mDSCI);
+
         // *** Major in Psychology
 
         // FAKE: PSYC-GDSZ-BS, Psychology - ???
@@ -849,7 +887,7 @@ public final class MajorsDeactivated extends MajorsBase {
 
         // 8010: EVHL-BS, Environmental Health (DEACTIVATED)
         final Major mBIOM1 = new Major(
-                new int[]{-1},
+                new int[]{8010},
                 new String[]{"EVHL-BS"},
                 EMPTY_TRACK_ARRAY,
                 "Biomedical Sciences (Environmental Health)",
@@ -860,7 +898,7 @@ public final class MajorsDeactivated extends MajorsBase {
 
         // 8020: MICR-BS, Microbiology (DEACTIVATED)
         final Major mBIOM2 = new Major(
-                new int[]{-1},
+                new int[]{8020},
                 new String[]{"MICR-BS"},
                 EMPTY_TRACK_ARRAY,
                 "Biomedical Sciences (Microbiology)",
@@ -868,6 +906,17 @@ public final class MajorsDeactivated extends MajorsBase {
                 ERequirement.PICK_3CR_118_124_125_126_155_160,
                 IdealFirstTerm.IDEAL_PICK_18_TO_60);
         majors.add(mBIOM2);
+
+        // 8040: Health physics - here so it does not appear in list of selectable majors
+        final Major mHLPH = new Major(
+                new int[]{8040},
+                new String[]{"HLPH-DD-BS"},
+                EMPTY_TRACK_ARRAY,
+                "Health Physics",
+                "https://online.colostate.edu/degrees/health-physics/",
+                ERequirement.M_160,
+                IdealFirstTerm.IDEAL_60);
+        majors.add(mHLPH);
 
         majors.sort(null);
     }
