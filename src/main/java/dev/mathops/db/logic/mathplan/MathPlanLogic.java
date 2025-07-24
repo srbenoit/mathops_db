@@ -29,11 +29,30 @@ public enum MathPlanLogic {
     ;
 
     /** Program codes for majors that are ignored. */
-    private static final List<String> IGNORED_MAJORS = Arrays.asList("GUES-CEUG", "FESV-DD-BS", "CSPH-MA", "GRAD-UG",
-            "CTED-UG", "DRVM-DVM", "CSOR", "N2CP-CPST-UG", "N2IE-SI", "N2EG-ENGX-UG", "SPCL-UG", "FCST-UG", "SSAS-UG");
+    private static final List<String> IGNORED_MAJORS = Arrays.asList("GUES-CEUG", "FESV-DD-BS", "CSOR");
 
     /** A map key. */
     private static final Integer ONE = Integer.valueOf(1);
+
+    /**
+     * Tests whether a program code should be ignored.
+     *
+     * @param code the program code
+     * @return true if the program code should be ignored
+     */
+    public static boolean isProgramCodeIgnored(final String code) {
+
+        return IGNORED_MAJORS.contains(code) || code.endsWith("-GR") || code.endsWith("-MS") || code.endsWith("-MA")
+               || code.endsWith("-MFA") || code.endsWith("-UG") || code.endsWith("-CT") || code.endsWith("-SI")
+               || code.endsWith("-MAS") || code.endsWith("-M") || code.endsWith("-ME") || code.endsWith("-MM")
+               || code.endsWith("-MBA") || code.endsWith("-DVM") || code.endsWith("-MTM") || code.endsWith("-MOT")
+               || code.endsWith("-MCS") || code.endsWith("-MAGR") || code.endsWith("-MAPD") || code.endsWith("-MPSM")
+               || code.endsWith("-MPSP") || code.endsWith("-MACC") || code.endsWith("-MACP") || code.endsWith("-MCIS")
+               || code.endsWith("-MCMM") || code.endsWith("-MPPA") || code.endsWith("-MFIN") || code.endsWith("-MIOP")
+               || code.endsWith("-MFWC") || code.endsWith("-MSM") || code.endsWith("-MSW") || code.endsWith("-MASW")
+               || code.endsWith("-MED") || code.endsWith("-DOT") || code.endsWith("-MCL") || code.endsWith("-MCIN")
+               || code.endsWith("-MNRS") || code.endsWith("-PHD");
+    }
 
     /**
      * Constructs a "Math Plan" for a student.
@@ -111,6 +130,7 @@ public enum MathPlanLogic {
         final StudentData studentData = cache.getStudent(studentId);
 
         final List<Major> majors = new ArrayList<>(10);
+        final Collection<Integer> mainKeys = new ArrayList<>(10);
         boolean good = true;
 
         try {
@@ -121,10 +141,10 @@ public enum MathPlanLogic {
                 final int code = key.intValue();
                 final Major major = Majors.getMajorByNumericCode(code);
                 if (major == null) {
-                    final String codeStr = Integer.toString(code);
-                    Log.warning("No major found with code ", codeStr, " (student ", studentId, ")");
-                } else if (!majors.contains(major)) {
+                    Log.warning("No major found with code ", key, " (student ", studentId, ")");
+                } else if (!majors.contains(major) && !mainKeys.contains(key)) {
                     majors.add(major);
+                    mainKeys.add(key);
                 }
             }
         } catch (final SQLException ex) {
@@ -137,13 +157,18 @@ public enum MathPlanLogic {
             if (student != null) {
                 final String declaredCode = student.programCode;
                 if (declaredCode != null) {
-                    if (!IGNORED_MAJORS.contains(declaredCode)) {
+                    if (!isProgramCodeIgnored(declaredCode)) {
                         final Major declared = Majors.getMajorByProgramCode(declaredCode);
                         if (declared == null) {
                             Log.warning("Failed to identify declared major '", declaredCode, "' for student ",
                                     studentId);
                         } else if (!majors.contains(declared)) {
-                            majors.add(declared);
+                            final int code = declared.questionNumbers[0];
+                            final Integer key = Integer.valueOf(code);
+                            if (!mainKeys.contains(key)) {
+                                majors.add(declared);
+                                mainKeys.add(key);
+                            }
                         }
                     }
                 }

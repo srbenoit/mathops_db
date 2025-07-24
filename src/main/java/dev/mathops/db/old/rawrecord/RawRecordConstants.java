@@ -10,6 +10,9 @@ public enum RawRecordConstants {
     public static final String M002 = "M 002";
 
     /** A commonly used string. */
+    public static final String M101 = "M 101";
+
+    /** A commonly used string. */
     public static final String M116 = "M 116";
 
     /** A commonly used string. */
@@ -29,6 +32,9 @@ public enum RawRecordConstants {
 
     /** A commonly used string. */
     public static final String M126 = "M 126";
+
+    /** A commonly used string. */
+    public static final String MATH101 = "MATH 101";
 
     /** A commonly used string. */
     public static final String MATH117 = "MATH 117";

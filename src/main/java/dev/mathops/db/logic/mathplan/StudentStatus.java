@@ -12,6 +12,7 @@ import dev.mathops.db.old.rawrecord.RawStmpe;
 import dev.mathops.db.old.rawrecord.RawStudent;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -96,17 +97,17 @@ public final class StudentStatus {
      *
      * @return the list of course IDs
      */
-    public Collection<String> getCompleted() {
+    public Collection<ECourse> getCompleted() {
 
-        final Collection<String> completed = new HashSet<>(6);
+        final Collection<String> courseIds = new ArrayList<>(10);
         for (final RawFfrTrns transfer : this.transferCredit) {
-            completed.add(transfer.course);
+            courseIds.add(transfer.course);
         }
         for (final RawStcourse finished : this.completedCourses) {
-            completed.add(finished.course);
+            courseIds.add(finished.course);
         }
 
-        return completed;
+        return ECourse.courseIdListToECourseSet(courseIds);
     }
 
     /**
@@ -125,25 +126,26 @@ public final class StudentStatus {
      *
      * @return the list of course IDs
      */
-    public Collection<String> getCompletedBOrHigher() {
+    public Collection<ECourse> getCompletedBOrHigher() {
 
-        final Collection<String> completed = new HashSet<>(6);
+        final Collection<String> courseIds = new HashSet<>(6);
+
         for (final RawFfrTrns transfer : this.transferCredit) {
             final String grade = transfer.grade;
             if (grade == null || grade.startsWith("A") || grade.startsWith("B")
                 || grade.startsWith("TA") || grade.startsWith("TB")) {
-                completed.add(transfer.course);
+                courseIds.add(transfer.course);
             }
         }
         for (final RawStcourse finished : this.completedCourses) {
             final String grade = finished.courseGrade;
             if (grade == null || grade.startsWith("A") || grade.startsWith("B")
                 || grade.startsWith("TA") || grade.startsWith("TB")) {
-                completed.add(finished.course);
+                courseIds.add(finished.course);
             }
         }
 
-        return completed;
+        return ECourse.courseIdListToECourseSet(courseIds);
     }
 
     /**
@@ -220,8 +222,8 @@ public final class StudentStatus {
      */
     public boolean hasCompleted(final ECourse course) {
 
-        final Collection<String> completed = getCompleted();
-        return isCourseInList(course, completed);
+        final Collection<ECourse> completed = getCompleted();
+        return completed.contains(course);
     }
 
     /**
@@ -232,48 +234,8 @@ public final class StudentStatus {
      */
     public boolean hasCompletedWithB(final ECourse course) {
 
-        final Collection<String> completed = getCompletedBOrHigher();
-        return isCourseInList(course, completed);
-    }
-
-    /**
-     * Tests whether a course appears in a list of course IDs.
-     *
-     * @param course the course for which to test
-     * @param list   the list of course IDs
-     * @return true if the course appears in the list
-     */
-    private static boolean isCourseInList(final ECourse course, final Collection<String> list) {
-
-        boolean result = false;
-
-        for (final String id : list) {
-            final String trimmed = id.replace("MATH ", "M ");
-
-            if (course == ECourse.M_101 && "M 101".equals(trimmed)) {
-                result = true;
-            } else if (course == ECourse.M_117 && "M 117".equals(trimmed)) {
-                result = true;
-            } else if (course == ECourse.M_118 && "M 118".equals(trimmed)) {
-                result = true;
-            } else if (course == ECourse.M_124 && "M 124".equals(trimmed)) {
-                result = true;
-            } else if (course == ECourse.M_125 && "M 125".equals(trimmed)) {
-                result = true;
-            } else if (course == ECourse.M_126 && "M 126".equals(trimmed)) {
-                result = true;
-            } else if (course == ECourse.M_141 && "M 141".equals(trimmed)) {
-                result = true;
-            } else if (course == ECourse.M_155 && "M 155".equals(trimmed)) {
-                result = true;
-            } else if (course == ECourse.M_156 && "M 156".equals(trimmed)) {
-                result = true;
-            } else if (course == ECourse.M_160 && "M 160".equals(trimmed)) {
-                result = true;
-            }
-        }
-
-        return result;
+        final Collection<ECourse> completed = getCompletedBOrHigher();
+        return completed.contains(course);
     }
 
     /**
@@ -326,9 +288,9 @@ public final class StudentStatus {
         }
 
         if (!eligible) {
-            final Collection<String> completed = getCompleted();
+            final Collection<ECourse> completed = getCompleted();
 
-            for (final String id : completed) {
+            for (final ECourse id : completed) {
                 if ("M 117".equals(id) || "MATH 117".equals(id)
                     || "M 118".equals(id) || "MATH 118".equals(id)
                     || "M 124".equals(id) || "MATH 124".equals(id)
@@ -336,9 +298,6 @@ public final class StudentStatus {
                     || "M 126".equals(id) || "MATH 126".equals(id)
                     || "M 120".equals(id) || "MATH 120".equals(id)
                     || "M 127".equals(id) || "MATH 127".equals(id)
-                    || "M 055".equals(id) || "MATH 055".equals(id)
-                    || "M 093".equals(id) || "MATH 093".equals(id)
-                    || "M 099".equals(id) || "MATH 099".equals(id)
                     || "M 002".equals(id) || "MATH 002".equals(id)
                     || "M 141".equals(id) || "MATH 141".equals(id)
                     || "M 155".equals(id) || "MATH 155".equals(id)
@@ -359,32 +318,37 @@ public final class StudentStatus {
     }
 
     /**
+     * Tests whether a student has placed out of a course.
+     *
+     * @param courseId the course ID
+     * @return true if the student has placed out
+     */
+    private boolean placedOut(final String courseId) {
+
+        boolean placed = false;
+
+        for (final RawMpeCredit mpt : this.placementCredit) {
+            if (courseId.equals(mpt.course) && ("P".equals(mpt.examPlaced) || "C".equals(mpt.examPlaced))) {
+                placed = true;
+                break;
+            }
+        }
+
+        return placed;
+    }
+
+    /**
      * Tests whether the student has course credit, transfer credit, or math placement credit for MATH 117.
      *
      * @return true if student has some form of credit for MATH 117
      */
     boolean has117() {
 
-        boolean has117 = false;
-
-        for (final RawMpeCredit mpt : this.placementCredit) {
-            if ("M 117".equals(mpt.course) && ("P".equals(mpt.examPlaced) || "C".equals(mpt.examPlaced))) {
-                has117 = true;
-                break;
-            }
-        }
+        boolean has117 = placedOut("M 117");
 
         if (!has117) {
-            final Collection<String> completed = getCompleted();
-
-            for (final String id : completed) {
-                final String trimmed = id.replace("MATH ", "M ");
-
-                if ("M 117".equals(trimmed)) {
-                    has117 = true;
-                    break;
-                }
-            }
+            final Collection<ECourse> completed = getCompleted();
+            has117 = completed.contains(ECourse.M_117);
         }
 
         return has117;
@@ -397,26 +361,11 @@ public final class StudentStatus {
      */
     boolean has118() {
 
-        boolean has118 = false;
-
-        for (final RawMpeCredit mpt : this.placementCredit) {
-            if ("M 118".equals(mpt.course) && ("P".equals(mpt.examPlaced) || "C".equals(mpt.examPlaced))) {
-                has118 = true;
-                break;
-            }
-        }
+        boolean has118 = placedOut("M 118");
 
         if (!has118) {
-            final Collection<String> completed = getCompleted();
-
-            for (final String id : completed) {
-                final String trimmed = id.replace("MATH ", "M ");
-
-                if ("M 118".equals(trimmed)) {
-                    has118 = true;
-                    break;
-                }
-            }
+            final Collection<ECourse> completed = getCompleted();
+            has118 = completed.contains(ECourse.M_118);
         }
 
         return has118;
@@ -430,26 +379,11 @@ public final class StudentStatus {
      */
     boolean has124(final boolean bOrHigher) {
 
-        boolean has124 = false;
-
-        for (final RawMpeCredit mpt : this.placementCredit) {
-            if ("M 124".equals(mpt.course) && ("P".equals(mpt.examPlaced) || "C".equals(mpt.examPlaced))) {
-                has124 = true;
-                break;
-            }
-        }
+        boolean has124 = placedOut("M 124");
 
         if (!has124) {
-            final Collection<String> completed = bOrHigher ? getCompletedBOrHigher() : getCompleted();
-
-            for (final String id : completed) {
-                final String trimmed = id.replace("MATH ", "M ");
-
-                if ("M 124".equals(trimmed)) {
-                    has124 = true;
-                    break;
-                }
-            }
+            final Collection<ECourse> completed = bOrHigher ? getCompletedBOrHigher() : getCompleted();
+            has124 = completed.contains(ECourse.M_124);
         }
 
         return has124;
@@ -463,20 +397,8 @@ public final class StudentStatus {
      */
     boolean has120(final boolean bOrHigher) {
 
-        boolean has120 = false;
-
-        final Collection<String> completed = bOrHigher ? getCompletedBOrHigher() : getCompleted();
-
-        for (final String id : completed) {
-            final String trimmed = id.replace("MATH ", "M ");
-
-            if ("M 120".equals(trimmed)) {
-                has120 = true;
-                break;
-            }
-        }
-
-        return has120;
+        final Collection<ECourse> completed = bOrHigher ? getCompletedBOrHigher() : getCompleted();
+        return completed.contains(ECourse.M_120);
     }
 
     /**
@@ -487,20 +409,8 @@ public final class StudentStatus {
      */
     boolean has127(final boolean bOrHigher) {
 
-        boolean has127 = false;
-
-        final Collection<String> completed = bOrHigher ? getCompletedBOrHigher() : getCompleted();
-
-        for (final String id : completed) {
-            final String trimmed = id.replace("MATH ", "M ");
-
-            if ("M 127".equals(trimmed)) {
-                has127 = true;
-                break;
-            }
-        }
-
-        return has127;
+        final Collection<ECourse> completed = bOrHigher ? getCompletedBOrHigher() : getCompleted();
+        return completed.contains(ECourse.M_127);
     }
 
     /**
@@ -510,26 +420,11 @@ public final class StudentStatus {
      */
     boolean has125() {
 
-        boolean has125 = false;
-
-        for (final RawMpeCredit mpt : this.placementCredit) {
-            if ("M 125".equals(mpt.course) && ("P".equals(mpt.examPlaced) || "C".equals(mpt.examPlaced))) {
-                has125 = true;
-                break;
-            }
-        }
+        boolean has125 = placedOut("M 125");
 
         if (!has125) {
-            final Collection<String> completed = getCompleted();
-
-            for (final String id : completed) {
-                final String trimmed = id.replace("MATH ", "M ");
-
-                if ("M 125".equals(trimmed)) {
-                    has125 = true;
-                    break;
-                }
-            }
+            final Collection<ECourse> completed = getCompleted();
+            has125 = completed.contains(ECourse.M_125);
         }
 
         return has125;
@@ -543,26 +438,11 @@ public final class StudentStatus {
      */
     boolean has126(final boolean bOrHigher) {
 
-        boolean has126 = false;
-
-        for (final RawMpeCredit mpt : this.placementCredit) {
-            if ("M 126".equals(mpt.course) && ("P".equals(mpt.examPlaced) || "C".equals(mpt.examPlaced))) {
-                has126 = true;
-                break;
-            }
-        }
+        boolean has126 = placedOut("M 126");
 
         if (!has126) {
-            final Collection<String> completed = bOrHigher ? getCompletedBOrHigher() : getCompleted();
-
-            for (final String id : completed) {
-                final String trimmed = id.replace("MATH ", "M ");
-
-                if ("M 126".equals(trimmed)) {
-                    has126 = true;
-                    break;
-                }
-            }
+            final Collection<ECourse> completed = bOrHigher ? getCompletedBOrHigher() : getCompleted();
+            has126 = completed.contains(ECourse.M_126);
         }
 
         return has126;
@@ -575,22 +455,18 @@ public final class StudentStatus {
      */
     boolean isEligibleFor118() {
 
-        boolean eligible = has117() || has120(false) || has127(false);
+        boolean eligible = placedOut("M 117");
 
         if (!eligible) {
-            final Collection<String> completed = getCompleted();
-
-            for (final String id : completed) {
-                final String trimmed = id.replace("MATH ", "M ");
-
-                if ("M 118".equals(trimmed) || "M 124".equals(trimmed) || "M 125".equals(trimmed)
-                    || "M 126".equals(trimmed) || "M 141".equals(trimmed) || "M 155".equals(trimmed)
-                    || "M 156".equals(trimmed) || "M 157".equals(trimmed) || "M 159".equals(trimmed)
-                    || "M 160".equals(trimmed) || "M 161".equals(trimmed) || "M 229".equals(trimmed)) {
-                    eligible = true;
-                    break;
-                }
-            }
+            final Collection<ECourse> completed = getCompleted();
+            eligible = completed.contains(ECourse.M_117) || completed.contains(ECourse.M_118)
+                       || completed.contains(ECourse.M_120) || completed.contains(ECourse.M_127)
+                       || completed.contains(ECourse.M_124) || completed.contains(ECourse.M_125)
+                       || completed.contains(ECourse.M_126) || completed.contains(ECourse.M_141)
+                       || completed.contains(ECourse.M_155) || completed.contains(ECourse.M_156)
+                       || completed.contains(ECourse.M_157) || completed.contains(ECourse.M_159)
+                       || completed.contains(ECourse.M_160) || completed.contains(ECourse.M_161)
+                       || completed.contains(ECourse.M_229) || completed.contains(ECourse.M_269);
         }
 
         return eligible;
@@ -603,22 +479,18 @@ public final class StudentStatus {
      */
     boolean isEligibleFor124() {
 
-        boolean eligible = has118() || has120(false) || has127(false);
+        boolean eligible = placedOut("M 118");
 
         if (!eligible) {
-            final Collection<String> completed = getCompleted();
-
-            for (final String id : completed) {
-                final String trimmed = id.replace("MATH ", "M ");
-
-                if ("M 124".equals(trimmed) || "M 125".equals(trimmed) || "M 126".equals(trimmed)
-                    || "M 141".equals(trimmed) || "M 155".equals(trimmed) || "M 156".equals(trimmed)
-                    || "M 157".equals(trimmed) || "M 159".equals(trimmed) || "M 160".equals(trimmed)
-                    || "M 161".equals(trimmed) || "M 229".equals(trimmed)) {
-                    eligible = true;
-                    break;
-                }
-            }
+            final Collection<ECourse> completed = getCompleted();
+            eligible = completed.contains(ECourse.M_118) || completed.contains(ECourse.M_120)
+                       || completed.contains(ECourse.M_127) || completed.contains(ECourse.M_124)
+                       || completed.contains(ECourse.M_125) || completed.contains(ECourse.M_126)
+                       || completed.contains(ECourse.M_141) || completed.contains(ECourse.M_155)
+                       || completed.contains(ECourse.M_156) || completed.contains(ECourse.M_157)
+                       || completed.contains(ECourse.M_159) || completed.contains(ECourse.M_160)
+                       || completed.contains(ECourse.M_161) || completed.contains(ECourse.M_229)
+                       || completed.contains(ECourse.M_269);
         }
 
         return eligible;
@@ -631,22 +503,18 @@ public final class StudentStatus {
      */
     boolean isEligibleFor125() {
 
-        boolean eligible = has118() || has120(false) || has127(false);
+        boolean eligible = placedOut("M 118");
 
         if (!eligible) {
-            final Collection<String> completed = getCompleted();
-
-            for (final String id : completed) {
-                final String trimmed = id.replace("MATH ", "M ");
-
-                if ("M 124".equals(trimmed) || "M 125".equals(trimmed) || "M 126".equals(trimmed)
-                    || "M 141".equals(trimmed) || "M 155".equals(trimmed) || "M 156".equals(trimmed)
-                    || "M 157".equals(trimmed) || "M 159".equals(trimmed) || "M 160".equals(trimmed)
-                    || "M 161".equals(trimmed) || "M 229".equals(trimmed)) {
-                    eligible = true;
-                    break;
-                }
-            }
+            final Collection<ECourse> completed = getCompleted();
+            eligible = completed.contains(ECourse.M_118) || completed.contains(ECourse.M_120)
+                       || completed.contains(ECourse.M_127) || completed.contains(ECourse.M_124)
+                       || completed.contains(ECourse.M_125) || completed.contains(ECourse.M_126)
+                       || completed.contains(ECourse.M_141) || completed.contains(ECourse.M_155)
+                       || completed.contains(ECourse.M_156) || completed.contains(ECourse.M_157)
+                       || completed.contains(ECourse.M_159) || completed.contains(ECourse.M_160)
+                       || completed.contains(ECourse.M_161) || completed.contains(ECourse.M_229)
+                       || completed.contains(ECourse.M_269);
         }
 
         return eligible;
@@ -659,21 +527,15 @@ public final class StudentStatus {
      */
     boolean isEligibleFor126() {
 
-        boolean eligible = has125() || has127(false);
+        boolean eligible = placedOut("M 125");
 
         if (!eligible) {
-            final Collection<String> completed = getCompleted();
-
-            for (final String id : completed) {
-                final String trimmed = id.replace("MATH ", "M ");
-
-                if ("M 126".equals(trimmed) || "M 155".equals(trimmed) || "M 156".equals(trimmed)
-                    || "M 157".equals(trimmed) || "M 159".equals(trimmed) || "M 160".equals(trimmed)
-                    || "M 161".equals(trimmed)) {
-                    eligible = true;
-                    break;
-                }
-            }
+            final Collection<ECourse> completed = getCompleted();
+            eligible = completed.contains(ECourse.M_125) || completed.contains(ECourse.M_127)
+                       || completed.contains(ECourse.M_126) || completed.contains(ECourse.M_155)
+                       || completed.contains(ECourse.M_156) || completed.contains(ECourse.M_157)
+                       || completed.contains(ECourse.M_159) || completed.contains(ECourse.M_160)
+                       || completed.contains(ECourse.M_161);
         }
 
         return eligible;
@@ -686,21 +548,15 @@ public final class StudentStatus {
      */
     boolean isEligibleFor141() {
 
-        boolean eligible = has118() || has120(false) || has127(false);
+        boolean eligible = placedOut("M 118");
 
         if (!eligible) {
-            final Collection<String> completed = getCompleted();
-
-            for (final String id : completed) {
-                final String trimmed = id.replace("MATH ", "M ");
-
-                if ("M 141".equals(trimmed) || "M 155".equals(trimmed) || "M 156".equals(trimmed)
-                    || "M 157".equals(trimmed) || "M 159".equals(trimmed) || "M 160".equals(trimmed)
-                    || "M 161".equals(trimmed)) {
-                    eligible = true;
-                    break;
-                }
-            }
+            final Collection<ECourse> completed = getCompleted();
+            eligible = completed.contains(ECourse.M_118) || completed.contains(ECourse.M_120)
+                       || completed.contains(ECourse.M_127) || completed.contains(ECourse.M_141)
+                       || completed.contains(ECourse.M_155) || completed.contains(ECourse.M_156)
+                       || completed.contains(ECourse.M_157) || completed.contains(ECourse.M_159)
+                       || completed.contains(ECourse.M_160) || completed.contains(ECourse.M_161);
         }
 
         return eligible;
@@ -713,18 +569,26 @@ public final class StudentStatus {
      */
     boolean isEligibleFor155() {
 
-        boolean eligible = (has124(false) || has120(false) || has127(false)) && has125();
+        boolean has124 = placedOut("M 124");
+        boolean has125 = placedOut("M 125");
+
+        boolean eligible = has124 && has125;
 
         if (!eligible) {
-            final Collection<String> completed = getCompleted();
-
-            for (final String id : completed) {
-                final String trimmed = id.replace("MATH ", "M ");
-
-                if ("M 155".equals(trimmed) || "M 156".equals(trimmed) || "M 159".equals(trimmed)
-                    || "M 160".equals(trimmed) || "M 161".equals(trimmed)) {
-                    eligible = true;
-                }
+            final Collection<ECourse> completed = getCompleted();
+            if (!has124) {
+                has124 = completed.contains(ECourse.M_124) || completed.contains(ECourse.M_120);
+            }
+            if (!has125) {
+                has125 = completed.contains(ECourse.M_125);
+            }
+            if (has124 && has125) {
+                eligible = true;
+            } else {
+                eligible = completed.contains(ECourse.M_127) || completed.contains(ECourse.M_141)
+                           || completed.contains(ECourse.M_155) || completed.contains(ECourse.M_156)
+                           || completed.contains(ECourse.M_157) || completed.contains(ECourse.M_159)
+                           || completed.contains(ECourse.M_160) || completed.contains(ECourse.M_161);
             }
         }
 
@@ -738,25 +602,29 @@ public final class StudentStatus {
      */
     boolean isEligibleFor156or160() {
 
-        boolean has124 = has124(true) || has120(true) || has127(true);
-        boolean has126 = has126(true);
+        boolean has124 = placedOut("M 124");
+        boolean has126 = placedOut("M 126");
 
-        if (!(has124 && has126)) {
-            final Collection<String> completed = getCompleted();
+        boolean eligible = has124 && has126;
 
-            for (final String id : completed) {
-                final String trimmed = id.replace("MATH ", "M ");
-
-                if ("M 155".equals(trimmed)) {
-                    has124 = true;
-                } else if ("M 156".equals(trimmed) || "M 159".equals(trimmed) || "M 160".equals(trimmed)
-                           || "M 161".equals(trimmed)) {
-                    has124 = true;
-                    has126 = true;
-                }
+        if (!eligible) {
+            final Collection<ECourse> completed = getCompletedBOrHigher();
+            if (!has124) {
+                has124 = completed.contains(ECourse.M_124) || completed.contains(ECourse.M_120)
+                         || completed.contains(ECourse.M_155);
+            }
+            if (!has126) {
+                has126 = completed.contains(ECourse.M_126);
+            }
+            if (has124 && has126) {
+                eligible = true;
+            } else {
+                eligible = completed.contains(ECourse.M_127) || completed.contains(ECourse.M_156)
+                           || completed.contains(ECourse.M_159) || completed.contains(ECourse.M_160)
+                           || completed.contains(ECourse.M_161);
             }
         }
 
-        return has124 && has126;
+        return eligible;
     }
 }

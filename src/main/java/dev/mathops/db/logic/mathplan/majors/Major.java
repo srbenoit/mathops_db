@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 /**
  * A math requirement associated with a major (major or major/concentration).

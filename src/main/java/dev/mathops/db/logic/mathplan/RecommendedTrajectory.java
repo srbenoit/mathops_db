@@ -106,11 +106,11 @@ public final class RecommendedTrajectory {
             } else if (implicit == ECourse.M_118 && this.math118 == ETrajectoryCourse.NOT_NEEDED) {
                 this.math118 = compute118Status(stuStatus);
             } else if (implicit == ECourse.M_124 && this.math124 == ETrajectoryCourse.NOT_NEEDED) {
-                this.math118 = compute124Status(stuStatus, this.requirements.needsBMinusIn2426);
+                this.math124 = compute124Status(stuStatus, this.requirements.needsBMinusIn2426);
             } else if (implicit == ECourse.M_125 && this.math125 == ETrajectoryCourse.NOT_NEEDED) {
-                this.math118 = compute125Status(stuStatus);
+                this.math125 = compute125Status(stuStatus);
             } else if (implicit == ECourse.M_126 && this.math126 == ETrajectoryCourse.NOT_NEEDED) {
-                this.math118 = compute126Status(stuStatus, this.requirements.needsBMinusIn2426);
+                this.math126 = compute126Status(stuStatus, this.requirements.needsBMinusIn2426);
             }
         }
 

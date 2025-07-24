@@ -1,4 +1,4 @@
-package dev.mathops.db.logic.mathops;
+package dev.mathops.db.logic.mathplan;
 
 import com.formdev.flatlaf.FlatLightLaf;
 import dev.mathops.commons.CoreConstants;
@@ -12,14 +12,6 @@ import dev.mathops.db.DbConnection;
 import dev.mathops.db.cfg.DatabaseConfig;
 import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.logic.StudentData;
-import dev.mathops.db.logic.mathplan.MathPlanConstants;
-import dev.mathops.db.logic.mathplan.MathPlanLogic;
-import dev.mathops.db.logic.mathplan.NextSteps;
-import dev.mathops.db.logic.mathplan.RecommendedFirstTerm;
-import dev.mathops.db.logic.mathplan.RecommendedTrajectory;
-import dev.mathops.db.logic.mathplan.Requirements;
-import dev.mathops.db.logic.mathplan.StudentMathPlan;
-import dev.mathops.db.logic.mathplan.StudentStatus;
 import dev.mathops.db.logic.mathplan.majors.Major;
 import dev.mathops.db.logic.mathplan.majors.Majors;
 import dev.mathops.db.logic.mathplan.majors.MajorsCurrent;

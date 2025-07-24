@@ -1,6 +1,5 @@
 package dev.mathops.db.logic.mathplan;
 
-import dev.mathops.commons.log.Log;
 import dev.mathops.db.logic.mathplan.majors.Major;
 import dev.mathops.db.logic.mathplan.types.ECourse;
 import dev.mathops.db.logic.mathplan.types.ERequirement;
@@ -85,7 +84,7 @@ public final class Requirements {
     /**
      * Tests whether no requirements are indicated.
      *
-     * @return the lsit of requirements is empty
+     * @return the list of requirements is empty
      */
     public boolean isEmpty() {
 
@@ -292,7 +291,7 @@ public final class Requirements {
      */
     private void generatePickLists(final Iterable<Major> majors, final StudentStatus stuStatus) {
 
-        final Collection<String> completed = stuStatus.getCompleted();
+        final Collection<ECourse> completed = stuStatus.getCompleted();
 
         for (final Major major : majors) {
 
@@ -383,27 +382,17 @@ public final class Requirements {
      * @param completed         the set of courses for which the student already has credit
      * @param acceptableCourses the list of acceptable courses
      */
-    private void addPickList(final Iterable<String> completed, final ECourse... acceptableCourses) {
+    private void addPickList(final Iterable<ECourse> completed, final ECourse... acceptableCourses) {
 
         final PickList pick = new PickList(3, acceptableCourses);
 
         // Remove courses for which the student already has credit
-        for (final String courseId : completed) {
-            if (RawRecordConstants.M117.equals(courseId) || RawRecordConstants.MATH117.equals(courseId)) {
-                pick.remove(ECourse.M_117);
-            } else if (RawRecordConstants.M118.equals(courseId) || RawRecordConstants.MATH118.equals(courseId)) {
-                pick.remove(ECourse.M_118);
-            } else if (RawRecordConstants.M124.equals(courseId) || RawRecordConstants.MATH124.equals(courseId)) {
-                pick.remove(ECourse.M_124);
-            } else if (RawRecordConstants.M125.equals(courseId) || RawRecordConstants.MATH125.equals(courseId)) {
-                pick.remove(ECourse.M_125);
-            } else if (RawRecordConstants.M126.equals(courseId) || RawRecordConstants.MATH126.equals(courseId)) {
-                pick.remove(ECourse.M_126);
-            } else if (RawRecordConstants.M120.equals(courseId) || RawRecordConstants.MATH120.equals(courseId)
-                       || RawRecordConstants.M127.equals(courseId) || RawRecordConstants.MATH127.equals(courseId)) {
-                // Assume 127 will get counted like 120 (none of our pick lists are greater than 3 credits, so the
-                // credit difference will not matter)
+        for (final ECourse courseId : completed) {
+            if (courseId == ECourse.M_127) {
+                // No pick lists have 127 - treat this as MATH 120 for purposes of pick lists
                 pick.remove(ECourse.M_120);
+            } else {
+                pick.remove(courseId);
             }
         }
 
