@@ -1,8 +1,11 @@
 package dev.mathops.db.logic.mathplan;
 
 import dev.mathops.commons.log.Log;
+import dev.mathops.db.logic.mathplan.majors.Major;
+import dev.mathops.db.logic.mathplan.majors.Majors;
 import dev.mathops.db.logic.mathplan.types.ECourse;
 import dev.mathops.db.logic.mathplan.types.ENextStep;
+import dev.mathops.db.logic.mathplan.types.ERequirement;
 import dev.mathops.db.logic.mathplan.types.ETrajectoryCourse;
 import dev.mathops.db.logic.mathplan.types.PickList;
 
@@ -39,6 +42,7 @@ public final class NextSteps {
         this.nextStep = computeNextStep(stuStatus, trajectory);
 
         this.placementNeeded = !(this.nextStep == ENextStep.MSG_PLACEMENT_NOT_NEEDED
+                                 || this.nextStep == ENextStep.MSG_PLACEMENT_NOT_NEEDED_FOR_DECLARED
                                  || this.nextStep == ENextStep.MSG_ALREADY_COMPLETE
                                  || this.nextStep == ENextStep.MSG_ALREADY_ELIGIBLE);
     }
@@ -59,39 +63,48 @@ public final class NextSteps {
         if (req.coreOnly) {
             result = ENextStep.MSG_PLACEMENT_NOT_NEEDED;
         } else {
-            // Find the first named course that has a prerequisite (there may not be any)
-            final ECourse firstNamed = req.identifyFirstNamedCourse();
-
-            // FIXME: Change the messaging depending on whether the student has placement attempts remaining and
-            //  whether they are eligible for the tutorial.  If neither, then implicit courses become on the same
-            //  footing as named courses.
-
-            if (firstNamed == ECourse.M_117) {
-                result = makeNextStep117(trajectory);
-            } else if (firstNamed == ECourse.M_118) {
-                result = makeNextStep118(trajectory);
-            } else if (firstNamed == ECourse.M_124) {
-                result = makeNextStep124(trajectory);
-            } else if (firstNamed == ECourse.M_125) {
-                result = makeNextStep125(trajectory);
-            } else if (firstNamed == ECourse.M_126) {
-                result = makeNextStep126(trajectory);
+            final String declared = stuStatus.student.programCode;
+            final Major declaredMajor = declared == null ? null : Majors.getMajorByProgramCode(declared);
+            if (declared != null && MathPlanLogic.isProgramCodeIgnored(declared)) {
+                // Students with some declared program codes (like grad students, guests), we don't demand placement
+                result = ENextStep.MSG_PLACEMENT_NOT_NEEDED;
+            } else if (declaredMajor != null && declaredMajor.requirements == ERequirement.CORE_ONLY) {
+                result = ENextStep.MSG_PLACEMENT_NOT_NEEDED_FOR_DECLARED;
             } else {
-                final ECourse namedCalc = req.namedCalculusRequirement;
+                // Find the first named course that has a prerequisite (there may not be any)
+                final ECourse firstNamed = req.identifyFirstNamedCourse();
 
-                if (namedCalc == ECourse.M_141 || namedCalc == ECourse.M_141_OR_155
-                    || namedCalc == ECourse.M_141_OR_155_OR_160) {
-                    result = makeNextStep141(stuStatus, trajectory);
-                } else if (firstNamed == ECourse.M_155 || firstNamed == ECourse.M_155_OR_160) {
-                    result = makeNextStep155(stuStatus, trajectory);
-                } else if (firstNamed == ECourse.M_156 || firstNamed == ECourse.M_156_OR_160
-                           || firstNamed == ECourse.M_160) {
-                    result = makeNextStep160(stuStatus, trajectory);
-                } else if (req.pickLists.isEmpty()) {
-                    // No named courses, no pick lists, so all requirements must already be met
-                    result = ENextStep.MSG_ALREADY_COMPLETE;
+                // FIXME: Change the messaging depending on whether the student has placement attempts remaining and
+                //  whether they are eligible for the tutorial.  If neither, then implicit courses become on the same
+                //  footing as named courses.
+
+                if (firstNamed == ECourse.M_117) {
+                    result = makeNextStep117(trajectory);
+                } else if (firstNamed == ECourse.M_118) {
+                    result = makeNextStep118(trajectory);
+                } else if (firstNamed == ECourse.M_124) {
+                    result = makeNextStep124(trajectory);
+                } else if (firstNamed == ECourse.M_125) {
+                    result = makeNextStep125(trajectory);
+                } else if (firstNamed == ECourse.M_126) {
+                    result = makeNextStep126(trajectory);
                 } else {
-                    result = processPickLists(stuStatus, trajectory);
+                    final ECourse namedCalc = req.namedCalculusRequirement;
+
+                    if (namedCalc == ECourse.M_141 || namedCalc == ECourse.M_141_OR_155
+                        || namedCalc == ECourse.M_141_OR_155_OR_160) {
+                        result = makeNextStep141(stuStatus, trajectory);
+                    } else if (firstNamed == ECourse.M_155 || firstNamed == ECourse.M_155_OR_160) {
+                        result = makeNextStep155(stuStatus, trajectory);
+                    } else if (firstNamed == ECourse.M_156 || firstNamed == ECourse.M_156_OR_160
+                               || firstNamed == ECourse.M_160) {
+                        result = makeNextStep160(stuStatus, trajectory);
+                    } else if (req.pickLists.isEmpty()) {
+                        // No named courses, no pick lists, so all requirements must already be met
+                        result = ENextStep.MSG_ALREADY_COMPLETE;
+                    } else {
+                        result = processPickLists(stuStatus, trajectory);
+                    }
                 }
             }
         }

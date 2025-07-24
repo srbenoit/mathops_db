@@ -3,6 +3,7 @@ package dev.mathops.db.logic.mathplan;
 import dev.mathops.commons.log.Log;
 import dev.mathops.db.logic.mathplan.majors.Major;
 import dev.mathops.db.logic.mathplan.types.ENextStep;
+import dev.mathops.text.builder.HtmlBuilder;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -56,5 +57,29 @@ public class StudentMathPlan {
             this.trajectory = new RecommendedTrajectory(theStuStatus, theRequirements);
             this.nextSteps = new NextSteps(theStuStatus, this.trajectory);
         }
+    }
+
+    /**
+     * Generates a diagnostic String representation of this object.
+     *
+     * @return the string representation
+     */
+    public String toString() {
+
+        final HtmlBuilder htm = new HtmlBuilder(100);
+
+        htm.addln("Student Math Plan for ", this.stuStatus.student.stuId, ":");
+        htm.addln("  Majors contributing to the plan:");
+        for (final Major major : this.majorsOfInterest) {
+            htm.addln("    ", major.programName, " (", major.requirements, ")");
+        }
+        htm.addln("  Merged Requirements:");
+        htm.addln("    ", this.requirements);
+        htm.addln("  Recommended Trajectory:");
+        htm.addln("    ", this.trajectory);
+        htm.addln("  Recommended Next steps:");
+        htm.addln("    ", this.nextSteps);
+
+        return htm.toString();
     }
 }

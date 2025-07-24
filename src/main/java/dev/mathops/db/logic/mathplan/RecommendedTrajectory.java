@@ -1,12 +1,9 @@
 package dev.mathops.db.logic.mathplan;
 
-import dev.mathops.commons.log.Log;
 import dev.mathops.db.logic.mathplan.types.ECourse;
 import dev.mathops.db.logic.mathplan.types.ETrajectoryCourse;
 import dev.mathops.db.logic.mathplan.types.PickList;
-
-import java.util.ArrayList;
-import java.util.List;
+import dev.mathops.text.builder.HtmlBuilder;
 
 /**
  * A student's "recommended trajectory" through Mathematics courses to try to satisfy the requirements for any of their
@@ -311,5 +308,57 @@ public final class RecommendedTrajectory {
             this.math126 = compute126Status(stuStatus, this.requirements.needsBMinusIn2426);
             play.remove(ECourse.M_126);
         }
+    }
+
+    /**
+     * Generates a diagnostic String representation of this object.
+     *
+     * @return the string representation
+     */
+    public String toString() {
+
+        final HtmlBuilder htm = new HtmlBuilder(100);
+
+        boolean comma = false;
+        if (this.math117 != ETrajectoryCourse.NOT_NEEDED) {
+            htm.add("MATH 117: ", this.math117);
+            comma = true;
+        }
+        if (this.math118 != ETrajectoryCourse.NOT_NEEDED) {
+            if (comma) {
+                htm.add(", ");
+            }
+            htm.add("MATH 118: ", this.math118);
+            comma = true;
+        }
+        if (this.math124 != ETrajectoryCourse.NOT_NEEDED) {
+            if (comma) {
+                htm.add(", ");
+            }
+            htm.add("MATH 124: ", this.math124);
+            comma = true;
+        }
+        if (this.math125 != ETrajectoryCourse.NOT_NEEDED) {
+            if (comma) {
+                htm.add(", ");
+            }
+            htm.add("MATH 125: ", this.math125);
+            comma = true;
+        }
+        if (this.math126 != ETrajectoryCourse.NOT_NEEDED) {
+            if (comma) {
+                htm.add(", ");
+            }
+            htm.add("MATH 126: ", this.math126);
+            comma = true;
+        }
+        if (this.include120Option) {
+            if (comma) {
+                htm.add(", ");
+            }
+            htm.add("(MATH 120 is allowed)");
+        }
+
+        return htm.toString();
     }
 }

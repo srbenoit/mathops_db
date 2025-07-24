@@ -189,7 +189,6 @@ public enum MathPlanLogic {
                 result = new StudentMathPlan(majors, stuStatus, requirements);
             } catch (final SQLException ex) {
                 Log.warning("Failed to calculate student status.", ex);
-                good = false;
             }
         }
 

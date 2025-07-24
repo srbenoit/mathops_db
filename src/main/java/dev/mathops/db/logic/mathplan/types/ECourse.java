@@ -1,10 +1,5 @@
 package dev.mathops.db.logic.mathplan.types;
 
-import dev.mathops.commons.log.Log;
-import dev.mathops.db.old.rawrecord.RawRecordConstants;
-
-import java.util.EnumSet;
-
 /**
  * All courses that participate in the Math Plan.
  */
@@ -95,63 +90,5 @@ public enum ECourse {
 
         this.credits = theCredits;
         this.label = theLabel;
-    }
-
-    /**
-     * Given a list of String course IDs, returns the set of all ECourse objects that correspond to any ID in that
-     * list.
-     *
-     * @param courseIdList the course ID list
-     * @return the set of ECourse objects
-     */
-    public static EnumSet<ECourse> courseIdListToECourseSet(final Iterable<String> courseIdList) {
-
-        final EnumSet<ECourse> result = EnumSet.noneOf(ECourse.class);
-
-        for (final String courseId : courseIdList) {
-            final String fixed = courseId.replace("MATH ", "M ");
-
-            if (RawRecordConstants.M101.equals(fixed) || "M 130".equals(fixed)) {
-                result.add(ECourse.M_101);
-            } else if (RawRecordConstants.M117.equals(fixed)) {
-                result.add(ECourse.M_117);
-            } else if (RawRecordConstants.M118.equals(fixed)) {
-                result.add(ECourse.M_118);
-            } else if (RawRecordConstants.M124.equals(fixed)) {
-                result.add(ECourse.M_124);
-            } else if (RawRecordConstants.M120.equals(fixed)) {
-                result.add(ECourse.M_120);
-            } else if (RawRecordConstants.M125.equals(fixed)) {
-                result.add(ECourse.M_125);
-            } else if (RawRecordConstants.M126.equals(fixed)) {
-                result.add(ECourse.M_126);
-            } else if (RawRecordConstants.M127.equals(fixed)) {
-                result.add(ECourse.M_127);
-            } else if (RawRecordConstants.M141.equals(fixed)) {
-                result.add(ECourse.M_141);
-            } else if (RawRecordConstants.M155.equals(fixed)) {
-                result.add(ECourse.M_155);
-            } else if (RawRecordConstants.M156.equals(fixed)) {
-                result.add(ECourse.M_156);
-            } else if (RawRecordConstants.M160.equals(fixed)) {
-                result.add(ECourse.M_160);
-            } else if (RawRecordConstants.M002.equals(fixed)) {
-                result.add(ECourse.M_002);
-            } else if ("M 157".equals(fixed)) {
-                result.add(ECourse.M_157);
-            } else if ("M 159".equals(fixed)) {
-                result.add(ECourse.M_159);
-            } else if ("M 161".equals(fixed)) {
-                result.add(ECourse.M_161);
-            } else if ("M 229".equals(fixed)) {
-                result.add(ECourse.M_229);
-            } else if ("M 269".equals(fixed)) {
-                result.add(ECourse.M_269);
-            } else {
-                Log.warning("Completed course not recognized: ", courseId);
-            }
-        }
-
-        return result;
     }
 }

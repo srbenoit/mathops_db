@@ -107,7 +107,7 @@ public final class StudentStatus {
             courseIds.add(finished.course);
         }
 
-        return ECourse.courseIdListToECourseSet(courseIds);
+        return courseIdListToECourseSet(courseIds);
     }
 
     /**
@@ -145,7 +145,46 @@ public final class StudentStatus {
             }
         }
 
-        return ECourse.courseIdListToECourseSet(courseIds);
+        return courseIdListToECourseSet(courseIds);
+    }
+
+    /**
+     * Given a list of String course IDs, returns the set of all ECourse objects that correspond to any ID in that
+     * list.
+     *
+     * @param courseIdList the course ID list
+     * @return the set of ECourse objects
+     */
+    private static EnumSet<ECourse> courseIdListToECourseSet(final Iterable<String> courseIdList) {
+
+        final EnumSet<ECourse> result = EnumSet.noneOf(ECourse.class);
+
+        for (final String courseId : courseIdList) {
+            final String fixed = courseId.replace("MATH ", "M ");
+
+            switch (fixed) {
+                case RawRecordConstants.M101, "M 130" -> result.add(ECourse.M_101);
+                case RawRecordConstants.M117 -> result.add(ECourse.M_117);
+                case RawRecordConstants.M118 -> result.add(ECourse.M_118);
+                case RawRecordConstants.M124 -> result.add(ECourse.M_124);
+                case RawRecordConstants.M120 -> result.add(ECourse.M_120);
+                case RawRecordConstants.M125 -> result.add(ECourse.M_125);
+                case RawRecordConstants.M126 -> result.add(ECourse.M_126);
+                case RawRecordConstants.M127 -> result.add(ECourse.M_127);
+                case RawRecordConstants.M141 -> result.add(ECourse.M_141);
+                case RawRecordConstants.M155 -> result.add(ECourse.M_155);
+                case RawRecordConstants.M156 -> result.add(ECourse.M_156);
+                case RawRecordConstants.M160 -> result.add(ECourse.M_160);
+                case RawRecordConstants.M002 -> result.add(ECourse.M_002);
+                case "M 157" -> result.add(ECourse.M_157);
+                case "M 159" -> result.add(ECourse.M_159);
+                case "M 161" -> result.add(ECourse.M_161);
+                case "M 229" -> result.add(ECourse.M_229);
+                case "M 269" -> result.add(ECourse.M_269);
+            }
+        }
+
+        return result;
     }
 
     /**

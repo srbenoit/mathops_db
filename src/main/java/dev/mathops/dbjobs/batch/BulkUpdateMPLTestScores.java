@@ -349,13 +349,23 @@ public final class BulkUpdateMPLTestScores {
 
                     String wantValue = null;
                     String wantNote = null;
-                    if (isProgramOnlyAUCC(student, report)) {
+
+                    if (student.programCode != null && MathPlanLogic.isProgramCodeIgnored(student.programCode)) {
                         wantValue = "1";
-                        wantNote = " (not needed, AUCC only)";
+                        wantNote = " (not needed, program " + student.programCode + " is ignored)";
                     } else {
                         final StudentMathPlan plan = MathPlanLogic.queryPlan(cache, stuId);
 
-                        if (latest1.containsKey(stuId)) {
+                        if (student.programCode != null && isProgramOnlyAUCC(student, report)) {
+                            wantValue = "1";
+                            if (plan.nextSteps.placementNeeded) {
+                                // Student has declared a major that only needs AUCC, but in the Math Plan, they
+                                // indicated courses that would require higher math.
+                                wantNote = " (not needed, AUCC only for declared major)";
+                            } else {
+                                wantNote = " (" + plan.nextSteps.nextStep + ")";
+                            }
+                        } else if (latest1.containsKey(stuId)) {
                             if (plan.stuStatus.isPlacementCompleted()) {
                                 wantNote = " (not needed, already done)";
                                 wantValue = "1";
@@ -373,8 +383,7 @@ public final class BulkUpdateMPLTestScores {
                     if (wantValue == null) {
                         if (mostRecent != null) {
                             final String msg = HtmlBuilder.concat("Student ", stuId,
-                                    " who has not completed MathPlan has a MPL score of ",
-                                    mostRecent.testScore);
+                                    " who has not completed MathPlan has a MPL score of ", mostRecent.testScore);
                             Log.warning(msg);
                             report.add(msg);
                         }
@@ -433,7 +442,8 @@ public final class BulkUpdateMPLTestScores {
     }
 
     /**
-     * Tests whether the student's program code is one of those that needs only AUCC-1B.
+     * Tests whether the student's program code is one of those that needs only AUCC-1B.  NOTE: this method is only
+     * called for program codes that are not in the "ignored" list.
      *
      * @param student the student record
      * @return true if this code only needs AUCC 1B
@@ -450,9 +460,6 @@ public final class BulkUpdateMPLTestScores {
             auccOnly = true;
         } else if (MAJORS_NEEDING_MORE.contains(programCode)) {
             auccOnly = false;
-        } else if (MathPlanLogic.isProgramCodeIgnored(programCode)) {
-            // Don't force students with an ignored code through the placement tool...
-            auccOnly = true;
         } else {
             final int ddIndex = programCode.indexOf("-DD-");
 

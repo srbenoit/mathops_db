@@ -11,6 +11,12 @@ public enum ENextStep {
     /** Student just needs 1B - Placement is not needed. */
     MSG_PLACEMENT_NOT_NEEDED("(AUCC 1B only)"),
 
+    /**
+     * Student just needs 1B for declared major - Placement is not needed (but would be needed for other courses in the
+     * student's list of majors of interest)
+     */
+    MSG_PLACEMENT_NOT_NEEDED_FOR_DECLARED("(AUCC 1B only for declared major)"),
+
     /** Student has already completed math first-semester requirements. */
     MSG_ALREADY_COMPLETE("(completed)"),
 

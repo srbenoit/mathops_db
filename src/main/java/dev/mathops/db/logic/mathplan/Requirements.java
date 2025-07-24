@@ -5,6 +5,7 @@ import dev.mathops.db.logic.mathplan.types.ECourse;
 import dev.mathops.db.logic.mathplan.types.ERequirement;
 import dev.mathops.db.logic.mathplan.types.PickList;
 import dev.mathops.db.old.rawrecord.RawRecordConstants;
+import dev.mathops.text.builder.HtmlBuilder;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -442,5 +443,70 @@ public final class Requirements {
         }
 
         return firstNamed;
+    }
+
+    /**
+     * Generates a diagnostic String representation of this object.
+     *
+     * @return the string representation
+     */
+    public String toString() {
+
+        final HtmlBuilder htm = new HtmlBuilder(100);
+
+        if (this.coreOnly) {
+            htm.add("3 Credits of AUCC 1B core");
+        } else {
+            boolean comma = false;
+            if (!this.namedPrecalculus.isEmpty()) {
+                for (final ECourse course : this.namedPrecalculus) {
+                    if (comma) {
+                        htm.add(", ");
+                    }
+                    htm.add(course.label);
+                    comma = true;
+                }
+            }
+            if (this.namedCalculusRequirement != ECourse.NONE) {
+                if (comma) {
+                    htm.add(", ");
+                }
+                htm.add(this.namedCalculusRequirement.label);
+                comma = true;
+            }
+            if (!this.implicitCourses.isEmpty()) {
+                if (comma) {
+                    htm.add(" ");
+                }
+                htm.add("[implicit: ");
+                comma = false;
+                for (final ECourse course : this.implicitCourses) {
+                    if (comma) {
+                        htm.add(", ");
+                    }
+                    htm.add(course.label);
+                    comma = true;
+                }
+                htm.add("]");
+                comma = true;
+            }
+            if (!this.pickLists.isEmpty()) {
+                for (final PickList pick : this.pickLists) {
+                    if (comma) {
+                        htm.add(", ");
+                    }
+                    htm.add(pick);
+                    comma = true;
+                }
+            }
+            if (this.needsBMinusIn2426) {
+                if (comma) {
+                    htm.add(", ");
+                }
+                htm.add("(Needs B- or higher in 124/126)");
+            }
+        }
+
+        return htm.toString();
     }
 }
