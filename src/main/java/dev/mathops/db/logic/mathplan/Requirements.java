@@ -302,7 +302,7 @@ public final class Requirements {
 
             } else if (major.requirements == ERequirement.PICK_3CR_117_118_124_120_155) {
 
-                if (completed.contains(RawRecordConstants.M155) || completed.contains(RawRecordConstants.MATH155)
+                if (completed.contains(ECourse.M_155)
                     || this.namedCalculusRequirement == ECourse.M_155
                     || this.namedCalculusRequirement == ECourse.M_155_OR_160) {
                     continue;
@@ -311,7 +311,7 @@ public final class Requirements {
 
             } else if (major.requirements == ERequirement.PICK_3CR_117_118_125_141) {
 
-                if (completed.contains(RawRecordConstants.M141) || completed.contains(RawRecordConstants.MATH141)
+                if (completed.contains(ECourse.M_141)
                     || this.namedCalculusRequirement == ECourse.M_141
                     || this.namedCalculusRequirement == ECourse.M_141_OR_155
                     || this.namedCalculusRequirement == ECourse.M_141_OR_155_OR_160) {
@@ -326,7 +326,7 @@ public final class Requirements {
 
             } else if (major.requirements == ERequirement.PICK_3CR_117_118_124_120_125_126_141) {
 
-                if (completed.contains(RawRecordConstants.M141) || completed.contains(RawRecordConstants.MATH141)
+                if (completed.contains(ECourse.M_141)
                     || this.namedCalculusRequirement == ECourse.M_141
                     || this.namedCalculusRequirement == ECourse.M_141_OR_155
                     || this.namedCalculusRequirement == ECourse.M_141_OR_155_OR_160) {
@@ -337,8 +337,7 @@ public final class Requirements {
 
             } else if (major.requirements == ERequirement.PICK_3CR_117_118_124_120_125_126_141_155) {
 
-                if (completed.contains(RawRecordConstants.M141) || completed.contains(RawRecordConstants.MATH141)
-                    || completed.contains(RawRecordConstants.M155) || completed.contains(RawRecordConstants.MATH155)
+                if (completed.contains(ECourse.M_141) || completed.contains(ECourse.M_155)
                     || this.namedCalculusRequirement == ECourse.M_141
                     || this.namedCalculusRequirement == ECourse.M_155
                     || this.namedCalculusRequirement == ECourse.M_141_OR_155
@@ -351,10 +350,8 @@ public final class Requirements {
 
             } else if (major.requirements == ERequirement.PICK_3CR_117_118_124_120_125_126_141_155_156_160) {
 
-                if (completed.contains(RawRecordConstants.M141) || completed.contains(RawRecordConstants.MATH141)
-                    || completed.contains(RawRecordConstants.M155) || completed.contains(RawRecordConstants.MATH155)
-                    || completed.contains(RawRecordConstants.M156) || completed.contains(RawRecordConstants.MATH156)
-                    || completed.contains(RawRecordConstants.M160) || completed.contains(RawRecordConstants.MATH160)
+                if (completed.contains(ECourse.M_141) || completed.contains(ECourse.M_155)
+                    || completed.contains(ECourse.M_156) || completed.contains(ECourse.M_160)
                     || this.namedCalculusRequirement != ECourse.NONE) {
                     continue;
                 }
@@ -363,8 +360,7 @@ public final class Requirements {
 
             } else if (major.requirements == ERequirement.PICK_3CR_118_124_125_126_155_160) {
 
-                if (completed.contains(RawRecordConstants.M155) || completed.contains(RawRecordConstants.MATH155)
-                    || completed.contains(RawRecordConstants.M160) || completed.contains(RawRecordConstants.MATH160)
+                if (completed.contains(ECourse.M_155) || completed.contains(ECourse.M_160)
                     || this.namedCalculusRequirement == ECourse.M_155
                     || this.namedCalculusRequirement == ECourse.M_155_OR_160
                     || this.namedCalculusRequirement == ECourse.M_160) {

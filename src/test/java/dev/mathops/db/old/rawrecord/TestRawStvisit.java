@@ -46,8 +46,8 @@ final class TestRawStvisit {
     @DisplayName("Constructor")
     void test0001() {
 
-        final RawStvisit obj = new RawStvisit(RawStudent.TEST_STUDENT_ID, TEST_WHEN_STARTED, TEST_WHEN_ENDED, TEST_LOCATION,
-                TEST_SEAT);
+        final RawStvisit obj = new RawStvisit(RawStudent.TEST_STUDENT_ID, TEST_WHEN_STARTED, TEST_WHEN_ENDED,
+                TEST_LOCATION, TEST_SEAT);
 
         assertEquals(RawStudent.TEST_STUDENT_ID, obj.stuId, "Invalid std_id value after constructor");
         assertEquals(TEST_WHEN_STARTED, obj.whenStarted, "Invalid when_started value after constructor");
@@ -61,8 +61,8 @@ final class TestRawStvisit {
     @DisplayName("string serialization")
     void test0098() {
 
-        final RawStvisit obj = new RawStvisit(RawStudent.TEST_STUDENT_ID, TEST_WHEN_STARTED, TEST_WHEN_ENDED, TEST_LOCATION,
-                TEST_SEAT);
+        final RawStvisit obj = new RawStvisit(RawStudent.TEST_STUDENT_ID, TEST_WHEN_STARTED, TEST_WHEN_ENDED,
+                TEST_LOCATION, TEST_SEAT);
 
         final String ser = obj.toString();
 

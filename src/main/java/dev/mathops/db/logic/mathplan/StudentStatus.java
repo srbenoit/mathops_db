@@ -330,23 +330,11 @@ public final class StudentStatus {
             final Collection<ECourse> completed = getCompleted();
 
             for (final ECourse id : completed) {
-                if ("M 117".equals(id) || "MATH 117".equals(id)
-                    || "M 118".equals(id) || "MATH 118".equals(id)
-                    || "M 124".equals(id) || "MATH 124".equals(id)
-                    || "M 125".equals(id) || "MATH 125".equals(id)
-                    || "M 126".equals(id) || "MATH 126".equals(id)
-                    || "M 120".equals(id) || "MATH 120".equals(id)
-                    || "M 127".equals(id) || "MATH 127".equals(id)
-                    || "M 002".equals(id) || "MATH 002".equals(id)
-                    || "M 141".equals(id) || "MATH 141".equals(id)
-                    || "M 155".equals(id) || "MATH 155".equals(id)
-                    || "M 156".equals(id) || "MATH 156".equals(id)
-                    || "M 157".equals(id) || "MATH 157".equals(id)
-                    || "M 159".equals(id) || "MATH 159".equals(id)
-                    || "M 160".equals(id) || "MATH 160".equals(id)
-                    || "M 161".equals(id) || "MATH 161".equals(id)
-                    || "M 229".equals(id) || "MATH 229".equals(id)
-                    || "M 269".equals(id) || "MATH 269".equals(id)) {
+                if (id == ECourse.M_117 || id == ECourse.M_118 || id == ECourse.M_124 || id == ECourse.M_125
+                    || id == ECourse.M_126 || id == ECourse.M_120 || id == ECourse.M_127 || id == ECourse.M_002
+                    || id == ECourse.M_141 || id == ECourse.M_155 || id == ECourse.M_156 || id == ECourse.M_157
+                    || id == ECourse.M_159 || id == ECourse.M_160 || id == ECourse.M_161 || id == ECourse.M_229
+                    || id == ECourse.M_269) {
                     eligible = true;
                     break;
                 }

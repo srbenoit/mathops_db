@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Generates a report of all students who have forfeited working on a course in order to move to a new RE deadline
@@ -177,6 +178,10 @@ public enum SpecialOpenReport {
 
         /**
          * Compares two records for order.
+         *
+         * @param o the object against which to compare
+         * @return a negative integer, zero, or a positive integer as this object is less than, equal to, or greater
+         *         than the specified object
          */
         @Override
         public final int compareTo(final Record o) {
@@ -184,11 +189,7 @@ public enum SpecialOpenReport {
             int result;
 
             if (this.openStatus == null) {
-                if (o.openStatus == null) {
-                    result = 0;
-                } else {
-                    result = -1;
-                }
+                result = o.openStatus == null ? 0 : -1;
             } else if (o.openStatus == null) {
                 result = 1;
             } else {
@@ -197,11 +198,7 @@ public enum SpecialOpenReport {
 
             if (result == 0) {
                 if (this.lastName == null) {
-                    if (o.lastName == null) {
-                        result = 0;
-                    } else {
-                        result = -1;
-                    }
+                    result = o.lastName == null ? 0 : -1;
                 } else if (o.lastName == null) {
                     result = 1;
                 } else {
@@ -211,11 +208,7 @@ public enum SpecialOpenReport {
 
             if (result == 0) {
                 if (this.firstName == null) {
-                    if (o.firstName == null) {
-                        result = 0;
-                    } else {
-                        result = -1;
-                    }
+                    result = o.firstName == null ? 0 : -1;
                 } else if (o.firstName == null) {
                     result = 1;
                 } else {
@@ -225,11 +218,7 @@ public enum SpecialOpenReport {
 
             if (result == 0) {
                 if (this.studentId == null) {
-                    if (o.studentId == null) {
-                        result = 0;
-                    } else {
-                        result = -1;
-                    }
+                    result = o.studentId == null ? 0 : -1;
                 } else if (o.studentId == null) {
                     result = 1;
                 } else {
@@ -239,11 +228,7 @@ public enum SpecialOpenReport {
 
             if (result == 0) {
                 if (this.sect == null) {
-                    if (o.sect == null) {
-                        result = 0;
-                    } else {
-                        result = -1;
-                    }
+                    result = o.sect == null ? 0 : -1;
                 } else if (o.sect == null) {
                     result = 1;
                 } else {
@@ -253,11 +238,7 @@ public enum SpecialOpenReport {
 
             if (result == 0) {
                 if (this.course == null) {
-                    if (o.course == null) {
-                        result = 0;
-                    } else {
-                        result = -1;
-                    }
+                    result = o.course == null ? 0 : -1;
                 } else if (o.course == null) {
                     result = 1;
                 } else {
@@ -266,6 +247,21 @@ public enum SpecialOpenReport {
             }
 
             return result;
+        }
+
+        /**
+         * Generates a hash code for the object.
+         *
+         * @return the hash code
+         */
+        public int hashCode() {
+
+            return Objects.hashCode(this.openStatus)
+                   + Objects.hashCode(this.lastName)
+                   + Objects.hashCode(this.firstName)
+                   + Objects.hashCode(this.studentId)
+                   + Objects.hashCode(this.sect)
+                   + Objects.hashCode(this.course);
         }
 
         /**

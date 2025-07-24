@@ -93,7 +93,8 @@ final class TestRawAdminHoldLogic {
             }
             conn.commit();
 
-            final RawAdminHold raw1 = new RawAdminHold(RawStudent.TEST_STUDENT_ID, "06", "F", Integer.valueOf(1), date1);
+            final RawAdminHold raw1 = new RawAdminHold(RawStudent.TEST_STUDENT_ID, "06", "F", Integer.valueOf(1),
+                    date1);
             final RawAdminHold raw2 = new RawAdminHold("888888889", "01", "N", Integer.valueOf(2), date2);
             final RawAdminHold raw3 = new RawAdminHold("888888889", "02", "N", Integer.valueOf(3), date3);
 
