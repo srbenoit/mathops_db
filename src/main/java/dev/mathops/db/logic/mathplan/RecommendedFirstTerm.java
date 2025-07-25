@@ -1,5 +1,6 @@
 package dev.mathops.db.logic.mathplan;
 
+import dev.mathops.commons.CoreConstants;
 import dev.mathops.db.logic.mathplan.majors.Major;
 import dev.mathops.db.logic.mathplan.types.ECourse;
 import dev.mathops.db.logic.mathplan.types.EIdealFirstTermType;
@@ -311,27 +312,31 @@ public final class RecommendedFirstTerm {
         courses.sort(null);
         final int numCourses = courses.size();
 
-        final ECourse first = courses.getFirst();
-        final ECourse last = courses.getLast();
-
-        if (numCourses == 1) {
-            result = first.label;
-        } else if (numCourses == 2) {
-            result = SimpleBuilder.concat(first.label, " or ", last.label);
+        if (numCourses == 0) {
+            result = CoreConstants.EMPTY;
         } else {
-            final HtmlBuilder htm = new HtmlBuilder(40);
+            final ECourse first = courses.getFirst();
+            final ECourse last = courses.getLast();
 
-            htm.add("any of ");
-            htm.add(first.label);
+            if (numCourses == 1) {
+                result = first.label;
+            } else if (numCourses == 2) {
+                result = SimpleBuilder.concat(first.label, " or ", last.label);
+            } else {
+                final HtmlBuilder htm = new HtmlBuilder(40);
 
-            for (int i = 1; i < numCourses - 1; ++i) {
-                final ECourse course = courses.get(i);
-                htm.add(", ", course.label);
+                htm.add("any of ");
+                htm.add(first.label);
+
+                for (int i = 1; i < numCourses - 1; ++i) {
+                    final ECourse course = courses.get(i);
+                    htm.add(", ", course.label);
+                }
+
+                htm.add(", or ", last.label);
+
+                result = htm.toString();
             }
-
-            htm.add(", or ", last.label);
-
-            result = htm.toString();
         }
 
         return result;

@@ -69,106 +69,14 @@ import java.util.Set;
  */
 public final class BulkUpdateMPLTestScores {
 
+    /** Majors that need only core courses. */
     private static final Set<String> MAJORS_NEEDING_ONLY_AUCC;
-//    = Arrays.asList("ECHE-BS", "FACS-BS", "FACS-FCSZ-BS",
-//            "FACS-IDSZ-BS", "HDFS-BS", "HDFS-ECPZ-BS", "HDFS-HDEZ-BS", "HDFS-LADZ-BS", "HDFS-PHPZ-BS", "HDFS-PISZ-BS"
-//            , "SOWK-BSW", "HDFS-BS", "HDFS-ECPZ-BS", "HDFS-HDEZ-BS", "HDFS-LADZ-BS", "HDFS-PHPZ-BS", "HDFS-PISZ-BS",
-//            "SOWK-BSW", "SOWK-ADSZ-BSW", "ANTH-BA", "ANTH-ARCZ-BA", "ANTH-BIOZ-BA", "ANTH-CLTZ-BA", "ARTI-BA",
-//            "ARTI-ARTZ-BA", "ARTI-IVSZ-BA", "ARTM-BFA", "ARTM-DRAZ-BF", "ARTM-ELAZ-BF", "ARTM-FIBZ-BF",
-//            "ARTM-GRDZ-BF",
-//            "ARTM-METZ-BF", "ARTM-PNTZ-BF", "ARTM-PHIZ-BF", "ARTM-POTZ-BF", "ARTM-PRTZ-BF", "ARTM-SCLZ-BF",
-//            "ARTM-AREZ-BF", "CMST-BA", "CMST-TCLZ-BA", "DNCE-BA", "DANC-BFA", "ENGL-BA", "ENGL-CRWZ-BA",
-//            "ENGL-ENEZ-BA",
-//            "ENGL-LINZ-BA", "ENGL-LITZ-BA", "ENGL-WRLZ-BA", "ETST-BA", "ETST-COIZ-BA", "ETST-RPRZ-BA", "ETST-SOTZ-BA",
-//            "GEOG-BS", "HIST-BA", "HIST-GENZ-BA", "HIST-LNGZ-BA", "HIST-SBSZ-BA", "HIST-SSTZ-BA", "HIST-DPUZ-BA",
-//            "JAMC-BA", "LLAC-BA", "LLAC-LFRZ-BA", "LLAC-LGEZ-BA", "LLAC-LSPZ-BA", "LLAC-SPPZ-BA", "MUSI-BA",
-//            "MUSC-BM",
-//            "MUSC-COMZ-BM", "MUSC-MUEZ-BM", "MUSC-MUTZ-BM", "MUSC-PERZ-BM", "PHIL-BA", "PHIL-GNPZ-BA", "PHIL-GPRZ-BA",
-//            "PHIL-PSAZ-BA", "POLS-BA", "POLS-EPAZ-BA", "POLS-GPPZ-BA", "POLS-ULPZ-BA", "POLS-LPGZ-BA", "POLS-PPSZ-BA",
-//            "POLS-PJDZ-PA", "SOCI-BA", "SOCI-CRCZ-BA", "SOCI-ENSZ-BA", "SOCI-GNSZ-BA", "THTR-BA", "THTR-MUSZ-BA",
-//            "THTR-PRFZ-BA", "THTR-CDTZ-BA", "THTR-LDTZ-BA", "THTR-PDTZ-BA", "THTR-SDSZ-BA", "THTR-SDTZ-BA", "WGST-BA",
-//            "INST-BA", "INST-ASTZ-BA", "INST-EUSZ-BA", "INST-GBLZ-BA", "INST-LTSZ-BA", "INST-MEAZ-BA", "ILAR-BA",
-//            // Below are not in catalog
-//            "THTR-DTHZ-BA", "CMST-DD-BA", "HDFS-DHDZ-BS", "HDFS-DECZ-BS", "SOCI-DGSZ-BA", "ANTH-DD-BA",
-//            "HDFS-DPHZ-BS",
-//            "JAMC-DD-BA", "ILAR-DD-BA", "POLS-DD-BA", "DANC-DEDZ-BF", "HDFS-LEPZ-BS", "HDFS-DPIZ-BS", "ENGL-LANZ-BA",
-//            "HDFS-DLAZ-BS", "SOWK-ADSZ-BW", "HDFS-DLEZ-BS", "SPCM-TCLZ-BA",
-//            "MUS0", // Pre-music
-//            "UNLA", // Assuming liberal arts
-//            "DNC0", // Assuming Dance
-//            "THR0" // Assuming Theatre
-//    );
 
+    /** Majors that need more than just core courses. */
     private static final Set<String> MAJORS_NEEDING_MORE;
-//    = Arrays.asList(
-//            "AGBI-BS", "AGBI-ENTZ-BS", "AGBI-PLPZ-BS", "AGBI-WEEZ-BS", "AGBU-BS", "AGBU-AECZ-BS", "AGBU-FRCZ-BS",
-//            "AGBU-FSSZ-BS", "AGED-BS", "AGED-AGLZ-BS", "AGED-TDLZ-BS", "ANIM-BS", "ENRE-BS", "ENHR-BS",
-//            "ENHR-LDAZ-BS",
-//            "ENHR-NALZ-BS", "ENHR-TURZ-BS", "EQSC-BS", "HORT-BS", "HORT-CEHZ-BS", "HORT-HBMZ-BS", "HORT-HFCZ-BS",
-//            "HORT-HOSZ-BS", "LDAR-BS", "LSBM-BS", "SOCR-BS", "SOCR-PBTZ-BS", "SOCR-SESZ-BS", "SOCR-SAMZ-BS",
-//            "BUSA-BS",
-//            "BUSA-ACCZ-BS", "BUSA-FINZ-BS", "BUSA-FPLZ-BS", "BUSA-HRMZ-BS", "BUSA-INSZ-BS", "BUSA-MINZ-BS",
-//            "BUSA-MKTZ-BS", "BUSA-REAZ-BS", "BUSA-SCMZ-BS", "BUSA-SUSZ-BS", "CBEG-DUAL", "CBEG-BMEC-BS",
-//            "CPEG-BMEP-BS",
-//            "ELEG-BMEE-BS", "ELEG-BMEL-BS", "MECH-BMEM-BS", "CBEG-BS", "CBEG-MLMZ-BS", "CBEG-BIMZ-BS", "CBEG-SSEZ-BS",
-//            "CIVE-BS", "CONE-BS", "CPEG-BS", "CPEG-AESZ-BS", "CPEG-EISZ-BS", "CPEG-NDTZ-BS", "CPEG-VICZ-BS",
-//            "ELEG-BS",
-//            "ELEG-ELEZ-BS", "ELEG-LOEZ-BS", "ELEG-ASPZ-BS", "ENVE-BS", "MECH-BS", "MECH-ACEZ-BS", "MECH-ADMZ-BS",
-//            "MECH-ASU-BS", "APAM-BS", "APAM-ADAZ-BS", "APAM-MDSZ-BS", "APAM-PDVZ-BS", "CTMG-BS", "FMST-BS", "HAES-BS",
-//            "HAES-HPRZ-BS", "HAES-SPMZ-BS", "HAES-EXSZ-BS", "HSMG-BS", "IARD-BS", "IARD-IADZ-BS", "IARD-IPRZ-BS",
-//            "NAFS-BS", "NAFS-DNMZ-BS", "NAFS-FSCZ-BS", "NAFS-NFTZ-BS", "NAFS-PHNZ-BS", "NUTR-BS", "NUTR-DINZ-BS",
-//            "NUTR-PHLZ-BS", "NUTR-SNWZ-BS", "ECON-BA", "ECSS-BS", "FWCB-BS", "FWCB-CNVZ-BS", "FWCB-FASZ-BS",
-//            "FWCB-WDBZ-BS", "FRRS-BS", "FRRS-FRBZ-BS", "FRRS-FRFZ-BS", "FRRS-FMGZ-BS", "FRRS-RFMZ-BS", "FRRS-RCMZ-BS",
-//            "GEOL-BS", "GEOL-EVGZ-BS", "GEOL-GEOZ-BS", "GEOL-GPYZ-BS", "GEOL-HYDZ-BS", "HDNR-BS", "NRRT-BS",
-//            "NRRT-GLTZ-BS", "NRRT-NRTZ-BS", "NRMG-BS", "RECO-BS", "WRSC-BS", "WRSC-WSDZ-BS", "WRSC-WSSZ-BS",
-//            "WRSC-WSUZ-BS", "BCHM-BS", "BCHM-ASBZ-BS", "BCHM-DTSZ-BS", "BCHM-HMSZ-BS", "BCHM-PPHZ-BS", "BLSC-BS",
-//            "BLSC-BLSZ-BS", "BLSC-BTNZ-BS", "CHEM-BS", "CHEM-ECHZ-BS", "CHEM-FCHZ-BS", "CHEM-HSCZ-BS", "CHEM-SCHZ-BS",
-//            "CHEM-MTRZ-BS", "CPSC-BS", "CPSC-CPSZ-BS", "CPSC-HCCZ-BS", "CPSC-AIMZ-BS", "CPSC-CSYZ-BS", "CPSC-NSCZ-BS",
-//            "CPSC-SEGZ-BS", "CPSC-CSEZ-BS", "CPSC-DCCZ-BS", "DSCI-BS", "DSCI-CSCZ-BS", "DSCI-DSTZ-BS", "DSCI-ECNZ-BS",
-//            "DSCI-MATZ-BS", "DSCI-STSZ-BS", "DSCI-NEUZ-BS", "DSCI-DCMZ-BS", "MATH-BS", "MATH-ALSZ-BS", "MATH-AMTZ-BS",
-//            "MATH-GNMZ-BS", "MATH-MTEZ-BS", "MATH-CPMZ-BS", "NSCI-BS", "NSCI-BLEZ-BS", "NSCI-CHEZ-BS", "NSCI-GLEZ-BS",
-//            "NSCI-PHSZ-BS", "NSCI-PHEZ-BS", "PHYS-BS", "PHYS-APPZ-BS", "PHYS-PHYZ-BS", "PSYC-BS", "PSYC-ADCZ-BS",
-//            "PSYC-CCPZ-BS", "PSYC-GPSZ-BS", "PSYC-IOPZ-BS", "PSYC-MBBZ-BS", "PSYC-AACZ-BS", "STAT-BS", "ZOOL-BS",
-//            "BIOM-BS", "BIOM-APHZ-BS", "BIOM-EPHZ-BS", "BIOM-MIDZ-BS", "NERO-BS", "NERO-BCNZ-BS", "NERO-CMNZ-BS",
-//            "HEMG-BS", "FAFS-BS", "FAFS-FSTZ-BS", "FAFS-FSIZ-BS", "HLPH-DD-BS",
-//            // Below are not in catalog
-//            "PSYC-GDSZ-BS", "CPSC-DCSZ-BS", "HORT-DHBZ-BS", "BUSA-OIMZ-BS", "AGBU-DD-BS", "WSSS-WSDZ-BS", "WSSS-BS",
-//            "NRTM-NRTZ-BS", "NRTM-GLTZ-BS", "FESV-DD-BS", "CHEM-ACSZ-BS", "WSSS-WSSZ-BS", "EVHL-BS",
-//            "WSSS-WSUZ-BS", "NAFS-NUSZ-BS", "ENRE-DD-BS", "ECON-DD-BA", "SOCR-DSAZ-BS", "CPSC-DSEZ-BS", "MICR-BS",
-//            "N2CP-CPSY-UG", "NAFS-FSNZ-BS", "NRTM-DNRZ-BS", "BUSA-DACZ-BS", "CPSC-DHCZ-BS", "CPSC-DCYZ-BS",
-//            "CPSC-DAIZ-BS", "SOCR-SOEZ-BS", "APCT-CPTZ-BS", "BCHM-GBCZ-BS", "CPSC-DNSZ-BS", "FRST-FMGZ-BS",
-//            "SOCR-PBGZ-BS", "SOCR-ISCZ-BS", "CPSC-CFCZ-BS", "SOCR-APMZ-BS", "NAFS-FSYZ-BS",
-//            "CTM0", // Pre-construction management
-//            "EXPL", "EXLA", // Exploratory studies: Land, Plant, and Animal Science
-//            "EXHF", // Exploratory studies: Health, Life, and Food
-//            "EXOM", // Exploratory studies: Organization, Management, Ent.
-//            "EXNR", // Exploratory studies: Environmental and Natural Sci.
-//            "EXPE", // Exploratory studies: Physical Science and Engineering
-//            "EXTC", // Exploratory studies: Education and Teaching
-//            "EXPO", // Exploratory studies: ???
-//            "EXCO", // Exploratory studies: ???
-//            "EXAD", // Exploratory studies: ???
-//            "EXGS", // Exploratory studies: ???
-//            "USEG", // Exploratory studies: Engineering
-//            "USBU", // Exploratory studies: Business interest
-//            "USBS", // Exploratory studies: Life Sciences
-//            "USCS", // Exploratory studies: IT
-//            "USJC", // Exploratory studies: ???
-//            "IAD0", // Unknown - assume it needs some math...
-//            "EGOP", // Unknown - assume it needs some math...
-//            "CSOR", // Unknown - assume it needs some math...
-//            "N2IE-SI", // Unknown - assume it needs some math...
-//            "GUES-CEUG", // Unknown - assume it needs some math...
-//            "N2EG-ENGX-UG", // Unknown - assume it needs some math...
-//            "GRAD-UG", // Unknown - assume it needs some math...
-//            "SPCL-UG", // Unknown - assume it needs some math...
-//            "CTED-UG", // Unknown - assume it needs some math...
-//            "FCST-UG",  // Unknown - assume it needs some math...
-//            "SSAS-UG"  // Unknown - assume it needs some math....
-//    );
 
     /** Debug flag - true to skip (but print) updates; false to actually perform updates. */
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     /** The test code. */
     private static final String TEST_CODE = "MPL";
