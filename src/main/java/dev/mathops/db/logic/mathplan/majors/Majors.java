@@ -1,6 +1,7 @@
 package dev.mathops.db.logic.mathplan.majors;
 
 import dev.mathops.commons.log.Log;
+import dev.mathops.text.builder.HtmlBuilder;
 
 /**
  * A utility class to look up majors.
@@ -23,6 +24,19 @@ public enum Majors {
             result = MajorsCurrent.INSTANCE.getMajor(programCode);
             if (result == null) {
                 result = MajorsDeactivated.INSTANCE.getMajor(programCode);
+
+                if (result == null) {
+                    // Do some processing to try to pick up "dual degree" annotations
+                    final int ddIndex = programCode.indexOf("-DD-");
+
+                    if (ddIndex > 0) {
+                        final String newCode = programCode.substring(0, ddIndex) + programCode.substring(ddIndex + 3);
+                        result = MajorsCurrent.INSTANCE.getMajor(newCode);
+                        if (result == null) {
+                            result = MajorsDeactivated.INSTANCE.getMajor(newCode);
+                        }
+                    }
+                }
             }
         }
 

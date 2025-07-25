@@ -76,7 +76,7 @@ public final class BulkUpdateMPLTestScores {
     private static final Set<String> MAJORS_NEEDING_MORE;
 
     /** Debug flag - true to skip (but print) updates; false to actually perform updates. */
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     /** The test code. */
     private static final String TEST_CODE = "MPL";
@@ -374,7 +374,7 @@ public final class BulkUpdateMPLTestScores {
             if (ddIndex == -1) {
                 final String msg = HtmlBuilder.concat("Unrecognized program code: ", programCode, ", student ",
                         student.stuId, " college is ", student.college, " and department is ", student.dept);
-                Log.info(msg);
+                Log.warning(msg);
                 report.add(msg);
                 auccOnly = false;
             } else {
@@ -387,7 +387,7 @@ public final class BulkUpdateMPLTestScores {
                 } else {
                     final String msg = HtmlBuilder.concat("Unrecognized program code: ", newCode, ", student ",
                             student.stuId, " college is ", student.college, " and department is ", student.dept);
-                    Log.info(msg);
+                    Log.warning(msg);
                     report.add(msg);
                     auccOnly = false;
                 }

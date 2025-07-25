@@ -533,7 +533,7 @@ public final class MajorsCurrent extends MajorsBase {
 
         final Major mSOWK = new Major(
                 new int[]{4100, 4101, 4102, 4103},
-                new String[]{"SOWK-BSW", "SOWK-ADSZ-BSW", "SOWK-HOCZ-BSW", "SOWK-ISWC-BSW"},
+                new String[]{"SOWK-BSW", "SOWK-ADSZ-BW", "SOWK-HOCZ-BW", "SOWK-ISWC-BW"},
                 new EMajorTrack[]{EMajorTrack.GLOBAL_SOCIAL_SCIENCES},
                 "Social Work",
                 MathPlanConstants.PGMS + "social-work/",
@@ -1054,6 +1054,7 @@ public final class MajorsCurrent extends MajorsBase {
         // ===========================
 
         // *** Major in Biochemistry
+        // 7011: Deactivated
         // 7012: BCHM-HMSZ-BS, Biochemistry - Health and Medical Sciences
         // 7013: BCHM-PPHZ-BS, Biochemistry - Pre-Pharmacy
         // 7014: BCHM-ASBZ-BS, Biochemistry - ASBMB

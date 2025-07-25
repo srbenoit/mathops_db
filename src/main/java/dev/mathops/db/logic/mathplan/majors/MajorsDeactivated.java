@@ -176,6 +176,19 @@ public final class MajorsDeactivated extends MajorsBase {
                 IdealFirstTerm.IDEAL_60);
         majors.add(mEGIS);
 
+        // ***  Mechanical Engineering
+
+        // FAKE: MECH-ASU-BS
+        final Major mMECH = new Major(
+                new int[]{3080,},
+                new String[]{"MECH-ASU-BS"},
+                new EMajorTrack[]{EMajorTrack.MATH_PHYSICAL_SCIENCES_ENGINEERING},
+                "Mechanical Engineering",
+                MathPlanConstants.PGMS + "mechanical-engineering/",
+                ERequirement.M_160,
+                IdealFirstTerm.IDEAL_60);
+        majors.add(mMECH);
+
         // ====================================
         // College of Health and Human Sciences
         // ====================================
@@ -243,12 +256,13 @@ public final class MajorsDeactivated extends MajorsBase {
         // FAKE: HDFS-DPIZ-BS, Human Development and Family Studies - ???
         // FAKE: HDFS-DLAZ-BS, Human Development and Family Studies - ???
         // FAKE: HDFS-DLEZ-BS, Human Development and Family Studies - ???
+        // FAKE: HDFS-DMHZ-BS, Human Development and Family Studies - ???
         final Major mHDFS = new Major(
                 new int[]{4070, 4073, 4075},
                 new String[]{"HDFS-LEPZ-BS", "HDFS-PISZ-BS", "HDFS-DECZ-BS", "HDFS-DHDZ-BS", "HDFS-DPHZ-BS",
-                        "HDFS-DPIZ-BS", "HDFS-DLAZ-BS", "HDFS-DLEZ-BS", "HDFS-LEPZ-BS"},
+                        "HDFS-DPIZ-BS", "HDFS-DLAZ-BS", "HDFS-DLEZ-BS", "HDFS-LEPZ-BS", "HDFS-DMHZ-BS"},
                 EMPTY_TRACK_ARRAY,
-                "Human Development &amp; Family Studies (Leadership and Entrepreneurial Professions)",
+                "Human Development &amp; Family Studies",
                 MathPlanConstants.PGMS + "human-development-and-family-studies/",
                 ERequirement.CORE_ONLY,
                 IdealFirstTerm.CORE_ONLY);
@@ -328,7 +342,7 @@ public final class MajorsDeactivated extends MajorsBase {
         // FAKE: CMST-DD-BA, Communication Studies - Dual Degree
         final Major mCMST1 = new Major(
                 new int[]{5040, 5041},
-                new String[]{"CMST-TCLZ-BA", "CMST-DD-BA"},
+                new String[]{"CMST-TCLZ-BA", "CMST-DD-BA", "SPCM-TCLZ-BA"},
                 EMPTY_TRACK_ARRAY,
                 "Communication Studies",
                 MathPlanConstants.PGMS + "communication-studies/",
@@ -421,7 +435,7 @@ public final class MajorsDeactivated extends MajorsBase {
         // FAKE: SOCI-DGSZ-BA, Sociology - ???
         final Major mSOCI = new Major(
                 new int[]{5160},
-                new String[]{"SOCI-DGSZ-BA"},
+                new String[]{"SOCI-DGSZ-BA", "SOCI-DRCZ-BA"},
                 EMPTY_TRACK_ARRAY,
                 "Sociology",
                 MathPlanConstants.PGMS + "sociology/",
@@ -479,9 +493,10 @@ public final class MajorsDeactivated extends MajorsBase {
         // 6040: NRRT-BS, Natural Resource Tourism (DEACTIVATED)
         // 6041: NRRT-GLTZ-BS, Natural Resource Tourism - Global Tourism (DEACTIVATED)
         // 6042: NRRT-NRTZ-BS, Natural Resource Tourism - Natural Resource Tourism (DEACTIVATED)
+        // FAKE: NRTM-DNRZ-BS, Natural Resource Tourism
         final Major mNRRT = new Major(
                 new int[]{6043, 6040, 6041, 6042},
-                new String[]{"NRRT-BS", "NRRT-GLTZ-BS", "NRRT-NRTZ-BS"},
+                new String[]{"NRRT-BS", "NRRT-GLTZ-BS", "NRRT-NRTZ-BS", "NRTM-DNRZ-BS"},
                 EMPTY_TRACK_ARRAY,
                 "Natural Resource Tourism",
                 MathPlanConstants.PGMS + "natural-resource-tourism/",
@@ -489,9 +504,49 @@ public final class MajorsDeactivated extends MajorsBase {
                 IdealFirstTerm.IDEAL_171824);
         majors.add(mNRRT);
 
+        // *** Major in Forestry
+        // FRST-BS, Forestry (DEACTIVATED)
+        // FRST-FBUZ-BS, Forestry - Forestry Business (DEACTIVATED)
+        // FRST-FMGZ-BS, Forestry - Forest Management (DEACTIVATED)
+        // FRST-FRFZ-BS, Forestry - Forest Fire Science (DEACTIVATED)
+        final Major mFRST1 = new Major(
+                new int[]{6080},
+                new String[]{"FRST-BS", "FRST-FBUZ-BS", "FRST-FMGZ-BS", "FRST-FRFZ-BS"},
+                new EMajorTrack[]{EMajorTrack.ENVIRONMENTAL_NATURAL_RESOURCES,
+                        EMajorTrack.ORGANIZATION_MANAGEMENT_ENTERPRISE},
+                "Forestry (General)",
+                MathPlanConstants.PGMS + "forest-and-rangeland-stewardship/",
+                ERequirement.M_141,
+                IdealFirstTerm.IDEAL_17_OR_HIGHER);
+        majors.add(mFRST1);
+
+        // FRST-FRBZ-BS, Forestry - Forest Biology (DEACTIVATED)
+        final Major mFRST2 = new Major(
+                new int[]{6081},
+                new String[]{"FRST-FRBZ-BS"},
+                new EMajorTrack[]{EMajorTrack.ENVIRONMENTAL_NATURAL_RESOURCES},
+                "Forest &amp; Rangeland Stewardship (Forest Biology)",
+                MathPlanConstants.PGMS + "forest-and-rangeland-stewardship/",
+                ERequirement.M_155,
+                IdealFirstTerm.IDEAL_17_OR_HIGHER);
+        majors.add(mFRST2);
+
         // ===========================
         // College of Natural Sciences
         // ===========================
+
+        // *** Major in Biochemistry
+        // 7011: BCHM-GBCZ-BS, General Biochemistry (DEACTIVATED)
+        final Major mBCHM = new Major(
+                new int[]{7010, 7011},
+                new String[]{"BCHM-GBCZ-BS"},
+                new EMajorTrack[]{EMajorTrack.HEALTH_LIFE_FOOD_SCIENCES, EMajorTrack.LAND_PLANT_ANIMAL_SCIENCES,
+                        EMajorTrack.MATH_PHYSICAL_SCIENCES_ENGINEERING},
+                "Biochemistry",
+                MathPlanConstants.PGMS + "biochemistry/",
+                ERequirement.M_155_OR_160,
+                IdealFirstTerm.IDEAL_55_OR_60);
+        majors.add(mBCHM);
 
         // *** Major in Chemistry
 
@@ -515,16 +570,33 @@ public final class MajorsDeactivated extends MajorsBase {
         // FAKE: CPSC-DHCZ-BS, Computer Science - ???
         // FAKE: CPSC-DNSZ-BS, Computer Science - ???
         // FAKE: CPSC-DSEZ-BS, Computer Science - ???
+        // FAKE: CPSC-DCCZ-BS, Computer Science - ???
         final Major mCPSC = new Major(
                 new int[]{7040},
                 new String[]{"CPSC-DAIZ-BS", "CPSC-DCSZ-BS", "CPSC-DCYZ-BS", "CPSC-DHCZ-BS", "CPSC-DNSZ-BS",
-                        "CPSC-DSEZ-BS"},
+                        "CPSC-DSEZ-BS", "CPSC-DCCZ-BS"},
                 EMPTY_TRACK_ARRAY,
                 "Computer Science",
                 MathPlanConstants.PGMS + "computer-science/",
                 ERequirement.M_156_OR_160,
                 IdealFirstTerm.IDEAL_56_OR_60);
         majors.add(mCPSC);
+
+        // *** Major in Applied Computing Technology
+
+        // APCT-BS, Applied Computing Technology
+        // APCT-CPEZ-BS, Applied Computing Technology
+        // APCT-CPTZ-BS, Applied Computing Technology
+        // APCT-HCCZ-BS, Applied Computing Technology
+        final Major mAPCT = new Major(
+                new int[]{-1},
+                new String[]{"APCT-BS", "APCT-CPEZ-BS", "APCT-CPTZ-BS", "APCT-HCCZ-BS"},
+                EMPTY_TRACK_ARRAY,
+                "Applied Computing Technology",
+                MathPlanConstants.PGMS + "computer-science/",
+                ERequirement.M_160,
+                IdealFirstTerm.IDEAL_242526);
+        majors.add(mAPCT);
 
         // *** Major in Data Science
         // 7051: DSCI-DCMZ-BS, Data Science - Computer Science (old program code)
