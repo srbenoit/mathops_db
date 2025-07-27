@@ -107,7 +107,7 @@ final class TestTermLogic {
             }
 
             // Make sure the PostgreSQL connection is using a TEST schema
-            if (informixFacet.data.use != EDbUse.TEST) {
+            if (informixFacet.data.use != EDbUse.TESTING) {
                 throw new IllegalArgumentException(TestRes.fmt(TestRes.ERR_NOT_CONNECTED_TO_TEST,
                         informixFacet.data.use));
             }

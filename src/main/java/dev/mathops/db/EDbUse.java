@@ -1,48 +1,57 @@
 package dev.mathops.db;
 
-import java.util.Locale;
-
 /**
  * Enumeration of supported database uses.
  */
 public enum EDbUse {
 
     /** Production data. */
-    PROD,
+    PRODUCTION("prod"),
 
     /** Development data. */
-    DEV,
+    DEVELOPMENT("dev"),
 
     /** TEst data. */
-    TEST,
+    TESTING("test"),
 
     /** Live registration database. */
-    LIVE,
+    LIVE_PRODUCTION("live"),
 
     /** Live registration database, development instance. */
-    LIVE_DEV,
+    LIVE_DEVELOPMENT("live_dev"),
 
     /** Operational data store. */
-    ODS,
+    ODS_PRODUCTION("ods"),
 
     /** Operational data store, development instance. */
-    ODS_DEV;
+    ODS_DEVELOPMENT("ods_dev");
+
+    /** The use name. */
+    public final String name;
+
+    /**
+     * Constructs a new {@code EDbUse}.
+     *
+     * @param theName the use name
+     */
+    EDbUse(final String theName) {
+
+        this.name = theName;
+    }
 
     /**
      * Finds the {@code EDbUse} with a particular name.
      *
-     * @param name the name
+     * @param theName the name
      * @return the corresponding {@code EDbUse}; {@code null} if none corresponds to the name
      */
-    public static EDbUse forName(final String name) {
+    public static EDbUse forName(final String theName) {
 
-        final String uppercase = name.toUpperCase(Locale.ROOT);
-
+        final EDbUse[] values = values();
         EDbUse result = null;
 
-        for (final EDbUse value : values()) {
-            final String valueName = value.name();
-            if (valueName.equals(uppercase)) {
+        for (final EDbUse value : values) {
+            if (value.name.equals(theName)) {
                 result = value;
                 break;
             }

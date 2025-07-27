@@ -11,8 +11,6 @@ import dev.mathops.db.cfg.Facet;
 import dev.mathops.db.cfg.Login;
 import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.rec.main.FacilityHoursRec;
-import dev.mathops.db.reclogic.main.FacilityHoursLogic;
-import dev.mathops.db.reclogic.main.TestRes;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -144,7 +142,7 @@ final class TestFacilityHoursLogic {
 
         // Make sure the connection is accessing the TEST database
         final Facet facet = profile.getFacet(ESchema.LEGACY);
-        if (facet.data.use != EDbUse.TEST) {
+        if (facet.data.use != EDbUse.TESTING) {
             throw new IllegalArgumentException(TestRes.fmt(TestRes.ERR_NOT_CONNECTED_TO_TEST, facet.data.use));
         }
 
