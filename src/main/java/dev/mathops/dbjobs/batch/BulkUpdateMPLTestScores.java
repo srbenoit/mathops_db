@@ -9,6 +9,7 @@ import dev.mathops.db.ESchema;
 import dev.mathops.db.cfg.DatabaseConfig;
 import dev.mathops.db.cfg.Login;
 import dev.mathops.db.cfg.Profile;
+import dev.mathops.db.logic.mathplan.MathPlanConstants;
 import dev.mathops.db.logic.mathplan.MathPlanLogic;
 import dev.mathops.db.logic.mathplan.StudentMathPlan;
 import dev.mathops.db.logic.mathplan.majors.Major;
@@ -76,13 +77,16 @@ public final class BulkUpdateMPLTestScores {
     private static final Set<String> MAJORS_NEEDING_MORE;
 
     /** Debug flag - true to skip (but print) updates; false to actually perform updates. */
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     /** The test code. */
     private static final String TEST_CODE = "MPL";
 
     /** A commonly used integer. */
     private static final Integer ONE = Integer.valueOf(1);
+
+    /** A commonly used integer. */
+    private static final Integer TWO = Integer.valueOf(2);
 
     /** The database profile through which to access the database. */
     private final Profile profile;
@@ -174,34 +178,37 @@ public final class BulkUpdateMPLTestScores {
         report.add(msg2);
         Log.fine(msg2);
 
-        final Map<String, RawStmathplan> latest1 = new HashMap<>(25000);
+        final Map<String, RawStmathplan> latestWWLCM5q1 = new HashMap<>(25000);
 
-        // Find the most recent "WLCM5" row with survey_nbr='1', use that as date/time of Math Plan completion - we
-        // scan for the most recent such record.
+        // Find the most recent "WLCM5" row with survey_nbr='1' or '2', use that as date/time of Math Plan completion;
+        // we scan for the most recent such record.
 
         for (final RawStmathplan row : allStMathPlan) {
-            if ("WLCM5".equals(row.version) && ONE.equals(row.surveyNbr)) {
+            if (MathPlanConstants.INTENTIONS_PROFILE.equals(row.version) && ONE.equals(row.surveyNbr)) {
                 final LocalDateTime when = row.getWhen();
-                final RawStmathplan existing1 = latest1.get(row.stuId);
+                if (when == null) {
+                    continue;
+                }
+                final RawStmathplan existing1 = latestWWLCM5q1.get(row.stuId);
                 if (existing1 == null) {
-                    latest1.put(row.stuId, row);
+                    latestWWLCM5q1.put(row.stuId, row);
                 } else {
                     final LocalDateTime existingWhen = existing1.getWhen();
                     if (existingWhen == null || when.isAfter(existingWhen)) {
-                        latest1.put(row.stuId, row);
+                        latestWWLCM5q1.put(row.stuId, row);
                     }
                 }
             }
         }
 
-        final int size1 = latest1.size();
+        final int size1 = latestWWLCM5q1.size();
         final String size1Str = Integer.toString(size1);
         final String msg3 = HtmlBuilder.concat("    Found ", size1Str, " 'WLCM5' question 1 responses");
         Log.fine(msg3);
         report.add(msg3);
 
         final Collection<String> stuIds = new HashSet<>(25000);
-        final Set<String> keys1 = latest1.keySet();
+        final Set<String> keys1 = latestWWLCM5q1.keySet();
         stuIds.addAll(keys1);
 
         final int sizeAll = stuIds.size();
@@ -273,7 +280,7 @@ public final class BulkUpdateMPLTestScores {
                             } else {
                                 wantNote = " (" + plan.nextSteps.nextStep + ")";
                             }
-                        } else if (latest1.containsKey(stuId)) {
+                        } else if (latestWWLCM5q1.containsKey(stuId)) {
                             if (plan.stuStatus.isPlacementCompleted()) {
                                 wantNote = " (not needed, already done)";
                                 wantValue = "1";

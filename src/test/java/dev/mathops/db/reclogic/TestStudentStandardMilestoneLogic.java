@@ -119,7 +119,7 @@ final class TestStudentStandardMilestoneLogic {
 
             // Make sure the Informix connection is accessing the TEST database
             final Facet facet = informixProfile.getFacet(ESchema.LEGACY);
-            if (facet.data.use != EDbUse.TESTING) {
+            if (facet.data.use != EDbUse.TEST) {
                 throw new IllegalArgumentException(TestRes.fmt(TestRes.ERR_NOT_CONNECTED_TO_TEST, facet.data.use));
             }
 

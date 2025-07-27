@@ -5,6 +5,7 @@ import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
 import dev.mathops.db.DbConnection;
 import dev.mathops.db.ESchema;
+import dev.mathops.db.logic.mathplan.MathPlanConstants;
 import dev.mathops.db.old.rawrecord.RawStmathplan;
 import dev.mathops.text.builder.SimpleBuilder;
 
@@ -175,11 +176,11 @@ public enum RawStmathplanLogic {
 
         final Map<String, List<RawStmathplan>> map = new HashMap<>(1);
 
-        map.put("WLCM1", makeWLCM1(studentId, appTerm, programCodes));
-        map.put("WLCM3", makeWLCM3(studentId, appTerm));
-        map.put("WLCM4", makeWLCM4(studentId, appTerm));
-        map.put("WLCM5", makeWLCM5(studentId, appTerm));
-        map.put("WLCM6", makeWLCM6(studentId, appTerm));
+        map.put(MathPlanConstants.MAJORS_PROFILE, makeWLCM1(studentId, appTerm, programCodes));
+        map.put(MathPlanConstants.ONLY_RECOM_PROFILE, makeWLCM3(studentId, appTerm));
+        map.put(MathPlanConstants.EXISTING_PROFILE, makeWLCM4(studentId, appTerm));
+        map.put(MathPlanConstants.INTENTIONS_PROFILE, makeWLCM5(studentId, appTerm));
+        map.put(MathPlanConstants.REVIEWED_PROFILE, makeWLCM6(studentId, appTerm));
 
         DATA.put(Integer.toString(studentId), map);
     }
@@ -200,8 +201,9 @@ public enum RawStmathplanLogic {
 
         final String stuIdString = Integer.toString(studentId);
         for (final int pc : programCodes) {
-            result.add(new RawStmathplan(stuIdString, Integer.valueOf(studentId), appTerm, "WLCM1", now.toLocalDate(),
-                    Integer.valueOf(pc), "Y", Integer.valueOf(TemporalUtils.minuteOfDay(now)), null));
+            result.add(new RawStmathplan(stuIdString, Integer.valueOf(studentId), appTerm,
+                    MathPlanConstants.MAJORS_PROFILE, now.toLocalDate(), Integer.valueOf(pc), "Y",
+                    Integer.valueOf(TemporalUtils.minuteOfDay(now)), null));
         }
 
         return result;
@@ -221,8 +223,9 @@ public enum RawStmathplanLogic {
 
         final LocalDateTime now = LocalDateTime.now();
 
-        result.add(new RawStmathplan(Integer.toString(studentId), Integer.valueOf(studentId), appTerm, "WLCM3",
-                now.toLocalDate(), Integer.valueOf(1), "Y", Integer.valueOf(TemporalUtils.minuteOfDay(now)), null));
+        result.add(new RawStmathplan(Integer.toString(studentId), Integer.valueOf(studentId), appTerm,
+                MathPlanConstants.ONLY_RECOM_PROFILE, now.toLocalDate(), Integer.valueOf(1), "Y",
+                Integer.valueOf(TemporalUtils.minuteOfDay(now)), null));
 
         return result;
     }
@@ -240,8 +243,9 @@ public enum RawStmathplanLogic {
 
         final LocalDateTime now = LocalDateTime.now();
 
-        result.add(new RawStmathplan(Integer.toString(studentId), Integer.valueOf(studentId), appTerm, "WLCM4",
-                now.toLocalDate(), Integer.valueOf(1), "Y", Integer.valueOf(TemporalUtils.minuteOfDay(now)), null));
+        result.add(new RawStmathplan(Integer.toString(studentId), Integer.valueOf(studentId), appTerm,
+                MathPlanConstants.EXISTING_PROFILE, now.toLocalDate(), Integer.valueOf(1), "Y",
+                Integer.valueOf(TemporalUtils.minuteOfDay(now)), null));
 
         return result;
     }
@@ -259,13 +263,13 @@ public enum RawStmathplanLogic {
 
         final LocalDateTime now = LocalDateTime.now();
 
-        result.add(new RawStmathplan(Integer.toString(studentId), Integer.valueOf(studentId), appTerm, "WLCM5",
-                now.toLocalDate(), Integer.valueOf(1), studentId % 2 == 0 ? "N" : "Y",
-                Integer.valueOf(TemporalUtils.minuteOfDay(now)), null));
+        result.add(new RawStmathplan(Integer.toString(studentId), Integer.valueOf(studentId), appTerm,
+                MathPlanConstants.INTENTIONS_PROFILE, now.toLocalDate(), Integer.valueOf(1),
+                studentId % 2 == 0 ? "N" : "Y", Integer.valueOf(TemporalUtils.minuteOfDay(now)), null));
 
-        result.add(new RawStmathplan(Integer.toString(studentId), Integer.valueOf(studentId), appTerm, "WLCM5",
-                now.toLocalDate(), Integer.valueOf(2), studentId / 2 % 2 == 0 ? "N" : "Y",
-                Integer.valueOf(TemporalUtils.minuteOfDay(now)), null));
+        result.add(new RawStmathplan(Integer.toString(studentId), Integer.valueOf(studentId), appTerm,
+                MathPlanConstants.INTENTIONS_PROFILE, now.toLocalDate(), Integer.valueOf(2),
+                studentId / 2 % 2 == 0 ? "N" : "Y", Integer.valueOf(TemporalUtils.minuteOfDay(now)), null));
 
         return result;
     }
@@ -283,8 +287,9 @@ public enum RawStmathplanLogic {
 
         final LocalDateTime now = LocalDateTime.now();
 
-        result.add(new RawStmathplan(Integer.toString(studentId), Integer.valueOf(studentId), appTerm, "WLCM6",
-                now.toLocalDate(), Integer.valueOf(1), "Y", Integer.valueOf(TemporalUtils.minuteOfDay(now)), null));
+        result.add(new RawStmathplan(Integer.toString(studentId), Integer.valueOf(studentId), appTerm,
+                MathPlanConstants.REVIEWED_PROFILE, now.toLocalDate(), Integer.valueOf(1), "Y",
+                Integer.valueOf(TemporalUtils.minuteOfDay(now)), null));
 
         return result;
     }

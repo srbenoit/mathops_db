@@ -1,57 +1,50 @@
 package dev.mathops.db;
 
+import java.util.Locale;
+
 /**
  * Enumeration of supported database uses.
  */
 public enum EDbUse {
 
+    // NOTE: The names of enumerated values should not be changed - they are used directly in config files.
+
     /** Production data. */
-    PRODUCTION("prod"),
+    PROD,
 
     /** Development data. */
-    DEVELOPMENT("dev"),
+    DEV,
 
-    /** TEst data. */
-    TESTING("test"),
+    /** Test data. */
+    TEST,
 
     /** Live registration database. */
-    LIVE_PRODUCTION("live"),
+    LIVE,
 
     /** Live registration database, development instance. */
-    LIVE_DEVELOPMENT("live_dev"),
+    LIVE_DEV,
 
     /** Operational data store. */
-    ODS_PRODUCTION("ods"),
+    ODS,
 
     /** Operational data store, development instance. */
-    ODS_DEVELOPMENT("ods_dev");
-
-    /** The use name. */
-    public final String name;
-
-    /**
-     * Constructs a new {@code EDbUse}.
-     *
-     * @param theName the use name
-     */
-    EDbUse(final String theName) {
-
-        this.name = theName;
-    }
+    ODS_DEV;
 
     /**
      * Finds the {@code EDbUse} with a particular name.
      *
-     * @param theName the name
+     * @param name the name
      * @return the corresponding {@code EDbUse}; {@code null} if none corresponds to the name
      */
-    public static EDbUse forName(final String theName) {
+    public static EDbUse forName(final String name) {
 
-        final EDbUse[] values = values();
+        final String uppercase = name.toUpperCase(Locale.ROOT);
+
         EDbUse result = null;
 
-        for (final EDbUse value : values) {
-            if (value.name.equals(theName)) {
+        for (final EDbUse value : values()) {
+            final String valueName = value.name();
+            if (valueName.equals(uppercase)) {
                 result = value;
                 break;
             }

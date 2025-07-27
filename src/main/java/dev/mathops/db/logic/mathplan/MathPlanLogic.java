@@ -104,9 +104,13 @@ public enum MathPlanLogic {
                 } else {
                     final Map<Integer, RawStmathplan> q4 = studentData.getLatestMathPlanResponsesByPage(
                             MathPlanConstants.INTENTIONS_PROFILE);
-                    if (q4.isEmpty()) {
+                    final RawStmathplan row = q4.get(ONE);
+                    if (row == null) {
                         result = EMathPlanStatus.REVIEWED_EXISTING;
                     } else {
+
+
+
                         result = q4.containsKey(ONE) ? EMathPlanStatus.PLAN_COMPLETED_PLACEMENT_NOT_NEEDED
                                 : EMathPlanStatus.PLAN_COMPLETED_PLACEMENT_NEEDED;
                     }
