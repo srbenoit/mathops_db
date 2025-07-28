@@ -159,7 +159,7 @@ public abstract class TermLogic implements IRecLogic<TermRec> {
         public boolean insert(final Cache cache, final TermRec record) throws SQLException {
 
             if (record.term == null || record.startDate == null || record.endDate == null
-                    || record.academicYear == null || record.activeIndex == null) {
+                || record.academicYear == null || record.activeIndex == null) {
                 throw new SQLException("Null value in required field.");
             }
 
@@ -369,25 +369,28 @@ public abstract class TermLogic implements IRecLogic<TermRec> {
         private static final String FLD_TERM = "term";
 
         /** A field name. */
-        private static final String FLD_START_DATE = "start_date";
+        private static final String FLD_TERM_YR = "term_yr";
 
         /** A field name. */
-        private static final String FLD_END_DATE = "end_date";
+        private static final String FLD_START_DT = "start_dt";
 
         /** A field name. */
-        private static final String FLD_ACADEMIC_YEAR = "academic_year";
+        private static final String FLD_END_DT = "end_dt";
+
+        /** A field name. */
+        private static final String FLD_ACADEMIC_YR = "academic_yr";
 
         /** A field name. */
         private static final String FLD_ACTIVE_INDEX = "active_index";
 
         /** A field name. */
-        private static final String FLD_DROP_DEADLINE = "drop_deadline";
+        private static final String FLD_I_DEADLINE_DT = "i_deadline_dt";
 
         /** A field name. */
-        private static final String FLD_WITHDRAW_DEADLINE = "withdraw_deadline";
+        private static final String FLD_W_DROP_DT = "w_drop_dt";
 
         /** A field name. */
-        private static final String FLD_INC_DEADLINE = "inc_deadline";
+        private static final String FLD_DROP_DT = "drop_dt";
 
         /**
          * Constructs a new {@code Postgres}.
@@ -395,6 +398,18 @@ public abstract class TermLogic implements IRecLogic<TermRec> {
         Postgres() {
 
             super();
+        }
+
+        /**
+         * Gets the qualified table name for a LEGACY table based on the Cache being used.
+         *
+         * @param cache the data cache
+         */
+        public static String getTableName(final Cache cache) {
+
+            final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+            return schemaPrefix == null ? "which_db" : (schemaPrefix + ".which_db");
         }
 
         /**
@@ -409,19 +424,37 @@ public abstract class TermLogic implements IRecLogic<TermRec> {
         public boolean insert(final Cache cache, final TermRec record) throws SQLException {
 
             if (record.term == null || record.startDate == null || record.endDate == null
-                    || record.academicYear == null || record.activeIndex == null) {
+                || record.academicYear == null || record.activeIndex == null) {
                 throw new SQLException("Null value in required field.");
             }
 
-            final String schemaPrefix = cache.getSchemaPrefix(ESchema.MAIN);
+            final String active;
+            final int index = record.activeIndex.intValue();
+            if (index == 0) {
+                active = "Y";
+            } else if (index == 1) {
+                active = "X";
+            } else if (index == 2) {
+                active = "2";
+            } else if (index == 3) {
+                active = "3";
+            } else if (index == -1) {
+                active = "P";
+            } else {
+                active = "N";
+            }
+
+            final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
 
             final String sql = SimpleBuilder.concat("INSERT INTO ", schemaPrefix, ".term ",
-                    "(term,start_date,end_date,academic_year,active_index,",
-                    "drop_deadline,withdraw_deadline,inc_deadline) VALUES (",
-                    sqlIntegerValue(record.term.toNumeric()), ",",
+                    "(term,term_yr,start_dt,end_dt,academic_yr,",
+                    "ctrl_enforce,active,active_index,drop_dt,w_drop_dt,i_deadline_dt) VALUES (",
+                    sqlStringValue(record.term.termCode), ",",
+                    sqlIntegerValue(record.term.shortYear), ",",
                     sqlDateValue(record.startDate), ",",
                     sqlDateValue(record.endDate), ",",
-                    sqlStringValue(record.academicYear), ",",
+                    sqlStringValue(record.academicYear), ",'N',",
+                    sqlStringValue(active), ",",
                     sqlIntegerValue(record.activeIndex), ",",
                     sqlDateValue(record.dropDeadline), ",",
                     sqlDateValue(record.withdrawDeadline), ",",
@@ -441,10 +474,11 @@ public abstract class TermLogic implements IRecLogic<TermRec> {
         @Override
         public boolean delete(final Cache cache, final TermRec record) throws SQLException {
 
-            final String schemaPrefix = cache.getSchemaPrefix(ESchema.MAIN);
+            final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
 
             final String sql = SimpleBuilder.concat("DELETE FROM ", schemaPrefix, ".term WHERE term=",
-                    sqlIntegerValue(record.term.toNumeric()));
+                    sqlStringValue(record.term.termCode), " AND term_yr=",
+                    sqlIntegerValue(record.term.shortYear));
 
             return doUpdateOneRow(cache, ESchema.LEGACY, sql);
         }
@@ -459,7 +493,7 @@ public abstract class TermLogic implements IRecLogic<TermRec> {
         @Override
         public List<TermRec> queryAll(final Cache cache) throws SQLException {
 
-            final String schemaPrefix = cache.getSchemaPrefix(ESchema.MAIN);
+            final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
 
             final String sql = SimpleBuilder.concat("SELECT * FROM ", schemaPrefix, ".term");
 
@@ -478,7 +512,7 @@ public abstract class TermLogic implements IRecLogic<TermRec> {
         @Override
         public TermRec queryByIndex(final Cache cache, final int termIndex) throws SQLException {
 
-            final String schemaPrefix = cache.getSchemaPrefix(ESchema.MAIN);
+            final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
 
             final String sql = SimpleBuilder.concat("SELECT * FROM ", schemaPrefix,
                     ".term WHERE active_index=", sqlIntegerValue(termIndex));
@@ -496,7 +530,7 @@ public abstract class TermLogic implements IRecLogic<TermRec> {
         @Override
         public List<TermRec> getFutureTerms(final Cache cache) throws SQLException {
 
-            final String schemaPrefix = cache.getSchemaPrefix(ESchema.MAIN);
+            final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
 
             final String sql = SimpleBuilder.concat("SELECT * FROM ", schemaPrefix,
                     ".term WHERE active_index>0");
@@ -514,7 +548,7 @@ public abstract class TermLogic implements IRecLogic<TermRec> {
         @Override
         public TermRec queryActive(final Cache cache) throws SQLException {
 
-            final String schemaPrefix = cache.getSchemaPrefix(ESchema.MAIN);
+            final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
 
             final String sql = SimpleBuilder.concat("SELECT * FROM ", schemaPrefix,
                     ".term WHERE active_index=0");
@@ -532,7 +566,7 @@ public abstract class TermLogic implements IRecLogic<TermRec> {
         @Override
         public TermRec queryNext(final Cache cache) throws SQLException {
 
-            final String schemaPrefix = cache.getSchemaPrefix(ESchema.MAIN);
+            final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
 
             final String sql = SimpleBuilder.concat("SELECT * FROM ", schemaPrefix,
                     ".term WHERE active_index=1");
@@ -550,7 +584,7 @@ public abstract class TermLogic implements IRecLogic<TermRec> {
         @Override
         public TermRec queryPrior(final Cache cache) throws SQLException {
 
-            final String schemaPrefix = cache.getSchemaPrefix(ESchema.MAIN);
+            final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
 
             final String sql = SimpleBuilder.concat("SELECT * FROM ", schemaPrefix,
                     ".term WHERE active_index=-1");
@@ -569,10 +603,10 @@ public abstract class TermLogic implements IRecLogic<TermRec> {
         @Override
         public TermRec query(final Cache cache, final TermKey termKey) throws SQLException {
 
-            final String schemaPrefix = cache.getSchemaPrefix(ESchema.MAIN);
+            final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
 
             final String sql = SimpleBuilder.concat("SELECT * FROM ", schemaPrefix, ".term WHERE term=",
-                    sqlIntegerValue(termKey.toNumeric()));
+                    sqlStringValue(termKey.termCode), " AND term_yr=", sqlIntegerValue(termKey.shortYear));
 
             return doSingleQuery(cache, ESchema.LEGACY, sql);
         }
@@ -587,17 +621,29 @@ public abstract class TermLogic implements IRecLogic<TermRec> {
         @Override
         public TermRec fromResultSet(final ResultSet rs) throws SQLException {
 
-            final TermKey theTermKey = new TermKey(getIntegerField(rs, FLD_TERM));
-            final LocalDate theStartDate = getDateField(rs, FLD_START_DATE);
-            final LocalDate theEndDate = getDateField(rs, FLD_END_DATE);
-            final String theAcademicYear = getStringField(rs, FLD_ACADEMIC_YEAR);
+            final String term = getStringField(rs, FLD_TERM);
+            final Integer termYr = getIntegerField(rs, FLD_TERM_YR);
+
+            if (term == null || termYr == null) {
+                throw new SQLException("Term record found with null term or term year");
+            }
+
+            final ETermName termName = ETermName.forName(term);
+            if (termName == null) {
+                throw new SQLException("Term record found with invalid term: " + term);
+            }
+
+            final TermKey theTermKey = new TermKey(termName, 2000 + termYr.intValue());
+            final LocalDate theStartDate = getDateField(rs, FLD_START_DT);
+            final LocalDate theEndDate = getDateField(rs, FLD_END_DT);
+            final String theAcademicYear = getStringField(rs, FLD_ACADEMIC_YR);
             final Integer theActiveIndex = getIntegerField(rs, FLD_ACTIVE_INDEX);
-            final LocalDate theDropDeadline = getDateField(rs, FLD_DROP_DEADLINE);
-            final LocalDate theWithdrawDeadline = getDateField(rs, FLD_WITHDRAW_DEADLINE);
-            final LocalDate theIcnDeadline = getDateField(rs, FLD_INC_DEADLINE);
+            final LocalDate theDropDeadline = getDateField(rs, FLD_DROP_DT);
+            final LocalDate theWithdrawDeadline = getDateField(rs, FLD_W_DROP_DT);
+            final LocalDate theIncDeadline = getDateField(rs, FLD_I_DEADLINE_DT);
 
             return new TermRec(theTermKey, theStartDate, theEndDate, theAcademicYear, theActiveIndex, theDropDeadline,
-                    theWithdrawDeadline, theIcnDeadline);
+                    theWithdrawDeadline, theIncDeadline);
         }
     }
 }

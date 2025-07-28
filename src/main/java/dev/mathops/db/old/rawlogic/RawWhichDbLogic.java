@@ -26,6 +26,18 @@ public enum RawWhichDbLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "which_db" : (schemaPrefix + ".which_db");
+    }
+
+    /**
      * Gets the first record found in a query of all records (there should be only one).
      *
      * @param cache the data cache
@@ -36,10 +48,12 @@ public enum RawWhichDbLogic {
 
         RawWhichDb result = null;
 
+        final String tableName = getTableName(cache);
+
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
-             final ResultSet rs = stmt.executeQuery("SELECT * FROM which_db")) {
+             final ResultSet rs = stmt.executeQuery("SELECT * FROM " + tableName)) {
 
             if (rs.next()) {
                 result = RawWhichDb.fromResultSet(rs);
