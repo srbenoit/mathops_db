@@ -48,6 +48,18 @@ public enum RawCusectionLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "cusection" : (schemaPrefix + ".cusection");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -61,8 +73,10 @@ public enum RawCusectionLogic {
             throw new SQLException("Null value in primary key field.");
         }
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "INSERT INTO cusection (course,sect,unit,term,term_yr,timeout,re_mastery_score,ue_mastery_score,",
+                "INSERT INTO ", tableName, " (course,sect,unit,term,term_yr,timeout,re_mastery_score,ue_mastery_score,",
                 "hw_mastery_score,hw_moveon_score,nbr_atmpts_allow,atmpts_per_review,first_test_dt,last_test_dt,",
                 "begin_test_period,end_test_period,coupon_cost,last_coupon_dt,show_test_window,unproctored_exam,",
                 "re_points_ontime) VALUES (",
@@ -115,8 +129,10 @@ public enum RawCusectionLogic {
      */
     public static boolean delete(final Cache cache, final RawCusection record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM cusection ",
-                "WHERE course=", LogicUtils.sqlStringValue(record.course),
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE course=", LogicUtils.sqlStringValue(record.course),
                 "  AND sect=", LogicUtils.sqlStringValue(record.sect),
                 "  AND unit=", LogicUtils.sqlIntegerValue(record.unit),
                 "  AND term=", LogicUtils.sqlStringValue(record.termKey.termCode),
@@ -148,7 +164,9 @@ public enum RawCusectionLogic {
      */
     public static List<RawCusection> queryAll(final Cache cache) throws SQLException {
 
-        return executeListQuery(cache, "SELECT * FROM cusection");
+        final String tableName = getTableName(cache);
+
+        return executeListQuery(cache, "SELECT * FROM " + tableName);
     }
 
     /**
@@ -161,7 +179,9 @@ public enum RawCusectionLogic {
      */
     public static List<RawCusection> queryByTerm(final Cache cache, final TermKey termKey) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM cusection",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
                 " WHERE term=", LogicUtils.sqlStringValue(termKey.termCode),
                 "   AND term_yr=", LogicUtils.sqlIntegerValue(termKey.shortYear));
 

@@ -33,6 +33,18 @@ public enum RawPlcFeeLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "plc_fee" : (schemaPrefix + ".plc_fee");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -46,8 +58,10 @@ public enum RawPlcFeeLogic {
             throw new SQLException("Null value in primary key or required field.");
         }
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "INSERT INTO plc_fee (stu_id,course,exam_dt,bill_dt) VALUES (",
+                "INSERT INTO ", tableName, " (stu_id,course,exam_dt,bill_dt) VALUES (",
                 LogicUtils.sqlStringValue(record.stuId), ",",
                 LogicUtils.sqlStringValue(record.course), ",",
                 LogicUtils.sqlDateValue(record.examDt), ",",
@@ -80,8 +94,10 @@ public enum RawPlcFeeLogic {
      */
     public static boolean delete(final Cache cache, final RawPlcFee record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM plc_fee ",
-                "WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
                 "  AND course=", LogicUtils.sqlStringValue(record.course));
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
@@ -110,7 +126,9 @@ public enum RawPlcFeeLogic {
      */
     public static List<RawPlcFee> queryAll(final Cache cache) throws SQLException {
 
-        final String sql = "SELECT * FROM plc_fee";
+        final String tableName = getTableName(cache);
+
+        final String sql = "SELECT * FROM " + tableName;
 
         final List<RawPlcFee> result = new ArrayList<>(500);
 
@@ -137,10 +155,12 @@ public enum RawPlcFeeLogic {
      * @return the complete set of records in the database
      * @throws SQLException if there is an error accessing the database
      */
-    public static RawPlcFee queryByStudent(final Cache cache, final String stuId)
-            throws SQLException {
+    public static RawPlcFee queryByStudent(final Cache cache, final String stuId) throws SQLException {
 
-        return executeSingleQuery(cache, "SELECT * FROM plc_fee WHERE stu_id=" + LogicUtils.sqlStringValue(stuId));
+        final String tableName = getTableName(cache);
+
+        return executeSingleQuery(cache,
+                "SELECT * FROM " + tableName + " WHERE stu_id=" + LogicUtils.sqlStringValue(stuId));
     }
 
     /**
@@ -152,7 +172,9 @@ public enum RawPlcFeeLogic {
      */
     public static LocalDate queryMostRecentBillDate(final Cache cache) throws SQLException {
 
-        final String sql = "SELECT MAX(bill_dt) FROM plc_fee";
+        final String tableName = getTableName(cache);
+
+        final String sql = "SELECT MAX(bill_dt) FROM " + tableName;
 
         LocalDate result = null;
 

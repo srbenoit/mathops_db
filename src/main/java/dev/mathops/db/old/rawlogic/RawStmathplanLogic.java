@@ -295,6 +295,18 @@ public enum RawStmathplanLogic {
     }
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "stmathplan" : (schemaPrefix + ".stmathplan");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -309,9 +321,10 @@ public enum RawStmathplanLogic {
             throw new SQLException("Null value in primary key or required field.");
         }
 
-        final String sql = SimpleBuilder.concat("INSERT INTO stmathplan (",
-                "stu_id,pidm,apln_term,version,exam_dt,survey_nbr,stu_answer,",
-                "finish_time,session) VALUES (",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("INSERT INTO ", tableName,
+                " (stu_id,pidm,apln_term,version,exam_dt,survey_nbr,stu_answer,finish_time,session) VALUES (",
                 LogicUtils.sqlStringValue(record.stuId), ",",
                 LogicUtils.sqlIntegerValue(record.pidm), ",",
                 LogicUtils.sqlStringValue(record.aplnTerm), ",",
@@ -347,13 +360,14 @@ public enum RawStmathplanLogic {
      * @return {@code true} if successful; {@code false} if not
      * @throws SQLException if there is an error accessing the database
      */
-    public static boolean delete(final Cache cache, final RawStmathplan record)
-            throws SQLException {
+    public static boolean delete(final Cache cache, final RawStmathplan record) throws SQLException {
 
         final boolean result;
 
-        final String sql = SimpleBuilder.concat("DELETE FROM stmathplan ",
-                "WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
                 " AND version=", LogicUtils.sqlStringValue(record.version),
                 " AND exam_dt=", LogicUtils.sqlDateValue(record.examDt),
                 " AND finish_time=", LogicUtils.sqlIntegerValue(record.finishTime),
@@ -385,7 +399,9 @@ public enum RawStmathplanLogic {
      */
     public static List<RawStmathplan> queryAll(final Cache cache) throws SQLException {
 
-        return executeQuery(cache, "SELECT * FROM stmathplan");
+        final String tableName = getTableName(cache);
+
+        return executeQuery(cache, "SELECT * FROM " + tableName);
     }
 
     /**
@@ -398,7 +414,9 @@ public enum RawStmathplanLogic {
      */
     public static List<RawStmathplan> queryByStudent(final Cache cache, final String stuId) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM stmathplan ",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
                 " WHERE stu_id=", LogicUtils.sqlStringValue(stuId));
 
         return executeQuery(cache, sql);
@@ -422,7 +440,9 @@ public enum RawStmathplanLogic {
         if (studentId.startsWith("99")) {
             result = queryLatestByTestStudentPage(studentId, pageId);
         } else {
-            final String sql = SimpleBuilder.concat("SELECT * FROM stmathplan ",
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
                     " WHERE stu_id=", LogicUtils.sqlStringValue(studentId),
                     "   AND version=", LogicUtils.sqlStringValue(pageId),
                     "  AND exam_dt IN ",
@@ -462,8 +482,9 @@ public enum RawStmathplanLogic {
         if (pidm.intValue() >= 990000000) {
             result = queryLatestByTestStudentPage(pidm, pageId);
         } else {
+            final String tableName = getTableName(cache);
 
-            final String sql = SimpleBuilder.concat("SELECT * FROM stmathplan ",
+            final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
                     " WHERE pidm=", LogicUtils.sqlIntegerValue(pidm),
                     "   AND version=", LogicUtils.sqlStringValue(pageId),
                     "  AND exam_dt IN ",
@@ -503,8 +524,10 @@ public enum RawStmathplanLogic {
             // Don't delete data for test IDs
             result = false;
         } else {
-            final String sql = SimpleBuilder.concat("DELETE FROM stmathplan ",
-                    "WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                    " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
                     "  AND version=", LogicUtils.sqlStringValue(pageId));
 
             Log.info(sql);
@@ -548,7 +571,9 @@ public enum RawStmathplanLogic {
             earliest = today.minus(Period.ofDays(numDays - 1));
         }
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM stmathplan WHERE exam_dt>=",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE exam_dt>=",
                 LogicUtils.sqlDateValue(earliest));
 
         final List<RawStmathplan> all = executeQuery(cache, sql);

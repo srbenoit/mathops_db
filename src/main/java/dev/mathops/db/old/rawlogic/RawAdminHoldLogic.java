@@ -214,6 +214,18 @@ public enum RawAdminHoldLogic {
     }
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "admin_hold" : (schemaPrefix + ".admin_hold");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -228,6 +240,8 @@ public enum RawAdminHoldLogic {
         if (record.stuId.startsWith("99")) {
             result = false;
         } else {
+            final String tableName = getTableName(cache);
+
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
             try {
@@ -235,7 +249,8 @@ public enum RawAdminHoldLogic {
 
                 if (conn.getProduct() == EDbProduct.POSTGRESQL) {
                     sql = SimpleBuilder.concat(
-                            "INSERT INTO admin_hold (stu_id,hold_id,sev_admin_hold,times_display,create_dt) VALUES (",
+                            "INSERT INTO ", tableName,
+                            " (stu_id,hold_id,sev_admin_hold,times_display,create_dt) VALUES (",
                             LogicUtils.sqlStringValue(record.stuId), ",",
                             LogicUtils.sqlStringValue(record.holdId), ",",
                             LogicUtils.sqlStringValue(record.sevAdminHold), ",",
@@ -243,7 +258,8 @@ public enum RawAdminHoldLogic {
                             LogicUtils.sqlPgDateValue(record.createDt), ")");
                 } else {
                     sql = SimpleBuilder.concat(
-                            "INSERT INTO admin_hold (stu_id,hold_id,sev_admin_hold,times_display,create_dt) VALUES (",
+                            "INSERT INTO ", tableName,
+                            " (stu_id,hold_id,sev_admin_hold,times_display,create_dt) VALUES (",
                             LogicUtils.sqlStringValue(record.stuId), ",",
                             LogicUtils.sqlStringValue(record.holdId), ",",
                             LogicUtils.sqlStringValue(record.sevAdminHold), ",",
@@ -282,7 +298,9 @@ public enum RawAdminHoldLogic {
 
         final HtmlBuilder sql = new HtmlBuilder(100);
 
-        sql.add("DELETE FROM admin_hold ",
+        final String tableName = getTableName(cache);
+
+        sql.add("DELETE FROM ", tableName,
                 " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
                 "   AND hold_id=", LogicUtils.sqlStringValue(record.holdId));
 
@@ -314,7 +332,9 @@ public enum RawAdminHoldLogic {
 
         final HtmlBuilder sql = new HtmlBuilder(100);
 
-        sql.add("SELECT * FROM admin_hold");
+        final String tableName = getTableName(cache);
+
+        sql.add("SELECT * FROM " + tableName);
 
         final List<RawAdminHold> result = new ArrayList<>(50);
 
@@ -348,8 +368,10 @@ public enum RawAdminHoldLogic {
         if (stuId.startsWith("99")) {
             result = queryByTestStudent(stuId);
         } else {
+            final String tableName = getTableName(cache);
+
             final String sql = SimpleBuilder.concat(
-                    "SELECT * FROM admin_hold WHERE stu_id=", LogicUtils.sqlStringValue(stuId));
+                    "SELECT * FROM ", tableName, " WHERE stu_id=", LogicUtils.sqlStringValue(stuId));
 
             result = new ArrayList<>(10);
 
@@ -387,7 +409,9 @@ public enum RawAdminHoldLogic {
         } else {
             final HtmlBuilder sql = new HtmlBuilder(100);
 
-            sql.add("SELECT * FROM admin_hold",
+            final String tableName = getTableName(cache);
+
+            sql.add("SELECT * FROM ", tableName,
                     " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
                     "   AND hold_id=", LogicUtils.sqlStringValue(holdId));
 
@@ -419,7 +443,9 @@ public enum RawAdminHoldLogic {
 
         final HtmlBuilder sql = new HtmlBuilder(100);
 
-        sql.add("SELECT count(*) FROM admin_hold",
+        final String tableName = getTableName(cache);
+
+        sql.add("SELECT count(*) FROM ", tableName,
                 " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
                 "   AND sev_admin_hold='F'");
 
@@ -452,7 +478,9 @@ public enum RawAdminHoldLogic {
 
         final HtmlBuilder sql = new HtmlBuilder(100);
 
-        sql.add("DELETE FROM admin_hold ",
+        final String tableName = getTableName(cache);
+
+        sql.add("DELETE FROM ", tableName,
                 " WHERE hold_id=", LogicUtils.sqlStringValue(holdId));
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
@@ -485,15 +513,17 @@ public enum RawAdminHoldLogic {
         } else {
             final HtmlBuilder sql = new HtmlBuilder(100);
 
+            final String tableName = getTableName(cache);
+
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
             try {
                 if (conn.getProduct() == EDbProduct.POSTGRESQL) {
-                    sql.add("UPDATE admin_hold ",
+                    sql.add("UPDATE ", tableName,
                             "   SET create_dt=", LogicUtils.sqlPgDateValue(record.createDt),
                             " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
                             "   AND hold_id=", LogicUtils.sqlStringValue(record.holdId));
                 } else {
-                    sql.add("UPDATE admin_hold ",
+                    sql.add("UPDATE ", tableName,
                             "   SET create_dt=", LogicUtils.sqlDateValue(record.createDt),
                             " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
                             "   AND hold_id=", LogicUtils.sqlStringValue(record.holdId));

@@ -29,6 +29,18 @@ public enum RawMpeLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "mpe" : (schemaPrefix + ".mpe");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -42,8 +54,10 @@ public enum RawMpeLogic {
             throw new SQLException("Null value in primary key field.");
         }
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "INSERT INTO mpe (version,max_online_atmpts,max_proctored_atmpts) VALUES (",
+                "INSERT INTO ", tableName, " (version,max_online_atmpts,max_proctored_atmpts) VALUES (",
                 LogicUtils.sqlStringValue(record.version), ",",
                 LogicUtils.sqlIntegerValue(record.maxOnlineAtmpts), ",",
                 LogicUtils.sqlIntegerValue(record.maxProctoredAtmpts), ")");
@@ -75,8 +89,10 @@ public enum RawMpeLogic {
      */
     public static boolean delete(final Cache cache, final RawMpe record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM mpe ",
-                "WHERE version=", LogicUtils.sqlStringValue(record.version));
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE version=", LogicUtils.sqlStringValue(record.version));
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
@@ -104,7 +120,9 @@ public enum RawMpeLogic {
      */
     public static List<RawMpe> queryAll(final Cache cache) throws SQLException {
 
-        final String sql = "SELECT * FROM mpe";
+        final String tableName = getTableName(cache);
+
+        final String sql = "SELECT * FROM " + tableName;
 
         final List<RawMpe> result = new ArrayList<>(10);
 

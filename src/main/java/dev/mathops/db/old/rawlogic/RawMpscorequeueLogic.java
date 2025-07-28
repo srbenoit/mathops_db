@@ -73,6 +73,18 @@ public enum RawMpscorequeueLogic {
     private static final String FAILED_QUEUEING = "Failed to post score to BANNER - Queueing";
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "mpscorequeue" : (schemaPrefix + ".mpscorequeue");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -86,8 +98,10 @@ public enum RawMpscorequeueLogic {
             throw new SQLException("Null value in primary key or required field.");
         }
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "INSERT INTO mpscorequeue (pidm,test_code,test_date,test_score) VALUES (",
+                "INSERT INTO ", tableName, " (pidm,test_code,test_date,test_score) VALUES (",
                 LogicUtils.sqlIntegerValue(record.pidm), ",",
                 LogicUtils.sqlStringValue(record.testCode), ",",
                 LogicUtils.sqlDateTimeValue(record.testDate), ",",
@@ -120,7 +134,9 @@ public enum RawMpscorequeueLogic {
      */
     public static boolean delete(final Cache cache, final RawMpscorequeue record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM mpscorequeue",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
                 " WHERE pidm=", LogicUtils.sqlIntegerValue(record.pidm),
                 " AND test_code=", LogicUtils.sqlStringValue(record.testCode),
                 " AND test_date=", LogicUtils.sqlDateTimeValue(record.testDate),
@@ -154,10 +170,12 @@ public enum RawMpscorequeueLogic {
 
         final List<RawMpscorequeue> result = new ArrayList<>(50);
 
+        final String tableName = getTableName(cache);
+
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
-             final ResultSet rs = stmt.executeQuery("SELECT * FROM mpscorequeue")) {
+             final ResultSet rs = stmt.executeQuery("SELECT * FROM " + tableName)) {
 
             while (rs.next()) {
                 result.add(RawMpscorequeue.fromResultSet(rs));
@@ -181,7 +199,9 @@ public enum RawMpscorequeueLogic {
 
         final List<RawMpscorequeue> result = new ArrayList<>(10);
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM mpscorequeue",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
                 " WHERE pidm=", LogicUtils.sqlIntegerValue(pidm));
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);

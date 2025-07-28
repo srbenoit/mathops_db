@@ -33,6 +33,18 @@ public enum RawSpecialStusLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "special_stus" : (schemaPrefix + ".special_stus");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -46,8 +58,10 @@ public enum RawSpecialStusLogic {
             throw new SQLException("Null value in primary key field.");
         }
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "INSERT INTO special_stus (stu_id,stu_type,start_dt,end_dt) VALUES (",
+                "INSERT INTO ", tableName, " (stu_id,stu_type,start_dt,end_dt) VALUES (",
                 LogicUtils.sqlStringValue(record.stuId), ",",
                 LogicUtils.sqlStringValue(record.stuType), ",",
                 LogicUtils.sqlDateValue(record.startDt), ",",
@@ -80,7 +94,9 @@ public enum RawSpecialStusLogic {
      */
     public static boolean delete(final Cache cache, final RawSpecialStus record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM special_stus ",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
                 " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
                 "   AND stu_type=", LogicUtils.sqlStringValue(record.stuType));
 
@@ -110,7 +126,9 @@ public enum RawSpecialStusLogic {
      */
     public static List<RawSpecialStus> queryAll(final Cache cache) throws SQLException {
 
-        return executeQuery(cache, "SELECT * FROM special_stus");
+        final String tableName = getTableName(cache);
+
+        return executeQuery(cache, "SELECT * FROM " + tableName);
     }
 
     /**
@@ -128,8 +146,9 @@ public enum RawSpecialStusLogic {
         if (stuId.startsWith("99")) {
             result = queryByTestStudent(stuId);
         } else {
-            final String sql = SimpleBuilder.concat(
-                    "SELECT * FROM special_stus WHERE stu_id=",
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE stu_id=",
                     LogicUtils.sqlStringValue(stuId));
 
             result = executeQuery(cache, sql);
@@ -178,7 +197,9 @@ public enum RawSpecialStusLogic {
      */
     public static List<RawSpecialStus> queryByType(final Cache cache, final String stuType) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM special_stus WHERE stu_type=",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE stu_type=",
                 LogicUtils.sqlStringValue(stuType));
 
         return executeQuery(cache, sql);
@@ -187,8 +208,8 @@ public enum RawSpecialStusLogic {
     /**
      * Executes a query that returns a list of records.
      *
-     * @param cache   the data cache
-     * @param sql  the SQL to execute
+     * @param cache the data cache
+     * @param sql   the SQL to execute
      * @return the list of matching records
      * @throws SQLException if there is an error accessing the database
      */

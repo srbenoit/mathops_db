@@ -33,6 +33,18 @@ public enum RawTreePathLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "tree_path" : (schemaPrefix + ".tree_path");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -47,8 +59,10 @@ public enum RawTreePathLogic {
             throw new SQLException("Null value in primary key or required field.");
         }
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "INSERT INTO tree_path (ident,parent_ident,depth,sort_order,label) VALUES (",
+                "INSERT INTO ", tableName, " (ident,parent_ident,depth,sort_order,label) VALUES (",
                 LogicUtils.sqlStringValue(record.ident), ",",
                 LogicUtils.sqlStringValue(record.parentIdent), ",",
                 LogicUtils.sqlIntegerValue(record.depth), ",",
@@ -82,7 +96,9 @@ public enum RawTreePathLogic {
      */
     public static boolean delete(final Cache cache, final RawTreePath record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM tree_path WHERE ident=",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName, " WHERE ident=",
                 LogicUtils.sqlStringValue(record.ident),
                 "  AND parent_ident=", LogicUtils.sqlStringValue(record.parentIdent),
                 "  AND depth=", LogicUtils.sqlIntegerValue(record.depth));
@@ -113,7 +129,9 @@ public enum RawTreePathLogic {
      */
     public static List<RawTreePath> queryAll(final Cache cache) throws SQLException {
 
-        return executeListQuery(cache, "SELECT * FROM tree_path");
+        final String tableName = getTableName(cache);
+
+        return executeListQuery(cache, "SELECT * FROM " + tableName);
     }
 
     /**
@@ -128,8 +146,10 @@ public enum RawTreePathLogic {
     public static List<RawTreePath> queryByDepthAndParent(final Cache cache, final int theDepth,
                                                           final String theParentIdent) throws SQLException {
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "SELECT * FROM tree_path WHERE depth=", Integer.toString(theDepth),
+                "SELECT * FROM ", tableName, " WHERE depth=", Integer.toString(theDepth),
                 "   AND parent_ident=", LogicUtils.sqlStringValue(theParentIdent),
                 " ORDER BY sort_order");
 
@@ -149,17 +169,19 @@ public enum RawTreePathLogic {
     public static RawTreePath query(final Cache cache, final String theIdent, final int theDepth,
                                     final String theParentIdent) throws SQLException {
 
+        final String tableName = getTableName(cache);
+
         final String sql;
 
         if (theDepth == 0 || theParentIdent == null) {
             sql = SimpleBuilder.concat(
-                    "SELECT * FROM tree_path WHERE ident=", LogicUtils.sqlStringValue(theIdent),
+                    "SELECT * FROM ", tableName, " WHERE ident=", LogicUtils.sqlStringValue(theIdent),
                     "   AND depth=", Integer.toString(theDepth),
                     "   AND parent_ident IS NULL",
                     " ORDER BY sort_order");
         } else {
             sql = SimpleBuilder.concat(
-                    "SELECT * FROM tree_path WHERE ident=", LogicUtils.sqlStringValue(theIdent),
+                    "SELECT * FROM ", tableName, " WHERE ident=", LogicUtils.sqlStringValue(theIdent),
                     "   AND depth=", Integer.toString(theDepth),
                     "   AND parent_ident=", LogicUtils.sqlStringValue(theParentIdent),
                     " ORDER BY sort_order");
@@ -234,15 +256,19 @@ public enum RawTreePathLogic {
     public static boolean updateSortOrder(final Cache cache, final RawTreePath toUpdate,
                                           final Integer theSortOrder) throws SQLException {
 
+        final String tableName = getTableName(cache);
+
         final String sql;
 
         if (toUpdate.parentIdent == null) {
-            sql = SimpleBuilder.concat("UPDATE tree_path SET sort_order=", LogicUtils.sqlIntegerValue(theSortOrder),
+            sql = SimpleBuilder.concat("UPDATE ", tableName, " SET sort_order=",
+                    LogicUtils.sqlIntegerValue(theSortOrder),
                     " WHERE ident=", LogicUtils.sqlStringValue(toUpdate.ident),
                     "   AND depth=", LogicUtils.sqlIntegerValue(toUpdate.depth),
                     "   AND parent_ident IS NULL");
         } else {
-            sql = SimpleBuilder.concat("UPDATE tree_path SET sort_order=", LogicUtils.sqlIntegerValue(theSortOrder),
+            sql = SimpleBuilder.concat("UPDATE ", tableName, " SET sort_order=",
+                    LogicUtils.sqlIntegerValue(theSortOrder),
                     " WHERE ident=", LogicUtils.sqlStringValue(toUpdate.ident),
                     "   AND depth=", LogicUtils.sqlIntegerValue(toUpdate.depth),
                     "   AND parent_ident=", LogicUtils.sqlStringValue(toUpdate.parentIdent));
@@ -277,15 +303,17 @@ public enum RawTreePathLogic {
     public static boolean updateLabel(final Cache cache, final RawTreePath toUpdate,
                                       final String theLabel) throws SQLException {
 
+        final String tableName = getTableName(cache);
+
         final String sql;
 
         if (toUpdate.parentIdent == null) {
-            sql = SimpleBuilder.concat("UPDATE tree_path SET label=", LogicUtils.sqlStringValue(theLabel),
+            sql = SimpleBuilder.concat("UPDATE ", tableName, " SET label=", LogicUtils.sqlStringValue(theLabel),
                     " WHERE ident=", LogicUtils.sqlStringValue(toUpdate.ident),
                     "   AND depth=", LogicUtils.sqlIntegerValue(toUpdate.depth),
                     "   AND parent_ident IS NULL");
         } else {
-            sql = SimpleBuilder.concat("UPDATE tree_path SET label=", LogicUtils.sqlStringValue(theLabel),
+            sql = SimpleBuilder.concat("UPDATE ", tableName, " SET label=", LogicUtils.sqlStringValue(theLabel),
                     " WHERE ident=", LogicUtils.sqlStringValue(toUpdate.ident),
                     "   AND depth=", LogicUtils.sqlIntegerValue(toUpdate.depth),
                     "   AND parent_ident=", LogicUtils.sqlStringValue(toUpdate.parentIdent));

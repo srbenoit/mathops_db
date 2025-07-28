@@ -28,6 +28,18 @@ public enum RawEtextCourseLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "etext_course" : (schemaPrefix + ".etext_course");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -41,7 +53,9 @@ public enum RawEtextCourseLogic {
             throw new SQLException("Null value in primary key field.");
         }
 
-        final String sql = SimpleBuilder.concat("INSERT INTO etext_course (etext_id,course) VALUES (",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("INSERT INTO ", tableName, " (etext_id,course) VALUES (",
                 LogicUtils.sqlStringValue(record.etextId), ",",
                 LogicUtils.sqlStringValue(record.course), ")");
 
@@ -72,8 +86,10 @@ public enum RawEtextCourseLogic {
      */
     public static boolean delete(final Cache cache, final RawEtextCourse record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM etext_course ",
-                "WHERE etext_id=", LogicUtils.sqlStringValue(record.etextId),
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE etext_id=", LogicUtils.sqlStringValue(record.etextId),
                 "  AND course=", LogicUtils.sqlStringValue(record.course));
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
@@ -102,7 +118,9 @@ public enum RawEtextCourseLogic {
      */
     public static List<RawEtextCourse> queryAll(final Cache cache) throws SQLException {
 
-        return executeQuery(cache, "SELECT * FROM etext_course");
+        final String tableName = getTableName(cache);
+
+        return executeQuery(cache, "SELECT * FROM " + tableName);
     }
 
     /**
@@ -115,8 +133,10 @@ public enum RawEtextCourseLogic {
      */
     public static List<RawEtextCourse> queryByEtext(final Cache cache, final String etextId) throws SQLException {
 
+        final String tableName = getTableName(cache);
+
         return executeQuery(cache, SimpleBuilder.concat(
-                "SELECT * FROM etext_course WHERE etext_id=", LogicUtils.sqlStringValue(etextId)));
+                "SELECT * FROM ", tableName, " WHERE etext_id=", LogicUtils.sqlStringValue(etextId)));
     }
 
     /**
@@ -127,11 +147,12 @@ public enum RawEtextCourseLogic {
      * @return the list of records that matched the criteria, a zero-length array if none matched
      * @throws SQLException if there is an error performing the query
      */
-    public static List<RawEtextCourse> queryByCourse(final Cache cache, final String courseId)
-            throws SQLException {
+    public static List<RawEtextCourse> queryByCourse(final Cache cache, final String courseId) throws SQLException {
+
+        final String tableName = getTableName(cache);
 
         return executeQuery(cache, SimpleBuilder.concat(
-                "SELECT * FROM etext_course WHERE course=", LogicUtils.sqlStringValue(courseId)));
+                "SELECT * FROM ", tableName, " WHERE course=", LogicUtils.sqlStringValue(courseId)));
     }
 
     /**

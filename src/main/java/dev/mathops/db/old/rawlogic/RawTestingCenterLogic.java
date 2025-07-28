@@ -42,6 +42,18 @@ public enum RawTestingCenterLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "testing_centers" : (schemaPrefix + ".testing_centers");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -55,10 +67,11 @@ public enum RawTestingCenterLogic {
             throw new SQLException("Null value in primary key field.");
         }
 
-        final String sql = SimpleBuilder.concat(
-                "INSERT INTO testing_centers (testing_center_id,tc_name,addres_1,addres_2,addres_3,city,state,",
-                "zip_code,active,dtime_created,dtime_approved,dtime_denied,",
-                "dtime_revoked,is_remote,is_proctored) VALUES (",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("INSERT INTO ", tableName,
+                " (testing_center_id,tc_name,addres_1,addres_2,addres_3,city,state,zip_code,active,dtime_created,",
+                "dtime_approved,dtime_denied,dtime_revoked,is_remote,is_proctored) VALUES (",
                 LogicUtils.sqlStringValue(record.testingCenterId), ",",
                 LogicUtils.sqlStringValue(record.tcName), ",",
                 LogicUtils.sqlStringValue(record.addres1), ",",
@@ -102,7 +115,9 @@ public enum RawTestingCenterLogic {
      */
     public static boolean delete(final Cache cache, final RawTestingCenter record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM testing_centers WHERE testing_center_id=",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName, " WHERE testing_center_id=",
                 LogicUtils.sqlStringValue(record.testingCenterId));
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
@@ -135,8 +150,10 @@ public enum RawTestingCenterLogic {
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
+        final String tableName = getTableName(cache);
+
         try (final Statement stmt = conn.createStatement();
-             final ResultSet rs = stmt.executeQuery("SELECT * FROM testing_centers")) {
+             final ResultSet rs = stmt.executeQuery("SELECT * FROM " + tableName)) {
 
             while (rs.next()) {
                 result.add(RawTestingCenter.fromResultSet(rs));
@@ -161,8 +178,10 @@ public enum RawTestingCenterLogic {
 
         RawTestingCenter result = null;
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "SELECT * FROM testing_centers WHERE testing_center_id=",
+                "SELECT * FROM ", tableName, " WHERE testing_center_id=",
                 LogicUtils.sqlStringValue(testingCenterId));
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);

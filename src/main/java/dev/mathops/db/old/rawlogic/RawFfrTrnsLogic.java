@@ -54,6 +54,18 @@ public enum RawFfrTrnsLogic {
     }
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "ffr_trns" : (schemaPrefix + ".ffr_trns");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -74,8 +86,10 @@ public enum RawFfrTrnsLogic {
             Log.info("stu_id: ", record.stuId);
             result = false;
         } else {
-            final String sql = SimpleBuilder.concat("INSERT INTO ffr_trns ",
-                    "(stu_id,course,exam_placed,exam_dt,dt_cr_refused,grade) VALUES (",
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("INSERT INTO ", tableName,
+                    " (stu_id,course,exam_placed,exam_dt,dt_cr_refused,grade) VALUES (",
                     LogicUtils.sqlStringValue(record.stuId), ",",
                     LogicUtils.sqlStringValue(record.course), ",",
                     LogicUtils.sqlStringValue(record.examPlaced), ",",
@@ -120,7 +134,9 @@ public enum RawFfrTrnsLogic {
             Log.info("stu_id: ", record.stuId);
             result = false;
         } else {
-            final String sql = SimpleBuilder.concat("UPDATE ffr_trns set grade=",
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("UPDATE ", tableName, " set grade=",
                     LogicUtils.sqlStringValue(newGrade),
                     " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
                     "  AND course=", LogicUtils.sqlStringValue(record.course));
@@ -153,8 +169,10 @@ public enum RawFfrTrnsLogic {
      */
     public static boolean delete(final Cache cache, final RawFfrTrns record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ffr_trns ",
-                "WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
                 "  AND course=", LogicUtils.sqlStringValue(record.course));
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
@@ -183,7 +201,9 @@ public enum RawFfrTrnsLogic {
      */
     public static List<RawFfrTrns> queryAll(final Cache cache) throws SQLException {
 
-        return executeListQuery(cache, "SELECT * FROM ffr_trns");
+        final String tableName = getTableName(cache);
+
+        return executeListQuery(cache, "SELECT * FROM " + tableName);
     }
 
     /**
@@ -201,7 +221,9 @@ public enum RawFfrTrnsLogic {
         if (!stuId.isEmpty() && stuId.charAt(0) == '9') {
             result = queryByTestStudent(stuId);
         } else {
-            final String sql = SimpleBuilder.concat("SELECT * FROM ffr_trns",
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("SELECT * FROM ",tableName,
                     " WHERE stu_id=", LogicUtils.sqlStringValue(stuId));
 
             result = executeListQuery(cache, sql);

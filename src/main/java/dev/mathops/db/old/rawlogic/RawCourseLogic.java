@@ -35,6 +35,18 @@ public enum RawCourseLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "course" : (schemaPrefix + ".course");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -48,8 +60,11 @@ public enum RawCourseLogic {
             throw new SQLException("Null value in primary key field.");
         }
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "INSERT INTO course (course,nbr_units,course_name,nbr_credits,calc_ok,course_label,inline_prefix,",
+                "INSERT INTO ", tableName,
+                " (course,nbr_units,course_name,nbr_credits,calc_ok,course_label,inline_prefix,",
                 "is_tutorial,require_etext) VALUES (",
                 LogicUtils.sqlStringValue(record.course), ",",
                 LogicUtils.sqlIntegerValue(record.nbrUnits), ",",
@@ -88,8 +103,10 @@ public enum RawCourseLogic {
      */
     public static boolean delete(final Cache cache, final RawCourse record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM course ",
-                "WHERE course=", LogicUtils.sqlStringValue(record.course));
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE course=", LogicUtils.sqlStringValue(record.course));
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
@@ -119,10 +136,12 @@ public enum RawCourseLogic {
 
         final List<RawCourse> result = new ArrayList<>(50);
 
+        final String tableName = getTableName(cache);
+
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
-             final ResultSet rs = stmt.executeQuery("SELECT * FROM course")) {
+             final ResultSet rs = stmt.executeQuery("SELECT * FROM " + tableName)) {
 
             while (rs.next()) {
                 result.add(RawCourse.fromResultSet(rs));

@@ -142,8 +142,8 @@ final class TestRawStcourseLogic {
             }
 
             try (final Statement stmt = conn.createStatement()) {
-                final String stcourseName = RawStcourseLogic.getTableName(cache);
-                stmt.executeUpdate("DELETE FROM " + stcourseName);
+                final String tableName = RawStcourseLogic.getTableName(cache);
+                stmt.executeUpdate("DELETE FROM " + tableName);
                 final String termName = TermLogic.Postgres.getTableName(cache);
                 stmt.executeUpdate("DELETE FROM " + termName);
             }
@@ -1987,8 +1987,8 @@ final class TestRawStcourseLogic {
         final Cache cache = new Cache(profile);
 
         try (final Statement stmt = conn.createStatement()) {
-            final String stcourseName = RawStcourseLogic.getTableName(cache);
-            stmt.executeUpdate("DELETE FROM " + stcourseName);
+            final String tableName = RawStcourseLogic.getTableName(cache);
+            stmt.executeUpdate("DELETE FROM " + tableName);
             final String termName = TermLogic.Postgres.getTableName(cache);
             stmt.executeUpdate("DELETE FROM " + termName);
             conn.commit();

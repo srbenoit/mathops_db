@@ -8,8 +8,6 @@ import dev.mathops.db.ESchema;
 import dev.mathops.db.cfg.DatabaseConfig;
 import dev.mathops.db.cfg.Login;
 import dev.mathops.db.cfg.Profile;
-import dev.mathops.db.old.rawlogic.RawDupRegistrLogic;
-import dev.mathops.db.old.rawlogic.TestRes;
 import dev.mathops.db.old.rawrecord.RawDupRegistr;
 import dev.mathops.db.old.rawrecord.RawRecordConstants;
 import dev.mathops.db.type.TermKey;
@@ -71,16 +69,17 @@ final class TestRawDupRegistrLogic {
         final DbConnection conn = login.checkOutConnection();
         final Cache cache = new Cache(profile);
 
+        final String whichDbName = RawWhichDbLogic.getTableName(cache);
+
         // Make sure we're in the TEST database
         try {
             try (final Statement stmt = conn.createStatement();
-                 final ResultSet rs = stmt.executeQuery("SELECT descr FROM which_db")) {
+                 final ResultSet rs = stmt.executeQuery("SELECT descr FROM " + whichDbName)) {
 
                 if (rs.next()) {
                     final String which = rs.getString(1);
                     if (which != null && !"TEST".equals(which.trim())) {
-                        throw new IllegalArgumentException(
-                                TestRes.fmt(TestRes.ERR_NOT_CONNECTED_TO_TEST, which));
+                        throw new IllegalArgumentException(TestRes.fmt(TestRes.ERR_NOT_CONNECTED_TO_TEST, which));
                     }
                 } else {
                     throw new IllegalArgumentException(TestRes.get(TestRes.ERR_CANT_QUERY_WHICH_DB));
@@ -88,7 +87,8 @@ final class TestRawDupRegistrLogic {
             }
 
             try (final Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("DELETE FROM dup_registr");
+                final String tableName = RawDupRegistrLogic.getTableName(cache);
+                stmt.executeUpdate("DELETE FROM " + tableName);
             }
             conn.commit();
 
@@ -360,10 +360,12 @@ final class TestRawDupRegistrLogic {
 
         final Login login = profile.getLogin(ESchema.LEGACY);
         final DbConnection conn = login.checkOutConnection();
+        final Cache cache = new Cache(profile);
 
         try {
             try (final Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("DELETE FROM dup_registr");
+                final String tableName = RawDupRegistrLogic.getTableName(cache);
+                stmt.executeUpdate("DELETE FROM " + tableName);
             }
 
             conn.commit();

@@ -34,6 +34,18 @@ public enum RawCampusCalendarLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "campus_calendar" : (schemaPrefix + ".campus_calendar");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -47,8 +59,10 @@ public enum RawCampusCalendarLogic {
             throw new SQLException("Null value in primary key field.");
         }
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "INSERT INTO campus_calendar (campus_dt,dt_desc,open_time1,open_time2,",
+                "INSERT INTO ", tableName, " (campus_dt,dt_desc,open_time1,open_time2,",
                 "close_time1,close_time2,weekdays_1,weekdays_2) VALUES (",
                 LogicUtils.sqlDateValue(record.campusDt), ",",
                 LogicUtils.sqlStringValue(record.dtDesc), ",",
@@ -86,8 +100,10 @@ public enum RawCampusCalendarLogic {
      */
     public static boolean delete(final Cache cache, final RawCampusCalendar record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM campus_calendar ",
-                "WHERE campus_dt=", LogicUtils.sqlDateValue(record.campusDt),
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE campus_dt=", LogicUtils.sqlDateValue(record.campusDt),
                 "  AND dt_desc=", LogicUtils.sqlStringValue(record.dtDesc));
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
@@ -118,7 +134,9 @@ public enum RawCampusCalendarLogic {
 
         final List<RawCampusCalendar> result = new ArrayList<>(50);
 
-        final String sql = "SELECT * FROM campus_calendar";
+        final String tableName = getTableName(cache);
+
+        final String sql = "SELECT * FROM " + tableName;
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 

@@ -36,6 +36,18 @@ public enum RawStresourceLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "stresource" : (schemaPrefix + ".stresource");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -51,8 +63,10 @@ public enum RawStresourceLogic {
 
         final boolean result;
 
-        final String sql = SimpleBuilder.concat("INSERT INTO stresource ",
-                "(stu_id,resource_id,loan_dt,start_time,due_dt,return_dt,finish_time,times_display,create_dt) VALUES (",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("INSERT INTO ", tableName, " (stu_id,resource_id,loan_dt,start_time,",
+                "due_dt,return_dt,finish_time,times_display,create_dt) VALUES (",
                 LogicUtils.sqlStringValue(record.stuId), ",",
                 LogicUtils.sqlStringValue(record.resourceId), ",",
                 LogicUtils.sqlDateValue(record.loanDt), ",",
@@ -92,8 +106,10 @@ public enum RawStresourceLogic {
 
         final boolean result;
 
-        final String sql = SimpleBuilder.concat("DELETE FROM stresource ",
-                "WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
                 "  AND resource_id=", LogicUtils.sqlStringValue(record.resourceId),
                 "  AND loan_dt=", LogicUtils.sqlDateValue(record.loanDt),
                 "  AND start_time=", LogicUtils.sqlIntegerValue(record.startTime));
@@ -124,7 +140,9 @@ public enum RawStresourceLogic {
      */
     public static List<RawStresource> queryAll(final Cache cache) throws SQLException {
 
-        return executeListQuery(cache, "SELECT * FROM stresource");
+        final String tableName = getTableName(cache);
+
+        return executeListQuery(cache, "SELECT * FROM " + tableName);
     }
 
     /**
@@ -137,7 +155,9 @@ public enum RawStresourceLogic {
      */
     public static List<RawStresource> queryByStudent(final Cache cache, final String stuId) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM stresource",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
                 " WHERE stu_id=", LogicUtils.sqlStringValue(stuId));
 
         return executeListQuery(cache, sql);
@@ -153,7 +173,9 @@ public enum RawStresourceLogic {
      */
     public static RawStresource queryOutstanding(final Cache cache, final String resourceId) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM stresource",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
                 " WHERE resource_id=", LogicUtils.sqlStringValue(resourceId),
                 " AND return_dt IS NULL");
 
@@ -174,8 +196,10 @@ public enum RawStresourceLogic {
                                                final LocalDate returnDate, final Integer finishTime)
             throws SQLException {
 
-        final String sql = SimpleBuilder.concat("UPDATE stresource ",
-                "SET return_dt=", LogicUtils.sqlDateValue(returnDate), ",",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("UPDATE ", tableName,
+                " SET return_dt=", LogicUtils.sqlDateValue(returnDate), ",",
                 "    finish_time=", LogicUtils.sqlIntegerValue(finishTime),
                 " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
                 "   AND resource_id=", LogicUtils.sqlStringValue(record.resourceId),

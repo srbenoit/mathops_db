@@ -30,6 +30,18 @@ public enum RawUserClearanceLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "user_clearance" : (schemaPrefix + ".user_clearance");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -43,8 +55,10 @@ public enum RawUserClearanceLogic {
             throw new SQLException("Null value in primary key field.");
         }
 
-        final String sql = SimpleBuilder.concat(
-                "INSERT INTO user_clearance (login,clear_function,clear_type,clear_passwd) VALUES (",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("INSERT INTO ", tableName,
+                " (login,clear_function,clear_type,clear_passwd) VALUES (",
                 LogicUtils.sqlStringValue(record.login), ",",
                 LogicUtils.sqlStringValue(record.clearFunction), ",",
                 LogicUtils.sqlIntegerValue(record.clearType), ",",
@@ -77,8 +91,10 @@ public enum RawUserClearanceLogic {
      */
     public static boolean delete(final Cache cache, final RawUserClearance record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM user_clearance ",
-                "WHERE login=", LogicUtils.sqlStringValue(record.login),
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE login=", LogicUtils.sqlStringValue(record.login),
                 "  AND clear_function=", LogicUtils.sqlStringValue(record.clearFunction));
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
@@ -111,8 +127,10 @@ public enum RawUserClearanceLogic {
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
+        final String tableName = getTableName(cache);
+
         try (final Statement stmt = conn.createStatement();
-             final ResultSet rs = stmt.executeQuery("SELECT * FROM user_clearance")) {
+             final ResultSet rs = stmt.executeQuery("SELECT * FROM " + tableName)) {
 
             while (rs.next()) {
                 result.add(RawUserClearance.fromResultSet(rs));
@@ -132,10 +150,11 @@ public enum RawUserClearanceLogic {
      * @return the list of records
      * @throws SQLException if there is an error accessing the database
      */
-    public static List<RawUserClearance> queryAllForLogin(final Cache cache, final String login)
-            throws SQLException {
+    public static List<RawUserClearance> queryAllForLogin(final Cache cache, final String login) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM user_clearance WHERE login=",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE login=",
                 LogicUtils.sqlStringValue(login));
 
         final List<RawUserClearance> result = new ArrayList<>(10);

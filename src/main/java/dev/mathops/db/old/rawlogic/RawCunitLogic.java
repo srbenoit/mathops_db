@@ -37,6 +37,18 @@ public enum RawCunitLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "cunit" : (schemaPrefix + ".cunit");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -50,8 +62,10 @@ public enum RawCunitLogic {
             throw new SQLException("Null value in primary key field.");
         }
 
-        final String sql = SimpleBuilder.concat(
-                "INSERT INTO cunit (course,unit,term,term_yr,unit_exam_wgt,unit_desc,unit_timelimit,possible_score,",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("INSERT INTO ", tableName,
+                " (course,unit,term,term_yr,unit_exam_wgt,unit_desc,unit_timelimit,possible_score,",
                 "nbr_questions,unit_type) VALUES (",
                 LogicUtils.sqlStringValue(record.course), ",",
                 record.unit, ",",
@@ -91,8 +105,10 @@ public enum RawCunitLogic {
      */
     public static boolean delete(final Cache cache, final RawCunit record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM cunit ",
-                "WHERE course=", LogicUtils.sqlStringValue(record.course),
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE course=", LogicUtils.sqlStringValue(record.course),
                 "  AND unit=", LogicUtils.sqlIntegerValue(record.unit),
                 "  AND term=", LogicUtils.sqlStringValue(record.termKey.termCode),
                 "  AND term_yr=", LogicUtils.sqlIntegerValue(record.termKey.shortYear));
@@ -123,7 +139,9 @@ public enum RawCunitLogic {
      */
     public static List<RawCunit> queryAll(final Cache cache) throws SQLException {
 
-        return executeListQuery(cache, "SELECT * FROM cunit");
+        final String tableName = getTableName(cache);
+
+        return executeListQuery(cache, "SELECT * FROM " + tableName);
     }
 
     /**
@@ -136,8 +154,10 @@ public enum RawCunitLogic {
      */
     public static List<RawCunit> queryByTerm(final Cache cache, final TermKey termKey) throws SQLException {
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "SELECT * FROM cunit WHERE term='", termKey.termCode, "' AND term_yr=", termKey.shortYear);
+                "SELECT * FROM ", tableName, " WHERE term='", termKey.termCode, "' AND term_yr=", termKey.shortYear);
 
         return executeListQuery(cache, sql);
     }

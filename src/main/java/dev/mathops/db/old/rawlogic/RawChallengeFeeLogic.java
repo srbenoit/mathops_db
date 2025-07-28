@@ -30,6 +30,18 @@ public enum RawChallengeFeeLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "challenge_fee" : (schemaPrefix + ".challenge_fee");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -40,12 +52,13 @@ public enum RawChallengeFeeLogic {
     public static boolean insert(final Cache cache, final RawChallengeFee record) throws SQLException {
 
         if (record.stuId == null || record.course == null || record.examDt == null || record.billDt == null) {
-
             throw new SQLException("Null value in primary key or required field.");
         }
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "INSERT INTO challenge_fee (stu_id,course,exam_dt,bill_dt) VALUES (",
+                "INSERT INTO ", tableName, " (stu_id,course,exam_dt,bill_dt) VALUES (",
                 LogicUtils.sqlStringValue(record.stuId), ",",
                 LogicUtils.sqlStringValue(record.course), ",",
                 LogicUtils.sqlDateValue(record.examDt), ",",
@@ -78,9 +91,11 @@ public enum RawChallengeFeeLogic {
      */
     public static boolean delete(final Cache cache, final RawChallengeFee record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM challenge_fee ",
-                "WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
-                "  AND course=", LogicUtils.sqlStringValue(record.course));
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
+                " AND course=", LogicUtils.sqlStringValue(record.course));
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
@@ -108,7 +123,9 @@ public enum RawChallengeFeeLogic {
      */
     public static List<RawChallengeFee> queryAll(final Cache cache) throws SQLException {
 
-        return executeListQuery(cache, "SELECT * FROM challenge_fee");
+        final String tableName = getTableName(cache);
+
+        return executeListQuery(cache, "SELECT * FROM " + tableName);
     }
 
     /**
@@ -121,8 +138,10 @@ public enum RawChallengeFeeLogic {
      */
     public static List<RawChallengeFee> queryByStudent(final Cache cache, final String stuId) throws SQLException {
 
+        final String tableName = getTableName(cache);
+
         return executeListQuery(cache,
-                "SELECT * FROM challenge_fee WHERE stu_id=" + LogicUtils.sqlStringValue(stuId));
+                "SELECT * FROM " + tableName + " WHERE stu_id=" + LogicUtils.sqlStringValue(stuId));
     }
 
     /**
@@ -137,7 +156,9 @@ public enum RawChallengeFeeLogic {
     public static RawChallengeFee queryByStudentCourse(final Cache cache, final String stuId,
                                                        final String course) throws SQLException {
 
-        return executeSingleQuery(cache, "SELECT * FROM challenge_fee WHERE stu_id="
+        final String tableName = getTableName(cache);
+
+        return executeSingleQuery(cache, "SELECT * FROM " + tableName + " WHERE stu_id="
                                          + LogicUtils.sqlStringValue(stuId)
                                          + " AND course=" + LogicUtils.sqlStringValue(course));
     }

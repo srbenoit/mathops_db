@@ -36,6 +36,18 @@ public enum RawExamLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "exam" : (schemaPrefix + ".exam");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -50,9 +62,10 @@ public enum RawExamLogic {
             throw new SQLException("Null value in primary key or required field.");
         }
 
-        final String sql = SimpleBuilder.concat("INSERT INTO exam (",
-                "version,course,unit,vsn_explt,title,tree_ref,exam_type,active_dt,",
-                "pull_dt,button_label) VALUES (",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("INSERT INTO ", tableName,
+                " (version,course,unit,vsn_explt,title,tree_ref,exam_type,active_dt,pull_dt,button_label) VALUES (",
                 LogicUtils.sqlStringValue(record.version), ",",
                 LogicUtils.sqlStringValue(record.course), ",",
                 LogicUtils.sqlIntegerValue(record.unit), ",",
@@ -91,8 +104,10 @@ public enum RawExamLogic {
      */
     public static boolean delete(final Cache cache, final RawExam record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM exam ",
-                "WHERE version=", LogicUtils.sqlStringValue(record.version));
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE version=", LogicUtils.sqlStringValue(record.version));
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
@@ -120,7 +135,9 @@ public enum RawExamLogic {
      */
     public static List<RawExam> queryAll(final Cache cache) throws SQLException {
 
-        return doListQuery(cache, "SELECT * FROM exam");
+        final String tableName = getTableName(cache);
+
+        return doListQuery(cache, "SELECT * FROM " + tableName);
     }
 
     /**
@@ -131,11 +148,12 @@ public enum RawExamLogic {
      * @return the list of records returned
      * @throws SQLException if there is an error performing the query
      */
-    public static List<RawExam> queryActiveByCourse(final Cache cache, final String course)
-            throws SQLException {
+    public static List<RawExam> queryActiveByCourse(final Cache cache, final String course) throws SQLException {
+
+        final String tableName = getTableName(cache);
 
         final String sql = SimpleBuilder.concat(
-                "SELECT * FROM exam WHERE course=", LogicUtils.sqlStringValue(course),
+                "SELECT * FROM ", tableName, " WHERE course=", LogicUtils.sqlStringValue(course),
                 " AND pull_dt IS NULL");
 
         return doListQuery(cache, sql);
@@ -153,9 +171,11 @@ public enum RawExamLogic {
     public static List<RawExam> queryActiveByCourseUnit(final Cache cache, final String course,
                                                         final Integer unit) throws SQLException {
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "SELECT * FROM exam WHERE course=", LogicUtils.sqlStringValue(course),
-                " AND unit=",LogicUtils. sqlIntegerValue(unit),
+                "SELECT * FROM ", tableName, " WHERE course=", LogicUtils.sqlStringValue(course),
+                " AND unit=", LogicUtils.sqlIntegerValue(unit),
                 " AND pull_dt IS NULL");
 
         return doListQuery(cache, sql);
@@ -175,8 +195,10 @@ public enum RawExamLogic {
     public static RawExam queryActiveByCourseUnitType(final Cache cache, final String course,
                                                       final Integer unit, final String examType) throws SQLException {
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "SELECT * FROM exam WHERE course=", LogicUtils.sqlStringValue(course),
+                "SELECT * FROM ", tableName, " WHERE course=", LogicUtils.sqlStringValue(course),
                 " AND unit=", LogicUtils.sqlIntegerValue(unit),
                 " AND exam_type=", LogicUtils.sqlStringValue(examType),
                 " AND pull_dt IS NULL");
@@ -194,8 +216,10 @@ public enum RawExamLogic {
      */
     public static RawExam query(final Cache cache, final String version) throws SQLException {
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "SELECT * FROM exam WHERE version=", LogicUtils.sqlStringValue(version));
+                "SELECT * FROM ", tableName, " WHERE version=", LogicUtils.sqlStringValue(version));
 
         return doSingleQuery(cache, sql);
     }

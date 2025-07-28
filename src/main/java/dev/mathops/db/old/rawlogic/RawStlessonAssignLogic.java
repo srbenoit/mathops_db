@@ -37,6 +37,18 @@ public enum RawStlessonAssignLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    private static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "stlesson_assign" : (schemaPrefix + ".stlesson_assign");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -57,9 +69,10 @@ public enum RawStlessonAssignLogic {
             Log.info("stu_id: ", record.stuId);
             result = false;
         } else {
-            final String sql = SimpleBuilder.concat("INSERT INTO stlesson_assign ",
-                    "(stu_id,course,lesson_id,when_shown,when_open,when_closed,",
-                    "when_hidden,when_started,when_finished,score_tenths) VALUES (",
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("INSERT INTO ", tableName, " (stu_id,course,lesson_id,when_shown,",
+                    "when_open,when_closed,when_hidden,when_started,when_finished,score_tenths) VALUES (",
                     LogicUtils.sqlStringValue(record.stuId), ",",
                     LogicUtils.sqlStringValue(record.course), ",",
                     LogicUtils.sqlStringValue(record.lessonId), ",",
@@ -99,8 +112,10 @@ public enum RawStlessonAssignLogic {
      */
     public static boolean delete(final Cache cache, final RawStlessonAssign record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM stlesson_assign ",
-                "WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
                 "  AND course=", LogicUtils.sqlStringValue(record.course),
                 "  AND lesson_id=", LogicUtils.sqlStringValue(record.lessonId));
 
@@ -130,7 +145,9 @@ public enum RawStlessonAssignLogic {
      */
     public static List<RawStlessonAssign> queryAll(final Cache cache) throws SQLException {
 
-        return executeListQuery(cache, "SELECT * FROM stlesson_assign");
+        final String tableName = getTableName(cache);
+
+        return executeListQuery(cache, "SELECT * FROM " + tableName);
     }
 
     /**
@@ -143,7 +160,9 @@ public enum RawStlessonAssignLogic {
      */
     public static List<RawStlessonAssign> queryByStudent(final Cache cache, final String stuId) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM stlesson_assign",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
                 " WHERE stu_id=", LogicUtils.sqlStringValue(stuId));
 
         return executeListQuery(cache, sql);
@@ -162,7 +181,9 @@ public enum RawStlessonAssignLogic {
     public static RawStlessonAssign query(final Cache cache, final String stuId, final String course,
                                           final String lessonId) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM stlesson_assign",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
                 " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
                 " AND course=", LogicUtils.sqlStringValue(course),
                 " AND lessod_id=", LogicUtils.sqlStringValue(lessonId));
@@ -173,8 +194,8 @@ public enum RawStlessonAssignLogic {
     /**
      * Executes a query that returns a single record.
      *
-     * @param cache    the data cache
-     * @param sql  the SQL to execute
+     * @param cache the data cache
+     * @param sql   the SQL to execute
      * @return the list of matching records
      * @throws SQLException if there is an error accessing the database
      */
@@ -200,8 +221,8 @@ public enum RawStlessonAssignLogic {
     /**
      * Executes a query that returns a list of records.
      *
-     * @param cache    the data cache
-     * @param sql  the SQL to execute
+     * @param cache the data cache
+     * @param sql   the SQL to execute
      * @return the list of matching records
      * @throws SQLException if there is an error accessing the database
      */

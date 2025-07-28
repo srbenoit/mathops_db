@@ -66,6 +66,18 @@ public enum RawStexamLogic {
     public static final String[] ALL_EXAM_TYPES = {"U", "F", "R"};
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "stexam" : (schemaPrefix + ".stexam");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -89,11 +101,13 @@ public enum RawStexamLogic {
             Log.info("stu_id: ", record.stuId);
             result = false;
         } else {
+            final String tableName = getTableName(cache);
+
             // Adjust serial number if needed to avoid collision with existing record
             Long ser = record.serialNbr;
             for (int i = 0; i < 1000; ++i) {
                 final Integer existing = LogicUtils.executeSimpleIntQuery(cache,
-                        "SELECT COUNT(*) FROM stexam WHERE serial_nbr=" + ser);
+                        "SELECT COUNT(*) FROM " + tableName + " WHERE serial_nbr=" + ser);
 
                 if (existing == null || existing.longValue() == 0L) {
                     break;
@@ -122,10 +136,9 @@ public enum RawStexamLogic {
                 finish = Integer.valueOf(1440 + finish.intValue());
             }
 
-            final String sql = SimpleBuilder.concat(
-                    "INSERT INTO stexam (serial_nbr,version,stu_id,exam_dt,exam_score,",
-                    "mastery_score,start_time,finish_time,time_ok,passed,seq_nbr,course,",
-                    "unit,exam_type,is_first_passed,exam_source,calc_nbr) VALUES (",
+            final String sql = SimpleBuilder.concat("INSERT INTO ", tableName,
+                    " (serial_nbr,version,stu_id,exam_dt,exam_score,mastery_score,start_time,finish_time,time_ok,",
+                    "passed,seq_nbr,course,unit,exam_type,is_first_passed,exam_source,calc_nbr) VALUES (",
                     LogicUtils.sqlLongValue(ser), ",",
                     LogicUtils.sqlStringValue(record.version), ",",
                     LogicUtils.sqlStringValue(record.stuId), ",",
@@ -172,7 +185,9 @@ public enum RawStexamLogic {
      */
     public static boolean delete(final Cache cache, final RawStexam record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM stexam",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
                 " WHERE serial_nbr=", LogicUtils.sqlLongValue(record.serialNbr),
                 " AND version=", LogicUtils.sqlStringValue(record.version),
                 " AND stu_id=", LogicUtils.sqlStringValue(record.stuId));
@@ -203,7 +218,9 @@ public enum RawStexamLogic {
      */
     public static List<RawStexam> queryAll(final Cache cache) throws SQLException {
 
-        return executeQuery(cache, "SELECT * FROM stexam");
+        final String tableName = getTableName(cache);
+
+        return executeQuery(cache, "SELECT * FROM " + tableName);
     }
 
     /**
@@ -224,8 +241,10 @@ public enum RawStexamLogic {
         if (stuId.startsWith("99")) {
             result = queryTestDatByStudent(stuId);
         } else {
-            final String sql = SimpleBuilder.concat("SELECT * FROM stexam ",
-                    "WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
+                    " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
                     (all ? CoreConstants.EMPTY : " AND (passed='Y' OR passed='N')"),
                     " ORDER BY exam_dt,finish_time");
 
@@ -255,7 +274,9 @@ public enum RawStexamLogic {
         if (stuId.startsWith("99")) {
             result = queryByTestStudentCourse(stuId, course);
         } else {
-            final String sql = SimpleBuilder.concat("SELECT * FROM stexam ",
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
                     " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
                     "   AND course=", LogicUtils.sqlStringValue(course),
                     (all ? CoreConstants.EMPTY : " AND (passed='Y' OR passed='N')"),
@@ -280,7 +301,9 @@ public enum RawStexamLogic {
     public static List<RawStexam> queryByCourse(final Cache cache, final String courseId,
                                                 final boolean includeAll) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM stexam ",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
                 " WHERE course=", LogicUtils.sqlStringValue(courseId),
                 (includeAll ? CoreConstants.EMPTY : " AND (passed='Y' OR passed='N')"),
                 " ORDER BY exam_dt,finish_time");
@@ -311,8 +334,10 @@ public enum RawStexamLogic {
             earliest = today.minus(Period.ofDays(numDays - 1));
         }
 
+        final String tableName = getTableName(cache);
+
         final HtmlBuilder sql = new HtmlBuilder(200);
-        sql.add("SELECT * FROM stexam ");
+        sql.add("SELECT * FROM ", tableName);
 
         final int numCourses = courses.length;
         if (numCourses == 1) {
@@ -366,8 +391,9 @@ public enum RawStexamLogic {
                                            final String... examTypes) throws SQLException {
 
         final HtmlBuilder sql = new HtmlBuilder(200);
+        final String tableName = getTableName(cache);
 
-        sql.add("SELECT * FROM stexam WHERE course=", LogicUtils.sqlStringValue(course));
+        sql.add("SELECT * FROM ", tableName, " WHERE course=", LogicUtils.sqlStringValue(course));
 
         if (passedOnly) {
             sql.add(" AND passed='Y'");
@@ -408,8 +434,9 @@ public enum RawStexamLogic {
                                            final boolean passedOnly, final String... examTypes) throws SQLException {
 
         final HtmlBuilder sql = new HtmlBuilder(200);
+        final String tableName = getTableName(cache);
 
-        sql.add("SELECT * FROM stexam ",
+        sql.add("SELECT * FROM ", tableName,
                 " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
                 "   AND course=", LogicUtils.sqlStringValue(course));
 
@@ -454,8 +481,9 @@ public enum RawStexamLogic {
                                            final String... examTypes) throws SQLException {
 
         final HtmlBuilder sql = new HtmlBuilder(200);
+        final String tableName = getTableName(cache);
 
-        sql.add("SELECT * FROM stexam ",
+        sql.add("SELECT * FROM ", tableName,
                 " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
                 "   AND course=", LogicUtils.sqlStringValue(course),
                 "   AND unit=", LogicUtils.sqlIntegerValue(unit));
@@ -498,8 +526,9 @@ public enum RawStexamLogic {
                                                     final boolean passedOnly) throws SQLException {
 
         final HtmlBuilder sql = new HtmlBuilder(200);
+        final String tableName = getTableName(cache);
 
-        sql.add("SELECT * FROM stexam ",
+        sql.add("SELECT * FROM ", tableName,
                 " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
                 "   AND version=", LogicUtils.sqlStringValue(version));
 
@@ -529,7 +558,9 @@ public enum RawStexamLogic {
     public static RawStexam getFirstPassing(final Cache cache, final String stuId, final String course,
                                             final Integer unit, final String examType) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM stexam ",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
                 " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
                 " AND course=", LogicUtils.sqlStringValue(course),
                 " AND unit=", LogicUtils.sqlIntegerValue(unit),
@@ -606,7 +637,9 @@ public enum RawStexamLogic {
             Log.info("  Student ID: ", rec.stuId);
             result = false;
         } else {
-            final String sql = SimpleBuilder.concat("UPDATE stexam ",
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("UPDATE ", tableName,
                     " SET passed=", LogicUtils.sqlStringValue(newPassed),
                     " WHERE serial_nbr=", LogicUtils.sqlLongValue(rec.serialNbr),
                     " AND version=", LogicUtils.sqlStringValue(rec.version),
@@ -651,7 +684,9 @@ public enum RawStexamLogic {
             Log.info("  Student ID: ", rec.stuId);
             result = false;
         } else {
-            final String sql = SimpleBuilder.concat("UPDATE stexam ",
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("UPDATE ", tableName,
                     " SET exam_score=", LogicUtils.sqlIntegerValue(newScore),
                     ", passed=", LogicUtils.sqlStringValue(newPassed),
                     " WHERE serial_nbr=", LogicUtils.sqlLongValue(rec.serialNbr),
@@ -692,7 +727,9 @@ public enum RawStexamLogic {
             Log.info("Skipping update of StudentExam for test student:");
             Log.info("  Student ID: ", rec.stuId);
         } else {
-            final String sql = SimpleBuilder.concat("UPDATE stexam ",
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("UPDATE ", tableName,
                     " SET mastery_score=", LogicUtils.sqlIntegerValue(newMastery),
                     " WHERE serial_nbr=", LogicUtils.sqlLongValue(rec.serialNbr),
                     " AND version=", LogicUtils.sqlStringValue(rec.version),
@@ -735,7 +772,9 @@ public enum RawStexamLogic {
             Log.info("  Student ID: ", rec.stuId);
             result = false;
         } else {
-            final String sql = SimpleBuilder.concat("UPDATE stexam ",
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("UPDATE ", tableName,
                     " SET exam_dt=", LogicUtils.sqlDateValue(newExamDate),
                     ", finish_time=", LogicUtils.sqlIntegerValue(newFinishTime),
                     " WHERE serial_nbr=", LogicUtils.sqlLongValue(rec.serialNbr),
@@ -775,7 +814,9 @@ public enum RawStexamLogic {
             Log.info("Skipping update of StudentExam for test student:");
             Log.info("  Student ID: ", rec.stuId);
         } else {
-            final String sql = SimpleBuilder.concat("UPDATE stexam ",
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("UPDATE ", tableName,
                     " SET is_first_passed=", LogicUtils.sqlStringValue(newFirstPassed),
                     " WHERE serial_nbr=", LogicUtils.sqlLongValue(rec.serialNbr),
                     " AND version=", LogicUtils.sqlStringValue(rec.version),
@@ -810,7 +851,9 @@ public enum RawStexamLogic {
             Log.info("Skipping update of StudentExam for test student:");
             Log.info("  Student ID: ", rec.stuId);
         } else {
-            final String sql = SimpleBuilder.concat("UPDATE stexam ",
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("UPDATE ", tableName,
                     " SET calc_nbr=", LogicUtils.sqlStringValue(newCalcNbr),
                     " WHERE serial_nbr=", LogicUtils.sqlLongValue(rec.serialNbr),
                     " AND version=", LogicUtils.sqlStringValue(rec.version),
@@ -1033,7 +1076,7 @@ public enum RawStexamLogic {
      * Executes a query that returns a list of records.
      *
      * @param cache the data cache the database connection, checked out to this thread
-     * @param sql  the SQL to execute
+     * @param sql   the SQL to execute
      * @return the list of matching records
      * @throws SQLException if there is an error accessing the database
      */

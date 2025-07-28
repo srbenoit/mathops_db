@@ -130,7 +130,6 @@ public enum RawStudentLogic {
             "bbffllnnssblbrchcrdrdsflfrgrglkrplprscspsttrwr".toCharArray();
 
     static {
-
         UPCOMING_FALL_ADMITS = Arrays.asList("999011111", "999011121",
                 "999011122", "999011123", "999011124",
                 "999011125", "999011126", "999011131",
@@ -262,6 +261,18 @@ public enum RawStudentLogic {
     }
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "student" : (schemaPrefix + ".student");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -276,12 +287,14 @@ public enum RawStudentLogic {
             throw new SQLException("Null value in primary key or required field.");
         }
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "INSERT INTO student (stu_id,pidm,last_name,first_name,pref_name,middle_initial,apln_term,class,",
-                "college,dept,program_code,minor,est_graduation,tr_credits,hs_code,hs_gpa,hs_class_rank,hs_size_class,",
-                "act_score,sat_score,ap_score,resident,birthdate,ethnicity,gender,discip_history,discip_status,",
-                "sev_admin_hold,timelimit_factor,licensed,campus,stu_email,adviser_email,password,admit_type,",
-                "order_enforce,pacing_structure,create_dt) VALUES (",
+                "INSERT INTO ", tableName, " (stu_id,pidm,last_name,first_name,pref_name,middle_initial,apln_term,",
+                "class,college,dept,program_code,minor,est_graduation,tr_credits,hs_code,hs_gpa,hs_class_rank,",
+                "hs_size_class,act_score,sat_score,ap_score,resident,birthdate,ethnicity,gender,discip_history,",
+                "discip_status,sev_admin_hold,timelimit_factor,licensed,campus,stu_email,adviser_email,password,",
+                "admit_type,order_enforce,pacing_structure,create_dt) VALUES (",
                 LogicUtils.sqlStringValue(record.stuId), ",",
                 LogicUtils.sqlIntegerValue(record.pidm), ",",
                 LogicUtils.sqlStringValue(record.lastName), ",",
@@ -372,7 +385,9 @@ public enum RawStudentLogic {
      */
     public static boolean delete(final Cache cache, final RawStudent record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM student WHERE stu_id=",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName, " WHERE stu_id=",
                 LogicUtils.sqlStringValue(record.stuId));
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
@@ -401,7 +416,9 @@ public enum RawStudentLogic {
      */
     public static List<RawStudent> queryAll(final Cache cache) throws SQLException {
 
-        return executeListQuery(cache, "SELECT * FROM student");
+        final String tableName = getTableName(cache);
+
+        return executeListQuery(cache, "SELECT * FROM " + tableName);
     }
 
     /**
@@ -421,7 +438,9 @@ public enum RawStudentLogic {
         if (stuId.startsWith("99")) {
             result = getTestStudent(cache, stuId);
         } else {
-            final String sql = SimpleBuilder.concat("SELECT * FROM student WHERE stu_id=",
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE stu_id=",
                     LogicUtils.sqlStringValue(stuId));
 
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
@@ -470,7 +489,9 @@ public enum RawStudentLogic {
      */
     public static RawStudent queryByInternalId(final Cache cache, final Integer pidm) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM student WHERE pidm=", pidm);
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE pidm=", pidm);
 
         return executeSingleQuery(cache, sql);
     }
@@ -489,8 +510,10 @@ public enum RawStudentLogic {
 
         final String upper = lastName.toUpperCase(Locale.US);
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "SELECT * FROM student WHERE UPPER(last_name)=", LogicUtils.sqlStringValue(upper));
+                "SELECT * FROM ", tableName, " WHERE UPPER(last_name)=", LogicUtils.sqlStringValue(upper));
 
         final List<RawStudent> list = executeListQuery(cache, sql);
 
@@ -513,8 +536,10 @@ public enum RawStudentLogic {
         final String upperLast = lastName.toUpperCase(Locale.US);
         final String upperFirst = firstName.toUpperCase(Locale.US);
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM student ",
-                "WHERE UPPER(last_name)=", LogicUtils.sqlStringValue(upperLast),
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
+                " WHERE UPPER(last_name)=", LogicUtils.sqlStringValue(upperLast),
                 "  AND (UPPER(first_name)=", LogicUtils.sqlStringValue(upperFirst),
                 " OR UPPER(pref_name)=", LogicUtils.sqlStringValue(upperFirst),
                 ")");
@@ -537,8 +562,10 @@ public enum RawStudentLogic {
         final String upperLast = lastName.toUpperCase(Locale.US);
         final String upperFirst = firstName.toUpperCase(Locale.US);
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM student ",
-                "WHERE UPPER(last_name) LIKE ", LogicUtils.sqlStringValue(upperLast),
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
+                " WHERE UPPER(last_name) LIKE ", LogicUtils.sqlStringValue(upperLast),
                 " AND (UPPER(first_name) LIKE ", LogicUtils.sqlStringValue(upperFirst),
                 " OR UPPER(pref_name) LIKE ", LogicUtils.sqlStringValue(upperFirst),
                 ")");
@@ -565,8 +592,10 @@ public enum RawStudentLogic {
             Log.info(STU_ID, studentId);
             result = false;
         } else {
-            final String sql = SimpleBuilder.concat("UPDATE student SET pidm=", LogicUtils.sqlIntegerValue(internalId),
-                    " WHERE stu_id=", LogicUtils.sqlStringValue(studentId));
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("UPDATE ", tableName, " SET pidm=",
+                    LogicUtils.sqlIntegerValue(internalId), " WHERE stu_id=", LogicUtils.sqlStringValue(studentId));
 
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
@@ -598,9 +627,9 @@ public enum RawStudentLogic {
      * @return true if successful; false if not
      * @throws SQLException if there is an error accessing the database
      */
-    public static boolean updateName(final Cache cache, final String studentId,
-                                     final String lastName, final String firstName, final String prefName,
-                                     final String middleInitial) throws SQLException {
+    public static boolean updateName(final Cache cache, final String studentId, final String lastName,
+                                     final String firstName, final String prefName, final String middleInitial)
+            throws SQLException {
 
         final boolean result;
 
@@ -614,8 +643,10 @@ public enum RawStudentLogic {
             check(prefName);
             check(middleInitial);
 
+            final String tableName = getTableName(cache);
+
             final String sql = SimpleBuilder.concat(
-                    "UPDATE student SET last_name=", LogicUtils.sqlStringValue(lastName),
+                    "UPDATE ", tableName, " SET last_name=", LogicUtils.sqlStringValue(lastName),
                     ", first_name=", LogicUtils.sqlStringValue(firstName),
                     ", pref_name=", LogicUtils.sqlStringValue(prefName),
                     ", middle_initial=", LogicUtils.sqlStringValue(middleInitial),
@@ -658,7 +689,9 @@ public enum RawStudentLogic {
             Log.info(STU_ID, studentId);
             result = false;
         } else {
-            final String sql = SimpleBuilder.concat("UPDATE student SET apln_term=",
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("UPDATE ", tableName, " SET apln_term=",
                     LogicUtils.sqlTermValue(newApplicationTerm),
                     " WHERE stu_id=", LogicUtils.sqlStringValue(studentId));
 
@@ -699,8 +732,10 @@ public enum RawStudentLogic {
             Log.info(STU_ID, studentId);
             result = false;
         } else {
+            final String tableName = getTableName(cache);
+
             final String sql = SimpleBuilder.concat(
-                    "UPDATE student SET class=", LogicUtils.sqlStringValue(newClassLevel),
+                    "UPDATE ", tableName, " SET class=", LogicUtils.sqlStringValue(newClassLevel),
                     " WHERE stu_id=", LogicUtils.sqlStringValue(studentId));
 
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
@@ -744,8 +779,10 @@ public enum RawStudentLogic {
             Log.info(STU_ID, studentId);
             result = false;
         } else {
+            final String tableName = getTableName(cache);
+
             final String sql = SimpleBuilder.concat(
-                    "UPDATE student SET college=", LogicUtils.sqlStringValue(newCollege),
+                    "UPDATE ", tableName, " SET college=", LogicUtils.sqlStringValue(newCollege),
                     ", dept=", LogicUtils.sqlStringValue(newDepartment),
                     ", program_code=", LogicUtils.sqlStringValue(newProgramCode),
                     ", minor=", LogicUtils.sqlStringValue(newMinor),
@@ -788,8 +825,10 @@ public enum RawStudentLogic {
             Log.info(STU_ID, studentId);
             result = false;
         } else {
+            final String tableName = getTableName(cache);
+
             final String sql = SimpleBuilder.concat(
-                    "UPDATE student SET est_graduation=", LogicUtils.sqlTermValue(newGraduationTerm),
+                    "UPDATE ", tableName, " SET est_graduation=", LogicUtils.sqlTermValue(newGraduationTerm),
                     " WHERE stu_id=", LogicUtils.sqlStringValue(studentId));
 
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
@@ -829,8 +868,10 @@ public enum RawStudentLogic {
             Log.info(STU_ID, studentId);
             result = false;
         } else {
+            final String tableName = getTableName(cache);
+
             final String sql = SimpleBuilder.concat(
-                    "UPDATE student SET tr_credits=", LogicUtils.sqlStringValue(newNumXferCredits),
+                    "UPDATE ", tableName, " SET tr_credits=", LogicUtils.sqlStringValue(newNumXferCredits),
                     " WHERE stu_id=", LogicUtils.sqlStringValue(studentId));
 
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
@@ -874,8 +915,10 @@ public enum RawStudentLogic {
             Log.info(STU_ID, studentId);
             result = false;
         } else {
+            final String tableName = getTableName(cache);
+
             final String sql = SimpleBuilder.concat(
-                    "UPDATE student SET hs_code=", LogicUtils.sqlStringValue(newHighSchoolCode),
+                    "UPDATE ", tableName, " SET hs_code=", LogicUtils.sqlStringValue(newHighSchoolCode),
                     ", hs_gpa=", LogicUtils.sqlStringValue(newHichSchoolGpa),
                     ", hs_class_rank=", LogicUtils.sqlIntegerValue(newHSClassRank),
                     ", hs_size_class=", LogicUtils.sqlIntegerValue(newHSClassSize),
@@ -920,8 +963,10 @@ public enum RawStudentLogic {
             Log.info(STU_ID, studentId);
             result = false;
         } else {
+            final String tableName = getTableName(cache);
+
             final String sql = SimpleBuilder.concat(
-                    "UPDATE student SET act_score=", LogicUtils.sqlIntegerValue(newAct),
+                    "UPDATE ", tableName, " SET act_score=", LogicUtils.sqlIntegerValue(newAct),
                     ", sat_score=", LogicUtils.sqlIntegerValue(newSat),
                     ", ap_score=", LogicUtils.sqlStringValue(newAp),
                     " WHERE stu_id=", LogicUtils.sqlStringValue(studentId));
@@ -963,8 +1008,10 @@ public enum RawStudentLogic {
             Log.info(STU_ID, studentId);
             result = false;
         } else {
+            final String tableName = getTableName(cache);
+
             final String sql = SimpleBuilder.concat(
-                    "UPDATE student SET resident=", LogicUtils.sqlStringValue(newResidency),
+                    "UPDATE ", tableName, " SET resident=", LogicUtils.sqlStringValue(newResidency),
                     " WHERE stu_id=", LogicUtils.sqlStringValue(studentId));
 
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
@@ -1004,8 +1051,10 @@ public enum RawStudentLogic {
             Log.info(STU_ID, studentId);
             result = false;
         } else {
+            final String tableName = getTableName(cache);
+
             final String sql = SimpleBuilder.concat(
-                    "UPDATE student SET birthdate=", LogicUtils.sqlDateValue(newBirthDate),
+                    "UPDATE ", tableName, " SET birthdate=", LogicUtils.sqlDateValue(newBirthDate),
                     " WHERE stu_id=", LogicUtils.sqlStringValue(studentId));
 
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
@@ -1045,8 +1094,10 @@ public enum RawStudentLogic {
             Log.info(STU_ID, studentId);
             result = false;
         } else {
+            final String tableName = getTableName(cache);
+
             final String sql = SimpleBuilder.concat(
-                    "UPDATE student SET gender=", LogicUtils.sqlStringValue(newGender),
+                    "UPDATE ", tableName, " SET gender=", LogicUtils.sqlStringValue(newGender),
                     " WHERE stu_id=", LogicUtils.sqlStringValue(studentId));
 
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
@@ -1086,8 +1137,10 @@ public enum RawStudentLogic {
             Log.info(STU_ID, studentId);
             result = false;
         } else {
+            final String tableName = getTableName(cache);
+
             final String sql = SimpleBuilder.concat(
-                    "UPDATE student SET sev_admin_hold=", LogicUtils.sqlStringValue(newHoldSeverity),
+                    "UPDATE ", tableName, " SET sev_admin_hold=", LogicUtils.sqlStringValue(newHoldSeverity),
                     " WHERE stu_id=", LogicUtils.sqlStringValue(studentId));
 
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
@@ -1127,7 +1180,9 @@ public enum RawStudentLogic {
             Log.info(STU_ID, studentId);
             result = false;
         } else {
-            final String sql = SimpleBuilder.concat("UPDATE student SET timelimit_factor=",
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("UPDATE ", tableName, " SET timelimit_factor=",
                     LogicUtils.sqlFloatValue(newTimeLimitFactor), " WHERE stu_id=",
                     LogicUtils.sqlStringValue(studentId));
 
@@ -1168,7 +1223,9 @@ public enum RawStudentLogic {
             Log.info(STU_ID, studentId);
             result = false;
         } else {
-            final String sql = SimpleBuilder.concat("UPDATE student SET extension_days=",
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("UPDATE ", tableName, " SET extension_days=",
                     LogicUtils.sqlIntegerValue(newExtensionDays), " WHERE stu_id=",
                     LogicUtils.sqlStringValue(studentId));
 
@@ -1209,8 +1266,10 @@ public enum RawStudentLogic {
             Log.info(STU_ID, studentId);
             result = false;
         } else {
+            final String tableName = getTableName(cache);
+
             final String sql = SimpleBuilder.concat(
-                    "UPDATE student SET licensed=", LogicUtils.sqlStringValue(newLicensed),
+                    "UPDATE ", tableName, " SET licensed=", LogicUtils.sqlStringValue(newLicensed),
                     " WHERE stu_id=", LogicUtils.sqlStringValue(studentId));
 
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
@@ -1250,8 +1309,10 @@ public enum RawStudentLogic {
             Log.info(STU_ID, studentId);
             result = false;
         } else {
-            final String sql = SimpleBuilder.concat("UPDATE student ",
-                    "SET campus=", LogicUtils.sqlStringValue(newCampus),
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("UPDATE ", tableName,
+                    " SET campus=", LogicUtils.sqlStringValue(newCampus),
                     " WHERE stu_id=", LogicUtils.sqlStringValue(studentId));
 
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
@@ -1295,8 +1356,10 @@ public enum RawStudentLogic {
             check(newStudentEmail);
             check(newAdviserEmail);
 
+            final String tableName = getTableName(cache);
+
             final String sql = SimpleBuilder.concat(
-                    "UPDATE student SET stu_email=", LogicUtils.sqlStringValue(newStudentEmail),
+                    "UPDATE ", tableName, " SET stu_email=", LogicUtils.sqlStringValue(newStudentEmail),
                     ", adviser_email=", LogicUtils.sqlStringValue(newAdviserEmail),
                     " WHERE stu_id=", LogicUtils.sqlStringValue(studentId));
 
@@ -1339,8 +1402,10 @@ public enum RawStudentLogic {
             Log.info(STU_ID, studentId);
             result = false;
         } else {
+            final String tableName = getTableName(cache);
+
             final String sql = SimpleBuilder.concat(
-                    "UPDATE student SET admit_type=", LogicUtils.sqlStringValue(newAdmitType),
+                    "UPDATE ",tableName," SET admit_type=", LogicUtils.sqlStringValue(newAdmitType),
                     " WHERE stu_id=", LogicUtils.sqlStringValue(studentId));
 
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
@@ -1380,8 +1445,10 @@ public enum RawStudentLogic {
             Log.info(STU_ID, studentId);
             result = false;
         } else {
+            final String tableName = getTableName(cache);
+
             final String sql = SimpleBuilder.concat(
-                    "UPDATE student SET order_enforce=", LogicUtils.sqlStringValue(newCourseOrder),
+                    "UPDATE ", tableName, " SET order_enforce=", LogicUtils.sqlStringValue(newCourseOrder),
                     " WHERE stu_id=", LogicUtils.sqlStringValue(studentId));
 
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
@@ -1421,8 +1488,10 @@ public enum RawStudentLogic {
             Log.info(STU_ID, studentId);
             result = false;
         } else {
+            final String tableName = getTableName(cache);
+
             final String sql = SimpleBuilder.concat(
-                    "UPDATE student SET pacing_structure=", LogicUtils.sqlStringValue(newPacingStructure),
+                    "UPDATE ", tableName, " SET pacing_structure=", LogicUtils.sqlStringValue(newPacingStructure),
                     " WHERE stu_id=", LogicUtils.sqlStringValue(studentId));
 
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
@@ -1458,8 +1527,10 @@ public enum RawStudentLogic {
             Log.info(SKIPPING_UPDATE);
             Log.info(STU_ID, studentId);
         } else {
+            final String tableName = getTableName(cache);
+
             final String sql = SimpleBuilder.concat(
-                    "UPDATE student SET canvas_id=", LogicUtils.sqlStringValue(newCanvasId),
+                    "UPDATE ", tableName, " SET canvas_id=", LogicUtils.sqlStringValue(newCanvasId),
                     " WHERE stu_id=", LogicUtils.sqlStringValue(studentId));
 
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);

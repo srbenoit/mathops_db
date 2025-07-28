@@ -47,6 +47,18 @@ public enum RawApplicantLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "applicant" : (schemaPrefix + ".applicant");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -65,13 +77,15 @@ public enum RawApplicantLogic {
         if (record.stuId.startsWith("99")) {
             result = false;
         } else {
+            final String tableName = getTableName(cache);
+
             final int aplnValue = record.aplnTerm.toNumeric();
             final String apln = Integer.toString(aplnValue);
 
             final String sql = SimpleBuilder.concat(
-                    "INSERT INTO applicant (stu_id,first_name,last_name,birthdate,ethnicity,gender,college,prog_study,",
-                    "hs_code,tr_credits,resident,resident_state,resident_county,hs_gpa,hs_class_rank,hs_size_class,",
-                    "act_score,sat_score,pidm,apln_term) VALUES (",
+                    "INSERT INTO ", tableName, " (stu_id,first_name,last_name,birthdate,ethnicity,gender,college,",
+                    "prog_study,hs_code,tr_credits,resident,resident_state,resident_county,hs_gpa,hs_class_rank,",
+                    "hs_size_class,act_score,sat_score,pidm,apln_term) VALUES (",
                     LogicUtils.sqlStringValue(record.stuId), ",",
                     LogicUtils.sqlStringValue(record.firstName), ",",
                     LogicUtils.sqlStringValue(record.lastName), ",",
@@ -124,8 +138,9 @@ public enum RawApplicantLogic {
         final boolean result;
 
         final HtmlBuilder sql = new HtmlBuilder(100);
+        final String tableName = getTableName(cache);
 
-        sql.add("DELETE FROM applicant WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId));
+        sql.add("DELETE FROM ", tableName, " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId));
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
@@ -153,7 +168,9 @@ public enum RawApplicantLogic {
      */
     public static List<RawApplicant> queryAll(final Cache cache) throws SQLException {
 
-        return executeQuery(cache, "SELECT * FROM applicant");
+        final String tableName = getTableName(cache);
+
+        return executeQuery(cache, "SELECT * FROM " + tableName);
     }
 
     /**
@@ -164,11 +181,12 @@ public enum RawApplicantLogic {
      * @return the list of admin_hold records
      * @throws SQLException if there is an error accessing the database
      */
-    public static List<RawApplicant> queryByStudent(final Cache cache, final String stuId)
-            throws SQLException {
+    public static List<RawApplicant> queryByStudent(final Cache cache, final String stuId) throws SQLException {
 
-        final String sql = SimpleBuilder.concat(
-                "SELECT * FROM applicant WHERE stu_id=", LogicUtils.sqlStringValue(stuId));
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE stu_id=",
+                LogicUtils.sqlStringValue(stuId));
 
         return executeQuery(cache, sql);
     }

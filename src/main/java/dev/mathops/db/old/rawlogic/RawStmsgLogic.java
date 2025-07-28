@@ -34,6 +34,18 @@ public enum RawStmsgLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "stmsg" : (schemaPrefix + ".stmsg");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -49,8 +61,10 @@ public enum RawStmsgLogic {
 
         final boolean result;
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "INSERT INTO stmsg (stu_id,msg_dt,pace,course_index,touch_point,msg_code,sender) VALUES (",
+                "INSERT INTO ", tableName, " (stu_id,msg_dt,pace,course_index,touch_point,msg_code,sender) VALUES (",
                 LogicUtils.sqlStringValue(record.stuId), ",",
                 LogicUtils.sqlDateValue(record.msgDt), ",",
                 LogicUtils.sqlIntegerValue(record.pace), ",",
@@ -88,8 +102,10 @@ public enum RawStmsgLogic {
 
         final boolean result;
 
-        final String sql = SimpleBuilder.concat("DELETE FROM stmsg ",
-                "WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
                 "  AND msg_dt=", LogicUtils.sqlDateValue(record.msgDt),
                 "  AND touch_point=", LogicUtils.sqlStringValue(record.touchPoint),
                 "  AND msg_code=", LogicUtils.sqlStringValue(record.msgCode));
@@ -120,7 +136,9 @@ public enum RawStmsgLogic {
      */
     public static List<RawStmsg> queryAll(final Cache cache) throws SQLException {
 
-        return executeQuery(cache, "SELECT * FROM stmsg");
+        final String tableName = getTableName(cache);
+
+        return executeQuery(cache, "SELECT * FROM " + tableName);
     }
 
     /**
@@ -132,10 +150,11 @@ public enum RawStmsgLogic {
      * @return the list of models that matched the criteria, a zero-length array if none matched
      * @throws SQLException if there is an error accessing the database
      */
-    public static List<RawStmsg> queryByStudent(final Cache cache, final String studentId)
-            throws SQLException {
+    public static List<RawStmsg> queryByStudent(final Cache cache, final String studentId) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM stmsg WHERE stu_id=",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE stu_id=",
                 LogicUtils.sqlStringValue(studentId));
 
         return executeQuery(cache, sql);
@@ -150,7 +169,9 @@ public enum RawStmsgLogic {
      */
     public static Integer count(final Cache cache) throws SQLException {
 
-        final String sql = "SELECT count(*) FROM stmsg";
+        final String tableName = getTableName(cache);
+
+        final String sql = "SELECT count(*) FROM " + tableName;
 
         return LogicUtils.executeSimpleIntQuery(cache, sql);
     }
@@ -164,7 +185,9 @@ public enum RawStmsgLogic {
      */
     public static LocalDate getLatest(final Cache cache) throws SQLException {
 
-        final String sql = "SELECT max(msg_dt) FROM stmsg";
+        final String tableName = getTableName(cache);
+
+        final String sql = "SELECT max(msg_dt) FROM " + tableName;
 
         return LogicUtils.executeSimpleDateQuery(cache, sql);
     }

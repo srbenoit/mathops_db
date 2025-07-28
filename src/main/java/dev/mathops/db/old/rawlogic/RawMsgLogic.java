@@ -33,6 +33,18 @@ public enum RawMsgLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "msg" : (schemaPrefix + ".msg");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -49,8 +61,10 @@ public enum RawMsgLogic {
         // FIXME: This needs to be a prepared statement! Subject and template text can include
         //  apostrophes or SQL escapes.
 
-        final String sql = SimpleBuilder.concat("INSERT INTO msg (",
-                "term,term_yr,touch_point,msg_code,subject,template) VALUES (?,?,?,?,?,?)");
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("INSERT INTO ", tableName,
+                " (term,term_yr,touch_point,msg_code,subject,template) VALUES (?,?,?,?,?,?)");
 
         // Normal SQL cannot insert into "Text" field - need a Prepared Statement
 
@@ -89,8 +103,10 @@ public enum RawMsgLogic {
      */
     public static boolean delete(final Cache cache, final RawMsg record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM msg ",
-                "WHERE term=", LogicUtils.sqlStringValue(record.termKey.termCode),
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE term=", LogicUtils.sqlStringValue(record.termKey.termCode),
                 "  AND term_yr=", LogicUtils.sqlIntegerValue(record.termKey.shortYear),
                 "  AND touch_point=", LogicUtils.sqlStringValue(record.touchPoint),
                 "  AND msg_code=", LogicUtils.sqlStringValue(record.msgCode));
@@ -121,7 +137,9 @@ public enum RawMsgLogic {
      */
     public static List<RawMsg> queryAll(final Cache cache) throws SQLException {
 
-        final String sql = "SELECT * FROM msg";
+        final String tableName = getTableName(cache);
+
+        final String sql = "SELECT * FROM " + tableName;
 
         final List<RawMsg> result = new ArrayList<>(100);
 

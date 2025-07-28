@@ -39,6 +39,18 @@ public enum RawStetextLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "stetext" : (schemaPrefix + ".stetext");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -59,9 +71,10 @@ public enum RawStetextLogic {
             Log.info("stu_id: ", record.stuId);
             result = false;
         } else {
-            final String sql = SimpleBuilder.concat(
-                    "INSERT INTO stetext (stu_id,etext_id,active_dt,etext_key,",
-                    "expiration_dt,refund_deadline_dt,refund_dt,refund_reason) VALUES (",
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("INSERT INTO ", tableName, " (stu_id,etext_id,active_dt,",
+                    "etext_key,expiration_dt,refund_deadline_dt,refund_dt,refund_reason) VALUES (",
                     LogicUtils.sqlStringValue(record.stuId), ",",
                     LogicUtils.sqlStringValue(record.etextId), ",",
                     LogicUtils.sqlDateValue(record.activeDt), ",",
@@ -101,8 +114,10 @@ public enum RawStetextLogic {
 
         final boolean result;
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "DELETE FROM stetext WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
+                "DELETE FROM ", tableName, " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
                 "   AND etext_id=", LogicUtils.sqlStringValue(record.etextId),
                 "   AND active_dt=", LogicUtils.sqlDateValue(record.activeDt));
 
@@ -132,7 +147,9 @@ public enum RawStetextLogic {
      */
     public static List<RawStetext> queryAll(final Cache cache) throws SQLException {
 
-        return executeQuery(cache, "SELECT * FROM stetext");
+        final String tableName = getTableName(cache);
+
+        return executeQuery(cache, "SELECT * FROM " + tableName);
     }
 
     /**
@@ -149,8 +166,10 @@ public enum RawStetextLogic {
                                                        final String studentId, final String etextId)
             throws SQLException {
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "SELECT * FROM stetext WHERE stu_id=", LogicUtils.sqlStringValue(studentId),
+                "SELECT * FROM ", tableName, " WHERE stu_id=", LogicUtils.sqlStringValue(studentId),
                 " AND etext_id=", LogicUtils.sqlStringValue(etextId),
                 " AND refund_dt IS NULL ",
                 " AND (expiration_dt IS NULL OR expiration_dt>=",
@@ -170,8 +189,10 @@ public enum RawStetextLogic {
      */
     public static List<RawStetext> queryByStudent(final Cache cache, final String studentId) throws SQLException {
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "SELECT * FROM stetext WHERE stu_id=", LogicUtils.sqlStringValue(studentId),
+                "SELECT * FROM ", tableName, " WHERE stu_id=", LogicUtils.sqlStringValue(studentId),
                 " ORDER BY etext_id");
 
         return executeQuery(cache, sql);
@@ -187,8 +208,10 @@ public enum RawStetextLogic {
      */
     public static List<RawStetext> queryUnrefundedByKey(final Cache cache, final String key) throws SQLException {
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "SELECT * FROM stetext WHERE etext_key=", LogicUtils.sqlStringValue(key),
+                "SELECT * FROM ", tableName, " WHERE etext_key=", LogicUtils.sqlStringValue(key),
                 "   AND refund_dt IS NULL");
 
         return executeQuery(cache, sql);
@@ -268,8 +291,10 @@ public enum RawStetextLogic {
             Log.info("stu_id: ", rec.stuId);
             result = false;
         } else {
+            final String tableName = getTableName(cache);
+
             final String sql = SimpleBuilder.concat(
-                    "UPDATE stetext SET refund_dt=", LogicUtils.sqlDateValue(now.toLocalDate()),
+                    "UPDATE ", tableName, " SET refund_dt=", LogicUtils.sqlDateValue(now.toLocalDate()),
                     ", refund_reason=", LogicUtils.sqlStringValue(refundReason),
                     " WHERE stu_id=", LogicUtils.sqlStringValue(rec.stuId),
                     "   AND etext_id=", LogicUtils.sqlStringValue(rec.etextId),
@@ -315,9 +340,10 @@ public enum RawStetextLogic {
             Log.info("stu_id: ", studentId);
             result = false;
         } else {
+            final String tableName = getTableName(cache);
+
             final String sql = SimpleBuilder.concat(
-                    "UPDATE stetext",
-                    " SET refund_deadline_dt=", LogicUtils.sqlDateValue(refundDeadline),
+                    "UPDATE ", tableName, " SET refund_deadline_dt=", LogicUtils.sqlDateValue(refundDeadline),
                     " WHERE stu_id=", LogicUtils.sqlStringValue(studentId),
                     "   AND etext_id=", LogicUtils.sqlStringValue(eTextId),
                     "   AND active_dt=", LogicUtils.sqlDateValue(whenActive));
@@ -363,8 +389,10 @@ public enum RawStetextLogic {
             Log.info("stu_id: ", stuId);
             result = false;
         } else {
+            final String tableName = getTableName(cache);
+
             final String sql = SimpleBuilder.concat(
-                    "UPDATE stetext SET refund_dt=", LogicUtils.sqlDateValue(refundDate),
+                    "UPDATE ", tableName, " SET refund_dt=", LogicUtils.sqlDateValue(refundDate),
                     ", refund_reason=", LogicUtils.sqlStringValue(refundReason),
                     " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
                     "   AND etext_id=", LogicUtils.sqlStringValue(etextId),

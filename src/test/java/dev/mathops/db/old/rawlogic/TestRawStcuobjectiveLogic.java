@@ -56,10 +56,12 @@ final class TestRawStcuobjectiveLogic {
         final DbConnection conn = login.checkOutConnection();
         final Cache cache = new Cache(profile);
 
+        final String whichDbName = RawWhichDbLogic.getTableName(cache);
+
         // Make sure we're in the TEST database
         try {
             try (final Statement stmt = conn.createStatement();
-                 final ResultSet rs = stmt.executeQuery("SELECT descr FROM which_db")) {
+                 final ResultSet rs = stmt.executeQuery("SELECT descr FROM " + whichDbName)) {
 
                 if (rs.next()) {
                     final String which = rs.getString(1);
@@ -73,7 +75,8 @@ final class TestRawStcuobjectiveLogic {
             }
 
             try (final Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("DELETE FROM stcuobjective");
+                final String tableName = RawStcuobjectiveLogic.getTableName(cache);
+                stmt.executeUpdate("DELETE FROM " + tableName);
             }
             conn.commit();
 
@@ -336,10 +339,12 @@ final class TestRawStcuobjectiveLogic {
 
         final Login login = profile.getLogin(ESchema.LEGACY);
         final DbConnection conn = login.checkOutConnection();
+        final Cache cache = new Cache(profile);
 
         try {
             try (final Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("DELETE FROM stcuobjective");
+                final String tableName = RawStcuobjectiveLogic.getTableName(cache);
+                stmt.executeUpdate("DELETE FROM " + tableName);
             }
 
             conn.commit();

@@ -35,6 +35,18 @@ public enum RawExceptStuLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "except_stu" : (schemaPrefix + ".except_stu");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -48,8 +60,10 @@ public enum RawExceptStuLogic {
             throw new SQLException("Null value in primary key field.");
         }
 
-        final String sql = SimpleBuilder.concat("INSERT INTO except_stu ",
-                "(term,term_yr,stu_id,course,unit,course_enroll,hwork_status,sect,sect_enroll) VALUES (",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("INSERT INTO ", tableName,
+                " (term,term_yr,stu_id,course,unit,course_enroll,hwork_status,sect,sect_enroll) VALUES (",
                 LogicUtils.sqlStringValue(record.termKey.termCode), ",",
                 LogicUtils.sqlIntegerValue(record.termKey.shortYear), ",",
                 LogicUtils.sqlStringValue(record.stuId), ",",
@@ -87,8 +101,10 @@ public enum RawExceptStuLogic {
      */
     public static boolean delete(final Cache cache, final RawExceptStu record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM except_stu ",
-                "WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
                 "  AND course=", LogicUtils.sqlStringValue(record.course),
                 "  AND unit=", LogicUtils.sqlIntegerValue(record.unit));
 
@@ -118,7 +134,9 @@ public enum RawExceptStuLogic {
      */
     public static List<RawExceptStu> queryAll(final Cache cache) throws SQLException {
 
-        return doListQuery(cache, "SELECT * FROM except_stu");
+        final String tableName = getTableName(cache);
+
+        return doListQuery(cache, "SELECT * FROM " + tableName);
     }
 
     /**
@@ -131,8 +149,10 @@ public enum RawExceptStuLogic {
      */
     public static List<RawExceptStu> queryByStudent(final Cache cache, final String stuId) throws SQLException {
 
-        final String sql = SimpleBuilder.concat(
-                "SELECT * FROM except_stu WHERE stu_id=", LogicUtils.sqlStringValue(stuId));
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE stu_id=",
+                LogicUtils.sqlStringValue(stuId));
 
         return doListQuery(cache, sql);
     }
@@ -149,8 +169,9 @@ public enum RawExceptStuLogic {
     public static List<RawExceptStu> queryByStudentCourse(final Cache cache, final String stuId,
                                                           final String course) throws SQLException {
 
-        final String sql = SimpleBuilder.concat(
-                "SELECT * FROM except_stu WHERE stu_id=",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE stu_id=",
                 LogicUtils.sqlStringValue(stuId), " AND course=",
                 LogicUtils.sqlStringValue(course));
 

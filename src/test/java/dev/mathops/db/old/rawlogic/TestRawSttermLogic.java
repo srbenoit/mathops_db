@@ -11,6 +11,7 @@ import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.old.rawrecord.RawRecordConstants;
 import dev.mathops.db.old.rawrecord.RawStterm;
 import dev.mathops.db.rec.TermRec;
+import dev.mathops.db.reclogic.TermLogic;
 import dev.mathops.db.type.TermKey;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -51,10 +52,12 @@ final class TestRawSttermLogic {
         final DbConnection conn = login.checkOutConnection();
         final Cache cache = new Cache(profile);
 
+        final String whichDbName = RawWhichDbLogic.getTableName(cache);
+
         // Make sure we're in the TEST database
         try {
             try (final Statement stmt = conn.createStatement();
-                 final ResultSet rs = stmt.executeQuery("SELECT descr FROM which_db")) {
+                 final ResultSet rs = stmt.executeQuery("SELECT descr FROM " + whichDbName)) {
 
                 if (rs.next()) {
                     final String which = rs.getString(1);
@@ -68,8 +71,10 @@ final class TestRawSttermLogic {
             }
 
             try (final Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("DELETE FROM stterm");
-                stmt.executeUpdate("DELETE FROM term");
+                final String tableName = RawSttermLogic.getTableName(cache);
+                stmt.executeUpdate("DELETE FROM " + tableName);
+                final String termName = TermLogic.Postgres.getTableName(cache);
+                stmt.executeUpdate("DELETE FROM " + termName);
             }
             conn.commit();
 
@@ -495,11 +500,14 @@ final class TestRawSttermLogic {
 
         final Login login = profile.getLogin(ESchema.LEGACY);
         final DbConnection conn = login.checkOutConnection();
+        final Cache cache = new Cache(profile);
 
         try {
             try (final Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("DELETE FROM stterm");
-                stmt.executeUpdate("DELETE FROM term");
+                final String tableName = RawSttermLogic.getTableName(cache);
+                stmt.executeUpdate("DELETE FROM " + tableName);
+                final String termName = TermLogic.Postgres.getTableName(cache);
+                stmt.executeUpdate("DELETE FROM " + termName);
             }
 
             conn.commit();

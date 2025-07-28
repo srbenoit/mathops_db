@@ -137,6 +137,18 @@ public enum RawStmpeLogic {
     }
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "stmpe" : (schemaPrefix + ".stmpe");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -158,11 +170,13 @@ public enum RawStmpeLogic {
             Log.info("stu_id: ", record.stuId);
             result = false;
         } else {
+            final String tableName = getTableName(cache);
+
             // Adjust serial number if needed to avoid collision with existing record
             if (record.serialNbr != null) {
                 for (int i = 0; i < 1000; ++i) {
                     final Integer existing = LogicUtils.executeSimpleIntQuery(cache,
-                            "SELECT COUNT(*) FROM stmpe WHERE serial_nbr=" + record.serialNbr);
+                            "SELECT COUNT(*) FROM " + tableName + " WHERE serial_nbr=" + record.serialNbr);
 
                     if (existing == null || existing.longValue() == 0L) {
                         break;
@@ -172,7 +186,7 @@ public enum RawStmpeLogic {
             }
 
             final String sql = SimpleBuilder.concat(
-                    "INSERT INTO stmpe (stu_id,version,academic_yr,exam_dt,start_time,finish_time,last_name,",
+                    "INSERT INTO ", tableName, " (stu_id,version,academic_yr,exam_dt,start_time,finish_time,last_name,",
                     "first_name,middle_initial,seq_nbr,serial_nbr,sts_a,sts_117,sts_118,sts_124,sts_125,sts_126,",
                     "placed,how_validated) VALUES (",
                     LogicUtils.sqlStringValue(record.stuId), ",",
@@ -223,7 +237,9 @@ public enum RawStmpeLogic {
      */
     public static boolean delete(final Cache cache, final RawStmpe record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM stmpe",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
                 " WHERE version=", LogicUtils.sqlStringValue(record.version),
                 " AND stu_id=", LogicUtils.sqlStringValue(record.stuId),
                 " AND exam_dt=", LogicUtils.sqlDateValue(record.examDt),
@@ -271,7 +287,9 @@ public enum RawStmpeLogic {
      */
     public static List<RawStmpe> queryAll(final Cache cache) throws SQLException {
 
-        return executeQuery(cache, "SELECT * FROM stmpe");
+        final String tableName = getTableName(cache);
+
+        return executeQuery(cache, "SELECT * FROM " + tableName);
     }
 
     /**
@@ -289,8 +307,10 @@ public enum RawStmpeLogic {
         if (stuId.startsWith("99")) {
             result = queryByTestStudent(stuId);
         } else {
-            final String sql = SimpleBuilder.concat("SELECT * FROM stmpe ",
-                    "WHERE stu_id=", LogicUtils.sqlStringValue(stuId));
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
+                    " WHERE stu_id=", LogicUtils.sqlStringValue(stuId));
 
             return executeQuery(cache, sql);
         }
@@ -313,8 +333,10 @@ public enum RawStmpeLogic {
         if (stuId.startsWith("99")) {
             result = queryByTestStudent(stuId);
         } else {
-            final String sql = SimpleBuilder.concat("SELECT * FROM stmpe ",
-                    "WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
+                    " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
                     " AND (placed='Y' OR placed='N')");
 
             return executeQuery(cache, sql);
@@ -635,8 +657,10 @@ public enum RawStmpeLogic {
         } else {
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
+            final String tableName = getTableName(cache);
+
             // Count legal unproctored attempts
-            final String sql1 = SimpleBuilder.concat("SELECT COUNT(*) FROM stmpe ",
+            final String sql1 = SimpleBuilder.concat("SELECT COUNT(*) FROM ", tableName,
                     " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
                     " AND version=", LogicUtils.sqlStringValue(version),
                     " AND (placed='Y' OR placed='N') ",
@@ -646,7 +670,7 @@ public enum RawStmpeLogic {
             final int numOnline = executeIntQuery(cache, sql1);
 
             // Count legal proctored attempts
-            final String sql2 = SimpleBuilder.concat("SELECT COUNT(*) FROM stmpe ",
+            final String sql2 = SimpleBuilder.concat("SELECT COUNT(*) FROM ", tableName,
                     " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
                     " AND version=", LogicUtils.sqlStringValue(version),
                     " AND (placed='Y' OR placed='N') ",
@@ -771,7 +795,9 @@ public enum RawStmpeLogic {
      */
     public static List<RawStmpe> queryOnOrAfter(final Cache cache, final LocalDate earliest) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM stmpe WHERE exam_dt>=",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE exam_dt>=",
                 LogicUtils.sqlDateValue(earliest), " AND (placed='Y' OR placed='N')");
 
         return executeQuery(cache, sql);

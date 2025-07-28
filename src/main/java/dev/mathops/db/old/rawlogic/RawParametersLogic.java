@@ -38,6 +38,18 @@ public enum RawParametersLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "parameters" : (schemaPrefix + ".parameters");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -51,8 +63,10 @@ public enum RawParametersLogic {
             throw new SQLException("Null value in primary key or required field.");
         }
 
-        final String sql = SimpleBuilder.concat("INSERT INTO parameters (",
-                "pgm_name,parm1,parm2,parm3,parm4,parm5,parm6,parm7,parm8,parm9,parm10) VALUES (",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("INSERT INTO ", tableName,
+                " (pgm_name,parm1,parm2,parm3,parm4,parm5,parm6,parm7,parm8,parm9,parm10) VALUES (",
                 LogicUtils.sqlStringValue(record.pgmName), ",",
                 LogicUtils.sqlStringValue(record.parm1), ",",
                 LogicUtils.sqlStringValue(record.parm2), ",",
@@ -92,8 +106,10 @@ public enum RawParametersLogic {
      */
     public static boolean delete(final Cache cache, final RawParameters record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM parameters ",
-                "WHERE pgm_name=", LogicUtils.sqlStringValue(record.pgmName));
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE pgm_name=", LogicUtils.sqlStringValue(record.pgmName));
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
@@ -121,7 +137,9 @@ public enum RawParametersLogic {
      */
     public static List<RawParameters> queryAll(final Cache cache) throws SQLException {
 
-        final String sql = "SELECT * FROM parameters";
+        final String tableName = getTableName(cache);
+
+        final String sql = "SELECT * FROM " + tableName;
 
         final List<RawParameters> result = new ArrayList<>(20);
 
@@ -150,8 +168,10 @@ public enum RawParametersLogic {
      */
     public static RawParameters query(final Cache cache, final String pgmName) throws SQLException {
 
+        final String tableName = getTableName(cache);
+
         return doSingleQuery(cache, SimpleBuilder.concat(
-                "SELECT * FROM parameters WHERE pgm_name=", LogicUtils.sqlStringValue(pgmName)));
+                "SELECT * FROM ", tableName, " WHERE pgm_name=", LogicUtils.sqlStringValue(pgmName)));
     }
 
     /**
@@ -166,8 +186,10 @@ public enum RawParametersLogic {
     public static boolean updateParm1(final Cache cache, final String pgmName,
                                       final String newParm1) throws SQLException {
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "UPDATE parameters SET parm1=", LogicUtils.sqlStringValue(newParm1),
+                "UPDATE ", tableName, " SET parm1=", LogicUtils.sqlStringValue(newParm1),
                 " WHERE pgm_name=", LogicUtils.sqlStringValue(pgmName));
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
@@ -199,8 +221,10 @@ public enum RawParametersLogic {
     public static boolean updateParm2(final Cache cache, final String pgmName,
                                       final String newParm2) throws SQLException {
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "UPDATE parameters SET parm2=", LogicUtils.sqlStringValue(newParm2),
+                "UPDATE ", tableName, " SET parm2=", LogicUtils.sqlStringValue(newParm2),
                 " WHERE pgm_name=", LogicUtils.sqlStringValue(pgmName));
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
@@ -232,8 +256,10 @@ public enum RawParametersLogic {
     public static boolean updateParm10(final Cache cache, final String pgmName,
                                        final LocalDate newParm10) throws SQLException {
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "UPDATE parameters SET parm10=", LogicUtils.sqlDateValue(newParm10),
+                "UPDATE ", tableName, " SET parm10=", LogicUtils.sqlDateValue(newParm10),
                 " WHERE pgm_name=", LogicUtils.sqlStringValue(pgmName));
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);

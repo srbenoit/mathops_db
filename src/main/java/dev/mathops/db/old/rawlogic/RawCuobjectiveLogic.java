@@ -35,6 +35,18 @@ public enum RawCuobjectiveLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "cuobjective" : (schemaPrefix + ".cuobjective");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -48,8 +60,10 @@ public enum RawCuobjectiveLogic {
             throw new SQLException("Null value in primary key field.");
         }
 
-        final String sql = SimpleBuilder.concat(
-                "INSERT INTO cuobjective (course,unit,term,term_yr,objective,lesson_id,lesson_nbr,start_dt) VALUES (",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("INSERT INTO ", tableName,
+                " (course,unit,term,term_yr,objective,lesson_id,lesson_nbr,start_dt) VALUES (",
                 LogicUtils.sqlStringValue(record.course), ",",
                 record.unit, ",",
                 LogicUtils.sqlStringValue(record.termKey.termCode), ",",
@@ -86,8 +100,10 @@ public enum RawCuobjectiveLogic {
      */
     public static boolean delete(final Cache cache, final RawCuobjective record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM cuobjective ",
-                "WHERE course=", LogicUtils.sqlStringValue(record.course),
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE course=", LogicUtils.sqlStringValue(record.course),
                 "  AND unit=", LogicUtils.sqlIntegerValue(record.unit),
                 "  AND term=", LogicUtils.sqlStringValue(record.termKey.termCode),
                 "  AND term_yr=", LogicUtils.sqlIntegerValue(record.termKey.shortYear),
@@ -119,7 +135,9 @@ public enum RawCuobjectiveLogic {
      */
     public static List<RawCuobjective> queryAll(final Cache cache) throws SQLException {
 
-        return executeListQuery(cache, "SELECT * FROM cuobjective");
+        final String tableName = getTableName(cache);
+
+        return executeListQuery(cache, "SELECT * FROM " + tableName);
     }
 
     /**
@@ -132,8 +150,10 @@ public enum RawCuobjectiveLogic {
      */
     public static List<RawCuobjective> queryByTerm(final Cache cache, final TermKey termKey) throws SQLException {
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "SELECT * FROM cuobjective",
+                "SELECT * FROM ", tableName,
                 " WHERE term=", LogicUtils.sqlStringValue(termKey.termCode),
                 " AND term_yr=", LogicUtils.sqlIntegerValue(termKey.shortYear));
 

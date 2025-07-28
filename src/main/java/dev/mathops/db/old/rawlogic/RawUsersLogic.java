@@ -35,6 +35,18 @@ public enum RawUsersLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "users" : (schemaPrefix + ".users");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -49,8 +61,10 @@ public enum RawUsersLogic {
             throw new SQLException("Null value in primary key or required field.");
         }
 
-        final String sql = SimpleBuilder.concat("INSERT INTO users ",
-                "(stu_id,term,term_yr,serial_nbr,version,exam_dt,exam_score,calc_course,passed) VALUES (",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("INSERT INTO ", tableName,
+                " (stu_id,term,term_yr,serial_nbr,version,exam_dt,exam_score,calc_course,passed) VALUES (",
                 LogicUtils.sqlStringValue(record.stuId), ",",
                 LogicUtils.sqlStringValue(record.termKey.termCode), ",",
                 LogicUtils.sqlIntegerValue(record.termKey.shortYear), ",",
@@ -88,7 +102,9 @@ public enum RawUsersLogic {
      */
     public static boolean delete(final Cache cache, final RawUsers record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM users WHERE stu_id=",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName, " WHERE stu_id=",
                 LogicUtils.sqlStringValue(record.stuId),
                 "  AND serial_nbr=", LogicUtils.sqlLongValue(record.serialNbr),
                 "  AND version=", LogicUtils.sqlStringValue(record.version));
@@ -119,7 +135,9 @@ public enum RawUsersLogic {
      */
     public static List<RawUsers> queryAll(final Cache cache) throws SQLException {
 
-        return executeQuery(cache, "SELECT * FROM users");
+        final String tableName = getTableName(cache);
+
+        return executeQuery(cache, "SELECT * FROM " + tableName);
     }
 
     /**
@@ -132,7 +150,10 @@ public enum RawUsersLogic {
      */
     public static List<RawUsers> queryByStudent(final Cache cache, final String stuId) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM users WHERE stu_id=", LogicUtils.sqlStringValue(stuId));
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE stu_id=",
+                LogicUtils.sqlStringValue(stuId));
 
         return executeQuery(cache, sql);
     }

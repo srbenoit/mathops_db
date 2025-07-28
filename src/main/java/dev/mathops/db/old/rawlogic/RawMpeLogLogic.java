@@ -37,6 +37,18 @@ public enum RawMpeLogLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "mpe_log" : (schemaPrefix + ".mpe_log");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -51,8 +63,10 @@ public enum RawMpeLogLogic {
         if (record.stuId.startsWith("99")) {
             result = false;
         } else {
+            final String tableName = getTableName(cache);
+
             final String sql = SimpleBuilder.concat(
-                    "INSERT INTO mpe_log (stu_id,academic_yr,course,version,start_dt,",
+                    "INSERT INTO ", tableName, " (stu_id,academic_yr,course,version,start_dt,",
                     "exam_dt,recover_dt,serial_nbr,start_time,calc_nbr) VALUES (",
                     LogicUtils.sqlStringValue(record.stuId), ",",
                     LogicUtils.sqlStringValue(record.academicYr), ",",
@@ -95,8 +109,10 @@ public enum RawMpeLogLogic {
 
         final boolean result;
 
-        final String sql = SimpleBuilder.concat("DELETE FROM mpe_log ",
-                "WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
                 "  AND course=", LogicUtils.sqlStringValue(record.course),
                 "  AND version=", LogicUtils.sqlStringValue(record.version),
                 "  AND start_dt=", LogicUtils.sqlDateValue(record.startDt),
@@ -129,7 +145,9 @@ public enum RawMpeLogLogic {
      */
     public static List<RawMpeLog> queryAll(final Cache cache) throws SQLException {
 
-        final String sql = "SELECT * FROM mpe_log";
+        final String tableName = getTableName(cache);
+
+        final String sql = "SELECT * FROM " + tableName;
 
         final List<RawMpeLog> result = new ArrayList<>(500);
 
@@ -170,8 +188,10 @@ public enum RawMpeLogLogic {
         if (stuId.startsWith("99")) {
             result = false;
         } else {
+            final String tableName = getTableName(cache);
+
             final String sql = SimpleBuilder.concat(
-                    "UPDATE mpe_log SET exam_dt=",
+                    "UPDATE ", tableName, " SET exam_dt=",
                     LogicUtils.sqlDateValue(examDt), ", recover_dt=",
                     LogicUtils.sqlDateValue(recoverDt), " WHERE stu_id=",
                     LogicUtils.sqlStringValue(stuId), " AND start_dt=",

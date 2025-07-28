@@ -30,6 +30,18 @@ public enum RawNewstuLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "newstu" : (schemaPrefix + ".newstu");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -43,7 +55,10 @@ public enum RawNewstuLogic {
             throw new SQLException("Null value in primary key or required field.");
         }
 
-        final String sql = SimpleBuilder.concat("INSERT INTO newstu (stu_id,acad_level,reg_type,term) VALUES (",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("INSERT INTO ", tableName,
+                " (stu_id,acad_level,reg_type,term) VALUES (",
                 LogicUtils.sqlStringValue(record.stuId), ",",
                 LogicUtils.sqlStringValue(record.acadLevel), ",",
                 LogicUtils.sqlStringValue(record.regType), ",",
@@ -76,8 +91,10 @@ public enum RawNewstuLogic {
      */
     public static boolean delete(final Cache cache, final RawNewstu record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM newstu ",
-                "WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId));
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId));
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
@@ -105,7 +122,9 @@ public enum RawNewstuLogic {
      */
     public static List<RawNewstu> queryAll(final Cache cache) throws SQLException {
 
-        final String sql = "SELECT * FROM newstu";
+        final String tableName = getTableName(cache);
+
+        final String sql = "SELECT * FROM " + tableName;
 
         final List<RawNewstu> result = new ArrayList<>(500);
 
@@ -135,8 +154,10 @@ public enum RawNewstuLogic {
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
+        final String tableName = getTableName(cache);
+
         try (final Statement stmt = conn.createStatement()) {
-            final int result = stmt.executeUpdate("DELETE FROM newstu");
+            final int result = stmt.executeUpdate("DELETE FROM " + tableName);
             conn.commit();
             return result;
         } finally {

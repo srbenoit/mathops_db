@@ -1,5 +1,6 @@
 package dev.mathops.db.old.rawrecord;
 
+import dev.mathops.db.Cache;
 import dev.mathops.db.type.TermKey;
 import dev.mathops.text.builder.HtmlBuilder;
 

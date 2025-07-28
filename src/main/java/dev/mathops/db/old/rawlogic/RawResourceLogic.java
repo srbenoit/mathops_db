@@ -32,6 +32,18 @@ public enum RawResourceLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "resource" : (schemaPrefix + ".resource");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -46,8 +58,10 @@ public enum RawResourceLogic {
             throw new SQLException("Null value in primary key or required field.");
         }
 
-        final String sql = SimpleBuilder.concat("INSERT INTO resource ",
-                "(resource_id,resource_type,resource_desc,days_allowed,holds_allowed,hold_id) VALUES (",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("INSERT INTO ", tableName,
+                " (resource_id,resource_type,resource_desc,days_allowed,holds_allowed,hold_id) VALUES (",
                 LogicUtils.sqlStringValue(record.resourceId), ",",
                 LogicUtils.sqlStringValue(record.resourceType), ",",
                 LogicUtils.sqlStringValue(record.resourceDesc), ",",
@@ -82,8 +96,10 @@ public enum RawResourceLogic {
      */
     public static boolean delete(final Cache cache, final RawResource record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM resource ",
-                "WHERE resource_id=", LogicUtils.sqlStringValue(record.resourceId));
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE resource_id=", LogicUtils.sqlStringValue(record.resourceId));
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
@@ -111,7 +127,9 @@ public enum RawResourceLogic {
      */
     public static List<RawResource> queryAll(final Cache cache) throws SQLException {
 
-        final String sql = "SELECT * FROM resource";
+        final String tableName = getTableName(cache);
+
+        final String sql = "SELECT * FROM " + tableName;
 
         final List<RawResource> result = new ArrayList<>(250);
 
@@ -138,10 +156,11 @@ public enum RawResourceLogic {
      * @return the list of matching records
      * @throws SQLException if there is an error performing the query
      */
-    public static RawResource query(final Cache cache, final String resourceId)
-            throws SQLException {
+    public static RawResource query(final Cache cache, final String resourceId) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM resource",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
                 " WHERE resource_id=", LogicUtils.sqlStringValue(resourceId));
 
         return executeSingleQuery(cache, sql);

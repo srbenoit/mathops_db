@@ -48,6 +48,18 @@ import java.util.List;
 public enum RawSthomeworkLogic {
     ;
 
+    /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "sthomework" : (schemaPrefix + ".sthomework");
+    }
+
     /** The types of homework. */
     public static final String[] ALL_HW_TYPES = {"HW"};
 
@@ -90,8 +102,11 @@ public enum RawSthomeworkLogic {
 
             final String obj = record.objective.toString();
 
+            final String tableName = getTableName(cache);
+
             final String sql = SimpleBuilder.concat(
-                    "INSERT INTO sthomework (serial_nbr,version,stu_id,hw_dt,hw_score,start_time,finish_time,time_ok,",
+                    "INSERT INTO ", tableName,
+                    " (serial_nbr,version,stu_id,hw_dt,hw_score,start_time,finish_time,time_ok,",
                     "passed,hw_type,course,sect,unit,objective,hw_coupon,used_dt,used_serial_nbr) VALUES (",
                     LogicUtils.sqlLongValue(record.serialNbr), ",",
                     LogicUtils.sqlStringValue(record.version), ",",
@@ -139,7 +154,9 @@ public enum RawSthomeworkLogic {
      */
     public static boolean delete(final Cache cache, final RawSthomework record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM sthomework",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
                 " WHERE serial_nbr=", LogicUtils.sqlLongValue(record.serialNbr),
                 " AND version=", LogicUtils.sqlStringValue(record.version),
                 " AND stu_id=", LogicUtils.sqlStringValue(record.stuId));
@@ -170,7 +187,9 @@ public enum RawSthomeworkLogic {
      */
     public static List<RawSthomework> queryAll(final Cache cache) throws SQLException {
 
-        return executeQuery(cache, "SELECT * FROM sthomework");
+        final String tableName = getTableName(cache);
+
+        return executeQuery(cache, "SELECT * FROM " + tableName);
     }
 
     /**
@@ -186,7 +205,9 @@ public enum RawSthomeworkLogic {
     public static List<RawSthomework> queryByStudent(final Cache cache, final String stuId,
                                                      final boolean all) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM sthomework WHERE stu_id=",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE stu_id=",
                 LogicUtils.sqlStringValue(stuId), (all ? CoreConstants.EMPTY : " AND (passed='Y' OR passed='N')"),
                 " ORDER BY hw_dt,finish_time");
 
@@ -208,7 +229,9 @@ public enum RawSthomeworkLogic {
     public static List<RawSthomework> queryByStudentCourse(final Cache cache, final String stuId, final String course,
                                                            final boolean all) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM sthomework ",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
                 " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
                 "   AND course=", LogicUtils.sqlStringValue(course),
                 (all ? CoreConstants.EMPTY : " AND (passed='Y' OR passed='N')"),
@@ -234,7 +257,9 @@ public enum RawSthomeworkLogic {
                                                                final String course, final Integer unit,
                                                                final boolean all) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM sthomework ",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
                 " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
                 "   AND course=", LogicUtils.sqlStringValue(course),
                 "   AND unit=", LogicUtils.sqlIntegerValue(unit),
@@ -263,7 +288,9 @@ public enum RawSthomeworkLogic {
                                                                         final Integer objective,
                                                                         final boolean all) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM sthomework ",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
                 " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
                 "   AND course=", LogicUtils.sqlStringValue(course),
                 "   AND unit=", LogicUtils.sqlIntegerValue(unit),
@@ -379,8 +406,10 @@ public enum RawSthomeworkLogic {
             earliest = today.minus(Period.ofDays(numDays - 1));
         }
 
+        final String tableName = getTableName(cache);
+
         final HtmlBuilder sql = new HtmlBuilder(200);
-        sql.add("SELECT * FROM sthomework ");
+        sql.add("SELECT * FROM ", tableName);
 
         final int numCourses = courses.length;
         if (numCourses == 1) {
@@ -435,8 +464,10 @@ public enum RawSthomeworkLogic {
                                                 final String version, final String stuId, final int newFinishTime,
                                                 final int newScore, final String newPassed) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("UPDATE sthomework ",
-                "SET finish_time=", Integer.toString(newFinishTime),
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("UPDATE ", tableName,
+                " SET finish_time=", Integer.toString(newFinishTime),
                 ", hw_score=", Integer.toString(newScore),
                 ", passed=", LogicUtils.sqlStringValue(newPassed),
                 " WHERE serial_nbr=", LogicUtils.sqlLongValue(serial),
@@ -480,7 +511,9 @@ public enum RawSthomeworkLogic {
             Log.info("  Student ID: ", rec.stuId);
             result = false;
         } else {
-            final String sql = SimpleBuilder.concat("UPDATE sthomework ",
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("UPDATE ",tableName,
                     " SET passed=", LogicUtils.sqlStringValue(newPassed),
                     " WHERE serial_nbr=", LogicUtils.sqlLongValue(rec.serialNbr),
                     "   AND version=", LogicUtils.sqlStringValue(rec.version),

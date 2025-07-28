@@ -41,6 +41,18 @@ public enum RawPendingExamLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "pending_exam" : (schemaPrefix + ".pending_exam");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -56,8 +68,10 @@ public enum RawPendingExamLogic {
             throw new SQLException("Null value in primary key field.");
         }
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "INSERT INTO pending_exam (serial_nbr,version,stu_id,exam_dt,exam_score,start_time,finish_time,",
+                "INSERT INTO ", tableName, " (serial_nbr,version,stu_id,exam_dt,exam_score,start_time,finish_time,",
                 "time_ok,passed,seq_nbr,course,unit,exam_type,timelimit_factor,stu_type) VALUES (",
                 LogicUtils.sqlLongValue(record.serialNbr), ",",
                 LogicUtils.sqlStringValue(record.version), ",",
@@ -102,7 +116,9 @@ public enum RawPendingExamLogic {
      */
     public static boolean delete(final Cache cache, final RawPendingExam record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM pending_exam ",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
                 " WHERE serial_nbr=", LogicUtils.sqlLongValue(record.serialNbr),
                 "   AND stu_id=", LogicUtils.sqlStringValue(record.stuId));
 
@@ -134,7 +150,9 @@ public enum RawPendingExamLogic {
      */
     public static boolean delete(final Cache cache, final Long serialNbr, final String stuId) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM pending_exam ",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
                 " WHERE serial_nbr=", LogicUtils.sqlLongValue(serialNbr),
                 "   AND stu_id=", LogicUtils.sqlStringValue(stuId));
 
@@ -168,8 +186,10 @@ public enum RawPendingExamLogic {
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
+        final String tableName = getTableName(cache);
+
         try (final Statement stmt = conn.createStatement();
-             final ResultSet rs = stmt.executeQuery("SELECT * FROM pending_exam")) {
+             final ResultSet rs = stmt.executeQuery("SELECT * FROM " + tableName)) {
 
             while (rs.next()) {
                 result.add(RawPendingExam.fromResultSet(rs));
@@ -194,7 +214,9 @@ public enum RawPendingExamLogic {
 
         final List<RawPendingExam> result = new ArrayList<>(10);
 
-        final String sql = "SELECT * FROM pending_exam WHERE stu_id=" + LogicUtils.sqlStringValue(stuId);
+        final String tableName = getTableName(cache);
+
+        final String sql = "SELECT * FROM " + tableName + " WHERE stu_id=" + LogicUtils.sqlStringValue(stuId);
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 

@@ -38,6 +38,18 @@ public enum RawSthwqaLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "sthwqa" : (schemaPrefix + ".sthwqa");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -54,9 +66,10 @@ public enum RawSthwqaLogic {
             Log.info("  Student ID: ", record.stuId);
             result = false;
         } else {
-            final String sql = SimpleBuilder.concat("INSERT INTO sthwqa (serial_nbr,",
-                    "question_nbr,answer_nbr,objective,stu_answer,stu_id,version,",
-                    "ans_correct,hw_dt,finish_time) VALUES (",
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("INSERT INTO ", tableName, " (serial_nbr,question_nbr,",
+                    "answer_nbr,objective,stu_answer,stu_id,version,ans_correct,hw_dt,finish_time) VALUES (",
                     LogicUtils.sqlLongValue(record.serialNbr), ",",
                     LogicUtils.sqlIntegerValue(record.questionNbr), ",",
                     LogicUtils.sqlIntegerValue(record.answerNbr), ",",
@@ -96,7 +109,9 @@ public enum RawSthwqaLogic {
      */
     public static boolean delete(final Cache cache, final RawSthwqa record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM sthwqa",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
                 " WHERE serial_nbr=", LogicUtils.sqlLongValue(record.serialNbr),
                 " AND question_nbr=", LogicUtils.sqlIntegerValue(record.questionNbr),
                 " AND answer_nbr=", LogicUtils.sqlIntegerValue(record.answerNbr));
@@ -127,7 +142,9 @@ public enum RawSthwqaLogic {
      */
     public static List<RawSthwqa> queryAll(final Cache cache) throws SQLException {
 
-        return executeQuery(cache, "SELECT * FROM sthwqa");
+        final String tableName = getTableName(cache);
+
+        return executeQuery(cache, "SELECT * FROM " + tableName);
     }
 
     /**
@@ -140,7 +157,10 @@ public enum RawSthwqaLogic {
      */
     public static List<RawSthwqa> queryByStudent(final Cache cache, final String stuId) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM sthwqa WHERE stu_id=", LogicUtils.sqlStringValue(stuId));
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE stu_id=",
+                LogicUtils.sqlStringValue(stuId));
 
         return executeQuery(cache, sql);
     }
@@ -155,7 +175,9 @@ public enum RawSthwqaLogic {
      */
     public static List<RawSthwqa> queryBySerial(final Cache cache, final Long serial) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM sthwqa WHERE serial_nbr=",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE serial_nbr=",
                 LogicUtils.sqlLongValue(serial));
 
         return executeQuery(cache, sql);
@@ -170,11 +192,12 @@ public enum RawSthwqaLogic {
      * @throws SQLException if there is an error accessing the database
      */
 
-    public static boolean deleteAllForAttempt(final Cache cache, final RawSthomework record)
-            throws SQLException {
+    public static boolean deleteAllForAttempt(final Cache cache, final RawSthomework record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM sthwqa ",
-                "WHERE serial_nbr=", LogicUtils.sqlLongValue(record.serialNbr));
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE serial_nbr=", LogicUtils.sqlLongValue(record.serialNbr));
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 

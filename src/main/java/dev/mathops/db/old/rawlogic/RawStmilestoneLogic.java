@@ -37,6 +37,18 @@ public enum RawStmilestoneLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "stmilestone" : (schemaPrefix + ".stmilestone");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -47,12 +59,14 @@ public enum RawStmilestoneLogic {
     public static boolean insert(final Cache cache, final RawStmilestone record) throws SQLException {
 
         if (record.stuId == null || record.termKey == null || record.paceTrack == null
-                || record.msNbr == null || record.msType == null) {
+            || record.msNbr == null || record.msType == null) {
             throw new SQLException("Null value in primary key field.");
         }
 
-        final String sql = SimpleBuilder.concat("INSERT INTO stmilestone (",
-                "stu_id,term,term_yr,pace_track,ms_nbr,ms_type,ms_date,nbr_atmpts_allow) VALUES (",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("INSERT INTO ", tableName,
+                " (stu_id,term,term_yr,pace_track,ms_nbr,ms_type,ms_date,nbr_atmpts_allow) VALUES (",
                 LogicUtils.sqlStringValue(record.stuId), ",",
                 LogicUtils.sqlStringValue(record.termKey.termCode), ",",
                 record.termKey.shortYear, ",",
@@ -60,7 +74,7 @@ public enum RawStmilestoneLogic {
                 record.msNbr, ",",
                 LogicUtils.sqlStringValue(record.msType), ",",
                 LogicUtils.sqlDateValue(record.msDate), ",",
-                LogicUtils.sqlIntegerValue(record.nbrAtmptsAllow),")");
+                LogicUtils.sqlIntegerValue(record.nbrAtmptsAllow), ")");
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
@@ -91,7 +105,9 @@ public enum RawStmilestoneLogic {
 
         final HtmlBuilder sql = new HtmlBuilder(100);
 
-        sql.add("DELETE FROM stmilestone ",
+        final String tableName = getTableName(cache);
+
+        sql.add("DELETE FROM ", tableName,
                 " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
                 "   AND term=", LogicUtils.sqlStringValue(record.termKey.termCode),
                 "   AND term_yr=", LogicUtils.sqlIntegerValue(record.termKey.shortYear),
@@ -145,8 +161,8 @@ public enum RawStmilestoneLogic {
     /**
      * Gets all records for a particular student.
      *
-     * @param cache   the data cache
-     * @param stuId   the student ID
+     * @param cache the data cache
+     * @param stuId the student ID
      * @return the list of records
      * @throws SQLException if there is an error accessing the database
      */
@@ -154,7 +170,9 @@ public enum RawStmilestoneLogic {
 
         final HtmlBuilder sql = new HtmlBuilder(100);
 
-        sql.add("SELECT * FROM stmilestone WHERE stu_id=", LogicUtils.sqlStringValue(stuId));
+        final String tableName = getTableName(cache);
+
+        sql.add("SELECT * FROM ", tableName, " WHERE stu_id=", LogicUtils.sqlStringValue(stuId));
 
         final List<RawStmilestone> result = new ArrayList<>(20);
 
@@ -187,7 +205,9 @@ public enum RawStmilestoneLogic {
 
         final HtmlBuilder sql = new HtmlBuilder(100);
 
-        sql.add("SELECT * FROM stmilestone",
+        final String tableName = getTableName(cache);
+
+        sql.add("SELECT * FROM ", tableName,
                 " WHERE term=", LogicUtils.sqlStringValue(termKey.termCode),
                 "   AND term_yr=", termKey.shortYear,
                 "   AND stu_id=", LogicUtils.sqlStringValue(stuId));
@@ -225,7 +245,9 @@ public enum RawStmilestoneLogic {
 
         final HtmlBuilder sql = new HtmlBuilder(100);
 
-        sql.add("SELECT * FROM stmilestone",
+        final String tableName = getTableName(cache);
+
+        sql.add("SELECT * FROM ",tableName,
                 " WHERE term=", LogicUtils.sqlStringValue(termKey.termCode),
                 "   AND term_yr=", LogicUtils.sqlIntegerValue(termKey.shortYear),
                 "   AND pace_track=", LogicUtils.sqlStringValue(paceTrack),
@@ -260,7 +282,9 @@ public enum RawStmilestoneLogic {
 
         final HtmlBuilder sql = new HtmlBuilder(100);
 
-        sql.add("UPDATE stmilestone SET ms_date=", LogicUtils.sqlDateValue(record.msDate),
+        final String tableName = getTableName(cache);
+
+        sql.add("UPDATE ", tableName, " SET ms_date=", LogicUtils.sqlDateValue(record.msDate),
                 ", nbr_atmpts_allow=", LogicUtils.sqlIntegerValue(record.nbrAtmptsAllow),
                 " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
                 "   AND term=", LogicUtils.sqlStringValue(record.termKey.termCode),

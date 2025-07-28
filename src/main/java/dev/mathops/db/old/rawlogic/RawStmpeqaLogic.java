@@ -37,6 +37,18 @@ public enum RawStmpeqaLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "stmpeqa" : (schemaPrefix + ".stmpeqa");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -53,8 +65,10 @@ public enum RawStmpeqaLogic {
             Log.info("  Student ID: ", record.stuId);
             result = false;
         } else {
-            final String sql = SimpleBuilder.concat("INSERT INTO stmpeqa (stu_id,version,exam_dt,finish_time,"
-                                                    + "question_nbr,stu_answer,ans_correct,subtest,tree_ref) VALUES (",
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("INSERT INTO ", tableName, " (stu_id,version,exam_dt,finish_time,",
+                    "question_nbr,stu_answer,ans_correct,subtest,tree_ref) VALUES (",
                     LogicUtils.sqlStringValue(record.stuId), ",",
                     LogicUtils.sqlStringValue(record.version), ",",
                     LogicUtils.sqlDateValue(record.examDt), ",",
@@ -93,8 +107,10 @@ public enum RawStmpeqaLogic {
      */
     public static boolean delete(final Cache cache, final RawStmpeqa record) throws SQLException {
 
-        final String sql1 = SimpleBuilder.concat("DELETE FROM stmpeqa ",
-                "WHERE version=", LogicUtils.sqlStringValue(record.version),
+        final String tableName = getTableName(cache);
+
+        final String sql1 = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE version=", LogicUtils.sqlStringValue(record.version),
                 "  AND stu_id=", LogicUtils.sqlStringValue(record.stuId),
                 "  AND exam_dt=", LogicUtils.sqlDateValue(record.examDt),
                 "  AND finish_time=", LogicUtils.sqlIntegerValue(record.finishTime),
@@ -130,8 +146,10 @@ public enum RawStmpeqaLogic {
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
+        final String tableName = getTableName(cache);
+
         try (final Statement stmt = conn.createStatement();
-             final ResultSet rs = stmt.executeQuery("SELECT * FROM stmpeqa")) {
+             final ResultSet rs = stmt.executeQuery("SELECT * FROM " + tableName)) {
 
             while (rs.next()) {
                 result.add(RawStmpeqa.fromResultSet(rs));
@@ -154,8 +172,10 @@ public enum RawStmpeqaLogic {
 
     public static boolean deleteAllForExam(final Cache cache, final RawStmpe record) throws SQLException {
 
-        final String sql1 = SimpleBuilder.concat("DELETE FROM stmpeqa ",
-                "WHERE version=", LogicUtils.sqlStringValue(record.version),
+        final String tableName = getTableName(cache);
+
+        final String sql1 = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE version=", LogicUtils.sqlStringValue(record.version),
                 "  AND stu_id=", LogicUtils.sqlStringValue(record.stuId),
                 "  AND exam_dt=", LogicUtils.sqlDateValue(record.examDt),
                 "  AND finish_time=", LogicUtils.sqlIntegerValue(record.finishTime));

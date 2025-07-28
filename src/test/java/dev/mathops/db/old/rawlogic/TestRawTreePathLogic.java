@@ -45,11 +45,14 @@ final class TestRawTreePathLogic {
 
         final Login login = profile.getLogin(ESchema.LEGACY);
         final DbConnection conn = login.checkOutConnection();
+        final Cache cache = new Cache(profile);
+
+        final String whichDbName = RawWhichDbLogic.getTableName(cache);
 
         // Make sure we're in the TEST database
         try {
             try (final Statement stmt = conn.createStatement();
-                 final ResultSet rs = stmt.executeQuery("SELECT descr FROM which_db")) {
+                 final ResultSet rs = stmt.executeQuery("SELECT descr FROM " + whichDbName)) {
 
                 if (rs.next()) {
                     final String which = rs.getString(1);
@@ -63,11 +66,10 @@ final class TestRawTreePathLogic {
             }
 
             try (final Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("DELETE FROM tree_path");
+                final String tableName = RawTreePathLogic.getTableName(cache);
+                stmt.executeUpdate("DELETE FROM " + tableName);
             }
             conn.commit();
-
-            final Cache cache = new Cache(profile);
 
             final RawTreePath raw1 = new RawTreePath("iso", CoreConstants.SLASH, Integer.valueOf(0),
                     Integer.valueOf(1), "ISO");
@@ -410,10 +412,12 @@ final class TestRawTreePathLogic {
 
         final Login login = profile.getLogin(ESchema.LEGACY);
         final DbConnection conn = login.checkOutConnection();
+        final Cache cache = new Cache(profile);
 
         try {
             try (final Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("DELETE FROM tree_path");
+                final String tableName = RawTreePathLogic.getTableName(cache);
+                stmt.executeUpdate("DELETE FROM " + tableName);
             }
 
             conn.commit();

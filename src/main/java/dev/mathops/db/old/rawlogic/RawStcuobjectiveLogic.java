@@ -35,6 +35,18 @@ public enum RawStcuobjectiveLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "stcuobjective" : (schemaPrefix + ".stcuobjective");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -55,8 +67,9 @@ public enum RawStcuobjectiveLogic {
             Log.info("  Student ID: ", record.stuId);
             result = false;
         } else {
-            final String sql = SimpleBuilder.concat(
-                    "INSERT INTO stcuobjective (stu_id,course,unit,objective,",
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("INSERT INTO ", tableName, " (stu_id,course,unit,objective,",
                     "lecture_viewed_dt,seed,last_component_finished) VALUES (",
                     LogicUtils.sqlStringValue(record.stuId), ",",
                     LogicUtils.sqlStringValue(record.course), ",",
@@ -96,8 +109,10 @@ public enum RawStcuobjectiveLogic {
 
         final boolean result;
 
-        final String sql = SimpleBuilder.concat("DELETE FROM stcuobjective ",
-                "WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
                 "  AND course=", LogicUtils.sqlStringValue(record.course),
                 "  AND unit=", LogicUtils.sqlIntegerValue(record.unit),
                 "  AND objective=", LogicUtils.sqlIntegerValue(record.objective));
@@ -128,7 +143,9 @@ public enum RawStcuobjectiveLogic {
      */
     public static List<RawStcuobjective> queryAll(final Cache cache) throws SQLException {
 
-        final String sql = "SELECT * FROM stcuobjective";
+        final String tableName = getTableName(cache);
+
+        final String sql = "SELECT * FROM " + tableName;
 
         return doListQuery(cache, sql);
     }
@@ -143,9 +160,10 @@ public enum RawStcuobjectiveLogic {
      */
     public static List<RawStcuobjective> queryByStudent(final Cache cache, final String studentId) throws SQLException {
 
-        final String sql = SimpleBuilder.concat(
-                "SELECT * FROM stcuobjective",
-                " WHERE stu_id=", LogicUtils.sqlStringValue(studentId));
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE stu_id=",
+                LogicUtils.sqlStringValue(studentId));
 
         return doListQuery(cache, sql);
     }
@@ -164,8 +182,10 @@ public enum RawStcuobjectiveLogic {
     public static RawStcuobjective query(final Cache cache, final String studentId, final String courseId,
                                          final Integer unit, final Integer objective) throws SQLException {
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "SELECT * FROM stcuobjective",
+                "SELECT * FROM ", tableName,
                 " WHERE stu_id=", LogicUtils.sqlStringValue(studentId),
                 " AND course=", LogicUtils.sqlStringValue(courseId),
                 " AND unit=", LogicUtils.sqlIntegerValue(unit),
@@ -217,12 +237,14 @@ public enum RawStcuobjectiveLogic {
             Log.info("  Student ID: ", studentId);
             result = false;
         } else {
+            final String tableName = getTableName(cache);
+
             final RawStcuobjective existing = query(cache, studentId, courseId, unit, objective);
 
             final String sql;
             if (existing == null) {
                 sql = SimpleBuilder.concat(
-                        "INSERT INTO stcuobjective (stu_id,course,unit,objective,",
+                        "INSERT INTO ", tableName, " (stu_id,course,unit,objective,",
                         "lecture_viewed_dt) VALUES (",
                         LogicUtils.sqlStringValue(studentId), ",",
                         LogicUtils.sqlStringValue(courseId), ",",
@@ -230,8 +252,8 @@ public enum RawStcuobjectiveLogic {
                         LogicUtils.sqlIntegerValue(objective), ",",
                         LogicUtils.sqlDateValue(now.toLocalDate()), ")");
             } else {
-                sql = SimpleBuilder.concat("UPDATE stcuobjective ",
-                        "SET lecture_viewed_dt=", LogicUtils.sqlDateValue(now.toLocalDate()),
+                sql = SimpleBuilder.concat("UPDATE ", tableName,
+                        " SET lecture_viewed_dt=", LogicUtils.sqlDateValue(now.toLocalDate()),
                         " WHERE stu_id=", LogicUtils.sqlStringValue(studentId),
                         " AND course=", LogicUtils.sqlStringValue(courseId),
                         " AND unit=", LogicUtils.sqlIntegerValue(unit),
