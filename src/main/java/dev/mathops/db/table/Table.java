@@ -77,7 +77,7 @@ public class Table implements Comparable<Table> {
      * identifier, if there are no fields provides, or if an entry in the fields array is {@code null}
      */
     public Table(final String theSchema, final String theGroup, final String theName, final String theDescription,
-                 final String theExamples, final Field... theFields) throws IllegalArgumentException {
+                 final String theExamples, final Field... theFields) {
 
         if (theSchema == null || theSchema.isBlank()) {
             throw new IllegalArgumentException("Schema name may not be null or blank");

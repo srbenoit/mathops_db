@@ -1,56 +1,19 @@
 package dev.mathops.db.table;
 
-import dev.mathops.db.table.constraint.AbstractFieldConstraint;
 import dev.mathops.text.builder.SimpleBuilder;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Objects;
-
 /**
- * An immutable definition of a database table field.
+ * An immutable definition of a field appearing with a specific role in a database table.
  *
- * <p>Each field defined within a table is represented by an instance of this class, which stores the field name (unique
- * within the table), the field's data type (see below), the field's role in the table (see below), and zero or more
- * constraints that values for this field must obey.
+ * <p>A field definition referenced by this object can be shared by multiple tables, but this class defines the role
+ * the field takes on in a particular table.
  *
  * <p>Field objects are suitable for use as map keys, and implement {@code Comparable&lt;Field&gt;} so they can be used
- * in contexts that require a well-defined order (such as keys in a {@code TreeMap}).  Ordering is based on field name
- * then field data type, then field's role.
- *
- * <h2>Field Data Types</h2>
- *
- * The data types supported by fields, along with the corresponding Java object type and the pre-defined types of
- * constraint that a field may define for each type are listed below:
- * <dl>
- * <dt>String (java.lang.String)</dt>
- *     <dd>StringEnumeratedConstraint, which defines a fixed list of allowed String values.</dd>
- *     <dd>StringLengthConstraint, which defines a minimum and maximum allowed length.</dd>
- * <dt>Boolean (java.lang.Boolean)</dt>
- * <dt>Byte (java.lang.Byte)</dt>
- *     <dd>ByteRangeConstraint, which defines a minimum and maximum allowed byte value.</dd>
- * <dt>Integer (java.lang.Integer)</dt>
- *     <dd>IntegerRangeConstraint, which defines a minimum and maximum allowed int value.</dd>
- * <dt>Long (java.lang.Long)</dt>
- *     <dd>LongRangeConstraint, which defines a minimum and maximum allowed long value.</dd>
- * <dt>Float (java.lang.Float)</dt>
- *     <dd>FloatRangeConstraint, which defines a minimum and maximum allowed float value and specified whether NaN or
- *         infinite values are allowed.</dd>
- * <dt>Double (java.lang.Double)</dt>
- *     <dd>DoubleRangeConstraint, which defines a minimum and maximum allowed double value and specified whether NaN or
- *         infinite values are allowed.</dd>
- * <dt>Blob (java.sql.Blob)</dt>
- * <dt>LocalDate (java.time.LocalDate)</dt>
- * <dt>LocalTime (java.time.LocalTime)</dt>
- * <dt>LocalDateTime (java.time.LocalDateTime)</dt>
- * </dl>
+ * in contexts that require a well-defined order (such as keys in a {@code TreeMap}).  Ordering is based on field
+ * definition, then field's role.
  *
  * <h2>Field Roles</h2>
- *
+ * <p>
  * The roles within their containing table that a field may be assigned include:
  * <dl>
  * <dt>Partition Key</dt>
@@ -72,100 +35,39 @@ import java.util.Objects;
  */
 public final class Field implements Comparable<Field> {
 
-    /** An empty constraints array. */
-    private static final AbstractFieldConstraint<?>[] ZERO_LEN_CONSTRAINTS = new AbstractFieldConstraint<?>[0];
-
-    /** The field name. */
-    private final String name;
-
-    /** The field data type. */
-    private final EFieldType type;
+    /** The field definition. */
+    private final FieldDef def;
 
     /** The field role in the table. */
     private final EFieldRole role;
 
-    /** The field description. */
-    private final String description;
-
-    /** Any constraints attached to the field. */
-    private final AbstractFieldConstraint<?>[] constraints;
-
     /**
      * Constructs a new {@code Field}.
      *
-     * @param theName        the field name
-     * @param theType        the field data type
-     * @param theRole        the field role in the table
-     * @param theDescription the field description (this should be a short phrase that could be used in a tool-tip
-     *                       associated with a field where the user is entering a value for the field)
-     * @param theConstraints any constraints attached to the field
+     * @param theDef  the field definition
+     * @param theRole the field role in the table
      */
-    public Field(final String theName, final EFieldType theType, final EFieldRole theRole,
-                 final String theDescription, final AbstractFieldConstraint<?>... theConstraints) {
+    public Field(final FieldDef theDef, final EFieldRole theRole) {
 
-        if (theName == null) {
+        if (theDef == null) {
             throw new IllegalArgumentException("Field name may not be null");
-        }
-        if (theType == null) {
-            throw new IllegalArgumentException("Field type may not be null");
         }
         if (theRole == null) {
             throw new IllegalArgumentException("Field role may not be null");
         }
-        if (NameUtils.isInvalidName(theName)) {
-            throw new IllegalArgumentException("Field name is not a valid identifier");
-        }
 
-        this.name = theName;
-        this.type = theType;
+        this.def = theDef;
         this.role = theRole;
-        this.description = theDescription;
-
-        if (theConstraints == null) {
-            this.constraints = ZERO_LEN_CONSTRAINTS;
-        } else {
-            final int len = theConstraints.length;
-            this.constraints = new AbstractFieldConstraint[len];
-            final Collection<String> names = new HashSet<>(len);
-
-            for (int i = 0; i < len; ++i) {
-                if (theConstraints[i] == null) {
-                    throw new IllegalArgumentException("Field constraints array may not include null values");
-                }
-                final String constraintName = theConstraints[i].getName();
-                if (names.contains(constraintName)) {
-                    throw new IllegalArgumentException("All constraints on a field must have unique names");
-                }
-                names.add(constraintName);
-                this.constraints[i] = theConstraints[i];
-            }
-
-            // We sort the constraints so two fields that have the same name/type/role/description and the same set of
-            // constraints will be considered "equal" regardless of the ordering in which they provide the constraints.
-            // This is the reason for having a constraint name - there is no other field shared by all types of
-            // constraint that could provide a natural ordering for constraints within a field.
-            Arrays.sort(this.constraints);
-        }
     }
 
     /**
-     * Gets the field name.
+     * Gets the field definition.
      *
-     * @return the field name
+     * @return the field definition
      */
-    public String getName() {
+    public FieldDef getDef() {
 
-        return this.name;
-    }
-
-    /**
-     * Gets the field data type.
-     *
-     * @return the field type
-     */
-    public EFieldType getType() {
-
-        return this.type;
+        return this.def;
     }
 
     /**
@@ -179,75 +81,6 @@ public final class Field implements Comparable<Field> {
     }
 
     /**
-     * Gets the field description.
-     *
-     * @return the field description
-     */
-    public String getDescription() {
-
-        return this.description;
-    }
-
-    /**
-     * Gets the constraints array.
-     *
-     * @return the constraints array
-     */
-    private AbstractFieldConstraint<?>[] innerGetConstraints() {
-
-        return this.constraints;
-    }
-
-    /**
-     * Gets the number of field constraints.
-     *
-     * @return the number of constraints
-     */
-    public int getNumConstraints() {
-
-        return this.constraints.length;
-    }
-
-    /**
-     * Gets a specified field constraint.
-     *
-     * @param index the zero-based constraint index
-     * @return the constraint
-     */
-    public AbstractFieldConstraint<?> getConstraint(final int index) {
-
-        return this.constraints[index];
-    }
-
-    /**
-     * Tests whether an object is of a type that is valid for this field.  Some types that are promotable to a valid
-     * type are considered valid (an Integer is valid for a Long field, for example).
-     *
-     * @param object the object whose type to test (not {@code null})
-     * @return true if the object's type is valid for this field
-     */
-    public boolean isValidType(final Object object) {
-
-        boolean valid = false;
-
-        switch (this.type) {
-            case STRING -> valid = object instanceof String;
-            case BOOLEAN -> valid = object instanceof Boolean;
-            case BYTE -> valid = object instanceof Byte;
-            case INTEGER -> valid = object instanceof Byte || object instanceof Integer;
-            case LONG -> valid = object instanceof Byte || object instanceof Integer || object instanceof Long;
-            case FLOAT -> valid = object instanceof Float;
-            case DOUBLE -> valid = object instanceof Float || object instanceof Double;
-            case BLOB -> valid = object instanceof byte[];
-            case LOCAL_DATE ->valid = object instanceof LocalDate;
-            case LOCAL_TIME -> valid = object instanceof LocalTime;
-            case LOCAL_DATE_TIME -> valid = object instanceof LocalDateTime;
-        }
-
-        return valid;
-    }
-
-    /**
      * Generates a hash code for the object.
      *
      * @return the hash code
@@ -255,8 +88,7 @@ public final class Field implements Comparable<Field> {
     @Override
     public int hashCode() {
 
-        return this.name.hashCode() + this.type.hashCode() + this.role.hashCode() + Objects.hashCode(this.description)
-                + Arrays.hashCode(this.constraints);
+        return this.def.hashCode() + this.role.hashCode();
     }
 
     /**
@@ -273,13 +105,7 @@ public final class Field implements Comparable<Field> {
         if (obj == this) {
             equal = true;
         } else if (obj instanceof final Field objField) {
-            final String objName = objField.getName();
-            final String objDescription = objField.getDescription();
-            final AbstractFieldConstraint<?>[] objConstraints = objField.innerGetConstraints();
-
-            equal = this.type == objField.getType() && this.role == objField.getRole() && this.name.equals(objName)
-                    && Objects.equals(this.description, objDescription)
-                    && Arrays.equals(this.constraints, objConstraints);
+            equal = this.role == objField.role && this.def.equals(objField.def);
         } else {
             equal = false;
         }
@@ -293,22 +119,15 @@ public final class Field implements Comparable<Field> {
      *
      * @param o the object to be compared
      * @return a negative integer, zero, or a positive integer as this object is less than, equal to, or greater than
-     * the specified object
+     *         the specified object
      */
     @Override
     public int compareTo(final Field o) {
 
-        final String oName = o.getName();
-        int result = this.name.compareTo(oName);
+        int result = this.def.compareTo(o.def);
 
         if (result == 0) {
-            final EFieldType oType = o.getType();
-            result = this.type.compareTo(oType);
-
-            if (result == 0) {
-                final EFieldRole oRole = o.getRole();
-                result = this.role.compareTo(oRole);
-            }
+            result = this.role.compareTo(o.role);
         }
 
         return result;
@@ -322,9 +141,6 @@ public final class Field implements Comparable<Field> {
     @Override
     public String toString() {
 
-        final String constraintsString = Arrays.toString(this.constraints);
-
-        return SimpleBuilder.concat("Field{name='", this.name , "', type=", this.type, ", role=", this.role,
-                ", constraints=", constraintsString, "}");
+        return SimpleBuilder.concat("Field{def='", this.def, ", role=", this.role, "}");
     }
 }

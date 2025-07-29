@@ -3,10 +3,11 @@ package dev.mathops.db.table;
 import dev.mathops.commons.log.Log;
 import dev.mathops.text.builder.SimpleBuilder;
 
+import java.math.BigDecimal;
 import java.sql.Blob;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.Locale;
 
 /**
@@ -14,38 +15,38 @@ import java.util.Locale;
  */
 public enum EFieldType {
 
-    /** Java String. */
-    STRING(String.class),
-
-    /** Java Boolean. */
-    BOOLEAN(Boolean.class),
-
-    /** Java Byte. */
-    BYTE(Byte.class),
-
-    /** Java Integer. */
+    /** Java Integer (java.sql.Types TINYINT, SMALLINT, INTEGER). */
     INTEGER(Integer.class),
 
-    /** Java Long. */
+    /** Java Long (java.sql.Types BIGINT). */
     LONG(Long.class),
 
-    /** Java Float. */
+    /** Java Float (java.sql.Types FLOAT, REAL). */
     FLOAT(Float.class),
 
-    /** Java Double. */
+    /** Java Double (java.sql.Types DOUBLE). */
     DOUBLE(Double.class),
 
-    /** Java byte array. */
-    BLOB(Blob.class),
+    /** Java BigDecimal (java.sql.Types NUMERIC, DECIMAL). */
+    DECIMAL(BigDecimal.class),
 
-    /** Java LocalDate. */
-    LOCAL_DATE(LocalDate.class),
+    /** Java String (java.sql.Types CHAR, VARCHAR, LONGVARCHAR, NCHAR, NVARCHAR, LONGNVARCHAR, CLOB). */
+    STRING(String.class),
 
-    /** Java LocalTime. */
-    LOCAL_TIME(LocalTime.class),
+    /** Java byte array (java.sql.Types BINARY, VARBINARY, LONGVARBINARY, BLOB). */
+    BINARY(Blob.class),
 
-    /** Java LocalDateTime. */
-    LOCAL_DATE_TIME(LocalDateTime.class);
+    /** Java Boolean (java.sql.Types BOOLEAN). */
+    BOOLEAN(Boolean.class),
+
+    /** Java LocalDate (java.sql.Types DATE). */
+    LOCAL_DATE(Date.class),
+
+    /** Java LocalTime (java.sql.Types TIME). */
+    LOCAL_TIME(Time.class),
+
+    /** Java LocalDateTime (java.sql.Types TIMESTAMP). */
+    LOCAL_DATE_TIME(Timestamp.class);
 
     /** The type class. */
     public final Class<?> cls;
