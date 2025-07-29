@@ -57,6 +57,18 @@ public enum RawCsectionLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "csection" : (schemaPrefix + ".csection");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -70,9 +82,11 @@ public enum RawCsectionLogic {
             throw new SQLException("Null value in primary key field.");
         }
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "INSERT INTO csection (course,sect,term,term_yr,section_id,aries_start_dt,aries_end_dt,start_dt,",
-                "exam_delete_dt,instrn_type,instructor,campus,pacing_structure,mtg_days,classroom_id,",
+                "INSERT INTO ", tableName, " (course,sect,term,term_yr,section_id,aries_start_dt,aries_end_dt,",
+                "start_dt,exam_delete_dt,instrn_type,instructor,campus,pacing_structure,mtg_days,classroom_id,",
                 "lst_stcrs_creat_dt,grading_std,a_min_score,b_min_score,c_min_score,d_min_score,survey_id,",
                 "course_label_shown,display_score,display_grade_scale,count_in_max_courses,online,bogus,canvas_id,",
                 "subterm) VALUES (",
@@ -132,11 +146,12 @@ public enum RawCsectionLogic {
      * @return {@code true} if successful; {@code false} if not
      * @throws SQLException if there is an error accessing the database
      */
-    public static boolean delete(final Cache cache, final RawCsection record)
-            throws SQLException {
+    public static boolean delete(final Cache cache, final RawCsection record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM csection ",
-                "WHERE course=", LogicUtils.sqlStringValue(record.course),
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE course=", LogicUtils.sqlStringValue(record.course),
                 "  AND sect=", LogicUtils.sqlStringValue(record.sect),
                 "  AND term=", LogicUtils.sqlStringValue(record.termKey.termCode),
                 "  AND term_yr=", LogicUtils.sqlIntegerValue(record.termKey.shortYear));
@@ -171,8 +186,10 @@ public enum RawCsectionLogic {
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
+        final String tableName = getTableName(cache);
+
         try (final Statement stmt = conn.createStatement();
-             final ResultSet rs = stmt.executeQuery("SELECT * FROM csection")) {
+             final ResultSet rs = stmt.executeQuery("SELECT * FROM " + tableName)) {
 
             while (rs.next()) {
                 result.add(RawCsection.fromResultSet(rs));
@@ -194,8 +211,10 @@ public enum RawCsectionLogic {
      */
     public static List<RawCsection> queryByTerm(final Cache cache, final TermKey termKey) throws SQLException {
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "SELECT * FROM csection WHERE term='", termKey.termCode,
+                "SELECT * FROM ", tableName, " WHERE term='", termKey.termCode,
                 "' AND term_yr=", termKey.shortYear);
 
         final List<RawCsection> result = new ArrayList<>(100);
@@ -228,14 +247,17 @@ public enum RawCsectionLogic {
     public static RawCsection query(final Cache cache, final TermKey termKey, final String course, final String sect)
             throws SQLException {
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "SELECT * FROM csection WHERE term=", LogicUtils.sqlStringValue(termKey.termCode),
+                "SELECT * FROM ", tableName, " WHERE term=", LogicUtils.sqlStringValue(termKey.termCode),
                 " AND term_yr=", LogicUtils.sqlIntegerValue(termKey.shortYear),
                 " AND course=", LogicUtils.sqlStringValue(course),
                 " AND sect=", LogicUtils.sqlStringValue(sect));
 
         return executeSingleQuery(cache, sql);
     }
+
     /**
      * Executes a query that returns a single records.
      *

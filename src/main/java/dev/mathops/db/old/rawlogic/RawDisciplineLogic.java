@@ -38,6 +38,18 @@ public enum RawDisciplineLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "discipline" : (schemaPrefix + ".discipline");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -51,14 +63,17 @@ public enum RawDisciplineLogic {
         // with prepared statements.
 
         if (record.stuId == null || record.dtIncident == null || record.incidentType == null
-                || record.course == null || record.unit == null) {
+            || record.course == null || record.unit == null) {
             throw new SQLException("Null value in primary key or required field.");
         }
 
         final boolean result;
 
-        final String sql = "INSERT INTO discipline (stu_id,dt_incident,incident_type,course,unit,cheat_desc,"
-                + "action_type,action_comment,interviewer,proctor) VALUES (?,?,?,?,?,?,?,?,?,?)";
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("INSERT INTO ", tableName,
+                " (stu_id,dt_incident,incident_type,course,unit,cheat_desc,",
+                "action_type,action_comment,interviewer,proctor) VALUES (?,?,?,?,?,?,?,?,?,?)");
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
@@ -102,7 +117,9 @@ public enum RawDisciplineLogic {
 
         final HtmlBuilder sql = new HtmlBuilder(100);
 
-        sql.add("DELETE FROM discipline ",
+        final String tableName = getTableName(cache);
+
+        sql.add("DELETE FROM ",tableName,
                 " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
                 " AND dt_incident=", LogicUtils.sqlDateValue(record.dtIncident),
                 " AND incident_type=", LogicUtils.sqlStringValue(record.incidentType),
@@ -135,7 +152,9 @@ public enum RawDisciplineLogic {
      */
     public static List<RawDiscipline> queryAll(final Cache cache) throws SQLException {
 
-        return executeQuery(cache, "SELECT * FROM discipline");
+        final String tableName = getTableName(cache);
+
+        return executeQuery(cache, "SELECT * FROM " + tableName);
     }
 
     /**
@@ -146,11 +165,12 @@ public enum RawDisciplineLogic {
      * @return the list of discipline records
      * @throws SQLException if there is an error accessing the database
      */
-    public static List<RawDiscipline> queryByStudent(final Cache cache, final String stuId)
-            throws SQLException {
+    public static List<RawDiscipline> queryByStudent(final Cache cache, final String stuId) throws SQLException {
+
+        final String tableName = getTableName(cache);
 
         final String sql = SimpleBuilder.concat(
-                "SELECT * FROM discipline WHERE stu_id=", LogicUtils.sqlStringValue(stuId));
+                "SELECT * FROM ", tableName, " WHERE stu_id=", LogicUtils.sqlStringValue(stuId));
 
         return executeQuery(cache, sql);
     }
@@ -158,16 +178,17 @@ public enum RawDisciplineLogic {
     /**
      * Gets all discipline records for an action code.
      *
-     * @param cache the data cache
+     * @param cache  the data cache
      * @param action the action code
      * @return the list of discipline records
      * @throws SQLException if there is an error accessing the database
      */
-    public static List<RawDiscipline> queryByActionCode(final Cache cache, final String action)
-            throws SQLException {
+    public static List<RawDiscipline> queryByActionCode(final Cache cache, final String action) throws SQLException {
+
+        final String tableName = getTableName(cache);
 
         final String sql = SimpleBuilder.concat(
-                "SELECT * FROM discipline WHERE action_type=", LogicUtils.sqlStringValue(action));
+                "SELECT * FROM ", tableName, " WHERE action_type=", LogicUtils.sqlStringValue(action));
 
         return executeQuery(cache, sql);
     }

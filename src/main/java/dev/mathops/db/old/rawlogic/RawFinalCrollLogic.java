@@ -57,6 +57,18 @@ public enum RawFinalCrollLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "final_croll" : (schemaPrefix + ".final_croll");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -73,8 +85,10 @@ public enum RawFinalCrollLogic {
             throw new SQLException("Null value in primary key or required field.");
         }
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "INSERT INTO final_croll (stu_id,course,sect,term,term_yr,pace_order,open_status,grading_option,",
+                "INSERT INTO ", tableName, " (stu_id,course,sect,term,term_yr,pace_order,open_status,grading_option,",
                 "completed,score,course_grade,prereq_satis,init_class_roll,stu_provided,final_class_roll,exam_placed,",
                 "zero_unit,timeout_factor,forfeit_i,i_in_progress,i_counted,ctrl_test,deferred_f_dt,bypass_timeout,",
                 "instrn_type,registration_status,last_class_roll_dt,i_term,i_term_yr,i_deadline_dt) VALUES (",
@@ -140,7 +154,9 @@ public enum RawFinalCrollLogic {
 
         final HtmlBuilder builder = new HtmlBuilder(100);
 
-        builder.add("DELETE FROM final_croll",
+        final String tableName = getTableName(cache);
+
+        builder.add("DELETE FROM ", tableName,
                 " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
                 "   AND course=", LogicUtils.sqlStringValue(record.course),
                 "   AND sect=", LogicUtils.sqlStringValue(record.sect),
@@ -187,7 +203,9 @@ public enum RawFinalCrollLogic {
      */
     public static List<RawFinalCroll> queryAll(final Cache cache) throws SQLException {
 
-        final String sql = "SELECT * FROM final_croll";
+        final String tableName = getTableName(cache);
+
+        final String sql = "SELECT * FROM " + tableName;
 
         final List<RawFinalCroll> result = new ArrayList<>(1000);
 

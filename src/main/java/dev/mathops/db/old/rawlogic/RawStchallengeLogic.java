@@ -62,6 +62,18 @@ public enum RawStchallengeLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "stchallenge" : (schemaPrefix + ".stchallenge");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -72,12 +84,14 @@ public enum RawStchallengeLogic {
     public static boolean insert(final Cache cache, final RawStchallenge record) throws SQLException {
 
         if (record.stuId == null || record.course == null || record.version == null || record.academicYr == null
-                || record.examDt == null || record.finishTime == null || record.passed == null) {
+            || record.examDt == null || record.finishTime == null || record.passed == null) {
             throw new SQLException("Null value in primary key or required field.");
         }
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "INSERT INTO stchallenge (stu_id,course,version,academic_yr,exam_dt,",
+                "INSERT INTO ", tableName, " (stu_id,course,version,academic_yr,exam_dt,",
                 "start_time,finish_time,last_name,first_name,middle_initial,seq_nbr,",
                 "serial_nbr,score,passed,how_validated) VALUES (",
                 LogicUtils.sqlStringValue(record.stuId), ",",
@@ -123,8 +137,10 @@ public enum RawStchallengeLogic {
      */
     public static boolean delete(final Cache cache, final RawStchallenge record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM stchallenge ",
-                "WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
                 "  AND course=", LogicUtils.sqlStringValue(record.course),
                 "  AND exam_dt=", LogicUtils.sqlDateValue(record.examDt),
                 "  AND finish_time=", LogicUtils.sqlIntegerValue(record.finishTime));
@@ -169,7 +185,9 @@ public enum RawStchallengeLogic {
      */
     public static List<RawStchallenge> queryAll(final Cache cache) throws SQLException {
 
-        return executeQuery(cache, "SELECT * FROM stchallenge");
+        final String tableName = getTableName(cache);
+
+        return executeQuery(cache, "SELECT * FROM " + tableName);
     }
 
     /**
@@ -197,7 +215,9 @@ public enum RawStchallengeLogic {
                 Log.warning("Invalid test student ID: " + stuId);
             }
         } else {
-            final String sql = "SELECT * FROM stchallenge WHERE stu_id=" + LogicUtils.sqlStringValue(stuId);
+            final String tableName = getTableName(cache);
+
+            final String sql = "SELECT * FROM " + tableName + " WHERE stu_id=" + LogicUtils.sqlStringValue(stuId);
 
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
@@ -243,8 +263,10 @@ public enum RawStchallengeLogic {
             }
 
         } else {
-            final String sql = "SELECT * FROM stchallenge WHERE stu_id="
-                    + LogicUtils.sqlStringValue(stuId) + " AND course=" + LogicUtils.sqlStringValue(course);
+            final String tableName = getTableName(cache);
+
+            final String sql = "SELECT * FROM " + tableName + " WHERE stu_id="
+                               + LogicUtils.sqlStringValue(stuId) + " AND course=" + LogicUtils.sqlStringValue(course);
 
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
@@ -388,8 +410,11 @@ public enum RawStchallengeLogic {
 
         } else {
             // Count legal attempts
-            final String sql1 = "SELECT COUNT(*) FROM stchallenge WHERE stu_id=" + LogicUtils.sqlStringValue(stuId)
-                    + " AND course=" + LogicUtils.sqlStringValue(course) + " AND (passed='Y' OR passed='N')";
+            final String tableName = getTableName(cache);
+
+            final String sql1 = "SELECT COUNT(*) FROM " + tableName + " WHERE stu_id=" + LogicUtils.sqlStringValue(stuId)
+                                + " AND course=" + LogicUtils.sqlStringValue(
+                    course) + " AND (passed='Y' OR passed='N')";
 
             result = LogicUtils.executeSimpleIntQuery(cache, sql1).intValue();
         }
@@ -457,7 +482,9 @@ public enum RawStchallengeLogic {
      */
     public static List<RawStchallenge> queryOnOrAfter(final Cache cache, final LocalDate earliest) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM stchallenge WHERE exam_dt>=",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE exam_dt>=",
                 LogicUtils.sqlDateValue(earliest));
 
         return executeQuery(cache, sql);
@@ -466,8 +493,8 @@ public enum RawStchallengeLogic {
     /**
      * Executes a query that returns a list of records.
      *
-     * @param cache    the data cache
-     * @param sql  the SQL to execute
+     * @param cache the data cache
+     * @param sql   the SQL to execute
      * @return the list of matching records
      * @throws SQLException if there is an error accessing the database
      */

@@ -75,10 +75,12 @@ final class TestRawStpaceSummaryLogic {
         final DbConnection conn = login.checkOutConnection();
         final Cache cache = new Cache(profile);
 
+        final String whichDbName = RawWhichDbLogic.getTableName(cache);
+
         // Make sure we're in the TEST database
         try {
             try (final Statement stmt = conn.createStatement();
-                 final ResultSet rs = stmt.executeQuery("SELECT descr FROM which_db")) {
+                 final ResultSet rs = stmt.executeQuery("SELECT descr FROM " + whichDbName)) {
 
                 if (rs.next()) {
                     final String which = rs.getString(1);
@@ -92,7 +94,8 @@ final class TestRawStpaceSummaryLogic {
             }
 
             try (final Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("DELETE FROM stpace_summary");
+                final String tableName = RawStpaceSummaryLogic.getTableName(cache);
+                stmt.executeUpdate("DELETE FROM " + tableName);
             }
             conn.commit();
 
@@ -298,10 +301,12 @@ final class TestRawStpaceSummaryLogic {
 
         final Login login = profile.getLogin(ESchema.LEGACY);
         final DbConnection conn = login.checkOutConnection();
+        final Cache cache = new Cache(profile);
 
         try {
             try (final Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("DELETE FROM stpace_summary");
+                final String tableName = RawStpaceSummaryLogic.getTableName(cache);
+                stmt.executeUpdate("DELETE FROM " + tableName);
             }
 
             conn.commit();

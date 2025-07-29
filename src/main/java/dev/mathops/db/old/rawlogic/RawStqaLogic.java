@@ -39,6 +39,18 @@ public enum RawStqaLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "stqa" : (schemaPrefix + ".stqa");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -55,9 +67,10 @@ public enum RawStqaLogic {
             Log.info("  Student ID: ", record.stuId);
             result = false;
         } else {
-            final String sql = SimpleBuilder.concat("INSERT INTO stqa (serial_nbr,",
-                    "question_nbr,answer_nbr,objective,stu_answer,stu_id,version,",
-                    "ans_correct,exam_dt,subtest,finish_time) VALUES (",
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("INSERT INTO ", tableName, " (serial_nbr,question_nbr,",
+                    "answer_nbr,objective,stu_answer,stu_id,version,ans_correct,exam_dt,subtest,finish_time) VALUES (",
                     LogicUtils.sqlLongValue(record.serialNbr), ",",
                     LogicUtils.sqlIntegerValue(record.questionNbr), ",",
                     LogicUtils.sqlIntegerValue(record.answerNbr), ",",
@@ -98,7 +111,9 @@ public enum RawStqaLogic {
      */
     public static boolean delete(final Cache cache, final RawStqa record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM stqa",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
                 " WHERE serial_nbr=", LogicUtils.sqlLongValue(record.serialNbr),
                 " AND question_nbr=", LogicUtils.sqlIntegerValue(record.questionNbr),
                 " AND answer_nbr=", LogicUtils.sqlIntegerValue(record.answerNbr));
@@ -129,7 +144,9 @@ public enum RawStqaLogic {
      */
     public static List<RawStqa> queryAll(final Cache cache) throws SQLException {
 
-        return executeQuery(cache, "SELECT * FROM stqa");
+        final String tableName = getTableName(cache);
+
+        return executeQuery(cache, "SELECT * FROM " + tableName);
     }
 
     /**
@@ -142,7 +159,10 @@ public enum RawStqaLogic {
      */
     public static List<RawStqa> queryByStudent(final Cache cache, final String stuId) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM stqa WHERE stu_id=", LogicUtils.sqlStringValue(stuId));
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE stu_id=",
+                LogicUtils.sqlStringValue(stuId));
 
         return executeQuery(cache, sql);
     }
@@ -157,7 +177,9 @@ public enum RawStqaLogic {
      */
     public static List<RawStqa> queryBySerial(final Cache cache, final Long serial) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM stqa WHERE serial_nbr=",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE serial_nbr=",
                 LogicUtils.sqlLongValue(serial));
 
         return executeQuery(cache, sql);
@@ -171,10 +193,11 @@ public enum RawStqaLogic {
      * @return true if successful; false if not
      * @throws SQLException if there is an error accessing the database
      */
-    public static boolean deleteAllForAttempt(final Cache cache, final RawStexam record)
-            throws SQLException {
+    public static boolean deleteAllForAttempt(final Cache cache, final RawStexam record) throws SQLException {
 
-        final String sql1 = SimpleBuilder.concat("DELETE FROM stqa",
+        final String tableName = getTableName(cache);
+
+        final String sql1 = SimpleBuilder.concat("DELETE FROM ", tableName,
                 " WHERE serial_nbr=", LogicUtils.sqlLongValue(record.serialNbr),
                 " AND version=", LogicUtils.sqlStringValue(record.version),
                 " AND stu_id=", LogicUtils.sqlStringValue(record.stuId));
@@ -210,10 +233,12 @@ public enum RawStqaLogic {
             Log.info("  Student ID: ", record.stuId);
             result = false;
         } else {
+            final String tableName = getTableName(cache);
+
             // TODO: We don't match on subtest here - should be moot, but this could update
             //  more than one row if an answer applies to multiple subtests
 
-            final String sql = SimpleBuilder.concat("UPDATE stqa ",
+            final String sql = SimpleBuilder.concat("UPDATE ", tableName,
                     " SET ans_correct=", LogicUtils.sqlStringValue(newCorrect),
                     " WHERE serial_nbr=", LogicUtils.sqlLongValue(record.serialNbr),
                     " AND question_nbr=", LogicUtils.sqlIntegerValue(record.questionNbr),

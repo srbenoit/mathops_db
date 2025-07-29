@@ -37,6 +37,18 @@ public enum RawMilestoneLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "milestone" : (schemaPrefix + ".milestone");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -50,10 +62,11 @@ public enum RawMilestoneLogic {
             throw new SQLException("Null value in primary key field.");
         }
 
-        final String sql = SimpleBuilder.concat(
-                "INSERT INTO milestone (term,term_yr,pace,pace_track,ms_nbr,ms_type,ms_date,nbr_atmpts_allow)",
-                " VALUES (",
-                "'", record.termKey.termCode, "',",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("INSERT INTO ", tableName,
+                " (term,term_yr,pace,pace_track,ms_nbr,ms_type,ms_date,nbr_atmpts_allow)", " VALUES (",
+                LogicUtils.sqlStringValue(record.termKey.termCode), ",",
                 record.termKey.shortYear, ",",
                 LogicUtils.sqlIntegerValue(record.pace), ",",
                 LogicUtils.sqlStringValue(record.paceTrack), ",",
@@ -89,8 +102,10 @@ public enum RawMilestoneLogic {
      */
     public static boolean delete(final Cache cache, final RawMilestone record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM milestone ",
-                "WHERE term=", LogicUtils.sqlStringValue(record.termKey.termCode),
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE term=", LogicUtils.sqlStringValue(record.termKey.termCode),
                 "  AND term_yr=", LogicUtils.sqlIntegerValue(record.termKey.shortYear),
                 "  AND pace=", LogicUtils.sqlIntegerValue(record.pace),
                 "  AND pace_track=", LogicUtils.sqlStringValue(record.paceTrack),
@@ -123,7 +138,9 @@ public enum RawMilestoneLogic {
      */
     public static List<RawMilestone> queryAll(final Cache cache) throws SQLException {
 
-        return executeListQuery(cache, "SELECT * FROM milestone");
+        final String tableName = getTableName(cache);
+
+        return executeListQuery(cache, "SELECT * FROM " + tableName);
     }
 
     /**
@@ -136,7 +153,9 @@ public enum RawMilestoneLogic {
      */
     public static List<RawMilestone> getAllMilestones(final Cache cache, final TermKey termKey) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM milestone",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM " + tableName,
                 " WHERE term=", LogicUtils.sqlStringValue(termKey.termCode),
                 "   AND term_yr=", LogicUtils.sqlIntegerValue(termKey.shortYear));
 
@@ -156,7 +175,9 @@ public enum RawMilestoneLogic {
     public static List<RawMilestone> getAllMilestones(final Cache cache, final TermKey termKey, final int pace,
                                                       final String paceTrack) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM milestone",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
                 " WHERE term=", LogicUtils.sqlStringValue(termKey.termCode),
                 "   AND term_yr=", LogicUtils.sqlIntegerValue(termKey.shortYear),
                 "   AND pace=", LogicUtils.sqlIntegerValue(Integer.valueOf(pace)),
@@ -177,7 +198,9 @@ public enum RawMilestoneLogic {
     public static boolean updateMsDate(final Cache cache, final RawMilestone milestone,
                                        final LocalDate newMsDate) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("UPDATE milestone",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("UPDATE ", tableName,
                 " SET ms_date=", LogicUtils.sqlDateValue(newMsDate),
                 " WHERE term=", LogicUtils.sqlStringValue(milestone.termKey.termCode),
                 "   AND term_yr=", LogicUtils.sqlIntegerValue(milestone.termKey.shortYear),

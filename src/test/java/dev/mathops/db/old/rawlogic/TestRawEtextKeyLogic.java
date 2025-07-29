@@ -57,16 +57,17 @@ final class TestRawEtextKeyLogic {
         final DbConnection conn = login.checkOutConnection();
         final Cache cache = new Cache(profile);
 
+        final String whichDbName = RawWhichDbLogic.getTableName(cache);
+
         // Make sure we're in the TEST database
         try {
             try (final Statement stmt = conn.createStatement();
-                 final ResultSet rs = stmt.executeQuery("SELECT descr FROM which_db")) {
+                 final ResultSet rs = stmt.executeQuery("SELECT descr FROM " + whichDbName)) {
 
                 if (rs.next()) {
                     final String which = rs.getString(1);
                     if (which != null && !"TEST".equals(which.trim())) {
-                        throw new IllegalArgumentException(
-                                TestRes.fmt(TestRes.ERR_NOT_CONNECTED_TO_TEST, which));
+                        throw new IllegalArgumentException(TestRes.fmt(TestRes.ERR_NOT_CONNECTED_TO_TEST, which));
                     }
                 } else {
                     throw new IllegalArgumentException(TestRes.get(TestRes.ERR_CANT_QUERY_WHICH_DB));
@@ -74,7 +75,8 @@ final class TestRawEtextKeyLogic {
             }
 
             try (final Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("DELETE FROM etext_key");
+                final String tableName = RawEtextKeyLogic.getTableName(cache);
+                stmt.executeUpdate("DELETE FROM " + tableName);
             }
             conn.commit();
 
@@ -239,10 +241,12 @@ final class TestRawEtextKeyLogic {
 
         final Login login = profile.getLogin(ESchema.LEGACY);
         final DbConnection conn = login.checkOutConnection();
+        final Cache cache = new Cache(profile);
 
         try {
             try (final Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("DELETE FROM etext_key");
+                final String tableName = RawEtextKeyLogic.getTableName(cache);
+                stmt.executeUpdate("DELETE FROM " + tableName);
             }
 
             conn.commit();

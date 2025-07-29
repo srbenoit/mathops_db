@@ -29,6 +29,18 @@ public enum RawZipCodeLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "zip_code" : (schemaPrefix + ".zip_code");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -42,7 +54,9 @@ public enum RawZipCodeLogic {
             throw new SQLException("Null value in primary key or required field.");
         }
 
-        final String sql = SimpleBuilder.concat("INSERT INTO zip_code (zip_code,city,state) VALUES (",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("INSERT INTO ", tableName, " (zip_code,city,state) VALUES (",
                 LogicUtils.sqlStringValue(record.zipCode), ",",
                 LogicUtils.sqlStringValue(record.city), ",",
                 LogicUtils.sqlStringValue(record.state), ")");
@@ -74,7 +88,9 @@ public enum RawZipCodeLogic {
      */
     public static boolean delete(final Cache cache, final RawZipCode record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM zip_code WHERE zip_code=",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName, " WHERE zip_code=",
                 LogicUtils.sqlStringValue(record.zipCode));
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
@@ -107,8 +123,10 @@ public enum RawZipCodeLogic {
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
+        final String tableName = getTableName(cache);
+
         try (final Statement stmt = conn.createStatement();
-             final ResultSet rs = stmt.executeQuery("SELECT * FROM zip_code")) {
+             final ResultSet rs = stmt.executeQuery("SELECT * FROM " + tableName)) {
 
             while (rs.next()) {
                 result.add(RawZipCode.fromResultSet(rs));

@@ -32,6 +32,18 @@ public enum RawPacingRulesLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "pacing_rules" : (schemaPrefix + ".pacing_rules");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -42,13 +54,15 @@ public enum RawPacingRulesLogic {
     public static boolean insert(final Cache cache, final RawPacingRules record) throws SQLException {
 
         if (record.termKey == null || record.pacingStructure == null || record.activityType == null
-                || record.requirement == null) {
+            || record.requirement == null) {
 
             throw new SQLException("Null value in primary key field.");
         }
 
-        final String sql = SimpleBuilder.concat( //
-                "INSERT INTO pacing_rules (term,term_yr,pacing_structure,activity_type,requirement) VALUES (",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat(
+                "INSERT INTO ", tableName, " (term,term_yr,pacing_structure,activity_type,requirement) VALUES (",
                 LogicUtils.sqlStringValue(record.termKey.termCode), ",",
                 record.termKey.shortYear, ",",
                 LogicUtils.sqlStringValue(record.pacingStructure), ",",
@@ -82,8 +96,10 @@ public enum RawPacingRulesLogic {
      */
     public static boolean delete(final Cache cache, final RawPacingRules record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM pacing_rules ",
-                "WHERE term=", LogicUtils.sqlStringValue(record.termKey.termCode),
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE term=", LogicUtils.sqlStringValue(record.termKey.termCode),
                 "  AND term_yr=", LogicUtils.sqlIntegerValue(record.termKey.shortYear),
                 "  AND pacing_structure=", LogicUtils.sqlStringValue(record.pacingStructure),
                 "  AND activity_type=", LogicUtils.sqlStringValue(record.activityType),
@@ -115,7 +131,9 @@ public enum RawPacingRulesLogic {
      */
     public static List<RawPacingRules> queryAll(final Cache cache) throws SQLException {
 
-        return executeListQuery(cache, "SELECT * FROM pacing_rules");
+        final String tableName = getTableName(cache);
+
+        return executeListQuery(cache, "SELECT * FROM " + tableName);
     }
 
     /**
@@ -126,10 +144,11 @@ public enum RawPacingRulesLogic {
      * @return the corresponding list of records
      * @throws SQLException if there is an error performing the query
      */
-    public static List<RawPacingRules> queryByTerm(final Cache cache, final TermKey termKey)
-            throws SQLException {
+    public static List<RawPacingRules> queryByTerm(final Cache cache, final TermKey termKey) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM pacing_rules WHERE term=",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE term=",
                 LogicUtils.sqlStringValue(termKey.termCode), " AND term_yr=", termKey.shortYear);
 
         return executeListQuery(cache, sql);
@@ -147,7 +166,9 @@ public enum RawPacingRulesLogic {
     public static List<RawPacingRules> queryByTermAndPacingStructure(final Cache cache, final TermKey termKey,
                                                                      final String pacingStructure) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM pacing_rules WHERE term=",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE term=",
                 LogicUtils.sqlStringValue(termKey.termCode), " AND term_yr=", termKey.shortYear,
                 " AND pacing_structure=", LogicUtils.sqlStringValue(pacingStructure));
 
@@ -166,10 +187,11 @@ public enum RawPacingRulesLogic {
      * @throws SQLException if there is an error accessing the database
      */
     public static boolean isRequired(final Cache cache, final TermKey termKey, final String pacingStructure,
-                                     final String activityType, final String requirement)
-            throws SQLException {
+                                     final String activityType, final String requirement) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM pacing_rules",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
                 " WHERE term=", LogicUtils.sqlStringValue(termKey.termCode),
                 "   AND term_yr=", termKey.shortYear,
                 "   AND pacing_structure=", LogicUtils.sqlStringValue(pacingStructure),

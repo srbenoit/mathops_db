@@ -30,6 +30,18 @@ public enum RawEtextKeyLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "etext_key" : (schemaPrefix + ".etext_key");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -43,8 +55,9 @@ public enum RawEtextKeyLogic {
             throw new SQLException("Null value in primary key field.");
         }
 
-        final String sql = SimpleBuilder.concat("INSERT INTO etext_key ",
-                "(etext_id,etext_key,active_dt) VALUES (",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("INSERT INTO ", tableName, " (etext_id,etext_key,active_dt) VALUES (",
                 LogicUtils.sqlStringValue(record.etextId), ",",
                 LogicUtils.sqlStringValue(record.etextKey), ",",
                 LogicUtils.sqlDateTimeValue(record.activeDt), ")");
@@ -76,8 +89,10 @@ public enum RawEtextKeyLogic {
      */
     public static boolean delete(final Cache cache, final RawEtextKey record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM etext_key ",
-                "WHERE etext_key=", LogicUtils.sqlStringValue(record.etextKey));
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE etext_key=", LogicUtils.sqlStringValue(record.etextKey));
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
@@ -107,7 +122,9 @@ public enum RawEtextKeyLogic {
 
         final List<RawEtextKey> result = new ArrayList<>(500);
 
-        final String sql = "SELECT * FROM etext_key";
+        final String tableName = getTableName(cache);
+
+        final String sql = "SELECT * FROM " + tableName;
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
@@ -136,8 +153,9 @@ public enum RawEtextKeyLogic {
 
         RawEtextKey result = null;
 
-        final String sql = SimpleBuilder.concat(
-                "SELECT * FROM etext_key WHERE etext_key=",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE etext_key=",
                 LogicUtils.sqlStringValue(etextKey));
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
@@ -167,7 +185,9 @@ public enum RawEtextKeyLogic {
     public static boolean updateActiveDt(final Cache cache, final String etextKey,
                                          final LocalDateTime newActiveDt) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("UPDATE etext_key SET active_dt=",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("UPDATE ", tableName, " SET active_dt=",
                 LogicUtils.sqlDateTimeValue(newActiveDt), " WHERE etext_key=", LogicUtils.sqlStringValue(etextKey));
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);

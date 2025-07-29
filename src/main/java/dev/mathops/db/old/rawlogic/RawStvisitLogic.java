@@ -33,6 +33,18 @@ public enum RawStvisitLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "stvisit" : (schemaPrefix + ".stvisit");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -53,8 +65,10 @@ public enum RawStvisitLogic {
             Log.info("stu_id: ", record.stuId);
             result = false;
         } else {
+            final String tableName = getTableName(cache);
+
             final String sql = SimpleBuilder.concat(
-                    "INSERT INTO stvisit (stu_id,when_started,when_ended,location,seat) VALUES (",
+                    "INSERT INTO ", tableName, " (stu_id,when_started,when_ended,location,seat) VALUES (",
                     LogicUtils.sqlStringValue(record.stuId), ",",
                     LogicUtils.sqlDateTimeValue(record.whenStarted), ",",
                     LogicUtils.sqlDateTimeValue(record.whenEnded), ",",
@@ -89,7 +103,9 @@ public enum RawStvisitLogic {
      */
     public static boolean delete(final Cache cache, final RawStvisit record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM stvisit WHERE stu_id=",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName, " WHERE stu_id=",
                 LogicUtils.sqlStringValue(record.stuId),
                 "  AND when_started=", LogicUtils.sqlDateTimeValue(record.whenStarted));
 
@@ -119,7 +135,9 @@ public enum RawStvisitLogic {
      */
     public static List<RawStvisit> queryAll(final Cache cache) throws SQLException {
 
-        return executeListQuery(cache, "SELECT * FROM stvisit");
+        final String tableName = getTableName(cache);
+
+        return executeListQuery(cache, "SELECT * FROM " + tableName);
     }
 
     /**
@@ -130,10 +148,11 @@ public enum RawStvisitLogic {
      * @return the list of records
      * @throws SQLException if there is an error accessing the database
      */
-    public static List<RawStvisit> queryByStudent(final Cache cache, final String stuId)
-            throws SQLException {
+    public static List<RawStvisit> queryByStudent(final Cache cache, final String stuId) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM stvisit WHERE stu_id=",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE stu_id=",
                 LogicUtils.sqlStringValue(stuId));
 
         return executeListQuery(cache, sql);
@@ -151,7 +170,10 @@ public enum RawStvisitLogic {
     public static List<RawStvisit> getInProgressStudentVisits(final Cache cache, final String stuId)
             throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM stvisit WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE stu_id=",
+                LogicUtils.sqlStringValue(stuId),
                 " AND when_ended IS NULL");
 
         return executeListQuery(cache, sql);
@@ -193,12 +215,14 @@ public enum RawStvisitLogic {
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
+        final String tableName = getTableName(cache);
+
         try (final Statement stmt = conn.createStatement()) {
 
             for (final RawStvisit rec : getInProgressStudentVisits(cache, stuId)) {
 
                 final String sql = SimpleBuilder.concat(
-                        "UPDATE stvisit SET when_ended=", LogicUtils.sqlDateTimeValue(endDateTime),
+                        "UPDATE ", tableName, " SET when_ended=", LogicUtils.sqlDateTimeValue(endDateTime),
                         " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
                         " AND when_started=", LogicUtils.sqlDateTimeValue(rec.whenStarted));
 

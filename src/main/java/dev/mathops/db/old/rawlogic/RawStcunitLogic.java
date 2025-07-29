@@ -36,6 +36,18 @@ public enum RawStcunitLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "stcunit" : (schemaPrefix + ".stcunit");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -46,7 +58,7 @@ public enum RawStcunitLogic {
     public static boolean insert(final Cache cache, final RawStcunit record) throws SQLException {
 
         if (record.stuId == null || record.course == null || record.unit == null
-                || record.reviewStatus == null || record.proctoredStatus == null) {
+            || record.reviewStatus == null || record.proctoredStatus == null) {
             throw new SQLException("Null value in primary key or required field.");
         }
 
@@ -57,8 +69,10 @@ public enum RawStcunitLogic {
             Log.info("  Student ID: ", record.stuId);
             result = false;
         } else {
+            final String tableName = getTableName(cache);
+
             final String sql = SimpleBuilder.concat(
-                    "INSERT INTO stcunit (stu_id,course,unit,review_status,",
+                    "INSERT INTO ", tableName, " (stu_id,course,unit,review_status,",
                     "review_score,review_points,proctored_status,proctored_score,",
                     "proctored_points) VALUES (",
                     LogicUtils.sqlStringValue(record.stuId), ",",
@@ -99,10 +113,12 @@ public enum RawStcunitLogic {
      */
     public static boolean delete(final Cache cache, final RawStcunit record) throws SQLException {
 
+        final String tableName = getTableName(cache);
+
         final boolean result;
 
-        final String sql = SimpleBuilder.concat("DELETE FROM stcunit ",
-                "WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
                 "  AND course=", LogicUtils.sqlStringValue(record.course),
                 "  AND unit=", LogicUtils.sqlIntegerValue(record.unit));
 
@@ -132,7 +148,9 @@ public enum RawStcunitLogic {
      */
     public static List<RawStcunit> queryAll(final Cache cache) throws SQLException {
 
-        final String sql = "SELECT * FROM stcunit";
+        final String tableName = getTableName(cache);
+
+        final String sql = "SELECT * FROM " + tableName;
 
         return doListQuery(cache, sql);
     }
@@ -147,7 +165,9 @@ public enum RawStcunitLogic {
      */
     public static List<RawStcunit> queryByStudent(final Cache cache, final String stuId) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM stcunit where stu_id=",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " where stu_id=",
                 LogicUtils.sqlStringValue(stuId));
 
         return doListQuery(cache, sql);

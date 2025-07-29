@@ -29,6 +29,18 @@ public enum RawCohortLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "cohort" : (schemaPrefix + ".cohort");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -42,8 +54,10 @@ public enum RawCohortLogic {
             throw new SQLException("Null value in primary key field.");
         }
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "INSERT INTO cohort (cohort,size,instructor) VALUES (",
+                "INSERT INTO ", tableName, " (cohort,size,instructor) VALUES (",
                 LogicUtils.sqlStringValue(record.cohort), ",",
                 LogicUtils.sqlIntegerValue(record.size), ",",
                 LogicUtils.sqlStringValue(record.instructor), ")");
@@ -75,8 +89,10 @@ public enum RawCohortLogic {
      */
     public static boolean delete(final Cache cache, final RawCohort record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM cohort ",
-                "WHERE cohort=", LogicUtils.sqlStringValue(record.cohort));
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE cohort=", LogicUtils.sqlStringValue(record.cohort));
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
@@ -106,7 +122,9 @@ public enum RawCohortLogic {
 
         final List<RawCohort> result = new ArrayList<>(100);
 
-        final String sql = "SELECT * FROM cohort";
+        final String tableName = getTableName(cache);
+
+        final String sql = "SELECT * FROM " + tableName;
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
@@ -135,8 +153,10 @@ public enum RawCohortLogic {
 
         RawCohort result = null;
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "SELECT * FROM cohort WHERE cohort=", LogicUtils.sqlStringValue(cohort));
+                "SELECT * FROM ", tableName, " WHERE cohort=", LogicUtils.sqlStringValue(cohort));
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
@@ -165,7 +185,9 @@ public enum RawCohortLogic {
     public static boolean updateCohortSize(final Cache cache, final String cohort,
                                            final Integer newSize) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("UPDATE cohort SET size=",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("UPDATE ", tableName, " SET size=",
                 LogicUtils.sqlIntegerValue(newSize), " WHERE cohort=", LogicUtils.sqlStringValue(cohort));
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);

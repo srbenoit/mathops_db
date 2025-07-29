@@ -43,6 +43,18 @@ public enum RawStpaceSummaryLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "stpace_summary" : (schemaPrefix + ".stpace_summary");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -59,8 +71,10 @@ public enum RawStpaceSummaryLogic {
             throw new SQLException("Null value in primary key or required field.");
         }
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "INSERT INTO stpace_summary (stu_id,course,sect,term,term_yr,",
+                "INSERT INTO ", tableName, " (stu_id,course,sect,term,term_yr,",
                 "i_in_progress,pace,pace_track,pace_order,ms_nbr,ms_unit,ms_date,",
                 "new_ms_date,exam_dt,re_points) VALUES (",
                 LogicUtils.sqlStringValue(record.stuId), ",",
@@ -110,8 +124,10 @@ public enum RawStpaceSummaryLogic {
 
         final HtmlBuilder builder = new HtmlBuilder(100);
 
-        builder.add("DELETE FROM stpace_summary ",
-                "WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
+        final String tableName = getTableName(cache);
+
+        builder.add("DELETE FROM ", tableName,
+                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
                 "  AND course=", LogicUtils.sqlStringValue(record.course),
                 "  AND sect=", LogicUtils.sqlStringValue(record.sect),
                 "  AND term=", LogicUtils.sqlStringValue(record.termKey.termCode),
@@ -146,7 +162,9 @@ public enum RawStpaceSummaryLogic {
      */
     public static List<RawStpaceSummary> queryAll(final Cache cache) throws SQLException {
 
-        final String sql = "SELECT * FROM stpace_summary";
+        final String tableName = getTableName(cache);
+
+        final String sql = "SELECT * FROM " + tableName;
 
         return executeQuery(cache, sql);
     }
@@ -169,8 +187,10 @@ public enum RawStpaceSummaryLogic {
 
         final HtmlBuilder builder = new HtmlBuilder(100);
 
-        builder.add("SELECT * FROM stpace_summary ",
-                "WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
+        final String tableName = getTableName(cache);
+
+        builder.add("SELECT * FROM ", tableName,
+                " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
                 "  AND course=", LogicUtils.sqlStringValue(course),
                 "  AND sect=", LogicUtils.sqlStringValue(sect),
                 "  AND term=", LogicUtils.sqlStringValue(termKey.termCode),

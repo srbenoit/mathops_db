@@ -44,6 +44,18 @@ public enum RawClientPcLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "client_pc" : (schemaPrefix + ".client_pc");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -58,9 +70,11 @@ public enum RawClientPcLogic {
             throw new SQLException("Null value in primary key field.");
         }
 
-        final String sql = SimpleBuilder.concat("INSERT INTO client_pc (computer_id,testing_center_id,station_nbr,",
-                "computer_desc,icon_x,icon_y,pc_usage,current_status,dtime_created,dtime_approved,mac_address,",
-                "power_status,power_on_due,last_ping,current_stu_id,current_course,",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("INSERT INTO ", tableName, " (computer_id,testing_center_id,",
+                "station_nbr,computer_desc,icon_x,icon_y,pc_usage,current_status,dtime_created,dtime_approved,",
+                "mac_address,power_status,power_on_due,last_ping,current_stu_id,current_course,",
                 "current_unit,current_version) VALUES (",
                 LogicUtils.sqlStringValue(record.computerId), ",",
                 LogicUtils.sqlStringValue(record.testingCenterId), ",",
@@ -106,11 +120,12 @@ public enum RawClientPcLogic {
      * @return {@code true} if successful; {@code false} if not
      * @throws SQLException if there is an error accessing the database
      */
-    public static boolean delete(final Cache cache, final RawClientPc record)
-            throws SQLException {
+    public static boolean delete(final Cache cache, final RawClientPc record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM client_pc ",
-                "WHERE computer_id=", LogicUtils.sqlStringValue(record.computerId));
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE computer_id=", LogicUtils.sqlStringValue(record.computerId));
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
@@ -140,10 +155,12 @@ public enum RawClientPcLogic {
 
         final List<RawClientPc> result = new ArrayList<>(200);
 
+        final String tableName = getTableName(cache);
+
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
-             final ResultSet rs = stmt.executeQuery("SELECT * FROM client_pc")) {
+             final ResultSet rs = stmt.executeQuery("SELECT * FROM " + tableName)) {
 
             while (rs.next()) {
                 result.add(RawClientPc.fromResultSet(rs));
@@ -168,7 +185,9 @@ public enum RawClientPcLogic {
 
         final List<RawClientPc> result = new ArrayList<>(100);
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM client_pc WHERE testing_center_id='",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE testing_center_id='",
                 testingCenterId, "'");
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
@@ -198,8 +217,9 @@ public enum RawClientPcLogic {
 
         RawClientPc result = null;
 
-        final String sql = SimpleBuilder.concat(
-                "SELECT * FROM client_pc WHERE computer_id='", computerId, "'");
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE computer_id='", computerId, "'");
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
@@ -230,8 +250,10 @@ public enum RawClientPcLogic {
 
         final HtmlBuilder sql = new HtmlBuilder(100);
 
-        sql.add("UPDATE client_pc SET current_status=",
-                newCurrentStatus, " WHERE computer_id='", computerId, "'");
+        final String tableName = getTableName(cache);
+
+        sql.add("UPDATE ", tableName, " SET current_status=", newCurrentStatus, " WHERE computer_id='", computerId,
+                "'");
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
@@ -269,7 +291,9 @@ public enum RawClientPcLogic {
                                            final Integer newCurrentUnit, final String newCurrentVersion)
             throws SQLException {
 
-        final String sql = SimpleBuilder.concat("UPDATE client_pc",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("UPDATE ", tableName,
                 " SET current_status=", LogicUtils.sqlIntegerValue(newCurrentStatus), ",",
                 " current_stu_id=", LogicUtils.sqlStringValue(newCurrentStuId), ",",
                 " current_course=", LogicUtils.sqlStringValue(newCurrentCourse), ",",
@@ -306,7 +330,9 @@ public enum RawClientPcLogic {
     public static boolean updatePcUsage(final Cache cache, final String computerId,
                                         final String newPcUsage) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("UPDATE client_pc",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("UPDATE ", tableName,
                 " SET pc_usage=", LogicUtils.sqlStringValue(newPcUsage),
                 " WHERE computer_id='", computerId, "'");
 
@@ -339,7 +365,9 @@ public enum RawClientPcLogic {
     public static boolean updatePowerStatus(final Cache cache, final String computerId,
                                             final String newPowerStatus) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("UPDATE client_pc",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("UPDATE ", tableName,
                 " SET power_status=", LogicUtils.sqlStringValue(newPowerStatus),
                 " WHERE computer_id='", computerId, "'");
 
@@ -374,7 +402,9 @@ public enum RawClientPcLogic {
     public static boolean updatePowerOnDue(final Cache cache, final String computerId,
                                            final Integer newPowerOnDue) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("UPDATE client_pc",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("UPDATE ", tableName,
                 " SET power_on_due=", LogicUtils.sqlIntegerValue(newPowerOnDue),
                 " WHERE computer_id='", computerId, "'");
 
@@ -408,8 +438,10 @@ public enum RawClientPcLogic {
     public static boolean updateLastPing(final Cache cache, final String computerId,
                                          final Integer newLastPing) throws SQLException {
 
+        final String tableName = getTableName(cache);
+
         final HtmlBuilder htm = new HtmlBuilder(50);
-        htm.add("UPDATE client_pc SET last_ping=", LogicUtils.sqlIntegerValue(newLastPing));
+        htm.add("UPDATE ", tableName, " SET last_ping=", LogicUtils.sqlIntegerValue(newLastPing));
         if (newLastPing != null) {
             htm.add(", power_status=2");
         }

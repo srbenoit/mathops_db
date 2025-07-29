@@ -32,6 +32,18 @@ public enum RawDontSubmitLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "dont_submit" : (schemaPrefix + ".dont_submit");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -45,8 +57,10 @@ public enum RawDontSubmitLogic {
             throw new SQLException("Null value in primary key field.");
         }
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "INSERT INTO dont_submit (course,sect,term,term_yr) VALUES (",
+                "INSERT INTO ", tableName, " (course,sect,term,term_yr) VALUES (",
                 "'", record.course, "',",
                 "'", record.sect, "',",
                 "'", record.termKey.termCode, "',",
@@ -83,7 +97,9 @@ public enum RawDontSubmitLogic {
 
         final HtmlBuilder sql = new HtmlBuilder(100);
 
-        sql.add("DELETE FROM dont_submit ",
+        final String tableName = getTableName(cache);
+
+        sql.add("DELETE FROM ", tableName,
                 " WHERE course=", LogicUtils.sqlStringValue(record.course),
                 " AND sect=", LogicUtils.sqlStringValue(record.sect),
                 " AND term=", LogicUtils.sqlStringValue(record.termKey.termCode),
@@ -115,7 +131,9 @@ public enum RawDontSubmitLogic {
      */
     public static List<RawDontSubmit> queryAll(final Cache cache) throws SQLException {
 
-        return executeListQuery(cache, "SELECT * FROM dont_submit");
+        final String tableName = getTableName(cache);
+
+        return executeListQuery(cache, "SELECT * FROM " + tableName);
     }
 
     /**
@@ -128,7 +146,9 @@ public enum RawDontSubmitLogic {
      */
     public static List<RawDontSubmit> queryByTerm(final Cache cache, final TermKey termKey) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM dont_submit",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
                 " WHERE term=", LogicUtils.sqlStringValue(termKey.termCode),
                 " AND term_yr=", LogicUtils.sqlIntegerValue(termKey.shortYear));
 

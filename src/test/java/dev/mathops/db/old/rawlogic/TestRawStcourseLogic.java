@@ -12,6 +12,7 @@ import dev.mathops.db.logic.SystemData;
 import dev.mathops.db.old.rawrecord.RawRecordConstants;
 import dev.mathops.db.old.rawrecord.RawStcourse;
 import dev.mathops.db.rec.TermRec;
+import dev.mathops.db.reclogic.TermLogic;
 import dev.mathops.db.type.TermKey;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -34,6 +35,10 @@ import static org.junit.jupiter.api.Assertions.fail;
  * Tests for the {@code RawStcourseLogic} class.
  */
 final class TestRawStcourseLogic {
+
+    /** The database context. */
+    private static final String CONTEXT = Contexts.POSTGRES_TEST_PATH;
+//    private static final String CONTEXT = Contexts.INFORMIX_TEST_PATH;
 
     /** A term key used in test records. */
     private static final TermKey sm21 = new TermKey("SM21");
@@ -109,7 +114,7 @@ final class TestRawStcourseLogic {
     static void initTests() {
 
         final DatabaseConfig config = DatabaseConfig.getDefault();
-        profile = config.getCodeProfile(Contexts.INFORMIX_TEST_PATH);
+        profile = config.getCodeProfile(CONTEXT);
         if (profile == null) {
             throw new IllegalArgumentException(TestRes.get(TestRes.ERR_NO_TEST_PROFILE));
         }
@@ -118,10 +123,12 @@ final class TestRawStcourseLogic {
         final DbConnection conn = login.checkOutConnection();
         final Cache cache = new Cache(profile);
 
+        final String whichDbName = RawWhichDbLogic.getTableName(cache);
+
         // Make sure we're in the TEST database
         try {
             try (final Statement stmt = conn.createStatement();
-                 final ResultSet rs = stmt.executeQuery("SELECT descr FROM which_db")) {
+                 final ResultSet rs = stmt.executeQuery("SELECT descr FROM " + whichDbName)) {
 
                 if (rs.next()) {
                     final String which = rs.getString(1);
@@ -135,8 +142,10 @@ final class TestRawStcourseLogic {
             }
 
             try (final Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("DELETE FROM stcourse");
-                stmt.executeUpdate("DELETE FROM term");
+                final String tableName = RawStcourseLogic.getTableName(cache);
+                stmt.executeUpdate("DELETE FROM " + tableName);
+                final String termName = TermLogic.Postgres.getTableName(cache);
+                stmt.executeUpdate("DELETE FROM " + termName);
             }
             conn.commit();
 
@@ -1473,7 +1482,7 @@ final class TestRawStcourseLogic {
             final boolean result = RawStcourseLogic.updateOpenStatusAndFinalClassRoll(cache, "111111111",
                     RawRecordConstants.M118, "001", fa21, "N", "N", newLast);
 
-            assertTrue(result, "updatePaceOrder returned false");
+            assertTrue(result, "updateOpenStatusAndFinalClassRoll returned false");
 
             final RawStcourse reg = RawStcourseLogic.getRegistration(cache, "111111111", RawRecordConstants.M118);
 
@@ -1509,6 +1518,12 @@ final class TestRawStcourseLogic {
                                     && reg.iDeadlineDt == null;
 
             assertTrue(correct, "updateOpenStatusAndFinalClassRoll did not update field");
+
+            // Restore final_class_roll since future updates filter on that.
+            final boolean result2 = RawStcourseLogic.updateOpenStatusAndFinalClassRoll(cache, "111111111",
+                    RawRecordConstants.M118, "001", fa21, "N", "Y", newLast);
+
+            assertTrue(result2, "updateOpenStatusAndFinalClassRoll returned false");
         } catch (final SQLException ex) {
             Log.warning(ex);
             fail("Exception while querying after updateOpenStatusAndFinalClassRoll: " + ex.getMessage());
@@ -1545,7 +1560,7 @@ final class TestRawStcourseLogic {
                                     && "P".equals(reg.prereqSatis)
                                     && "N".equals(reg.initClassRoll)
                                     && "N".equals(reg.stuProvided)
-                                    && "N".equals(reg.finalClassRoll)
+                                    && "Y".equals(reg.finalClassRoll)
                                     && "G".equals(reg.examPlaced)
                                     && reg.zeroUnit == null
                                     && TWO.equals(reg.timeoutFactor)
@@ -1561,7 +1576,7 @@ final class TestRawStcourseLogic {
                                     && reg.iTermKey == null
                                     && reg.iDeadlineDt == null;
 
-            assertTrue(correct, "updateOpenStatusAndFinalClassRoll did not update field");
+            assertTrue(correct, "updatePrereqSatisfied did not update field");
         } catch (final SQLException ex) {
             Log.warning(ex);
             fail("Exception while querying after updatePrereqSatisfied: " + ex.getMessage());
@@ -1598,7 +1613,7 @@ final class TestRawStcourseLogic {
                                     && "P".equals(reg.prereqSatis)
                                     && "N".equals(reg.initClassRoll)
                                     && "N".equals(reg.stuProvided)
-                                    && "N".equals(reg.finalClassRoll)
+                                    && "Y".equals(reg.finalClassRoll)
                                     && "G".equals(reg.examPlaced)
                                     && reg.zeroUnit == null
                                     && TWO.equals(reg.timeoutFactor)
@@ -1715,7 +1730,7 @@ final class TestRawStcourseLogic {
                                     && "P".equals(reg.prereqSatis)
                                     && "N".equals(reg.initClassRoll)
                                     && "N".equals(reg.stuProvided)
-                                    && "N".equals(reg.finalClassRoll)
+                                    && "Y".equals(reg.finalClassRoll)
                                     && "G".equals(reg.examPlaced)
                                     && reg.zeroUnit == null
                                     && TWO.equals(reg.timeoutFactor)
@@ -1768,7 +1783,7 @@ final class TestRawStcourseLogic {
                                     && "P".equals(reg.prereqSatis)
                                     && "N".equals(reg.initClassRoll)
                                     && "N".equals(reg.stuProvided)
-                                    && "N".equals(reg.finalClassRoll)
+                                    && "Y".equals(reg.finalClassRoll)
                                     && "G".equals(reg.examPlaced)
                                     && reg.zeroUnit == null
                                     && TWO.equals(reg.timeoutFactor)
@@ -1821,7 +1836,7 @@ final class TestRawStcourseLogic {
                                     && "P".equals(reg.prereqSatis)
                                     && "N".equals(reg.initClassRoll)
                                     && "N".equals(reg.stuProvided)
-                                    && "N".equals(reg.finalClassRoll)
+                                    && "Y".equals(reg.finalClassRoll)
                                     && "G".equals(reg.examPlaced)
                                     && reg.zeroUnit == null
                                     && TWO.equals(reg.timeoutFactor)
@@ -1969,17 +1984,18 @@ final class TestRawStcourseLogic {
 
         final Login login = profile.getLogin(ESchema.LEGACY);
         final DbConnection conn = login.checkOutConnection();
+        final Cache cache = new Cache(profile);
 
-        try {
-            try (final Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("DELETE FROM stcourse");
-                stmt.executeUpdate("DELETE FROM term");
-            }
-
+        try (final Statement stmt = conn.createStatement()) {
+            final String tableName = RawStcourseLogic.getTableName(cache);
+            stmt.executeUpdate("DELETE FROM " + tableName);
+            final String termName = TermLogic.Postgres.getTableName(cache);
+            stmt.executeUpdate("DELETE FROM " + termName);
             conn.commit();
         } catch (final SQLException ex) {
             Log.warning(ex);
-            fail("Exception while cleaning tables: " + ex.getMessage());
+            final String msg = ex.getMessage();
+            fail("Exception while cleaning tables: " + msg);
         } finally {
             login.checkInConnection(conn);
         }

@@ -40,6 +40,18 @@ public enum RawMpecrDeniedLogic {
     public static final String DENIED_BY_VAL = "V";
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "mpecr_denied" : (schemaPrefix + ".mpecr_denied");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -54,8 +66,9 @@ public enum RawMpecrDeniedLogic {
         if (record.stuId.startsWith("99")) {
             result = false;
         } else {
-            final String sql = SimpleBuilder.concat(
-                    "INSERT INTO mpecr_denied (stu_id,course,exam_placed,exam_dt,",
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("INSERT INTO ", tableName, " (stu_id,course,exam_placed,exam_dt,",
                     "why_denied,serial_nbr,version,exam_source) VALUES (",
                     LogicUtils.sqlStringValue(record.stuId), ",",
                     LogicUtils.sqlStringValue(record.course), ",",
@@ -96,8 +109,10 @@ public enum RawMpecrDeniedLogic {
 
         final boolean result;
 
-        final String sql = SimpleBuilder.concat("DELETE FROM mpecr_denied ",
-                "WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
                 "  AND course=", LogicUtils.sqlStringValue(record.course),
                 "  AND exam_dt=", LogicUtils.sqlDateValue(record.examDt),
                 "  AND serial_nbr=", LogicUtils.sqlLongValue(record.serialNbr));
@@ -132,8 +147,10 @@ public enum RawMpecrDeniedLogic {
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
+        final String tableName = getTableName(cache);
+
         try (final Statement stmt = conn.createStatement();
-             final ResultSet rs = stmt.executeQuery("SELECT * FROM mpecr_denied")) {
+             final ResultSet rs = stmt.executeQuery("SELECT * FROM " + tableName)) {
 
             while (rs.next()) {
                 result.add(RawMpecrDenied.fromResultSet(rs));
@@ -153,12 +170,12 @@ public enum RawMpecrDeniedLogic {
      * @return the list of records that matched the criteria, a zero-length array if none matched
      * @throws SQLException if there is an error accessing the database
      */
-    public static List<RawMpecrDenied> queryByStudent(final Cache cache, final String stuId)
-            throws SQLException {
+    public static List<RawMpecrDenied> queryByStudent(final Cache cache, final String stuId) throws SQLException {
 
-        final String sql = SimpleBuilder.concat(
-                "SELECT * FROM mpecr_denied",
-                " WHERE stu_id=", LogicUtils.sqlStringValue(stuId));
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE stu_id=",
+                LogicUtils.sqlStringValue(stuId));
 
         final List<RawMpecrDenied> result = new ArrayList<>(50);
 
@@ -187,9 +204,10 @@ public enum RawMpecrDeniedLogic {
      */
     public static List<RawMpecrDenied> queryByExam(final Cache cache, final Long serialNbr) throws SQLException {
 
-        final String sql = SimpleBuilder.concat(
-                "SELECT * FROM mpecr_denied",
-                " WHERE serial_nbr=", LogicUtils.sqlLongValue(serialNbr));
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE serial_nbr=",
+                LogicUtils.sqlLongValue(serialNbr));
 
         final List<RawMpecrDenied> result = new ArrayList<>(50);
 

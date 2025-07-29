@@ -32,6 +32,18 @@ public enum RawHighSchoolsLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "high_schools" : (schemaPrefix + ".high_schools");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -45,11 +57,12 @@ public enum RawHighSchoolsLogic {
             throw new SQLException("Null value in primary key field.");
         }
 
+        final String tableName = getTableName(cache);
+
         // FIXME: This needs to be a prepared statement! Address or HS name could include apostrophes or SQL escapes.
 
         final String sql = SimpleBuilder.concat(
-                "INSERT INTO high_schools (",
-                "hs_code,hs_name,addres_1,city,state,zip_code) VALUES (",
+                "INSERT INTO ", tableName, " (hs_code,hs_name,addres_1,city,state,zip_code) VALUES (",
                 LogicUtils.sqlStringValue(record.hsCode), ",",
                 LogicUtils.sqlStringValue(record.hsName), ",",
                 LogicUtils.sqlStringValue(record.addres1), ",",
@@ -84,8 +97,10 @@ public enum RawHighSchoolsLogic {
      */
     public static boolean delete(final Cache cache, final RawHighSchools record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM high_schools ",
-                "WHERE hs_code=", LogicUtils.sqlStringValue(record.hsCode));
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE hs_code=", LogicUtils.sqlStringValue(record.hsCode));
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
@@ -111,7 +126,9 @@ public enum RawHighSchoolsLogic {
      */
     public static List<RawHighSchools> queryAll(final Cache cache) throws SQLException {
 
-        final String sql = "SELECT * FROM high_schools";
+        final String tableName = getTableName(cache);
+
+        final String sql = "SELECT * FROM " + tableName;
 
         final List<RawHighSchools> result = new ArrayList<>(1000);
 

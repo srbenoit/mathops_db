@@ -31,6 +31,18 @@ public enum RawCalcsLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "calcs" : (schemaPrefix + ".calcs");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -41,12 +53,14 @@ public enum RawCalcsLogic {
     public static boolean insert(final Cache cache, final RawCalcs record) throws SQLException {
 
         if (record.stuId == null || record.issuedNbr == null || record.returnNbr == null
-                || record.serialNbr == null || record.examDt == null) {
+            || record.serialNbr == null || record.examDt == null) {
             throw new SQLException("Null value in primary key or required field.");
         }
 
-        final String sql = SimpleBuilder.concat("INSERT INTO calcs (",
-                "stu_id,issued_nbr,return_nbr,serial_nbr,exam_dt) VALUES (",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("INSERT INTO ", tableName,
+                " (stu_id,issued_nbr,return_nbr,serial_nbr,exam_dt) VALUES (",
                 LogicUtils.sqlStringValue(record.stuId), ",",
                 LogicUtils.sqlStringValue(record.issuedNbr), ",",
                 LogicUtils.sqlStringValue(record.returnNbr), ",",
@@ -80,7 +94,9 @@ public enum RawCalcsLogic {
      */
     public static boolean delete(final Cache cache, final RawCalcs record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM calcs ",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
                 " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
                 "   AND issued_nbr=", LogicUtils.sqlStringValue(record.issuedNbr),
                 "   AND return_nbr=", LogicUtils.sqlStringValue(record.returnNbr),
@@ -115,7 +131,9 @@ public enum RawCalcsLogic {
 
         final List<RawCalcs> result = new ArrayList<>(50);
 
-        final String sql = "SELECT * FROM calcs";
+        final String tableName = getTableName(cache);
+
+        final String sql = "SELECT * FROM " + tableName;
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
@@ -144,7 +162,9 @@ public enum RawCalcsLogic {
 
         final List<RawCalcs> result = new ArrayList<>(10);
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM calcs",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
                 " WHERE stu_id=", LogicUtils.sqlStringValue(stuId));
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
@@ -174,7 +194,9 @@ public enum RawCalcsLogic {
 
         RawCalcs result = null;
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM calcs",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
                 " WHERE issued_nbr=", LogicUtils.sqlStringValue(calculatorId));
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);

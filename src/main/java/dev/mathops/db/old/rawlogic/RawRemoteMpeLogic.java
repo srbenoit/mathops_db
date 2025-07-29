@@ -32,6 +32,18 @@ public enum RawRemoteMpeLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "remote_mpe" : (schemaPrefix + ".remote_mpe");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -42,13 +54,14 @@ public enum RawRemoteMpeLogic {
     public static boolean insert(final Cache cache, final RawRemoteMpe record) throws SQLException {
 
         if (record.termKey == null || record.aplnTerm == null || record.course == null
-                || record.startDt == null || record.endDt == null) {
+            || record.startDt == null || record.endDt == null) {
             throw new SQLException("Null value in primary key field.");
         }
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "INSERT INTO remote_mpe (",
-                "term,term_yr,apln_term,course,start_dt,end_dt) VALUES (",
+                "INSERT INTO ", tableName, " (term,term_yr,apln_term,course,start_dt,end_dt) VALUES (",
                 LogicUtils.sqlStringValue(record.termKey.termCode), ",",
                 record.termKey.shortYear, ",",
                 LogicUtils.sqlTermValue(record.aplnTerm), ",",
@@ -83,8 +96,10 @@ public enum RawRemoteMpeLogic {
      */
     public static boolean delete(final Cache cache, final RawRemoteMpe record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM remote_mpe ",
-                "WHERE term=", LogicUtils.sqlStringValue(record.termKey.termCode),
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE term=", LogicUtils.sqlStringValue(record.termKey.termCode),
                 "  AND term_yr=", LogicUtils.sqlIntegerValue(record.termKey.shortYear),
                 "  AND apln_term=", LogicUtils.sqlStringValue(record.aplnTerm.shortString),
                 "  AND course=", LogicUtils.sqlStringValue(record.course),
@@ -118,10 +133,12 @@ public enum RawRemoteMpeLogic {
 
         final List<RawRemoteMpe> result = new ArrayList<>(20);
 
+        final String tableName = getTableName(cache);
+
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
-             final ResultSet rs = stmt.executeQuery("SELECT * FROM remote_mpe")) {
+             final ResultSet rs = stmt.executeQuery("SELECT * FROM " + tableName)) {
 
             while (rs.next()) {
                 result.add(RawRemoteMpe.fromResultSet(rs));
@@ -146,7 +163,9 @@ public enum RawRemoteMpeLogic {
 
         final List<RawRemoteMpe> result = new ArrayList<>(10);
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM remote_mpe",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
                 " WHERE apln_term='", applicationTerm, "'");
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
@@ -176,7 +195,9 @@ public enum RawRemoteMpeLogic {
 
         final List<RawRemoteMpe> result = new ArrayList<>(10);
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM remote_mpe",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
                 " WHERE course='", course, "'");
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);

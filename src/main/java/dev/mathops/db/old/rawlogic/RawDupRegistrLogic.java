@@ -57,6 +57,18 @@ public enum RawDupRegistrLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "dup_registr" : (schemaPrefix + ".dup_registr");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -67,15 +79,17 @@ public enum RawDupRegistrLogic {
     public static boolean insert(final Cache cache, final RawDupRegistr record) throws SQLException {
 
         if (record.stuId == null || record.course == null || record.sect == null
-                || record.termKey == null || record.completed == null || record.initClassRoll == null
-                || record.finalClassRoll == null || record.iInProgress == null
-                || record.ctrlTest == null || record.bypassTimeout == null
-                || record.lastClassRollDt == null) {
+            || record.termKey == null || record.completed == null || record.initClassRoll == null
+            || record.finalClassRoll == null || record.iInProgress == null
+            || record.ctrlTest == null || record.bypassTimeout == null
+            || record.lastClassRollDt == null) {
             throw new SQLException("Null value in primary key or required field.");
         }
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "INSERT INTO dup_registr (stu_id,course,sect,term,term_yr,pace_order,open_status,grading_option,",
+                "INSERT INTO ", tableName, " (stu_id,course,sect,term,term_yr,pace_order,open_status,grading_option,",
                 "completed,score,course_grade,prereq_satis,init_class_roll,stu_provided,final_class_roll,exam_placed,",
                 "zero_unit,timeout_factor,forfeit_i,i_in_progress,i_counted,ctrl_test,deferred_f_dt,bypass_timeout,",
                 "instrn_type,registration_status,last_class_roll_dt,i_term,i_term_yr,i_deadline_dt) VALUES (",
@@ -141,7 +155,9 @@ public enum RawDupRegistrLogic {
 
         final HtmlBuilder builder = new HtmlBuilder(100);
 
-        builder.add("DELETE FROM dup_registr",
+        final String tableName = getTableName(cache);
+
+        builder.add("DELETE FROM ", tableName,
                 " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
                 "   AND course=", LogicUtils.sqlStringValue(record.course),
                 "   AND sect=", LogicUtils.sqlStringValue(record.sect),
@@ -188,7 +204,9 @@ public enum RawDupRegistrLogic {
      */
     public static List<RawDupRegistr> queryAll(final Cache cache) throws SQLException {
 
-        final String sql = "SELECT * FROM dup_registr";
+        final String tableName = getTableName(cache);
+
+        final String sql = "SELECT * FROM " + tableName;
 
         final List<RawDupRegistr> result = new ArrayList<>(20);
 
@@ -218,8 +236,10 @@ public enum RawDupRegistrLogic {
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
+        final String tableName = getTableName(cache);
+
         try (final Statement stmt = conn.createStatement()) {
-            stmt.executeUpdate("DELETE FROM dup_registr");
+            stmt.executeUpdate("DELETE FROM " + tableName);
             conn.commit();
         } finally {
             Cache.checkInConnection(conn);

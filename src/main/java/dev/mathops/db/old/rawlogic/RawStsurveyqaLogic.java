@@ -37,6 +37,18 @@ public enum RawStsurveyqaLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "stsurveyqa" : (schemaPrefix + ".stsurveyqa");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -53,8 +65,10 @@ public enum RawStsurveyqaLogic {
 
         final boolean result;
 
-        final String sql = SimpleBuilder.concat("INSERT INTO stsurveyqa ",
-                "(stu_id,version,exam_dt,survey_nbr,stu_answer,finish_time) VALUES (",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("INSERT INTO ", tableName,
+                " (stu_id,version,exam_dt,survey_nbr,stu_answer,finish_time) VALUES (",
                 LogicUtils.sqlStringValue(record.stuId), ",",
                 LogicUtils.sqlStringValue(record.version), ",",
                 LogicUtils.sqlDateValue(record.examDt), ",",
@@ -91,8 +105,10 @@ public enum RawStsurveyqaLogic {
 
         final boolean result;
 
-        final String sql = SimpleBuilder.concat("DELETE FROM stsurveyqa ",
-                "WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
                 "  AND version=", LogicUtils.sqlStringValue(record.version),
                 "  AND exam_dt=", LogicUtils.sqlDateValue(record.examDt),
                 "  AND finish_time=", LogicUtils.sqlIntegerValue(record.finishTime),
@@ -124,7 +140,9 @@ public enum RawStsurveyqaLogic {
      */
     public static List<RawStsurveyqa> queryAll(final Cache cache) throws SQLException {
 
-        return executeListQuery(cache, "SELECT * FROM stsurveyqa");
+        final String tableName = getTableName(cache);
+
+        return executeListQuery(cache, "SELECT * FROM " + tableName);
     }
 
     /**
@@ -137,8 +155,10 @@ public enum RawStsurveyqaLogic {
      */
     public static List<RawStsurveyqa> queryLatestByStudent(final Cache cache, final String stuId) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM stsurveyqa ",
-                "WHERE stu_id=", LogicUtils.sqlStringValue(stuId));
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
+                " WHERE stu_id=", LogicUtils.sqlStringValue(stuId));
 
         final List<RawStsurveyqa> all = executeListQuery(cache, sql);
 
@@ -169,8 +189,10 @@ public enum RawStsurveyqaLogic {
     public static List<RawStsurveyqa> queryLatestByStudentProfile(final Cache cache, final String stuId,
                                                                   final String version) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM stsurveyqa ",
-                "WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
+                " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
                 "  AND version=", LogicUtils.sqlStringValue(version));
 
         final List<RawStsurveyqa> all = executeListQuery(cache, sql);

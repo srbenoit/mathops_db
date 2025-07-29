@@ -37,6 +37,18 @@ public enum RawSttermLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "stterm" : (schemaPrefix + ".stterm");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -66,8 +78,10 @@ public enum RawSttermLogic {
             Log.info("stu_id: ", record.stuId);
             result = false;
         } else {
-            final String sql = SimpleBuilder.concat("INSERT INTO stterm ",
-                    "(stu_id,term,term_yr,pace,pace_track,first_course,cohort,urgency,do_not_disturb) VALUES (",
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("INSERT INTO ", tableName,
+                    " (stu_id,term,term_yr,pace,pace_track,first_course,cohort,urgency,do_not_disturb) VALUES (",
                     LogicUtils.sqlStringValue(record.stuId), ",",
                     LogicUtils.sqlStringValue(record.termKey.termCode), ",",
                     LogicUtils.sqlIntegerValue(record.termKey.shortYear), ",",
@@ -106,8 +120,10 @@ public enum RawSttermLogic {
      */
     public static boolean delete(final Cache cache, final RawStterm record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM stterm ",
-                "WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
                 "  AND term=", LogicUtils.sqlStringValue(record.termKey.termCode),
                 "  AND term_yr=", LogicUtils.sqlIntegerValue(record.termKey.shortYear));
 
@@ -137,7 +153,9 @@ public enum RawSttermLogic {
      */
     public static List<RawStterm> queryAll(final Cache cache) throws SQLException {
 
-        return executeListQuery(cache, "SELECT * FROM stterm");
+        final String tableName = getTableName(cache);
+
+        return executeListQuery(cache, "SELECT * FROM " + tableName);
     }
 
     /**
@@ -150,7 +168,9 @@ public enum RawSttermLogic {
      */
     public static List<RawStterm> queryAllByTerm(final Cache cache, final TermKey termKey) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM stterm",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
                 " WHERE term=", LogicUtils.sqlStringValue(termKey.termCode),
                 "   AND term_yr=", LogicUtils.sqlIntegerValue(termKey.shortYear));
 
@@ -167,7 +187,9 @@ public enum RawSttermLogic {
      */
     public static List<RawStterm> queryByStudent(final Cache cache, final String stuId) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM stterm",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
                 " WHERE stu_id=", LogicUtils.sqlStringValue(stuId));
 
         return executeListQuery(cache, sql);
@@ -184,8 +206,10 @@ public enum RawSttermLogic {
      */
     public static RawStterm query(final Cache cache, final TermKey termKey, final String stuId) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM stterm ",
-                "WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
+                " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
                 "  AND term=", LogicUtils.sqlStringValue(termKey.termCode),
                 "  AND term_yr=", LogicUtils.sqlIntegerValue(termKey.shortYear));
 
@@ -209,7 +233,9 @@ public enum RawSttermLogic {
                                                      final int pace, final String paceTrack, final String firstCourse)
             throws SQLException {
 
-        final String sql = SimpleBuilder.concat("UPDATE stterm ",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("UPDATE ", tableName,
                 " SET pace=", Integer.toString(pace), ",",
                 "     pace_track=", LogicUtils.sqlStringValue(paceTrack), ",",
                 "     first_course=", LogicUtils.sqlStringValue(firstCourse),
@@ -247,7 +273,9 @@ public enum RawSttermLogic {
     public static boolean updateCohort(final Cache cache, final String stuId, final TermKey termKey,
                                        final String cohort) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("UPDATE stterm ",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("UPDATE ", tableName,
                 " SET cohort=", LogicUtils.sqlStringValue(cohort),
                 " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
                 "  AND term=", LogicUtils.sqlStringValue(termKey.termCode),
@@ -283,7 +311,9 @@ public enum RawSttermLogic {
     public static boolean updateUrgency(final Cache cache, final String stuId, final TermKey termKey,
                                         final Integer urgency) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("UPDATE stterm ",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("UPDATE ", tableName,
                 " SET urgency=", LogicUtils.sqlIntegerValue(urgency),
                 " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
                 "  AND term=", LogicUtils.sqlStringValue(termKey.termCode),
@@ -320,7 +350,9 @@ public enum RawSttermLogic {
     public static boolean updateCanvasId(final Cache cache, final String stuId, final TermKey termKey,
                                          final String canvasId) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("UPDATE stterm ",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("UPDATE ", tableName,
                 " SET canvas_id=", LogicUtils.sqlStringValue(canvasId),
                 " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
                 "  AND term=", LogicUtils.sqlStringValue(termKey.termCode),

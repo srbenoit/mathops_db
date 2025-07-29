@@ -34,6 +34,18 @@ public enum RawGradeRollLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "grade_roll" : (schemaPrefix + ".grade_roll");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -45,11 +57,13 @@ public enum RawGradeRollLogic {
             throws SQLException {
 
         if (record.stuId == null || record.course == null || record.sect == null || record.fullname == null
-                || record.gradeOpt == null || record.termKey == null) {
+            || record.gradeOpt == null || record.termKey == null) {
             throw new SQLException("Null value in primary key or required field.");
         }
 
-        final String sql = SimpleBuilder.concat("INSERT INTO grade_roll (",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("INSERT INTO ", tableName, " (",
                 "stu_id,course,sect,fullname,grade_opt,term,term_yr) VALUES (",
                 LogicUtils.sqlStringValue(record.stuId), ",",
                 LogicUtils.sqlStringValue(record.course), ",",
@@ -90,8 +104,10 @@ public enum RawGradeRollLogic {
             throw new SQLException("Null value in primary key or required field.");
         }
 
-        final String sql = SimpleBuilder.concat("DELETE FROM grade_roll ",
-                "WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
                 "  AND course=", LogicUtils.sqlStringValue(record.course),
                 "  AND sect=", LogicUtils.sqlStringValue(record.sect),
                 "  AND term=", LogicUtils.sqlStringValue(record.termKey.termCode),
@@ -123,26 +139,28 @@ public enum RawGradeRollLogic {
      */
     public static List<RawGradeRoll> queryAll(final Cache cache) throws SQLException {
 
-        return executeQuery(cache, "SELECT * FROM grade_roll");
+        final String tableName = getTableName(cache);
+
+        return executeQuery(cache, "SELECT * FROM " + tableName);
     }
 
     /**
      * Queries for all students registered for a particular term. This method does not automatically scan for
      * "provisional" satisfaction of prerequisites, and does not return synthetic test data records.
      *
-     * @param conn the database connection, checked out to this thread
-     * @param term the active term
+     * @param cache the data cache
+     * @param term  the active term
      * @return the list of records that matched the criteria, a zero-length array if none matched
      * @throws SQLException if there is an error performing the query
      */
-    public static List<RawGradeRoll> queryByTerm(final Cache conn, final TermKey term)
-            throws SQLException {
+    public static List<RawGradeRoll> queryByTerm(final Cache cache, final TermKey term) throws SQLException {
 
-        final String sql = SimpleBuilder.concat(
-                "SELECT * FROM grade_roll WHERE term='", term.termCode,
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE term='", term.termCode,
                 "' AND term_yr=", term.shortYear);
 
-        return executeQuery(conn, sql);
+        return executeQuery(cache, sql);
     }
 
     /**
@@ -153,8 +171,7 @@ public enum RawGradeRollLogic {
      * @return the list of matching records
      * @throws SQLException if there is an error accessing the database
      */
-    private static List<RawGradeRoll> executeQuery(final Cache cache, final String sql)
-            throws SQLException {
+    private static List<RawGradeRoll> executeQuery(final Cache cache, final String sql) throws SQLException {
 
         final List<RawGradeRoll> result = new ArrayList<>(500);
 

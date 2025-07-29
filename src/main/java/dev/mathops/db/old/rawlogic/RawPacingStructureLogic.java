@@ -54,6 +54,18 @@ public enum RawPacingStructureLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "pacing_structure" : (schemaPrefix + ".pacing_structure");
+    }
+
+    /**
      * Inserts a new pacing_structure record.
      *
      * @param cache  the data cache
@@ -65,14 +77,16 @@ public enum RawPacingStructureLogic {
             throws SQLException {
 
         if (record.termKey == null || record.pacingStructure == null || record.requirePartic == null
-                || record.maxParticMissed == null || record.allowInc == null
-                || record.maxCourses == null || record.nbrOpenAllowed == null) {
+            || record.maxParticMissed == null || record.allowInc == null
+            || record.maxCourses == null || record.nbrOpenAllowed == null) {
 
             throw new SQLException("Null value in primary key field.");
         }
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "INSERT INTO pacing_structure (term,term_yr,pacing_structure,def_pace_track,require_licensed,",
+                "INSERT INTO ", tableName, " (term,term_yr,pacing_structure,def_pace_track,require_licensed,",
                 "require_partic,max_partic_missed,allow_inc,max_courses,nbr_open_allowed,require_unit_exams,",
                 "use_midterms,allow_coupons,coupons_after_window,users_progress_cr,hw_progress_cr,re_progress_cr,",
                 "ue_progress_cr,fin_progress_cr,pacing_name,schedule_source,sr_due_date_enforced,re_due_date_enforced,",
@@ -129,11 +143,12 @@ public enum RawPacingStructureLogic {
      * @return {@code true} if successful; {@code false} if not
      * @throws SQLException if there is an error accessing the database
      */
-    public static boolean delete(final Cache cache, final RawPacingStructure record)
-            throws SQLException {
+    public static boolean delete(final Cache cache, final RawPacingStructure record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM pacing_structure ",
-                "WHERE pacing_structure=", LogicUtils.sqlStringValue(record.pacingStructure),
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE pacing_structure=", LogicUtils.sqlStringValue(record.pacingStructure),
                 "  AND term=", LogicUtils.sqlStringValue(record.termKey.termCode),
                 "  AND term_yr=", LogicUtils.sqlIntegerValue(record.termKey.shortYear));
 
@@ -163,7 +178,9 @@ public enum RawPacingStructureLogic {
      */
     public static List<RawPacingStructure> queryAll(final Cache cache) throws SQLException {
 
-        return executeListQuery(cache, "SELECT * FROM pacing_structure");
+        final String tableName = getTableName(cache);
+
+        return executeListQuery(cache, "SELECT * FROM " + tableName);
     }
 
     /**
@@ -174,10 +191,11 @@ public enum RawPacingStructureLogic {
      * @return the corresponding list of records
      * @throws SQLException if there is an error performing the query
      */
-    public static List<RawPacingStructure> queryByTerm(final Cache cache, final TermKey termKey)
-            throws SQLException {
+    public static List<RawPacingStructure> queryByTerm(final Cache cache, final TermKey termKey) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM pacing_structure",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
                 " WHERE term=", LogicUtils.sqlStringValue(termKey.termCode),
                 "   AND term_yr=", termKey.shortYear);
 
@@ -196,7 +214,9 @@ public enum RawPacingStructureLogic {
     public static RawPacingStructure query(final Cache cache, final TermKey termKey,
                                            final String pacingStructure) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM pacing_structure",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
                 " WHERE pacing_structure=", LogicUtils.sqlStringValue(pacingStructure),
                 "   AND term=", LogicUtils.sqlStringValue(termKey.termCode),
                 "   AND term_yr=", termKey.shortYear);

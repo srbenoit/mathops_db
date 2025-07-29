@@ -31,6 +31,18 @@ public enum RawHoldTypeLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "hold_type" : (schemaPrefix + ".hold_type");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -45,8 +57,10 @@ public enum RawHoldTypeLogic {
             throw new SQLException("Null value in primary key or required field.");
         }
 
-        final String sql = SimpleBuilder.concat("INSERT INTO hold_type (",
-                "hold_id,sev_admin_hold,hold_type,add_hold,delete_hold) VALUES (",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("INSERT INTO ", tableName,
+                " (hold_id,sev_admin_hold,hold_type,add_hold,delete_hold) VALUES (",
                 LogicUtils.sqlStringValue(record.holdId), ",",
                 LogicUtils.sqlStringValue(record.sevAdminHold), ",",
                 LogicUtils.sqlStringValue(record.holdType), ",",
@@ -80,8 +94,10 @@ public enum RawHoldTypeLogic {
      */
     public static boolean delete(final Cache cache, final RawHoldType record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM hold_type ",
-                "WHERE hold_id=", LogicUtils.sqlStringValue(record.holdId));
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE hold_id=", LogicUtils.sqlStringValue(record.holdId));
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
@@ -109,7 +125,9 @@ public enum RawHoldTypeLogic {
      */
     public static List<RawHoldType> queryAll(final Cache cache) throws SQLException {
 
-        final String sql = "SELECT * FROM hold_type";
+        final String tableName = getTableName(cache);
+
+        final String sql = "SELECT * FROM " + tableName;
 
         final List<RawHoldType> result = new ArrayList<>(50);
 

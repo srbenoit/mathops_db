@@ -41,6 +41,18 @@ public enum RawSurveyqaLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "surveyqa" : (schemaPrefix + ".surveyqa");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -51,12 +63,14 @@ public enum RawSurveyqaLogic {
     public static boolean insert(final Cache cache, final RawSurveyqa record) throws SQLException {
 
         if (record.termKey == null || record.version == null || record.surveyNbr == null
-                || record.questionDesc == null || record.answer == null || record.answerDesc == null) {
+            || record.questionDesc == null || record.answer == null || record.answerDesc == null) {
             throw new SQLException("Null value in primary key field.");
         }
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "INSERT INTO surveyqa (term,term_yr,version,survey_nbr,question_desc,type_question,answer,",
+                "INSERT INTO ", tableName, " (term,term_yr,version,survey_nbr,question_desc,type_question,answer,",
                 "answer_desc,answer_meaning,must_answer,tree_ref) VALUES (",
                 LogicUtils.sqlStringValue(record.termKey.termCode), ",",
                 LogicUtils.sqlIntegerValue(record.termKey.shortYear), ",",
@@ -97,7 +111,9 @@ public enum RawSurveyqaLogic {
      */
     public static boolean delete(final Cache cache, final RawSurveyqa record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM surveyqa ",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
                 "WHERE term=", LogicUtils.sqlStringValue(record.termKey.termCode),
                 "  AND term_yr=", LogicUtils.sqlIntegerValue(record.termKey.shortYear),
                 "  AND version=", LogicUtils.sqlStringValue(record.version),
@@ -130,7 +146,9 @@ public enum RawSurveyqaLogic {
      */
     public static List<RawSurveyqa> queryAll(final Cache cache) throws SQLException {
 
-        return executeQuery(cache, "SELECT * FROM surveyqa");
+        final String tableName = getTableName(cache);
+
+        return executeQuery(cache, "SELECT * FROM " + tableName);
     }
 
     /**
@@ -144,8 +162,10 @@ public enum RawSurveyqaLogic {
      */
     public static List<RawSurveyqa> queryByTerm(final Cache cache, final TermKey termKey) throws SQLException {
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "SELECT * FROM surveyqa WHERE term=", LogicUtils.sqlStringValue(termKey.termCode),
+                "SELECT * FROM ", tableName, " WHERE term=", LogicUtils.sqlStringValue(termKey.termCode),
                 "   AND term_yr=", LogicUtils.sqlIntegerValue(termKey.shortYear));
 
         return executeQuery(cache, sql);
@@ -164,8 +184,10 @@ public enum RawSurveyqaLogic {
 
         final TermRec active = cache.getSystemData().getActiveTerm();
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "SELECT * FROM surveyqa WHERE version=", LogicUtils.sqlStringValue(theVersion),
+                "SELECT * FROM ", tableName, " WHERE version=", LogicUtils.sqlStringValue(theVersion),
                 "   AND term=", LogicUtils.sqlStringValue(active.term.termCode),
                 "   AND term_yr=", LogicUtils.sqlIntegerValue(active.term.shortYear));
 
@@ -209,8 +231,10 @@ public enum RawSurveyqaLogic {
 
         final TermRec active = cache.getSystemData().getActiveTerm();
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "SELECT * FROM surveyqa WHERE version=", LogicUtils.sqlStringValue(theVersion),
+                "SELECT * FROM ", tableName, " WHERE version=", LogicUtils.sqlStringValue(theVersion),
                 "   AND survey_nbr=", LogicUtils.sqlIntegerValue(theSurveyNbr),
                 "   AND term=", LogicUtils.sqlStringValue(active.term.termCode),
                 "   AND term_yr=", LogicUtils.sqlIntegerValue(active.term.shortYear),

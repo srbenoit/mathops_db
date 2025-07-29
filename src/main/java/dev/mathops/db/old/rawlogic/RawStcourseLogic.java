@@ -4,6 +4,7 @@ import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
 import dev.mathops.db.DbConnection;
 import dev.mathops.db.ESchema;
+import dev.mathops.db.logic.SystemData;
 import dev.mathops.db.old.rawrecord.RawRecordConstants;
 import dev.mathops.db.old.rawrecord.RawStcourse;
 import dev.mathops.db.rec.TermRec;
@@ -73,6 +74,18 @@ public enum RawStcourseLogic {
     private static final List<RawStcourse> EMPTY_LIST = Collections.unmodifiableList(new ArrayList<>(0));
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "stcourse" : (schemaPrefix + ".stcourse");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -116,8 +129,10 @@ public enum RawStcourseLogic {
             throw new SQLException("Null value in 'lastClassRollDt' field.");
         }
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "INSERT INTO stcourse (stu_id,course,sect,term,term_yr,pace_order,open_status,grading_option,",
+                "INSERT INTO ", tableName, " (stu_id,course,sect,term,term_yr,pace_order,open_status,grading_option,",
                 "completed,score,course_grade,prereq_satis,init_class_roll,stu_provided,final_class_roll,exam_placed,",
                 "zero_unit,timeout_factor,forfeit_i,i_in_progress,i_counted,ctrl_test,deferred_f_dt,bypass_timeout,",
                 "instrn_type,registration_status,last_class_roll_dt,i_term,i_term_yr,i_deadline_dt) VALUES (",
@@ -155,11 +170,13 @@ public enum RawStcourseLogic {
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement()) {
-            final boolean result = stmt.executeUpdate(sql) == 1;
+            final int count = stmt.executeUpdate(sql);
+            final boolean result = count == 1;
 
             if (result) {
                 conn.commit();
             } else {
+                Log.warning("Insert into '", tableName, "' returned " + count + " rather than 1 (", sql, ").");
                 conn.rollback();
             }
 
@@ -177,14 +194,15 @@ public enum RawStcourseLogic {
      * @return {@code true} if successful; {@code false} if not
      * @throws SQLException if there is an error accessing the database
      */
-    public static boolean delete(final Cache cache, final RawStcourse record)
-            throws SQLException {
+    public static boolean delete(final Cache cache, final RawStcourse record) throws SQLException {
 
         final boolean result;
 
+        final String tableName = getTableName(cache);
+
         final HtmlBuilder builder = new HtmlBuilder(100);
 
-        builder.add("DELETE FROM stcourse",
+        builder.add("DELETE FROM ", tableName,
                 " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
                 "   AND course=", LogicUtils.sqlStringValue(record.course),
                 "   AND sect=", LogicUtils.sqlStringValue(record.sect),
@@ -208,11 +226,13 @@ public enum RawStcourseLogic {
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement()) {
-            result = stmt.executeUpdate(sql) == 1;
+            final int count = stmt.executeUpdate(sql);
+            result = count == 1;
 
             if (result) {
                 conn.commit();
             } else {
+                Log.warning("Delete from '", tableName, "' returned " + count + " rather than 1 (", sql, ").");
                 conn.rollback();
             }
         } finally {
@@ -231,7 +251,9 @@ public enum RawStcourseLogic {
      */
     public static List<RawStcourse> queryAll(final Cache cache) throws SQLException {
 
-        return executeQuery(cache, "SELECT * FROM stcourse");
+        final String tableName = getTableName(cache);
+
+        return executeQuery(cache, "SELECT * FROM " + tableName);
     }
 
     /**
@@ -248,9 +270,11 @@ public enum RawStcourseLogic {
     public static List<RawStcourse> queryByTerm(final Cache cache, final TermKey term, final boolean includeOT,
                                                 final boolean includeDropped) throws SQLException {
 
+        final String tableName = getTableName(cache);
+
         final HtmlBuilder sql = new HtmlBuilder(100);
 
-        sql.add("SELECT * FROM stcourse WHERE term='", term.termCode, "' AND term_yr=", term.shortYear);
+        sql.add("SELECT * FROM ", tableName, " WHERE term='", term.termCode, "' AND term_yr=", term.shortYear);
 
         if (!includeOT) {
             sql.add(AND_NOT_OT);
@@ -278,9 +302,12 @@ public enum RawStcourseLogic {
                                                              final String course, final String sect,
                                                              final boolean includeDropped) throws SQLException {
 
+        final String tableName = getTableName(cache);
+
         final HtmlBuilder sql = new HtmlBuilder(100);
 
-        sql.add("SELECT * FROM stcourse WHERE course='", course, "' AND sect='", sect, "' AND term='", term.termCode,
+        sql.add("SELECT * FROM ", tableName, " WHERE course='", course, "' AND sect='", sect, "' AND term='",
+                term.termCode,
                 "' AND term_yr=", term.shortYear);
 
         if (!includeDropped) {
@@ -299,7 +326,9 @@ public enum RawStcourseLogic {
      */
     public static List<RawStcourse> queryOpenIncompletes(final Cache cache) throws SQLException {
 
-        return executeQuery(cache, "SELECT * FROM stcourse WHERE i_in_progress='Y'");
+        final String tableName = getTableName(cache);
+
+        return executeQuery(cache, "SELECT * FROM " + tableName + " WHERE i_in_progress='Y'");
     }
 
     /**
@@ -312,7 +341,8 @@ public enum RawStcourseLogic {
      */
     public static List<RawStcourse> queryActiveForActiveTerm(final Cache cache) throws SQLException {
 
-        final TermRec activeTerm = cache.getSystemData().getActiveTerm();
+        final SystemData systemData = cache.getSystemData();
+        final TermRec activeTerm = systemData.getActiveTerm();
 
         // The following returns all except "OT" and "Dropped" records
 
@@ -337,18 +367,16 @@ public enum RawStcourseLogic {
      * flag to indicate "provisional satisfaction" of prerequisites. This condition does not apply to "resident" student
      * taking 401 sections.
      *
-     * @param stcourse the record whose status to test
+     * @param row the record whose status to test
      * @return true if the record matched the criteria and was set with prerequisite provisionally satisfied
      */
-    public static boolean testProvisionalPrereqSatisfied(final RawStcourse stcourse) {
+    public static boolean testProvisionalPrereqSatisfied(final RawStcourse row) {
 
         boolean found = false;
 
-        if (RawRecordConstants.M117.equals(stcourse.course) && ("801".equals(stcourse.sect)
-                                                                || "809".equals(stcourse.sect))) {
-
-            if (stcourse.prereqSatis == null || "N".equals(stcourse.prereqSatis)) {
-                stcourse.prereqSatis = "P";
+        if (RawRecordConstants.M117.equals(row.course) && ("801".equals(row.sect) || "809".equals(row.sect))) {
+            if (row.prereqSatis == null || "N".equals(row.prereqSatis)) {
+                row.prereqSatis = "P";
                 found = true;
             }
         }
@@ -377,9 +405,11 @@ public enum RawStcourseLogic {
         if (studentId.startsWith("99")) {
             result = queryByStudentTestData(cache, studentId);
         } else {
+            final String tableName = getTableName(cache);
+
             final HtmlBuilder sql = new HtmlBuilder(120);
 
-            sql.add("SELECT * FROM stcourse WHERE stu_id='", studentId, "'");
+            sql.add("SELECT * FROM ", tableName, " WHERE stu_id='", studentId, "'");
 
             if (!includeOT) {
                 sql.add(AND_NOT_OT);
@@ -414,9 +444,11 @@ public enum RawStcourseLogic {
         if (studentId.startsWith("99")) {
             result = queryByStudentTestData(cache, studentId, termKey);
         } else {
+            final String tableName = getTableName(cache);
+
             final HtmlBuilder sql = new HtmlBuilder(160);
 
-            sql.add("SELECT * FROM stcourse",
+            sql.add("SELECT * FROM ", tableName,
                     " WHERE stu_id='", studentId, "'",
                     " AND term='", termKey.termCode, "'",
                     " AND term_yr=", termKey.shortYear);
@@ -442,11 +474,12 @@ public enum RawStcourseLogic {
      * @return the list of records that matched the criteria, a zero-length array if none matched
      * @throws SQLException if there is an error performing the query
      */
-    public static List<RawStcourse> queryCreditByExam(final Cache cache, final String studentId)
-            throws SQLException {
+    public static List<RawStcourse> queryCreditByExam(final Cache cache, final String studentId) throws SQLException {
+
+        final String tableName = getTableName(cache);
 
         final String sql = SimpleBuilder.concat(
-                "SELECT * FROM stcourse WHERE instrn_type='OT' ",
+                "SELECT * FROM ", tableName, " WHERE instrn_type='OT' ",
                 "AND stu_id=", LogicUtils.sqlStringValue(studentId),
                 " AND (exam_placed='F' OR exam_placed='M')");
 
@@ -523,9 +556,11 @@ public enum RawStcourseLogic {
 
         final TermRec activeTerm = cache.getSystemData().getActiveTerm();
 
+        final String tableName = getTableName(cache);
+
         final HtmlBuilder sql = new HtmlBuilder(160);
 
-        sql.add("SELECT * FROM stcourse",
+        sql.add("SELECT * FROM ", tableName,
                 " WHERE stu_id=", LogicUtils.sqlStringValue(studentId),
                 "   AND course=", LogicUtils.sqlStringValue(courseId),
                 "   AND term=", LogicUtils.sqlStringValue(activeTerm.term.termCode),
@@ -629,7 +664,9 @@ public enum RawStcourseLogic {
             Log.info("stuId: ", stuId);
             result = true;
         } else {
-            final String sql = SimpleBuilder.concat("UPDATE stcourse",
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("UPDATE ", tableName,
                     " SET pace_order=", LogicUtils.sqlIntegerValue(newPaceOrder),
                     " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
                     "   AND course=", LogicUtils.sqlStringValue(course),
@@ -642,11 +679,13 @@ public enum RawStcourseLogic {
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
             try (final Statement stmt = conn.createStatement()) {
-                result = stmt.executeUpdate(sql) == 1;
+                final int count = stmt.executeUpdate(sql);
+                result = count == 1;
 
                 if (result) {
                     conn.commit();
                 } else {
+                    Log.warning("Update of '", tableName, "' returned " + count + " rather than 1 (", sql, ").");
                     conn.rollback();
                 }
             } finally {
@@ -684,7 +723,9 @@ public enum RawStcourseLogic {
             Log.info("stuId: ", stuId);
             result = true;
         } else {
-            final String sql = SimpleBuilder.concat("UPDATE stcourse",
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("UPDATE ", tableName,
                     " SET open_status=", LogicUtils.sqlStringValue(newOpenStatus), ",",
                     "     final_class_roll=", LogicUtils.sqlStringValue(newFinalClassRoll), ",",
                     "     last_class_roll_dt=", LogicUtils.sqlDateValue(newLastClassRollDt),
@@ -698,11 +739,13 @@ public enum RawStcourseLogic {
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
             try (final Statement stmt = conn.createStatement()) {
-                result = stmt.executeUpdate(sql) == 1;
+                final int count = stmt.executeUpdate(sql);
+                result = count == 1;
 
                 if (result) {
                     conn.commit();
                 } else {
+                    Log.warning("Update of '", tableName, "' returned " + count + " rather than 1 (", sql, ").");
                     conn.rollback();
                 }
             } finally {
@@ -736,7 +779,9 @@ public enum RawStcourseLogic {
             Log.info("stuId: ", stuId);
             result = true;
         } else {
-            final String sql = SimpleBuilder.concat("UPDATE stcourse",
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("UPDATE ", tableName,
                     " SET prereq_satis=", LogicUtils.sqlStringValue(newPrereqSatisfied),
                     " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
                     "   AND course=", LogicUtils.sqlStringValue(course),
@@ -748,11 +793,13 @@ public enum RawStcourseLogic {
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
             try (final Statement stmt = conn.createStatement()) {
-                result = stmt.executeUpdate(sql) == 1;
+                final int count = stmt.executeUpdate(sql);
+                result = count == 1;
 
                 if (result) {
                     conn.commit();
                 } else {
+                    Log.warning("Update of '", tableName, "' returned " + count + " rather than 1 (", sql, ").");
                     conn.rollback();
                 }
             } finally {
@@ -788,7 +835,9 @@ public enum RawStcourseLogic {
             Log.info("stuId: ", stuId);
             result = true;
         } else {
-            final String sql = SimpleBuilder.concat("UPDATE stcourse",
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("UPDATE ", tableName,
                     " SET completed=", LogicUtils.sqlStringValue(newCompleted), ",",
                     "     score=", LogicUtils.sqlIntegerValue(newScore), ",",
                     "     course_grade=", LogicUtils.sqlStringValue(newGrade),
@@ -803,11 +852,13 @@ public enum RawStcourseLogic {
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
             try (final Statement stmt = conn.createStatement()) {
-                result = stmt.executeUpdate(sql) == 1;
+                final int count = stmt.executeUpdate(sql);
+                result = count == 1;
 
                 if (result) {
                     conn.commit();
                 } else {
+                    Log.warning("Update of '", tableName, "' returned " + count + " rather than 1 (", sql, ").");
                     conn.rollback();
                 }
             } finally {
@@ -841,7 +892,9 @@ public enum RawStcourseLogic {
             Log.info("stuId: ", stuId);
             result = true;
         } else {
-            final String sql = SimpleBuilder.concat("UPDATE stcourse",
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("UPDATE ", tableName,
                     " SET exam_placed=", LogicUtils.sqlStringValue(newExamPlaced),
                     " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
                     "   AND course=", LogicUtils.sqlStringValue(course),
@@ -854,11 +907,13 @@ public enum RawStcourseLogic {
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
             try (final Statement stmt = conn.createStatement()) {
-                result = stmt.executeUpdate(sql) == 1;
+                final int count = stmt.executeUpdate(sql);
+                result = count == 1;
 
                 if (result) {
                     conn.commit();
                 } else {
+                    Log.warning("Update of '", tableName, "' returned " + count + " rather than 1 (", sql, ").");
                     conn.rollback();
                 }
             } finally {
@@ -894,7 +949,9 @@ public enum RawStcourseLogic {
             Log.info("stuId: ", stuId);
             result = true;
         } else {
-            final String sql = SimpleBuilder.concat("UPDATE stcourse",
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("UPDATE ", tableName,
                     " SET course_grade=", LogicUtils.sqlStringValue(newGrade),
                     " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
                     "   AND course=", LogicUtils.sqlStringValue(course),
@@ -908,11 +965,13 @@ public enum RawStcourseLogic {
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
             try (final Statement stmt = conn.createStatement()) {
-                result = stmt.executeUpdate(sql) == 1;
+                final int count = stmt.executeUpdate(sql);
+                result = count == 1;
 
                 if (result) {
                     conn.commit();
                 } else {
+                    Log.warning("Update of '", tableName, "' returned " + count + " rather than 1 (", sql, ").");
                     conn.rollback();
                 }
             } finally {
@@ -946,7 +1005,9 @@ public enum RawStcourseLogic {
             Log.info("stuId: ", stuId);
             result = true;
         } else {
-            final String sql = SimpleBuilder.concat("UPDATE stcourse",
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("UPDATE ", tableName,
                     " SET instrn_type=", LogicUtils.sqlStringValue(newInstrnType),
                     " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
                     "   AND course=", LogicUtils.sqlStringValue(course),
@@ -959,11 +1020,13 @@ public enum RawStcourseLogic {
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
             try (final Statement stmt = conn.createStatement()) {
-                result = stmt.executeUpdate(sql) == 1;
+                final int count = stmt.executeUpdate(sql);
+                result = count == 1;
 
                 if (result) {
                     conn.commit();
                 } else {
+                    Log.warning("Update of '", tableName, "' returned " + count + " rather than 1 (", sql, ").");
                     conn.rollback();
                 }
             } finally {
@@ -997,7 +1060,9 @@ public enum RawStcourseLogic {
             Log.info("stuId: ", stuId);
             result = true;
         } else {
-            final String sql = SimpleBuilder.concat("UPDATE stcourse",
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("UPDATE ", tableName,
                     " SET grading_option=", LogicUtils.sqlStringValue(newGradingOption),
                     " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
                     "   AND course=", LogicUtils.sqlStringValue(course),
@@ -1010,11 +1075,13 @@ public enum RawStcourseLogic {
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
             try (final Statement stmt = conn.createStatement()) {
-                result = stmt.executeUpdate(sql) == 1;
+                final int count = stmt.executeUpdate(sql);
+                result = count == 1;
 
                 if (result) {
                     conn.commit();
                 } else {
+                    Log.warning("Update of '", tableName, "' returned " + count + " rather than 1 (", sql, ").");
                     conn.rollback();
                 }
             } finally {
@@ -1049,7 +1116,8 @@ public enum RawStcourseLogic {
             Log.info("stuId: ", stuId);
             result = true;
         } else {
-            final String sql = SimpleBuilder.concat("UPDATE stcourse",
+            final String tableName = getTableName(cache);
+            final String sql = SimpleBuilder.concat("UPDATE ", tableName,
                     " SET registration_status=", LogicUtils.sqlStringValue(newRegStatus),
                     " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
                     "   AND course=", LogicUtils.sqlStringValue(course),
@@ -1062,11 +1130,13 @@ public enum RawStcourseLogic {
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
             try (final Statement stmt = conn.createStatement()) {
-                result = stmt.executeUpdate(sql) == 1;
+                final int count = stmt.executeUpdate(sql);
+                result = count == 1;
 
                 if (result) {
                     conn.commit();
                 } else {
+                    Log.warning("Update of '", tableName, "' returned " + count + " rather than 1 (", sql, ").");
                     conn.rollback();
                 }
             } finally {

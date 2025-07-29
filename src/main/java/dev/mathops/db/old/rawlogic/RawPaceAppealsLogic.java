@@ -43,6 +43,18 @@ public enum RawPaceAppealsLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "pace_appeals" : (schemaPrefix + ".pace_appeals");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -60,9 +72,11 @@ public enum RawPaceAppealsLogic {
         if (record.stuId.startsWith("99")) {
             result = false;
         } else {
-            final String sql = "INSERT INTO pace_appeals (stu_id,term,term_yr,appeal_dt,relief_given,pace,pace_track,"
-                               + "ms_nbr,ms_type,ms_date,new_deadline_dt,nbr_atmpts_allow,circumstances,comment," +
-                               "interviewer) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("INSERT INTO ", tableName, " (stu_id,term,term_yr,appeal_dt,",
+                    "relief_given,pace,pace_track,ms_nbr,ms_type,ms_date,new_deadline_dt,nbr_atmpts_allow,",
+                    "circumstances,comment,interviewer) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
@@ -112,7 +126,9 @@ public enum RawPaceAppealsLogic {
 
         final HtmlBuilder sql = new HtmlBuilder(100);
 
-        sql.add("DELETE FROM pace_appeals",
+        final String tableName = getTableName(cache);
+
+        sql.add("DELETE FROM ", tableName,
                 " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
                 "   AND term=", LogicUtils.sqlStringValue(record.termKey.termCode),
                 "   AND term_yr=", LogicUtils.sqlIntegerValue(record.termKey.shortYear),
@@ -153,7 +169,9 @@ public enum RawPaceAppealsLogic {
 
         final HtmlBuilder sql = new HtmlBuilder(100);
 
-        sql.add("UPDATE pace_appeals",
+        final String tableName = getTableName(cache);
+
+        sql.add("UPDATE ",tableName,
                 " SET relief_given=", LogicUtils.sqlStringValue(record.reliefGiven),
                 ", new_deadline_dt=", LogicUtils.sqlDateValue(record.newDeadlineDt),
                 ", nbr_atmpts_allow=", LogicUtils.sqlIntegerValue(record.nbrAtmptsAllow),
@@ -197,7 +215,9 @@ public enum RawPaceAppealsLogic {
      */
     public static List<RawPaceAppeals> queryAll(final Cache cache) throws SQLException {
 
-        return executeQuery(cache, "SELECT * FROM pace_appeals");
+        final String tableName = getTableName(cache);
+
+        return executeQuery(cache, "SELECT * FROM " + tableName);
     }
 
     /**
@@ -210,8 +230,10 @@ public enum RawPaceAppealsLogic {
      */
     public static List<RawPaceAppeals> queryByStudent(final Cache cache, final String stuId) throws SQLException {
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "SELECT * FROM pace_appeals WHERE stu_id=", LogicUtils.sqlStringValue(stuId));
+                "SELECT * FROM ", tableName, " WHERE stu_id=", LogicUtils.sqlStringValue(stuId));
 
         return executeQuery(cache, sql);
     }

@@ -44,6 +44,18 @@ public enum RawMilestoneAppealLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    private static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "milestone_appeal" : (schemaPrefix + ".milestone_appeal");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -61,9 +73,11 @@ public enum RawMilestoneAppealLogic {
         if (record.stuId.startsWith("99")) {
             result = false;
         } else {
-            final String sql = "INSERT INTO milestone_appeal (stu_id,term,term_yr,appeal_date_time,appeal_type,pace,"
-                               + "pace_track,ms_nbr,ms_type,prior_ms_dt,new_ms_dt,attempts_allowed,circumstances,"
-                               + "comment,interviewer) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("INSERT INTO ", tableName, " (stu_id,term,term_yr,",
+                    "appeal_date_time,appeal_type,pace,pace_track,ms_nbr,ms_type,prior_ms_dt,new_ms_dt,",
+                    "attempts_allowed,circumstances,comment,interviewer) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
@@ -113,7 +127,9 @@ public enum RawMilestoneAppealLogic {
 
         final HtmlBuilder sql = new HtmlBuilder(100);
 
-        sql.add("DELETE FROM milestone_appeal",
+        final String tableName = getTableName(cache);
+
+        sql.add("DELETE FROM ", tableName,
                 " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
                 "   AND term=", LogicUtils.sqlStringValue(record.termKey.termCode),
                 "   AND term_yr=", LogicUtils.sqlIntegerValue(record.termKey.shortYear),
@@ -150,7 +166,9 @@ public enum RawMilestoneAppealLogic {
 
         final HtmlBuilder sql = new HtmlBuilder(200);
 
-        sql.add("UPDATE milestone_appeal",
+        final String tableName = getTableName(cache);
+
+        sql.add("UPDATE ", tableName,
                 " SET pace=", LogicUtils.sqlIntegerValue(record.pace),
                 ", pace_track=", LogicUtils.sqlStringValue(record.paceTrack),
                 ", appeal_type=", LogicUtils.sqlStringValue(record.appealType),
@@ -198,7 +216,9 @@ public enum RawMilestoneAppealLogic {
      */
     public List<RawMilestoneAppeal> queryAll(final Cache cache) throws SQLException {
 
-        return executeQuery(cache, "SELECT * FROM milestone_appeal");
+        final String tableName = getTableName(cache);
+
+        return executeQuery(cache, "SELECT * FROM " + tableName);
     }
 
     /**
@@ -211,8 +231,10 @@ public enum RawMilestoneAppealLogic {
      */
     public static List<RawMilestoneAppeal> queryByStudent(final Cache cache, final String stuId) throws SQLException {
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "SELECT * FROM milestone_appeal WHERE stu_id=", LogicUtils.sqlStringValue(stuId));
+                "SELECT * FROM ", tableName, " WHERE stu_id=", LogicUtils.sqlStringValue(stuId));
 
         return executeQuery(cache, sql);
     }

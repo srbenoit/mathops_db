@@ -39,6 +39,18 @@ public enum RawLoginsLogic {
     ;
 
     /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     */
+    static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "logins" : (schemaPrefix + ".logins");
+    }
+
+    /**
      * Inserts a new record.
      *
      * @param cache  the data cache
@@ -53,7 +65,9 @@ public enum RawLoginsLogic {
             throw new SQLException("Null value in primary key or required field.");
         }
 
-        final String sql = SimpleBuilder.concat("INSERT INTO logins (user_id,user_type,user_name,stored_key,",
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("INSERT INTO ", tableName, " (user_id,user_type,user_name,stored_key,",
                 "server_key,dtime_created,dtime_expires,dtime_last_login,force_pw_change,email,salt,",
                 "nbr_invalid_atmpts) VALUES (",
                 LogicUtils.sqlStringValue(record.userId), ",",
@@ -96,8 +110,10 @@ public enum RawLoginsLogic {
      */
     public static boolean delete(final Cache cache, final RawLogins record) throws SQLException {
 
-        final String sql = SimpleBuilder.concat("DELETE FROM logins ",
-                "WHERE user_name=", LogicUtils.sqlStringValue(record.userName));
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE user_name=", LogicUtils.sqlStringValue(record.userName));
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
@@ -125,7 +141,9 @@ public enum RawLoginsLogic {
      */
     public static List<RawLogins> queryAll(final Cache cache) throws SQLException {
 
-        final String sql = "SELECT * FROM logins";
+        final String tableName = getTableName(cache);
+
+        final String sql = "SELECT * FROM " + tableName;
 
         final List<RawLogins> result = new ArrayList<>(50);
 
@@ -154,8 +172,10 @@ public enum RawLoginsLogic {
      */
     public static RawLogins query(final Cache cache, final String username) throws SQLException {
 
+        final String tableName = getTableName(cache);
+
         return doSingleQuery(cache, SimpleBuilder.concat(
-                "SELECT * FROM logins WHERE user_name=", LogicUtils.sqlStringValue(username)));
+                "SELECT * FROM ", tableName, " WHERE user_name=", LogicUtils.sqlStringValue(username)));
     }
 
     /**
@@ -168,10 +188,12 @@ public enum RawLoginsLogic {
      */
     public static boolean updateLastLoginTime(final Cache cache, final RawLogins record) throws SQLException {
 
+        final String tableName = getTableName(cache);
+
         final LocalDateTime now = LocalDateTime.now();
 
         final String sql = SimpleBuilder.concat(
-                "UPDATE logins SET dtime_last_login=", LogicUtils.sqlDateTimeValue(now),
+                "UPDATE ", tableName, " SET dtime_last_login=", LogicUtils.sqlDateTimeValue(now),
                 " WHERE user_name=", LogicUtils.sqlStringValue(record.userName));
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
@@ -203,8 +225,10 @@ public enum RawLoginsLogic {
     public static boolean updatePasswordFails(final Cache cache, final String username,
                                               final Integer fails) throws SQLException {
 
+        final String tableName = getTableName(cache);
+
         final String sql = SimpleBuilder.concat(
-                "UPDATE logins SET nbr_invalid_atmpts=", LogicUtils.sqlIntegerValue(fails),
+                "UPDATE ", tableName, " SET nbr_invalid_atmpts=", LogicUtils.sqlIntegerValue(fails),
                 " WHERE user_name=", LogicUtils.sqlStringValue(username));
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
