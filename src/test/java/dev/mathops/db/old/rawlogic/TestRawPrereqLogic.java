@@ -51,7 +51,7 @@ final class TestRawPrereqLogic {
         try (final Statement stmt = conn.createStatement()) {
             final String tableName = RawPrereqLogic.getTableName(cache);
             stmt.executeUpdate("DELETE FROM " + tableName);
-            final String termName = TermLogic.Postgres.getTableName(cache);
+            final String termName = TermLogic.getTableName(cache);
             stmt.executeUpdate("DELETE FROM " + termName);
             conn.commit();
 
@@ -317,7 +317,7 @@ final class TestRawPrereqLogic {
         try (final Statement stmt = conn.createStatement()) {
             final String tableName = RawPrereqLogic.getTableName(cache);
             stmt.executeUpdate("DELETE FROM " + tableName);
-            final String termName = TermLogic.Postgres.getTableName(cache);
+            final String termName = TermLogic.getTableName(cache);
             stmt.executeUpdate("DELETE FROM " + termName);
             conn.commit();
         } catch (final SQLException ex) {

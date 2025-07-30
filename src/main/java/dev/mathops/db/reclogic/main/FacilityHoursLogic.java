@@ -5,7 +5,6 @@ import dev.mathops.db.Cache;
 import dev.mathops.db.DataDict;
 import dev.mathops.db.ESchema;
 import dev.mathops.db.rec.main.FacilityHoursRec;
-import dev.mathops.db.reclogic.IRecLogic;
 import dev.mathops.text.builder.SimpleBuilder;
 
 import java.sql.ResultSet;
@@ -34,7 +33,7 @@ import java.util.List;
  * ) TABLESPACE primary_ts;
  * </pre>
  */
-public final class FacilityHoursLogic implements IRecLogic<FacilityHoursRec> {
+public final class FacilityHoursLogic implements IMainRecLogic<FacilityHoursRec> {
 
     /** A single instance. */
     public static final FacilityHoursLogic INSTANCE = new FacilityHoursLogic();
@@ -78,7 +77,7 @@ public final class FacilityHoursLogic implements IRecLogic<FacilityHoursRec> {
                     sqlTimeValue(record.openTime2), ",",
                     sqlTimeValue(record.closeTime2), ")");
 
-            result = doUpdateOneRow(cache, ESchema.MAIN, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;
@@ -106,7 +105,7 @@ public final class FacilityHoursLogic implements IRecLogic<FacilityHoursRec> {
                     sqlStringValue(record.facilityId), " AND display_index=",
                     sqlIntegerValue(record.displayIndex));
 
-            result = doUpdateOneRow(cache, ESchema.MAIN, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;
@@ -131,7 +130,7 @@ public final class FacilityHoursLogic implements IRecLogic<FacilityHoursRec> {
         } else {
             final String sql = SimpleBuilder.concat("SELECT * FROM ", schemaPrefix, ".facility_hours");
 
-            result = doListQuery(cache, ESchema.MAIN, sql);
+            result = doListQuery(cache, sql);
         }
 
         return result;
@@ -160,7 +159,7 @@ public final class FacilityHoursLogic implements IRecLogic<FacilityHoursRec> {
                     ".facility_hours WHERE facility_id=", sqlStringValue(facilityId), " AND display_index=",
                     sqlIntegerValue(displayIndex));
 
-            result = doSingleQuery(cache, ESchema.MAIN, sql);
+            result = doSingleQuery(cache, sql);
         }
 
         return result;
@@ -186,7 +185,7 @@ public final class FacilityHoursLogic implements IRecLogic<FacilityHoursRec> {
             final String sql = SimpleBuilder.concat("SELECT * FROM ", schemaPrefix,
                     ".facility_hours WHERE facility_id=", sqlStringValue(facilityId));
 
-            result = doListQuery(cache, ESchema.MAIN, sql);
+            result = doListQuery(cache, sql);
         }
 
         return result;
@@ -220,7 +219,7 @@ public final class FacilityHoursLogic implements IRecLogic<FacilityHoursRec> {
                     sqlStringValue(record.facilityId), " AND display_index=",
                     sqlIntegerValue(record.displayIndex));
 
-            result = doUpdateOneRow(cache, ESchema.MAIN, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;

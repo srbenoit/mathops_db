@@ -5,7 +5,6 @@ import dev.mathops.db.Cache;
 import dev.mathops.db.DataDict;
 import dev.mathops.db.ESchema;
 import dev.mathops.db.rec.term.StandardsMilestoneRec;
-import dev.mathops.db.reclogic.IRecLogic;
 import dev.mathops.text.builder.SimpleBuilder;
 
 import java.sql.ResultSet;
@@ -29,7 +28,7 @@ import java.util.List;
  * ) TABLESPACE primary_ts;
  * </pre>
  */
-public final class StandardsMilestoneLogic implements IRecLogic<StandardsMilestoneRec> {
+public final class StandardsMilestoneLogic implements ITermRecLogic<StandardsMilestoneRec> {
 
     /** A single instance. */
     public static final StandardsMilestoneLogic INSTANCE = new StandardsMilestoneLogic();
@@ -69,7 +68,7 @@ public final class StandardsMilestoneLogic implements IRecLogic<StandardsMilesto
                     sqlStringValue(record.msType), ",",
                     sqlDateValue(record.msDate), ")");
 
-            result = doUpdateOneRow(cache, ESchema.TERM, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;
@@ -100,7 +99,7 @@ public final class StandardsMilestoneLogic implements IRecLogic<StandardsMilesto
                     " AND module_nbr=", sqlIntegerValue(record.moduleNbr),
                     " AND ms_type=", sqlStringValue(record.msType));
 
-            result = doUpdateOneRow(cache, ESchema.TERM, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;
@@ -125,7 +124,7 @@ public final class StandardsMilestoneLogic implements IRecLogic<StandardsMilesto
         } else {
             final String sql = SimpleBuilder.concat("SELECT * FROM ", schemaPrefix, ".standards_milestone");
 
-            result = doListQuery(cache, ESchema.TERM, sql);
+            result = doListQuery(cache, sql);
         }
 
         return result;
@@ -160,7 +159,7 @@ public final class StandardsMilestoneLogic implements IRecLogic<StandardsMilesto
                     " AND pace_index=", sqlIntegerValue(paceIndex),
                     " AND module_nbr=", sqlIntegerValue(moduleNbr),
                     " AND ms_type=", sqlStringValue(msType));
-            result = doSingleQuery(cache, ESchema.TERM, sql);
+            result = doSingleQuery(cache, sql);
         }
 
         return result;
@@ -191,7 +190,7 @@ public final class StandardsMilestoneLogic implements IRecLogic<StandardsMilesto
                     " AND module_nbr=", sqlIntegerValue(record.moduleNbr),
                     " AND ms_type=", sqlStringValue(record.msType));
 
-            result = doUpdateOneRow(cache, ESchema.TERM, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;

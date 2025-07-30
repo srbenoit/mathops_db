@@ -5,7 +5,6 @@ import dev.mathops.db.Cache;
 import dev.mathops.db.DataDict;
 import dev.mathops.db.ESchema;
 import dev.mathops.db.rec.main.CourseSurveyItemRec;
-import dev.mathops.db.reclogic.IRecLogic;
 import dev.mathops.text.builder.SimpleBuilder;
 
 import java.sql.ResultSet;
@@ -26,7 +25,7 @@ import java.util.List;
  * ) TABLESPACE primary_ts;
  * </pre>
  */
-public final class CourseSurveyItemLogic implements IRecLogic<CourseSurveyItemRec> {
+public final class CourseSurveyItemLogic implements IMainRecLogic<CourseSurveyItemRec> {
 
     /** A single instance. */
     public static final CourseSurveyItemLogic INSTANCE = new CourseSurveyItemLogic();
@@ -64,7 +63,7 @@ public final class CourseSurveyItemLogic implements IRecLogic<CourseSurveyItemRe
                     sqlIntegerValue(record.itemType), ",",
                     sqlStringValue(record.promptHtml), ")");
 
-            result = doUpdateOneRow(cache, ESchema.MAIN, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;
@@ -92,7 +91,7 @@ public final class CourseSurveyItemLogic implements IRecLogic<CourseSurveyItemRe
                     ".course_survey_item WHERE survey_id=", sqlStringValue(record.surveyId),
                     " AND item_nbr=", sqlIntegerValue(record.itemNbr));
 
-            result = doUpdateOneRow(cache, ESchema.MAIN, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;
@@ -117,7 +116,7 @@ public final class CourseSurveyItemLogic implements IRecLogic<CourseSurveyItemRe
         } else {
             final String sql = SimpleBuilder.concat("SELECT * FROM ", schemaPrefix, ".course_survey_item");
 
-            result = doListQuery(cache, ESchema.MAIN, sql);
+            result = doListQuery(cache, sql);
         }
 
         return result;
@@ -146,7 +145,7 @@ public final class CourseSurveyItemLogic implements IRecLogic<CourseSurveyItemRe
                     ".course_survey_item  WHERE survey_id=", sqlStringValue(surveyId),
                     " AND item_nbr=", sqlIntegerValue(itemNbr));
 
-            result = doSingleQuery(cache, ESchema.MAIN, sql);
+            result = doSingleQuery(cache, sql);
         }
 
         return result;
@@ -172,7 +171,7 @@ public final class CourseSurveyItemLogic implements IRecLogic<CourseSurveyItemRe
             final String sql = SimpleBuilder.concat("SELECT * FROM ", schemaPrefix,
                     ".course_survey_item WHERE survey_id=", sqlStringValue(surveyId));
 
-            result = doListQuery(cache, ESchema.MAIN, sql);
+            result = doListQuery(cache, sql);
             result.sort(null);
         }
 
@@ -202,7 +201,7 @@ public final class CourseSurveyItemLogic implements IRecLogic<CourseSurveyItemRe
                     " WHERE survey_id=", sqlStringValue(record.surveyId),
                     " AND item_nbr=", sqlIntegerValue(record.itemNbr));
 
-            result = doUpdateOneRow(cache, ESchema.MAIN, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;

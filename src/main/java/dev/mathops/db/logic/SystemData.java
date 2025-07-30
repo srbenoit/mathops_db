@@ -191,7 +191,7 @@ public final class SystemData {
     public TermRec getActiveTerm() throws SQLException {
 
         if (this.activeTerm == null) {
-            this.activeTerm = TermLogic.get(this.cache).queryActive(this.cache);
+            this.activeTerm = TermLogic.INSTANCE.queryActive(this.cache);
         }
 
         return this.activeTerm;
@@ -206,7 +206,7 @@ public final class SystemData {
     public TermRec getPriorTerm() throws SQLException {
 
         if (this.priorTerm == null) {
-            this.priorTerm = TermLogic.get(this.cache).queryPrior(this.cache);
+            this.priorTerm = TermLogic.INSTANCE.queryPrior(this.cache);
         }
 
         return this.priorTerm;
@@ -221,7 +221,7 @@ public final class SystemData {
     public TermRec getNextTerm() throws SQLException {
 
         if (this.nextTerm == null) {
-            this.nextTerm = TermLogic.get(this.cache).queryNext(this.cache);
+            this.nextTerm = TermLogic.INSTANCE.queryNext(this.cache);
         }
 
         return this.nextTerm;
@@ -236,7 +236,7 @@ public final class SystemData {
     public List<TermRec> getFutureTerms() throws SQLException {
 
         if (this.futureTerms == null) {
-            this.futureTerms = TermLogic.get(this.cache).getFutureTerms(this.cache);
+            this.futureTerms = TermLogic.INSTANCE.getFutureTerms(this.cache);
         }
 
         return this.futureTerms;
@@ -253,7 +253,7 @@ public final class SystemData {
 
         // TODO: Should we cache all terms, and convert the queries for active/prior/next to lookups?
 
-        return TermLogic.get(this.cache).query(this.cache, term);
+        return TermLogic.INSTANCE.query(this.cache, term);
     }
 
     /**
@@ -265,7 +265,7 @@ public final class SystemData {
      */
     public boolean insertTerm(final TermRec record) throws SQLException {
 
-        final boolean ok = TermLogic.get(this.cache).insert(this.cache, record);
+        final boolean ok = TermLogic.INSTANCE.insert(this.cache, record);
 
         if (ok) {
             final Integer index = record.activeIndex;
@@ -437,7 +437,7 @@ public final class SystemData {
     public List<TermWeekRec> getTermWeeks() throws SQLException {
 
         if (this.termWeeks == null) {
-            this.termWeeks = TermWeekLogic.get(this.cache).queryAll(this.cache);
+            this.termWeeks = TermWeekLogic.INSTANCE.queryAll(this.cache);
             Collections.sort(this.termWeeks);
         }
 
@@ -961,7 +961,7 @@ public final class SystemData {
         }
 
         if (result == null) {
-            result = AssignmentLogic.get(this.cache).queryActiveByCourse(this.cache, course, null);
+            result = AssignmentLogic.INSTANCE.queryActiveByCourse(this.cache, course, null);
             this.assignments.put(course, result);
         }
 
@@ -1107,7 +1107,7 @@ public final class SystemData {
         AssignmentRec result = null;
 
         if (this.assignments == null) {
-            result = AssignmentLogic.get(this.cache).query(this.cache, assignmentId);
+            result = AssignmentLogic.INSTANCE.query(this.cache, assignmentId);
         } else {
             outer:
             for (final List<AssignmentRec> list : this.assignments.values()) {
@@ -1120,7 +1120,7 @@ public final class SystemData {
             }
 
             if (result == null) {
-                result = AssignmentLogic.get(this.cache).query(this.cache, assignmentId);
+                result = AssignmentLogic.INSTANCE.query(this.cache, assignmentId);
             }
         }
 
@@ -1248,7 +1248,7 @@ public final class SystemData {
         }
 
         if (result == null) {
-            result = MasteryExamLogic.get(this.cache).queryActiveByCourse(this.cache, course);
+            result = MasteryExamLogic.INSTANCE.queryActiveByCourse(this.cache, course);
             this.masteryExams.put(course, result);
         }
 
@@ -1353,7 +1353,7 @@ public final class SystemData {
     public List<StandardMilestoneRec> getStandardMilestones() throws SQLException {
 
         if (this.standardMilestones == null) {
-            this.standardMilestones = StandardMilestoneLogic.get(this.cache).queryAll(this.cache);
+            this.standardMilestones = StandardMilestoneLogic.INSTANCE.queryAll(this.cache);
         }
 
         return this.standardMilestones;

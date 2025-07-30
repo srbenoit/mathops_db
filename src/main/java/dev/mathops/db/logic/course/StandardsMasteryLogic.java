@@ -62,7 +62,7 @@ public final class StandardsMasteryLogic {
         this.mastered = new HashMap<>(numExams);
 
         for (final MasteryExamRec exam : this.masteryExams) {
-            final List<MasteryAttemptRec> attempts = MasteryAttemptLogic.get(cache).queryByStudentExam(cache, stuId,
+            final List<MasteryAttemptRec> attempts = MasteryAttemptLogic.INSTANCE.queryByStudentExam(cache, stuId,
                     exam.examId, false);
 
             this.masteryAttempts.put(exam.examId, attempts);
@@ -78,7 +78,7 @@ public final class StandardsMasteryLogic {
                     isMastered = true;
                 }
 
-                final List<MasteryAttemptQaRec> qa = MasteryAttemptQaLogic.get(cache).queryByAttempt(cache,
+                final List<MasteryAttemptQaRec> qa = MasteryAttemptQaLogic.INSTANCE.queryByAttempt(cache,
                         attempt.serialNbr, attempt.examId);
                 qaList.addAll(qa);
             }

@@ -33,28 +33,23 @@ final class TestStandardsCourseStandardLogic {
 
     /** A raw test record. */
     private static final StandardsCourseStandardRec RAW1 =
-            new StandardsCourseStandardRec("MATH 117", Integer.valueOf(1), Integer.valueOf(3), "I can A.",
-                    "Y");
+            new StandardsCourseStandardRec("MATH 117", Integer.valueOf(1), Integer.valueOf(3), "I can A.", "Y");
 
     /** A raw test record. */
     private static final StandardsCourseStandardRec RAW2 =
-            new StandardsCourseStandardRec("MATH 101", Integer.valueOf(2), Integer.valueOf(5), "I can B.",
-                    "N");
+            new StandardsCourseStandardRec("MATH 101", Integer.valueOf(2), Integer.valueOf(5), "I can B.", "N");
 
     /** A raw test record. */
     private static final StandardsCourseStandardRec RAW3 =
-            new StandardsCourseStandardRec("MATH 160", Integer.valueOf(3), Integer.valueOf(4), "I can C.",
-                    "A");
+            new StandardsCourseStandardRec("MATH 160", Integer.valueOf(3), Integer.valueOf(4), "I can C.", "A");
 
     /** A raw test record. */
     private static final StandardsCourseStandardRec RAW4 =
-            new StandardsCourseStandardRec("MATH 160", Integer.valueOf(4), Integer.valueOf(6), "I can D.",
-                    "B");
+            new StandardsCourseStandardRec("MATH 160", Integer.valueOf(4), Integer.valueOf(6), "I can D.", "B");
 
     /** A raw test record. */
     private static final StandardsCourseStandardRec UPD4 =
-            new StandardsCourseStandardRec("MATH 160", Integer.valueOf(4), Integer.valueOf(7), "I can E.",
-                    "C");
+            new StandardsCourseStandardRec("MATH 160", Integer.valueOf(4), Integer.valueOf(6), "I can E.", "C");
 
     /** The database profile. */
     static Profile profile;

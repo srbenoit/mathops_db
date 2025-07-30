@@ -5,7 +5,6 @@ import dev.mathops.db.Cache;
 import dev.mathops.db.DataDict;
 import dev.mathops.db.ESchema;
 import dev.mathops.db.rec.term.LtiContextCourseSectionRec;
-import dev.mathops.db.reclogic.IRecLogic;
 import dev.mathops.text.builder.SimpleBuilder;
 
 import java.sql.ResultSet;
@@ -28,7 +27,7 @@ import java.util.List;
  * ) TABLESPACE primary_ts;
  * </pre>
  */
-public final class LtiContextCourseSectionLogic implements IRecLogic<LtiContextCourseSectionRec> {
+public final class LtiContextCourseSectionLogic implements ITermRecLogic<LtiContextCourseSectionRec> {
 
     /** A single instance. */
     public static final LtiContextCourseSectionLogic INSTANCE = new LtiContextCourseSectionLogic();
@@ -68,7 +67,7 @@ public final class LtiContextCourseSectionLogic implements IRecLogic<LtiContextC
                     sqlStringValue(record.courseId), ",",
                     sqlStringValue(record.sectionNbr), ")");
 
-            result = doUpdateOneRow(cache, ESchema.TERM, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;
@@ -100,7 +99,7 @@ public final class LtiContextCourseSectionLogic implements IRecLogic<LtiContextC
                     " AND course_id=", sqlStringValue(record.courseId),
                     " AND section_nbr=", sqlStringValue(record.sectionNbr));
 
-            result = doUpdateOneRow(cache, ESchema.TERM, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;
@@ -125,7 +124,7 @@ public final class LtiContextCourseSectionLogic implements IRecLogic<LtiContextC
         } else {
             final String sql = SimpleBuilder.concat("SELECT * FROM ", schemaPrefix, ".lti_context_course_section");
 
-            result = doListQuery(cache, ESchema.TERM, sql);
+            result = doListQuery(cache, sql);
         }
 
         return result;
@@ -159,7 +158,7 @@ public final class LtiContextCourseSectionLogic implements IRecLogic<LtiContextC
                     " AND deployment_id=", sqlStringValue(deploymentId),
                     " AND context_id=", sqlStringValue(contextId));
 
-            result = doListQuery(cache, ESchema.TERM, sql);
+            result = doListQuery(cache, sql);
         }
 
         return result;
@@ -197,7 +196,7 @@ public final class LtiContextCourseSectionLogic implements IRecLogic<LtiContextC
                     " AND course_id=", sqlStringValue(courseId),
                     " AND section_nbr=", sqlStringValue(sectionNbr));
 
-            result = doSingleQuery(cache, ESchema.TERM, sql);
+            result = doSingleQuery(cache, sql);
         }
 
         return result;

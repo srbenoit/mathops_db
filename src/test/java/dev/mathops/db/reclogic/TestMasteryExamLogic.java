@@ -143,7 +143,7 @@ final class TestMasteryExamLogic {
                 }
                 conn.commit();
 
-                final MasteryExamLogic logic = MasteryExamLogic.get(cache);
+                final MasteryExamLogic logic = MasteryExamLogic.INSTANCE;
 
                 assertTrue(logic.insert(cache, RAW1), "Failed to insert Informix mastery_exam");
                 assertTrue(logic.insert(cache, RAW2), "Failed to insert Informix mastery_exam");
@@ -165,7 +165,7 @@ final class TestMasteryExamLogic {
         void test0003() {
 
             final Cache cache = new Cache(informixProfile);
-            final MasteryExamLogic logic = MasteryExamLogic.get(cache);
+            final MasteryExamLogic logic = MasteryExamLogic.INSTANCE;
 
             try {
                 final List<MasteryExamRec> all = logic.queryAll(cache);
@@ -216,7 +216,7 @@ final class TestMasteryExamLogic {
         void test0004() {
 
             final Cache cache = new Cache(informixProfile);
-            final MasteryExamLogic logic = MasteryExamLogic.get(cache);
+            final MasteryExamLogic logic = MasteryExamLogic.INSTANCE;
 
             try {
                 final List<MasteryExamRec> all = logic.queryActiveByCourse(cache, RawRecordConstants.M125);
@@ -264,7 +264,7 @@ final class TestMasteryExamLogic {
         void test0005() {
 
             final Cache cache = new Cache(informixProfile);
-            final MasteryExamLogic logic = MasteryExamLogic.get(cache);
+            final MasteryExamLogic logic = MasteryExamLogic.INSTANCE;
 
             try {
                 final List<MasteryExamRec> all = logic.queryActiveByCourseUnit(cache, RawRecordConstants.M125,
@@ -308,7 +308,7 @@ final class TestMasteryExamLogic {
         void test0006() {
 
             final Cache cache = new Cache(informixProfile);
-            final MasteryExamLogic logic = MasteryExamLogic.get(cache);
+            final MasteryExamLogic logic = MasteryExamLogic.INSTANCE;
 
             try {
                 final List<MasteryExamRec> all = logic.queryActiveByCourseUnitObjective(cache,
@@ -346,7 +346,7 @@ final class TestMasteryExamLogic {
         void test0007() {
 
             final Cache cache = new Cache(informixProfile);
-            final MasteryExamLogic logic = MasteryExamLogic.get(cache);
+            final MasteryExamLogic logic = MasteryExamLogic.INSTANCE;
 
             try {
                 final MasteryExamRec r = logic.queryActive(cache,
@@ -371,7 +371,7 @@ final class TestMasteryExamLogic {
         void test0008() {
 
             final Cache cache = new Cache(informixProfile);
-            final MasteryExamLogic logic = MasteryExamLogic.get(cache);
+            final MasteryExamLogic logic = MasteryExamLogic.INSTANCE;
 
             try {
                 final MasteryExamRec r = logic.query(cache, "C41_LT1_M");
@@ -394,7 +394,7 @@ final class TestMasteryExamLogic {
         void test0009() {
 
             final Cache cache = new Cache(informixProfile);
-            final MasteryExamLogic logic = MasteryExamLogic.get(cache);
+            final MasteryExamLogic logic = MasteryExamLogic.INSTANCE;
 
             try {
                 final boolean result = logic.delete(cache, RAW5);

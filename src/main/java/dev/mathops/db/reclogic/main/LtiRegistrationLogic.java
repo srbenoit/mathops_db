@@ -5,7 +5,6 @@ import dev.mathops.db.Cache;
 import dev.mathops.db.DataDict;
 import dev.mathops.db.ESchema;
 import dev.mathops.db.rec.main.LtiRegistrationRec;
-import dev.mathops.db.reclogic.IRecLogic;
 import dev.mathops.text.builder.SimpleBuilder;
 
 import java.sql.ResultSet;
@@ -30,7 +29,7 @@ import java.util.List;
  * ) TABLESPACE primary_ts;
  * </pre>
  */
-public final class LtiRegistrationLogic implements IRecLogic<LtiRegistrationRec> {
+public final class LtiRegistrationLogic implements IMainRecLogic<LtiRegistrationRec> {
 
     /** A single instance. */
     public static final LtiRegistrationLogic INSTANCE = new LtiRegistrationLogic();
@@ -72,7 +71,7 @@ public final class LtiRegistrationLogic implements IRecLogic<LtiRegistrationRec>
                     sqlStringValue(record.regEndpoint), ",",
                     sqlStringValue(record.jwksUri), ")");
 
-            result = doUpdateOneRow(cache, ESchema.MAIN, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;
@@ -100,7 +99,7 @@ public final class LtiRegistrationLogic implements IRecLogic<LtiRegistrationRec>
                     ".lti_registration WHERE client_id=", sqlStringValue(record.clientId),
                     " AND issuer=", sqlStringValue(record.issuer));
 
-            result = doUpdateOneRow(cache, ESchema.MAIN, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;
@@ -125,7 +124,7 @@ public final class LtiRegistrationLogic implements IRecLogic<LtiRegistrationRec>
         } else {
             final String sql = SimpleBuilder.concat("SELECT * FROM ", schemaPrefix, ".lti_registration");
 
-            result = doListQuery(cache, ESchema.MAIN, sql);
+            result = doListQuery(cache, sql);
         }
 
         return result;
@@ -153,7 +152,7 @@ public final class LtiRegistrationLogic implements IRecLogic<LtiRegistrationRec>
                     ".lti_registration WHERE client_id=", sqlStringValue(clientId),
                     " AND issuer=", sqlStringValue(issuer));
 
-            result = doSingleQuery(cache, ESchema.MAIN, sql);
+            result = doSingleQuery(cache, sql);
         }
 
         return result;
@@ -186,7 +185,7 @@ public final class LtiRegistrationLogic implements IRecLogic<LtiRegistrationRec>
                     " WHERE client_id=", sqlStringValue(record.clientId),
                     " AND issuer=", sqlStringValue(record.issuer));
 
-            result = doUpdateOneRow(cache, ESchema.MAIN, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;

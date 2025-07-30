@@ -5,7 +5,6 @@ import dev.mathops.db.Cache;
 import dev.mathops.db.DataDict;
 import dev.mathops.db.ESchema;
 import dev.mathops.db.rec.term.StandardAssignmentAttemptRec;
-import dev.mathops.db.reclogic.IRecLogic;
 import dev.mathops.text.builder.SimpleBuilder;
 
 import java.sql.ResultSet;
@@ -41,7 +40,7 @@ import java.util.List;
  * ) TABLESPACE primary_ts;
  * </pre>
  */
-public final class StandardAssignmentAttemptLogic implements IRecLogic<StandardAssignmentAttemptRec> {
+public final class StandardAssignmentAttemptLogic implements ITermRecLogic<StandardAssignmentAttemptRec> {
 
     /** A single instance. */
     public static final StandardAssignmentAttemptLogic INSTANCE = new StandardAssignmentAttemptLogic();
@@ -88,7 +87,7 @@ public final class StandardAssignmentAttemptLogic implements IRecLogic<StandardA
                     sqlIntegerValue(record.score), ",",
                     sqlStringValue(record.passed), ")");
 
-            result = doUpdateOneRow(cache, ESchema.TERM, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;
@@ -115,7 +114,7 @@ public final class StandardAssignmentAttemptLogic implements IRecLogic<StandardA
             final String sql = SimpleBuilder.concat("DELETE FROM ", schemaPrefix,
                     ".standard_assignment_attempt WHERE serial_nbr=", sqlIntegerValue(record.serialNbr));
 
-            result = doUpdateOneRow(cache, ESchema.TERM, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;
@@ -140,7 +139,7 @@ public final class StandardAssignmentAttemptLogic implements IRecLogic<StandardA
         } else {
             final String sql = SimpleBuilder.concat("SELECT * FROM ", schemaPrefix, ".standard_assignment_attempt");
 
-            result = doListQuery(cache, ESchema.TERM, sql);
+            result = doListQuery(cache, sql);
         }
 
         return result;
@@ -167,7 +166,7 @@ public final class StandardAssignmentAttemptLogic implements IRecLogic<StandardA
             final String sql = SimpleBuilder.concat("SELECT * FROM ", schemaPrefix,
                     ".standard_assignment_attempt WHERE serial_nbr=", sqlIntegerValue(serialNbr));
 
-            result = doSingleQuery(cache, ESchema.TERM, sql);
+            result = doSingleQuery(cache, sql);
         }
 
         return result;
@@ -194,7 +193,7 @@ public final class StandardAssignmentAttemptLogic implements IRecLogic<StandardA
             final String sql = SimpleBuilder.concat("SELECT * FROM ", schemaPrefix,
                     ".standard_assignment_attempt WHERE student_id=", sqlStringValue(studentId));
 
-            result = doListQuery(cache, ESchema.TERM, sql);
+            result = doListQuery(cache, sql);
         }
 
         return result;
@@ -224,7 +223,7 @@ public final class StandardAssignmentAttemptLogic implements IRecLogic<StandardA
                     ".standard_assignment_attempt WHERE student_id=", sqlStringValue(studentId),
                     " AND course_id=", sqlStringValue(courseId));
 
-            result = doListQuery(cache, ESchema.TERM, sql);
+            result = doListQuery(cache, sql);
         }
 
         return result;
@@ -261,7 +260,7 @@ public final class StandardAssignmentAttemptLogic implements IRecLogic<StandardA
                     ",passed=", sqlStringValue(record.passed),
                     " WHERE serial_nbr=", sqlIntegerValue(record.serialNbr));
 
-            result = doUpdateOneRow(cache, ESchema.TERM, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;

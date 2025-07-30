@@ -5,7 +5,6 @@ import dev.mathops.db.Cache;
 import dev.mathops.db.DataDict;
 import dev.mathops.db.ESchema;
 import dev.mathops.db.rec.term.StandardAssignmentAttemptQaRec;
-import dev.mathops.db.reclogic.IRecLogic;
 import dev.mathops.text.builder.SimpleBuilder;
 
 import java.sql.ResultSet;
@@ -26,7 +25,7 @@ import java.util.List;
  * ) TABLESPACE primary_ts;
  * </pre>
  */
-public final class StandardAssignmentAttemptQaLogic implements IRecLogic<StandardAssignmentAttemptQaRec> {
+public final class StandardAssignmentAttemptQaLogic implements ITermRecLogic<StandardAssignmentAttemptQaRec> {
 
     /** A single instance. */
     public static final StandardAssignmentAttemptQaLogic INSTANCE = new StandardAssignmentAttemptQaLogic();
@@ -64,7 +63,7 @@ public final class StandardAssignmentAttemptQaLogic implements IRecLogic<Standar
                     sqlIntegerValue(record.points), ",",
                     sqlStringValue(record.itemId), ")");
 
-            result = doUpdateOneRow(cache, ESchema.TERM, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;
@@ -92,7 +91,7 @@ public final class StandardAssignmentAttemptQaLogic implements IRecLogic<Standar
                     ".standard_assignment_attempt_qa WHERE serial_nbr=", sqlIntegerValue(record.serialNbr),
                     " AND question_nbr=", sqlIntegerValue(record.questionNbr));
 
-            result = doUpdateOneRow(cache, ESchema.TERM, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;
@@ -117,7 +116,7 @@ public final class StandardAssignmentAttemptQaLogic implements IRecLogic<Standar
         } else {
             final String sql = SimpleBuilder.concat("SELECT * FROM ", schemaPrefix, ".standard_assignment_attempt_qa");
 
-            result = doListQuery(cache, ESchema.TERM, sql);
+            result = doListQuery(cache, sql);
         }
 
         return result;
@@ -146,7 +145,7 @@ public final class StandardAssignmentAttemptQaLogic implements IRecLogic<Standar
                     ".standard_assignment_attempt_qa WHERE serial_nbr=", sqlIntegerValue(serialNbr),
                     " AND question_nbr=", sqlIntegerValue(questionNbr));
 
-            result = doSingleQuery(cache, ESchema.TERM, sql);
+            result = doSingleQuery(cache, sql);
         }
 
         return result;
@@ -175,7 +174,7 @@ public final class StandardAssignmentAttemptQaLogic implements IRecLogic<Standar
                     " WHERE serial_nbr=", sqlIntegerValue(record.serialNbr),
                     " AND question_nbr=", sqlIntegerValue(record.questionNbr));
 
-            result = doUpdateOneRow(cache, ESchema.TERM, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;

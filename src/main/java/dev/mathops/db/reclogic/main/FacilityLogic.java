@@ -5,7 +5,6 @@ import dev.mathops.db.Cache;
 import dev.mathops.db.DataDict;
 import dev.mathops.db.ESchema;
 import dev.mathops.db.rec.main.FacilityRec;
-import dev.mathops.db.reclogic.IRecLogic;
 import dev.mathops.text.builder.SimpleBuilder;
 
 import java.sql.ResultSet;
@@ -26,7 +25,7 @@ import java.util.List;
  * ) TABLESPACE primary_ts;
  * </pre>
  */
-public final class FacilityLogic implements IRecLogic<FacilityRec> {
+public final class FacilityLogic implements IMainRecLogic<FacilityRec> {
 
     /** A single instance. */
     public static final FacilityLogic INSTANCE = new FacilityLogic();
@@ -64,7 +63,7 @@ public final class FacilityLogic implements IRecLogic<FacilityRec> {
                     sqlStringValue(record.buildingName), ",",
                     sqlStringValue(record.roomNbr), ")");
 
-            result = doUpdateOneRow(cache, ESchema.MAIN, sql);
+            result = doUpdateOneRow(cache, sql);
 
         }
 
@@ -92,7 +91,7 @@ public final class FacilityLogic implements IRecLogic<FacilityRec> {
             final String sql = SimpleBuilder.concat("DELETE FROM ", schemaPrefix, ".facility WHERE facility_id=",
                     sqlStringValue(record.facilityId));
 
-            result = doUpdateOneRow(cache, ESchema.MAIN, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;
@@ -117,7 +116,7 @@ public final class FacilityLogic implements IRecLogic<FacilityRec> {
         } else {
             final String sql = SimpleBuilder.concat("SELECT * FROM ", schemaPrefix, ".facility");
 
-            result = doListQuery(cache, ESchema.MAIN, sql);
+            result = doListQuery(cache, sql);
         }
 
         return result;
@@ -143,7 +142,7 @@ public final class FacilityLogic implements IRecLogic<FacilityRec> {
             final String sql = SimpleBuilder.concat("SELECT * FROM ", schemaPrefix, ".facility WHERE facility_id=",
                     sqlStringValue(facility));
 
-            result = doSingleQuery(cache, ESchema.MAIN, sql);
+            result = doSingleQuery(cache, sql);
         }
 
         return result;
@@ -171,7 +170,7 @@ public final class FacilityLogic implements IRecLogic<FacilityRec> {
                     ",room_nbr=", sqlStringValue(record.roomNbr), " WHERE facility_id=",
                     sqlStringValue(record.facilityId));
 
-            result = doUpdateOneRow(cache, ESchema.MAIN, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;

@@ -392,6 +392,7 @@ CREATE TABLE IF NOT EXISTS main.standard_assignment (
     standard_nbr             smallint        NOT NULL,  -- The standard number (1 for the first standard in a module)
     pts_possible             smallint,                  -- The number of points possible
     min_passing_score        smallint,                  -- The minimum score that is considered "passing"
+    tree_ref                 varchar(250),              -- The tree reference of the assignment
     PRIMARY KEY (assignment_id)
 ) TABLESPACE primary_ts;
 ALTER TABLE IF EXISTS main.standard_assignment OWNER to math;
@@ -405,6 +406,7 @@ CREATE TABLE IF NOT EXISTS main_dev.standard_assignment (
     standard_nbr             smallint        NOT NULL,
     pts_possible             smallint,
     min_passing_score        smallint,
+    tree_ref                 varchar(250),
     PRIMARY KEY (assignment_id)
 ) TABLESPACE primary_ts;
 ALTER TABLE IF EXISTS main_dev.standard_assignment OWNER to math;
@@ -418,6 +420,7 @@ CREATE TABLE IF NOT EXISTS main_test.standard_assignment (
     standard_nbr             smallint        NOT NULL,
     pts_possible             smallint,
     min_passing_score        smallint,
+    tree_ref                 varchar(250),
     PRIMARY KEY (assignment_id)
 ) TABLESPACE primary_ts;
 ALTER TABLE IF EXISTS main_test.standard_assignment OWNER to math;

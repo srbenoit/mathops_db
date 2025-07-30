@@ -5,7 +5,6 @@ import dev.mathops.db.Cache;
 import dev.mathops.db.DataDict;
 import dev.mathops.db.ESchema;
 import dev.mathops.db.rec.main.FacilityClosureRec;
-import dev.mathops.db.reclogic.IRecLogic;
 import dev.mathops.text.builder.SimpleBuilder;
 
 import java.sql.ResultSet;
@@ -30,7 +29,7 @@ import java.util.List;
  * ) TABLESPACE primary_ts;
  * </pre>
  */
-public final class FacilityClosureLogic implements IRecLogic<FacilityClosureRec> {
+public final class FacilityClosureLogic implements IMainRecLogic<FacilityClosureRec> {
 
     /** A single instance. */
     public static final FacilityClosureLogic INSTANCE = new FacilityClosureLogic();
@@ -70,7 +69,7 @@ public final class FacilityClosureLogic implements IRecLogic<FacilityClosureRec>
                     sqlTimeValue(record.startTime), ",",
                     sqlTimeValue(record.endTime), ")");
 
-            result = doUpdateOneRow(cache, ESchema.MAIN, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;
@@ -98,7 +97,7 @@ public final class FacilityClosureLogic implements IRecLogic<FacilityClosureRec>
                     ".facility_closure WHERE facility_id=", sqlStringValue(record.facilityId), " AND start_date=",
                     sqlDateValue(record.startDate));
 
-            result = doUpdateOneRow(cache, ESchema.MAIN, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;
@@ -123,7 +122,7 @@ public final class FacilityClosureLogic implements IRecLogic<FacilityClosureRec>
         } else {
             final String sql = SimpleBuilder.concat("SELECT * FROM ", schemaPrefix, ".facility_closure");
 
-            result = doListQuery(cache, ESchema.MAIN, sql);
+            result = doListQuery(cache, sql);
         }
 
         return result;
@@ -152,7 +151,7 @@ public final class FacilityClosureLogic implements IRecLogic<FacilityClosureRec>
                     ".facility_closure WHERE facility_id=", sqlStringValue(facilityId), " AND start_date=",
                     sqlDateValue(startDate));
 
-            result = doSingleQuery(cache, ESchema.MAIN, sql);
+            result = doSingleQuery(cache, sql);
         }
 
         return result;
@@ -178,7 +177,7 @@ public final class FacilityClosureLogic implements IRecLogic<FacilityClosureRec>
             final String sql = SimpleBuilder.concat("SELECT * FROM ", schemaPrefix,
                     ".facility_closure WHERE facility_id=", sqlStringValue(facilityId));
 
-            result = doListQuery(cache, ESchema.MAIN, sql);
+            result = doListQuery(cache, sql);
         }
 
         return result;
@@ -209,7 +208,7 @@ public final class FacilityClosureLogic implements IRecLogic<FacilityClosureRec>
                     " WHERE facility_id=", sqlStringValue(record.facilityId),
                     " AND start_date=", sqlDateValue(record.startDate));
 
-            result = doUpdateOneRow(cache, ESchema.MAIN, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;

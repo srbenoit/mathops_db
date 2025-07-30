@@ -125,7 +125,7 @@ final class TestTermLogic {
                         if (which == null || !"TEST".equals(which.trim())) {
                             throw new IllegalArgumentException(
                                     TestRes.fmt(TestRes.ERR_NOT_CONNECTED_TO_TEST,
-                                    which));
+                                            which));
                         }
                     } else {
                         throw new IllegalArgumentException(TestRes.get(TestRes.ERR_CANT_QUERY_WHICH_DB));
@@ -137,11 +137,11 @@ final class TestTermLogic {
                 }
                 conn.commit();
 
-                assertTrue(TermLogic.Informix.INSTANCE.insert(cache, RAW1), "Failed to insert Informix term");
-                assertTrue(TermLogic.Informix.INSTANCE.insert(cache, RAW2), "Failed to insert Informix term");
-                assertTrue(TermLogic.Informix.INSTANCE.insert(cache, RAW3), "Failed to insert Informix term");
-                assertTrue(TermLogic.Informix.INSTANCE.insert(cache, RAW4), "Failed to insert Informix term");
-                assertTrue(TermLogic.Informix.INSTANCE.insert(cache, RAW5), "Failed to insert Informix term");
+                assertTrue(TermLogic.INSTANCE.insert(cache, RAW1), "Failed to insert Informix term");
+                assertTrue(TermLogic.INSTANCE.insert(cache, RAW2), "Failed to insert Informix term");
+                assertTrue(TermLogic.INSTANCE.insert(cache, RAW3), "Failed to insert Informix term");
+                assertTrue(TermLogic.INSTANCE.insert(cache, RAW4), "Failed to insert Informix term");
+                assertTrue(TermLogic.INSTANCE.insert(cache, RAW5), "Failed to insert Informix term");
             } catch (final SQLException ex) {
                 fail("Exception while initializing Informix 'term' table: " + ex.getMessage());
                 throw new IllegalArgumentException(ex);
@@ -158,7 +158,7 @@ final class TestTermLogic {
             final Cache cache = new Cache(informixProfile);
 
             try {
-                final List<TermRec> all = TermLogic.Informix.INSTANCE.queryAll(cache);
+                final List<TermRec> all = TermLogic.INSTANCE.queryAll(cache);
 
                 assertEquals(5, all.size(), "Incorrect record count from Informix queryAll");
 
@@ -204,7 +204,7 @@ final class TestTermLogic {
             final Cache cache = new Cache(informixProfile);
 
             try {
-                final TermRec index2 = TermLogic.Informix.INSTANCE.queryByIndex(cache, 2);
+                final TermRec index2 = TermLogic.INSTANCE.queryByIndex(cache, 2);
 
                 assertNotNull(index2, "Informix queryByIndex returned null");
                 assertEquals(RAW5, index2, "Informix term index 2 not found");
@@ -222,7 +222,7 @@ final class TestTermLogic {
             final Cache cache = new Cache(informixProfile);
 
             try {
-                final List<TermRec> all = TermLogic.Informix.INSTANCE.getFutureTerms(cache);
+                final List<TermRec> all = TermLogic.INSTANCE.getFutureTerms(cache);
 
                 assertEquals(2, all.size(), "Incorrect record count from Informix getFutureTerms");
 
@@ -256,7 +256,7 @@ final class TestTermLogic {
             final Cache cache = new Cache(informixProfile);
 
             try {
-                final TermRec active = TermLogic.Informix.INSTANCE.queryActive(cache);
+                final TermRec active = TermLogic.INSTANCE.queryActive(cache);
 
                 assertNotNull(active, "Informix queryActive returned null");
                 assertEquals(RAW3, active, "Informix active term not found");
@@ -274,7 +274,7 @@ final class TestTermLogic {
             final Cache cache = new Cache(informixProfile);
 
             try {
-                final TermRec active = TermLogic.Informix.INSTANCE.queryNext(cache);
+                final TermRec active = TermLogic.INSTANCE.queryNext(cache);
 
                 assertNotNull(active, "Informix queryNext returned null");
                 assertEquals(RAW4, active, "Informix next term not found");
@@ -292,7 +292,7 @@ final class TestTermLogic {
             final Cache cache = new Cache(informixProfile);
 
             try {
-                final TermRec active = TermLogic.Informix.INSTANCE.queryPrior(cache);
+                final TermRec active = TermLogic.INSTANCE.queryPrior(cache);
 
                 assertNotNull(active, "Informix queryPrior returned null");
                 assertEquals(RAW2, active, "Informix prior term not found");
@@ -310,7 +310,7 @@ final class TestTermLogic {
             final Cache cache = new Cache(informixProfile);
 
             try {
-                final TermRec active = TermLogic.Informix.INSTANCE.query(cache, RAW1.term);
+                final TermRec active = TermLogic.INSTANCE.query(cache, RAW1.term);
 
                 assertNotNull(active, "Informix query returned null");
                 assertEquals(RAW1, active, "Informix term not found");

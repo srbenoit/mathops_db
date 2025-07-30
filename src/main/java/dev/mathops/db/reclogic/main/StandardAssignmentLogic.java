@@ -5,7 +5,6 @@ import dev.mathops.db.Cache;
 import dev.mathops.db.DataDict;
 import dev.mathops.db.ESchema;
 import dev.mathops.db.rec.main.StandardAssignmentRec;
-import dev.mathops.db.reclogic.IRecLogic;
 import dev.mathops.text.builder.SimpleBuilder;
 
 import java.sql.ResultSet;
@@ -30,7 +29,7 @@ import java.util.List;
  * ) TABLESPACE primary_ts;
  * </pre>
  */
-public final class StandardAssignmentLogic implements IRecLogic<StandardAssignmentRec> {
+public final class StandardAssignmentLogic implements IMainRecLogic<StandardAssignmentRec> {
 
     /** A single instance. */
     public static final StandardAssignmentLogic INSTANCE = new StandardAssignmentLogic();
@@ -73,7 +72,7 @@ public final class StandardAssignmentLogic implements IRecLogic<StandardAssignme
                     sqlIntegerValue(record.minPassingScore), ",",
                     sqlStringValue(record.treeRef), ")");
 
-            result = doUpdateOneRow(cache, ESchema.MAIN, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;
@@ -101,7 +100,7 @@ public final class StandardAssignmentLogic implements IRecLogic<StandardAssignme
                     ".standard_assignment WHERE assignment_id=",
                     sqlStringValue(record.assignmentId));
 
-            result = doUpdateOneRow(cache, ESchema.MAIN, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;
@@ -126,7 +125,7 @@ public final class StandardAssignmentLogic implements IRecLogic<StandardAssignme
         } else {
             final String sql = SimpleBuilder.concat("SELECT * FROM ", schemaPrefix, ".standard_assignment");
 
-            result = doListQuery(cache, ESchema.MAIN, sql);
+            result = doListQuery(cache, sql);
         }
 
         return result;
@@ -152,7 +151,7 @@ public final class StandardAssignmentLogic implements IRecLogic<StandardAssignme
             final String sql = SimpleBuilder.concat("SELECT * FROM ", schemaPrefix,
                     ".standard_assignment WHERE course_id=", sqlStringValue(courseId));
 
-            result = doListQuery(cache, ESchema.MAIN, sql);
+            result = doListQuery(cache, sql);
             result.sort(null);
         }
 
@@ -179,7 +178,7 @@ public final class StandardAssignmentLogic implements IRecLogic<StandardAssignme
             final String sql = SimpleBuilder.concat("SELECT * FROM ", schemaPrefix,
                     ".standard_assignment WHERE assignment_id=", sqlStringValue(assignmentId));
 
-            result = doSingleQuery(cache, ESchema.MAIN, sql);
+            result = doSingleQuery(cache, sql);
         }
 
         return result;
@@ -212,7 +211,7 @@ public final class StandardAssignmentLogic implements IRecLogic<StandardAssignme
                     ",tree_ref=", sqlStringValue(record.treeRef),
                     " WHERE assignment_id=", sqlStringValue(record.assignmentId));
 
-            result = doUpdateOneRow(cache, ESchema.MAIN, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;

@@ -126,7 +126,7 @@ final class TestAssignmentLogic {
                 conn.commit();
 
                 final Cache cache = new Cache(informixProfile);
-                final AssignmentLogic logic = AssignmentLogic.get(cache);
+                final AssignmentLogic logic = AssignmentLogic.INSTANCE;
 
                 assertTrue(logic.insert(cache, RAW1), "Failed to insert Informix homework");
                 assertTrue(logic.insert(cache, RAW2), "Failed to insert Informix homework");
@@ -148,7 +148,7 @@ final class TestAssignmentLogic {
         void test0003() {
 
             final Cache cache = new Cache(informixProfile);
-            final AssignmentLogic logic = AssignmentLogic.get(cache);
+            final AssignmentLogic logic = AssignmentLogic.INSTANCE;
 
             try {
                 final List<AssignmentRec> all = logic.queryAll(cache);
@@ -195,7 +195,7 @@ final class TestAssignmentLogic {
         void test0004() {
 
             final Cache cache = new Cache(informixProfile);
-            final AssignmentLogic logic = AssignmentLogic.get(cache);
+            final AssignmentLogic logic = AssignmentLogic.INSTANCE;
 
             try {
                 final List<AssignmentRec> all = logic.queryActiveByCourse(cache, RawRecordConstants.M117, null);
@@ -238,7 +238,7 @@ final class TestAssignmentLogic {
         void test0008() {
 
             final Cache cache = new Cache(informixProfile);
-            final AssignmentLogic logic = AssignmentLogic.get(cache);
+            final AssignmentLogic logic = AssignmentLogic.INSTANCE;
 
             try {
                 final AssignmentRec r = logic.query(cache, "1718H");
@@ -261,7 +261,7 @@ final class TestAssignmentLogic {
         void test0009() {
 
             final Cache cache = new Cache(informixProfile);
-            final AssignmentLogic logic = AssignmentLogic.get(cache);
+            final AssignmentLogic logic = AssignmentLogic.INSTANCE;
 
             try {
                 final boolean result = logic.delete(cache, RAW2);

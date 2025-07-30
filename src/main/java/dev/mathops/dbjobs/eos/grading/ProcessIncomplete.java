@@ -47,7 +47,7 @@ public final class ProcessIncomplete implements Runnable {
     public void run() {
 
         try {
-            final TermRec active = TermLogic.get(this.cache).queryActive(this.cache);
+            final TermRec active = TermLogic.INSTANCE.queryActive(this.cache);
 
             if (active == null) {
                 Log.warning("Unable to query the active term");

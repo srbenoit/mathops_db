@@ -5,7 +5,6 @@ import dev.mathops.db.Cache;
 import dev.mathops.db.DataDict;
 import dev.mathops.db.ESchema;
 import dev.mathops.db.rec.term.LtiContextRec;
-import dev.mathops.db.reclogic.IRecLogic;
 import dev.mathops.text.builder.SimpleBuilder;
 
 import java.sql.ResultSet;
@@ -28,7 +27,7 @@ import java.util.List;
  * ) TABLESPACE primary_ts;
  * </pre>
  */
-public final class LtiContextLogic implements IRecLogic<LtiContextRec> {
+public final class LtiContextLogic implements ITermRecLogic<LtiContextRec> {
 
     /** A single instance. */
     public static final LtiContextLogic INSTANCE = new LtiContextLogic();
@@ -68,7 +67,7 @@ public final class LtiContextLogic implements IRecLogic<LtiContextRec> {
                     sqlStringValue(record.lmsCourseId), ",",
                     sqlStringValue(record.lmsCourseTitle), ")");
 
-            result = doUpdateOneRow(cache, ESchema.TERM, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;
@@ -98,7 +97,7 @@ public final class LtiContextLogic implements IRecLogic<LtiContextRec> {
                     " AND deployment_id=", sqlStringValue(record.deploymentId),
                     " AND context_id=", sqlStringValue(record.contextId));
 
-            result = doUpdateOneRow(cache, ESchema.TERM, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;
@@ -123,7 +122,7 @@ public final class LtiContextLogic implements IRecLogic<LtiContextRec> {
         } else {
             final String sql = SimpleBuilder.concat("SELECT * FROM ", schemaPrefix, ".lti_context");
 
-            result = doListQuery(cache, ESchema.TERM, sql);
+            result = doListQuery(cache, sql);
         }
 
         return result;
@@ -156,7 +155,7 @@ public final class LtiContextLogic implements IRecLogic<LtiContextRec> {
                     " AND deployment_id=", sqlStringValue(deploymentId),
                     " AND context_id=", sqlStringValue(contextId));
 
-            result = doSingleQuery(cache, ESchema.TERM, sql);
+            result = doSingleQuery(cache, sql);
         }
 
         return result;
@@ -187,7 +186,7 @@ public final class LtiContextLogic implements IRecLogic<LtiContextRec> {
                     " AND deployment_id=", sqlStringValue(record.deploymentId),
                     " AND context_id=", sqlStringValue(record.contextId));
 
-            result = doUpdateOneRow(cache, ESchema.TERM, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;

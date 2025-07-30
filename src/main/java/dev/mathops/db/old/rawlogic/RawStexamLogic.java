@@ -1026,7 +1026,7 @@ public enum RawStexamLogic {
         }
 
         if (!verified) {
-            final List<MasteryAttemptRec> masteries = MasteryAttemptLogic.get(cache).queryByStudent(cache, studentId);
+            final List<MasteryAttemptRec> masteries = MasteryAttemptLogic.INSTANCE.queryByStudent(cache, studentId);
             verified = lookForRecentMasteryAttempt(masteries, minutes);
         }
 

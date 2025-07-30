@@ -119,7 +119,7 @@ final class TestMasteryAttemptQaLogic {
                 }
                 conn.commit();
 
-                final MasteryAttemptQaLogic logic = MasteryAttemptQaLogic.get(cache);
+                final MasteryAttemptQaLogic logic = MasteryAttemptQaLogic.INSTANCE;
 
                 assertTrue(logic.insert(cache, RAW1), "Failed to insert Informix mastery_attempt_qa");
                 assertTrue(logic.insert(cache, RAW2), "Failed to insert Informix mastery_attempt_qa");
@@ -140,7 +140,7 @@ final class TestMasteryAttemptQaLogic {
         void test0003() {
 
             final Cache cache = new Cache(informixProfile);
-            final MasteryAttemptQaLogic logic = MasteryAttemptQaLogic.get(cache);
+            final MasteryAttemptQaLogic logic = MasteryAttemptQaLogic.INSTANCE;
 
             try {
                 final List<MasteryAttemptQaRec> all = logic.queryAll(cache);
@@ -183,7 +183,7 @@ final class TestMasteryAttemptQaLogic {
         void test0004() {
 
             final Cache cache = new Cache(informixProfile);
-            final MasteryAttemptQaLogic logic = MasteryAttemptQaLogic.get(cache);
+            final MasteryAttemptQaLogic logic = MasteryAttemptQaLogic.INSTANCE;
 
             try {
                 final List<MasteryAttemptQaRec> all = logic.queryByAttempt(cache, Integer.valueOf(11111), "EXAM1");
@@ -219,7 +219,7 @@ final class TestMasteryAttemptQaLogic {
         void test0005() {
 
             final Cache cache = new Cache(informixProfile);
-            final MasteryAttemptQaLogic logic = MasteryAttemptQaLogic.get(cache);
+            final MasteryAttemptQaLogic logic = MasteryAttemptQaLogic.INSTANCE;
 
             try {
                 final MasteryAttemptQaRec r = logic.query(cache, Integer.valueOf(11111), "EXAM1",
@@ -243,7 +243,7 @@ final class TestMasteryAttemptQaLogic {
         void test0006() {
 
             final Cache cache = new Cache(informixProfile);
-            final MasteryAttemptQaLogic logic = MasteryAttemptQaLogic.get(cache);
+            final MasteryAttemptQaLogic logic = MasteryAttemptQaLogic.INSTANCE;
 
             try {
                 assertTrue(logic.updateCorrect(cache, RAW1, "Z"), "updateCorrect returned false");
@@ -269,7 +269,7 @@ final class TestMasteryAttemptQaLogic {
         void test0007() {
 
             final Cache cache = new Cache(informixProfile);
-            final MasteryAttemptQaLogic logic = MasteryAttemptQaLogic.get(cache);
+            final MasteryAttemptQaLogic logic = MasteryAttemptQaLogic.INSTANCE;
 
             try {
                 final boolean result = logic.delete(cache, RAW3);

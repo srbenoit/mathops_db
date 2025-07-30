@@ -132,7 +132,7 @@ final class TestStandardMilestoneLogic {
                 }
                 conn.commit();
 
-                final StandardMilestoneLogic logic = StandardMilestoneLogic.get(cache);
+                final StandardMilestoneLogic logic = StandardMilestoneLogic.INSTANCE;
 
                 assertTrue(logic.insert(cache, RAW1), "Failed to insert Informix std_milestone");
                 assertTrue(logic.insert(cache, RAW2), "Failed to insert Informix std_milestone");
@@ -156,7 +156,7 @@ final class TestStandardMilestoneLogic {
 
             final Cache cache = new Cache(informixProfile);
 
-            final StandardMilestoneLogic logic = StandardMilestoneLogic.get(cache);
+            final StandardMilestoneLogic logic = StandardMilestoneLogic.INSTANCE;
 
             try {
                 final List<StandardMilestoneRec> all = logic.queryAll(cache);
@@ -207,7 +207,7 @@ final class TestStandardMilestoneLogic {
         void test0004() {
 
             final Cache cache = new Cache(informixProfile);
-            final StandardMilestoneLogic logic = StandardMilestoneLogic.get(cache);
+            final StandardMilestoneLogic logic = StandardMilestoneLogic.INSTANCE;
 
             try {
                 final List<StandardMilestoneRec> all = logic.queryByPaceTrackPace(cache, "A", Integer.valueOf(5));
@@ -251,7 +251,7 @@ final class TestStandardMilestoneLogic {
         void test0005() {
 
             final Cache cache = new Cache(informixProfile);
-            final StandardMilestoneLogic logic = StandardMilestoneLogic.get(cache);
+            final StandardMilestoneLogic logic = StandardMilestoneLogic.INSTANCE;
 
             try {
                 final List<StandardMilestoneRec> all = logic.queryByPaceTrackPaceIndex(cache, "A",
@@ -291,7 +291,7 @@ final class TestStandardMilestoneLogic {
         void test0006() {
 
             final Cache cache = new Cache(informixProfile);
-            final StandardMilestoneLogic logic = StandardMilestoneLogic.get(cache);
+            final StandardMilestoneLogic logic = StandardMilestoneLogic.INSTANCE;
 
             try {
                 final StandardMilestoneRec r = logic.query(cache, "A", Integer.valueOf(5), Integer.valueOf(3),
@@ -315,7 +315,7 @@ final class TestStandardMilestoneLogic {
         void test0007() {
 
             final Cache cache = new Cache(informixProfile);
-            final StandardMilestoneLogic logic = StandardMilestoneLogic.get(cache);
+            final StandardMilestoneLogic logic = StandardMilestoneLogic.INSTANCE;
 
             try {
                 final boolean result = logic.updateDate(cache, RAW1, RAW1NEWDATE.msDate);
@@ -342,7 +342,7 @@ final class TestStandardMilestoneLogic {
         void test0008() {
 
             final Cache cache = new Cache(informixProfile);
-            final StandardMilestoneLogic logic = StandardMilestoneLogic.get(cache);
+            final StandardMilestoneLogic logic = StandardMilestoneLogic.INSTANCE;
 
             try {
                 final boolean result = logic.delete(cache, RAW5);

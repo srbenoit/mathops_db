@@ -145,7 +145,7 @@ final class TestStudentStandardMilestoneLogic {
                 }
                 conn.commit();
 
-                final StuStandardMilestoneLogic logic = StuStandardMilestoneLogic.get(cache);
+                final StuStandardMilestoneLogic logic = StuStandardMilestoneLogic.INSTANCE;
 
                 assertTrue(logic.insert(cache, RAW1), "Failed to insert Informix stu_std_milestone");
                 assertTrue(logic.insert(cache, RAW2), "Failed to insert Informix stu_std_milestone");
@@ -168,7 +168,7 @@ final class TestStudentStandardMilestoneLogic {
         void test0003() {
 
             final Cache cache = new Cache(informixProfile);
-            final StuStandardMilestoneLogic logic = StuStandardMilestoneLogic.get(cache);
+            final StuStandardMilestoneLogic logic = StuStandardMilestoneLogic.INSTANCE;
 
             try {
                 final List<StuStandardMilestoneRec> all = logic.queryAll(cache);
@@ -219,7 +219,7 @@ final class TestStudentStandardMilestoneLogic {
         void test0004() {
 
             final Cache cache = new Cache(informixProfile);
-            final StuStandardMilestoneLogic logic = StuStandardMilestoneLogic.get(cache);
+            final StuStandardMilestoneLogic logic = StuStandardMilestoneLogic.INSTANCE;
 
             try {
                 final List<StuStandardMilestoneRec> all = logic.queryByStuPaceTrackPace(cache, "111111111", "A",
@@ -264,7 +264,7 @@ final class TestStudentStandardMilestoneLogic {
         void test0005() {
 
             final Cache cache = new Cache(informixProfile);
-            final StuStandardMilestoneLogic logic = StuStandardMilestoneLogic.get(cache);
+            final StuStandardMilestoneLogic logic = StuStandardMilestoneLogic.INSTANCE;
 
             try {
                 final List<StuStandardMilestoneRec> all = logic.queryByStuPaceTrackPaceIndex(cache, "111111111",
@@ -304,7 +304,7 @@ final class TestStudentStandardMilestoneLogic {
         void test0006() {
 
             final Cache cache = new Cache(informixProfile);
-            final StuStandardMilestoneLogic logic = StuStandardMilestoneLogic.get(cache);
+            final StuStandardMilestoneLogic logic = StuStandardMilestoneLogic.INSTANCE;
 
             try {
                 final StuStandardMilestoneRec r = logic.query(cache, "111111111", "A", Integer.valueOf(5),
@@ -328,7 +328,7 @@ final class TestStudentStandardMilestoneLogic {
         void test0007() {
 
             final Cache cache = new Cache(informixProfile);
-            final StuStandardMilestoneLogic logic = StuStandardMilestoneLogic.get(cache);
+            final StuStandardMilestoneLogic logic = StuStandardMilestoneLogic.INSTANCE;
 
             try {
                 final boolean result = logic.updateDate(cache, RAW1, RAW1NEWDATE.msDate);
@@ -355,7 +355,7 @@ final class TestStudentStandardMilestoneLogic {
         void test0008() {
 
             final Cache cache = new Cache(informixProfile);
-            final StuStandardMilestoneLogic logic = StuStandardMilestoneLogic.get(cache);
+            final StuStandardMilestoneLogic logic = StuStandardMilestoneLogic.INSTANCE;
 
             try {
                 final boolean result = logic.delete(cache, RAW5);

@@ -1691,7 +1691,7 @@ public final class StudentData {
     public List<MasteryAttemptRec> getMasteryAttempts() throws SQLException {
 
         if (this.masteryAttempts == null) {
-            this.masteryAttempts = MasteryAttemptLogic.get(this.cache).queryByStudent(this.cache, this.studentId);
+            this.masteryAttempts = MasteryAttemptLogic.INSTANCE.queryByStudent(this.cache, this.studentId);
         }
 
         return this.masteryAttempts;
@@ -1735,7 +1735,7 @@ public final class StudentData {
     public List<StuCourseMasteryRec> getStudentCourseMastery() throws SQLException {
 
         if (this.studentCourseMastery == null) {
-            this.studentCourseMastery = StuCourseMasteryLogic.get(this.cache).queryByStudent(this.cache,
+            this.studentCourseMastery = StuCourseMasteryLogic.INSTANCE.queryByStudent(this.cache,
                     this.studentId);
         }
 
@@ -1751,7 +1751,7 @@ public final class StudentData {
     public List<StuUnitMasteryRec> getStudentUnitMastery() throws SQLException {
 
         if (this.studentUnitMastery == null) {
-            this.studentUnitMastery = StuUnitMasteryLogic.get(this.cache).queryByStudent(this.cache,
+            this.studentUnitMastery = StuUnitMasteryLogic.INSTANCE.queryByStudent(this.cache,
                     this.studentId);
         }
 
@@ -1815,7 +1815,7 @@ public final class StudentData {
     public List<StuStandardMilestoneRec> getStudentStandardMilestones() throws SQLException {
 
         if (this.studentStandardMilestones == null) {
-            this.studentStandardMilestones = StuStandardMilestoneLogic.get(this.cache).queryByStudent(this.cache,
+            this.studentStandardMilestones = StuStandardMilestoneLogic.INSTANCE.queryByStudent(this.cache,
                     this.studentId);
         }
 

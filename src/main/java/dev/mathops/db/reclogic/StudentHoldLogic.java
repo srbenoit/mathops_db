@@ -4,7 +4,6 @@ import dev.mathops.commons.CoreConstants;
 import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
 import dev.mathops.db.DbConnection;
-import dev.mathops.db.EDbProduct;
 import dev.mathops.db.ESchema;
 import dev.mathops.db.rec.StudentHoldRec;
 import dev.mathops.text.builder.HtmlBuilder;
@@ -23,7 +22,25 @@ import java.util.Map;
 /**
  * A utility class to work with stu_unit_mastery records.
  */
-public abstract class StudentHoldLogic implements IRecLogic<StudentHoldRec> {
+public final class StudentHoldLogic implements ILegacyRecLogic<StudentHoldRec> {
+
+    /** A single instance. */
+    public static final StudentHoldLogic INSTANCE = new StudentHoldLogic();
+
+    /** A field name. */
+    public static final String FLD_STU_ID = "stu_id";
+
+    /** A field name. */
+    public static final String FLD_HOLD_ID = "hold_id";
+
+    /** A field name. */
+    public static final String FLD_SEV_ADMIN_HOLD = "sev_admin_hold";
+
+    /** A field name. */
+    public static final String FLD_TIMES_DISPLAY = "times_display";
+
+    /** A field name. */
+    public static final String FLD_CREATE_DT = "create_dt";
 
     /** Hold messages directed to staff/administrators. */
     private static final Map<String, String> STAFF_HOLD_MSG = new HashMap<>(40);
@@ -209,76 +226,17 @@ public abstract class StudentHoldLogic implements IRecLogic<StudentHoldRec> {
     }
 
     /**
-     * Gets the instance of {@code StudentUnitMasteryLogic} appropriate to a cache. The result will depend on the
-     * database installation type of the PRIMARY schema configuration in cache's database profile.
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
      *
-     * @param cache the cache
-     * @return the appropriate {@code StudentUnitMasteryLogic} object (null if none found)
+     * @param cache the data cache
+     * @return the table name
      */
-    public static StudentHoldLogic get(final Cache cache) {
+    public static String getTableName(final Cache cache) {
 
-        final EDbProduct type = IRecLogic.getDbType(cache, ESchema.LEGACY);
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
 
-        StudentHoldLogic result = null;
-        if (type == EDbProduct.INFORMIX) {
-            result = Informix.INSTANCE;
-        } else if (type == EDbProduct.POSTGRESQL) {
-            result = Postgres.INSTANCE;
-        }
-
-        return result;
+        return schemaPrefix == null ? "admin_hold" : (schemaPrefix + ".admin_hold");
     }
-
-    /**
-     * Gets all admin_hold records for a student.
-     *
-     * @param cache the data cache
-     * @param stuId the student ID
-     * @return the list of admin_hold records
-     * @throws SQLException if there is an error accessing the database
-     */
-    public abstract List<StudentHoldRec> queryByStudent(Cache cache, String stuId) throws SQLException;
-
-    /**
-     * Gets a single admin_hold record.
-     *
-     * @param cache  the data cache
-     * @param stuId  the student ID
-     * @param holdId the hold ID
-     * @return the admin_hold record; null if not found
-     * @throws SQLException if there is an error accessing the database
-     */
-    public abstract StudentHoldRec query(Cache cache, String stuId, String holdId) throws SQLException;
-
-    /**
-     * Tests whether a student has a fatal (sev_admin_hold = 'F') hold.
-     *
-     * @param cache the data cache
-     * @param stuId the student ID
-     * @return true if a fatal hold was found; false if not
-     * @throws SQLException if there is an error accessing the database
-     */
-    public abstract boolean hasFatalHold(Cache cache, String stuId) throws SQLException;
-
-    /**
-     * Deletes all admin_hold records with a specified hold ID.
-     *
-     * @param cache  the data cache
-     * @param holdId the hold ID to delete
-     * @return the number of holds deleted
-     * @throws SQLException if there is an error accessing the database
-     */
-    public abstract int deleteAllByHoldId(Cache cache, String holdId) throws SQLException;
-
-    /**
-     * Updates the date on an admin hold record.
-     *
-     * @param cache  the data cache
-     * @param record the record to delete
-     * @return {@code true} if successful; {@code false} otherwise
-     * @throws SQLException if there is an error accessing the database
-     */
-    public abstract boolean updateAdminHoldDate(Cache cache, StudentHoldRec record) throws SQLException;
 
     /**
      * Gets the student-oriented message for an administrative hold.
@@ -437,444 +395,131 @@ public abstract class StudentHoldLogic implements IRecLogic<StudentHoldRec> {
     }
 
     /**
-     * A subclass of {@code StudentHoldLogic} designed for the Informix schema.
+     * Inserts a new record.
+     *
+     * @param cache  the data cache
+     * @param record the record to insert
+     * @return {@code true} if successful; {@code false} if not
+     * @throws SQLException if there is an error accessing the database
      */
-    public static final class Informix extends StudentHoldLogic {
+    @Override
+    public boolean insert(final Cache cache, final StudentHoldRec record) throws SQLException {
 
-        /** A single instance. */
-        public static final Informix INSTANCE = new Informix();
+        final boolean result;
 
-        /** A field name. */
-        public static final String FLD_STU_ID = "stu_id";
+        if (record.stuId.startsWith("99")) {
+            result = false;
+        } else {
+            final String tableName = getTableName(cache);
 
-        /** A field name. */
-        public static final String FLD_HOLD_ID = "hold_id";
+            final String sql = SimpleBuilder.concat("INSERT INTO ", tableName,
+                    " (stu_id,hold_id,sev_admin_hold,times_display,create_dt) VALUES (",
+                    sqlStringValue(record.stuId), ",",
+                    sqlStringValue(record.holdId), ",",
+                    sqlStringValue(record.sevAdminHold), ",",
+                    sqlIntegerValue(record.timesDisplay), ",",
+                    sqlDateValue(record.createDt), ")");
 
-        /** A field name. */
-        public static final String FLD_SEV_ADMIN_HOLD = "sev_admin_hold";
-
-        /** A field name. */
-        public static final String FLD_TIMES_DISPLAY = "times_display";
-
-        /** A field name. */
-        public static final String FLD_CREATE_DT = "create_dt";
-
-        /**
-         * Inserts a new record.
-         *
-         * @param cache  the data cache
-         * @param record the record to insert
-         * @return {@code true} if successful; {@code false} if not
-         * @throws SQLException if there is an error accessing the database
-         */
-        @Override
-        public boolean insert(final Cache cache, final StudentHoldRec record) throws SQLException {
-
-            final boolean result;
-
-            if (record.stuId.startsWith("99")) {
-                result = false;
-            } else {
-                final String sql = SimpleBuilder.concat(
-                        "INSERT INTO admin_hold (stu_id,hold_id,sev_admin_hold,times_display,create_dt) VALUES (",
-                        sqlStringValue(record.stuId), ",",
-                        sqlStringValue(record.holdId), ",",
-                        sqlStringValue(record.sevAdminHold), ",",
-                        sqlIntegerValue(record.timesDisplay), ",",
-                        sqlDateValue(record.createDt), ")");
-
-                result = doUpdateOneRow(cache, ESchema.LEGACY, sql);
-            }
-
-            return result;
+            result = doUpdateOneRow(cache, sql);
         }
 
-        /**
-         * Deletes a record.
-         *
-         * @param cache  the data cache
-         * @param record the record to delete
-         * @return {@code true} if successful; {@code false} if not
-         * @throws SQLException if there is an error accessing the database
-         */
-        @Override
-        public boolean delete(final Cache cache, final StudentHoldRec record) throws SQLException {
-
-            final String sql = SimpleBuilder.concat("DELETE FROM admin_hold WHERE stu_id=",
-                    sqlStringValue(record.stuId), " AND hold_id=", sqlStringValue(record.holdId));
-
-            return doUpdateOneRow(cache, ESchema.LEGACY, sql);
-        }
-
-        /**
-         * Queries every record in the database.
-         *
-         * @param cache the data cache
-         * @return the complete set of records in the database
-         * @throws SQLException if there is an error performing the query
-         */
-        @Override
-        public List<StudentHoldRec> queryAll(final Cache cache) throws SQLException {
-
-            return doListQuery(cache, ESchema.LEGACY, "SELECT * FROM admin_hold");
-        }
-
-        /**
-         * Gets all admin_hold records for a student.
-         *
-         * @param cache the data cache
-         * @param stuId the student ID
-         * @return the list of admin_hold records
-         * @throws SQLException if there is an error accessing the database
-         */
-        public List<StudentHoldRec> queryByStudent(final Cache cache, final String stuId) throws SQLException {
-
-            final List<StudentHoldRec> result;
-
-            if (stuId.startsWith("99")) {
-                result = queryByTestStudent(stuId);
-            } else {
-                final String sql = SimpleBuilder.concat("SELECT * FROM admin_hold WHERE stu_id=",
-                        sqlStringValue(stuId));
-
-                result = new ArrayList<>(10);
-
-                final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
-
-                try (final Statement stmt = conn.createStatement();
-                     final ResultSet rs = stmt.executeQuery(sql)) {
-
-                    while (rs.next()) {
-                        result.add(fromResultSet(rs));
-                    }
-                } finally {
-                    Cache.checkInConnection(conn);
-                }
-            }
-
-            return result;
-        }
-
-        /**
-         * Gets a single admin_hold record.
-         *
-         * @param cache  the data cache
-         * @param stuId  the student ID
-         * @param holdId the hold ID
-         * @return the admin_hold record; null if not found
-         * @throws SQLException if there is an error accessing the database
-         */
-        public StudentHoldRec query(final Cache cache, final String stuId, final String holdId) throws SQLException {
-
-            StudentHoldRec result = null;
-
-            if (stuId.startsWith("99")) {
-                result = queryByTestStudentHold(stuId, holdId);
-            } else {
-                final HtmlBuilder sql = new HtmlBuilder(100);
-
-                sql.add("SELECT * FROM admin_hold WHERE stu_id=", sqlStringValue(stuId),
-                        "   AND hold_id=", sqlStringValue(holdId));
-
-                final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
-
-                try (final Statement stmt = conn.createStatement();
-                     final ResultSet rs = stmt.executeQuery(sql.toString())) {
-
-                    if (rs.next()) {
-                        result = fromResultSet(rs);
-                    }
-                } finally {
-                    Cache.checkInConnection(conn);
-                }
-            }
-
-            return result;
-        }
-
-        /**
-         * Tests whether a student has a fatal (sev_admin_hold = 'F') hold.
-         *
-         * @param cache the data cache
-         * @param stuId the student ID
-         * @return true if a fatal hold was found; false if not
-         * @throws SQLException if there is an error accessing the database
-         */
-        public boolean hasFatalHold(final Cache cache, final String stuId) throws SQLException {
-
-            final HtmlBuilder sql = new HtmlBuilder(100);
-
-            sql.add("SELECT count(*) FROM admin_hold WHERE stu_id=", sqlStringValue(stuId),
-                    "   AND sev_admin_hold='F'");
-
-            boolean result = false;
-
-            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
-
-            try (final Statement stmt = conn.createStatement();
-                 final ResultSet rs = stmt.executeQuery(sql.toString())) {
-
-                if (rs.next()) {
-                    result = rs.getInt(1) > 0;
-                }
-            } finally {
-                Cache.checkInConnection(conn);
-            }
-
-            return result;
-        }
-
-        /**
-         * Deletes all admin_hold records with a specified hold ID.
-         *
-         * @param cache  the data cache
-         * @param holdId the hold ID to delete
-         * @return the number of holds deleted
-         * @throws SQLException if there is an error accessing the database
-         */
-        public int deleteAllByHoldId(final Cache cache, final String holdId) throws SQLException {
-
-            final HtmlBuilder sql = new HtmlBuilder(100);
-
-            sql.add("DELETE FROM admin_hold WHERE hold_id=", sqlStringValue(holdId));
-
-            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
-
-            final int count;
-            try (final Statement stmt = conn.createStatement()) {
-                count = stmt.executeUpdate(sql.toString());
-                conn.commit();
-            } finally {
-                Cache.checkInConnection(conn);
-            }
-
-            return count;
-        }
-
-        /**
-         * Updates the date on an admin hold record.
-         *
-         * @param cache  the data cache
-         * @param record the record to delete
-         * @return {@code true} if successful; {@code false} otherwise
-         * @throws SQLException if there is an error accessing the database
-         */
-        public boolean updateAdminHoldDate(final Cache cache, final StudentHoldRec record) throws SQLException {
-
-            final boolean result;
-
-            if (record.stuId.startsWith("99")) {
-                result = false;
-            } else {
-                final String sql = SimpleBuilder.concat("UPDATE admin_hold ",
-                        "   SET create_dt=", sqlDateValue(record.createDt),
-                        " WHERE stu_id=", sqlStringValue(record.stuId),
-                        "   AND hold_id=", sqlStringValue(record.holdId));
-
-                result = doUpdateOneRow(cache, ESchema.LEGACY, sql);
-            }
-
-            return result;
-        }
-
-        /**
-         * Extracts a record from a result set.
-         *
-         * @param rs the result set from which to retrieve the record
-         * @return the record
-         * @throws SQLException if there is an error accessing the database
-         */
-        @Override
-        public StudentHoldRec fromResultSet(final ResultSet rs) throws SQLException {
-
-            final StudentHoldRec result = new StudentHoldRec();
-
-            result.stuId = getStringField(rs, FLD_STU_ID);
-            result.holdId = getStringField(rs, FLD_HOLD_ID);
-            result.sevAdminHold = getStringField(rs, FLD_SEV_ADMIN_HOLD);
-            result.timesDisplay = getIntegerField(rs, FLD_TIMES_DISPLAY);
-            result.createDt = getDateField(rs, FLD_CREATE_DT);
-
-            return result;
-        }
+        return result;
     }
 
     /**
-     * A subclass of {@code StudentUnitMasteryLogic} designed for the PostgreSQL schema.
+     * Deletes a record.
+     *
+     * @param cache  the data cache
+     * @param record the record to delete
+     * @return {@code true} if successful; {@code false} if not
+     * @throws SQLException if there is an error accessing the database
      */
-    public static final class Postgres extends StudentHoldLogic {
+    @Override
+    public boolean delete(final Cache cache, final StudentHoldRec record) throws SQLException {
 
-        /** A single instance. */
-        public static final Postgres INSTANCE = new Postgres();
+        final String tableName = getTableName(cache);
 
-        /** A field name. */
-        public static final String FLD_STU_ID = "stu_id";
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName, " WHERE stu_id=",
+                sqlStringValue(record.stuId), " AND hold_id=", sqlStringValue(record.holdId));
 
-        /** A field name. */
-        public static final String FLD_HOLD_ID = "hold_id";
+        return doUpdateOneRow(cache, sql);
+    }
 
-        /** A field name. */
-        public static final String FLD_SEV_ADMIN_HOLD = "sev_admin_hold";
+    /**
+     * Queries every record in the database.
+     *
+     * @param cache the data cache
+     * @return the complete set of records in the database
+     * @throws SQLException if there is an error performing the query
+     */
+    @Override
+    public List<StudentHoldRec> queryAll(final Cache cache) throws SQLException {
 
-        /** A field name. */
-        public static final String FLD_TIMES_DISPLAY = "times_display";
+        final String tableName = getTableName(cache);
 
-        /** A field name. */
-        public static final String FLD_CREATE_DT = "create_dt";
+        return doListQuery(cache, "SELECT * FROM " + tableName);
+    }
 
-        /**
-         * Inserts a new record.
-         *
-         * @param cache  the data cache
-         * @param record the record to insert
-         * @return {@code true} if successful; {@code false} if not
-         * @throws SQLException if there is an error accessing the database
-         */
-        @Override
-        public boolean insert(final Cache cache, final StudentHoldRec record) throws SQLException {
+    /**
+     * Gets all admin_hold records for a student.
+     *
+     * @param cache the data cache
+     * @param stuId the student ID
+     * @return the list of admin_hold records
+     * @throws SQLException if there is an error accessing the database
+     */
+    public List<StudentHoldRec> queryByStudent(final Cache cache, final String stuId) throws SQLException {
 
-            final boolean result;
+        final List<StudentHoldRec> result;
 
-            if (record.stuId.startsWith("99")) {
-                result = false;
-            } else {
-                final String sql = SimpleBuilder.concat(
-                        "INSERT INTO admin_hold (stu_id,hold_id,sev_admin_hold,times_display,create_dt) VALUES (",
-                        sqlStringValue(record.stuId), ",",
-                        sqlStringValue(record.holdId), ",",
-                        sqlStringValue(record.sevAdminHold), ",",
-                        sqlIntegerValue(record.timesDisplay), ",",
-                        sqlPgDateValue(record.createDt), ")");
+        if (stuId.startsWith("99")) {
+            result = queryByTestStudent(stuId);
+        } else {
+            final String tableName = getTableName(cache);
 
-                result = doUpdateOneRow(cache, ESchema.LEGACY, sql);
-            }
+            final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE stu_id=",
+                    sqlStringValue(stuId));
 
-            return result;
-        }
+            result = new ArrayList<>(10);
 
-        /**
-         * Deletes a record.
-         *
-         * @param cache  the data cache
-         * @param record the record to delete
-         * @return {@code true} if successful; {@code false} if not
-         * @throws SQLException if there is an error accessing the database
-         */
-        @Override
-        public boolean delete(final Cache cache, final StudentHoldRec record) throws SQLException {
+            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
-            final String sql = SimpleBuilder.concat("DELETE FROM admin_hold WHERE stu_id=",
-                    sqlStringValue(record.stuId), " AND hold_id=", sqlStringValue(record.holdId));
+            try (final Statement stmt = conn.createStatement();
+                 final ResultSet rs = stmt.executeQuery(sql)) {
 
-            return doUpdateOneRow(cache, ESchema.LEGACY, sql);
-        }
-
-        /**
-         * Queries every record in the database.
-         *
-         * @param cache the data cache
-         * @return the complete set of records in the database
-         * @throws SQLException if there is an error performing the query
-         */
-        @Override
-        public List<StudentHoldRec> queryAll(final Cache cache) throws SQLException {
-
-            final String schemaPrefix = cache.getSchemaPrefix(ESchema.TERM);
-
-            final String sql = SimpleBuilder.concat("SELECT * FROM ", schemaPrefix, ".admin_hold");
-
-            return doListQuery(cache, ESchema.LEGACY, sql);
-        }
-
-        /**
-         * Gets all admin_hold records for a student.
-         *
-         * @param cache the data cache
-         * @param stuId the student ID
-         * @return the list of admin_hold records
-         * @throws SQLException if there is an error accessing the database
-         */
-        public List<StudentHoldRec> queryByStudent(final Cache cache, final String stuId) throws SQLException {
-
-            final List<StudentHoldRec> result;
-
-            if (stuId.startsWith("99")) {
-                result = queryByTestStudent(stuId);
-            } else {
-                final String sql = SimpleBuilder.concat("SELECT * FROM admin_hold WHERE stu_id=",
-                        sqlStringValue(stuId));
-
-                result = new ArrayList<>(10);
-
-                final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
-
-                try (final Statement stmt = conn.createStatement();
-                     final ResultSet rs = stmt.executeQuery(sql)) {
-
-                    while (rs.next()) {
-                        result.add(fromResultSet(rs));
-                    }
-                } finally {
-                    Cache.checkInConnection(conn);
+                while (rs.next()) {
+                    result.add(fromResultSet(rs));
                 }
+            } finally {
+                Cache.checkInConnection(conn);
             }
-
-            return result;
         }
 
-        /**
-         * Gets a single admin_hold record.
-         *
-         * @param cache  the data cache
-         * @param stuId  the student ID
-         * @param holdId the hold ID
-         * @return the admin_hold record; null if not found
-         * @throws SQLException if there is an error accessing the database
-         */
-        public StudentHoldRec query(final Cache cache, final String stuId, final String holdId) throws SQLException {
+        return result;
+    }
 
-            StudentHoldRec result = null;
+    /**
+     * Gets a single admin_hold record.
+     *
+     * @param cache  the data cache
+     * @param stuId  the student ID
+     * @param holdId the hold ID
+     * @return the admin_hold record; null if not found
+     * @throws SQLException if there is an error accessing the database
+     */
+    public StudentHoldRec query(final Cache cache, final String stuId, final String holdId) throws SQLException {
 
-            if (stuId.startsWith("99")) {
-                result = queryByTestStudentHold(stuId, holdId);
-            } else {
-                final HtmlBuilder sql = new HtmlBuilder(100);
+        StudentHoldRec result = null;
 
-                sql.add("SELECT * FROM admin_hold WHERE stu_id=", sqlStringValue(stuId),
-                        "   AND hold_id=", sqlStringValue(holdId));
-
-                final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
-
-                try (final Statement stmt = conn.createStatement();
-                     final ResultSet rs = stmt.executeQuery(sql.toString())) {
-
-                    if (rs.next()) {
-                        result = fromResultSet(rs);
-                    }
-                } finally {
-                    Cache.checkInConnection(conn);
-                }
-            }
-
-            return result;
-        }
-
-        /**
-         * Tests whether a student has a fatal (sev_admin_hold = 'F') hold.
-         *
-         * @param cache the data cache
-         * @param stuId the student ID
-         * @return true if a fatal hold was found; false if not
-         * @throws SQLException if there is an error accessing the database
-         */
-        public boolean hasFatalHold(final Cache cache, final String stuId) throws SQLException {
-
+        if (stuId.startsWith("99")) {
+            result = queryByTestStudentHold(stuId, holdId);
+        } else {
             final HtmlBuilder sql = new HtmlBuilder(100);
 
-            sql.add("SELECT count(*) FROM admin_hold WHERE stu_id=", sqlStringValue(stuId),
-                    "   AND sev_admin_hold='F'");
+            final String tableName = getTableName(cache);
 
-            boolean result = false;
+            sql.add("SELECT * FROM ", tableName, " WHERE stu_id=", sqlStringValue(stuId),
+                    "   AND hold_id=", sqlStringValue(holdId));
 
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
@@ -882,87 +527,128 @@ public abstract class StudentHoldLogic implements IRecLogic<StudentHoldRec> {
                  final ResultSet rs = stmt.executeQuery(sql.toString())) {
 
                 if (rs.next()) {
-                    result = rs.getInt(1) > 0;
+                    result = fromResultSet(rs);
                 }
             } finally {
                 Cache.checkInConnection(conn);
             }
-
-            return result;
         }
 
-        /**
-         * Deletes all admin_hold records with a specified hold ID.
-         *
-         * @param cache  the data cache
-         * @param holdId the hold ID to delete
-         * @return the number of holds deleted
-         * @throws SQLException if there is an error accessing the database
-         */
-        public int deleteAllByHoldId(final Cache cache, final String holdId) throws SQLException {
+        return result;
+    }
 
-            final HtmlBuilder sql = new HtmlBuilder(100);
+    /**
+     * Tests whether a student has a fatal (sev_admin_hold = 'F') hold.
+     *
+     * @param cache the data cache
+     * @param stuId the student ID
+     * @return true if a fatal hold was found; false if not
+     * @throws SQLException if there is an error accessing the database
+     */
+    public boolean hasFatalHold(final Cache cache, final String stuId) throws SQLException {
 
-            sql.add("DELETE FROM admin_hold WHERE hold_id=", sqlStringValue(holdId));
+        final HtmlBuilder sql = new HtmlBuilder(100);
 
-            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+        final String tableName = getTableName(cache);
 
-            final int count;
-            try (final Statement stmt = conn.createStatement()) {
-                count = stmt.executeUpdate(sql.toString());
-                conn.commit();
-            } finally {
-                Cache.checkInConnection(conn);
+        sql.add("SELECT count(*) FROM ", tableName, " WHERE stu_id=", sqlStringValue(stuId),
+                "   AND sev_admin_hold='F'");
+
+        boolean result = false;
+
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        try (final Statement stmt = conn.createStatement();
+             final ResultSet rs = stmt.executeQuery(sql.toString())) {
+
+            if (rs.next()) {
+                result = rs.getInt(1) > 0;
             }
-
-            return count;
+        } finally {
+            Cache.checkInConnection(conn);
         }
 
-        /**
-         * Updates the date on an admin hold record.
-         *
-         * @param cache  the data cache
-         * @param record the record to delete
-         * @return {@code true} if successful; {@code false} otherwise
-         * @throws SQLException if there is an error accessing the database
-         */
-        public boolean updateAdminHoldDate(final Cache cache, final StudentHoldRec record) throws SQLException {
+        return result;
+    }
 
-            final boolean result;
+    /**
+     * Deletes all admin_hold records with a specified hold ID.
+     *
+     * @param cache  the data cache
+     * @param holdId the hold ID to delete
+     * @return the number of holds deleted
+     * @throws SQLException if there is an error accessing the database
+     */
+    public int deleteAllByHoldId(final Cache cache, final String holdId) throws SQLException {
 
-            if (record.stuId.startsWith("99")) {
-                result = false;
-            } else {
-                final String sql = SimpleBuilder.concat("UPDATE admin_hold ",
-                        "   SET create_dt=", sqlPgDateValue(record.createDt),
-                        " WHERE stu_id=", sqlStringValue(record.stuId),
-                        "   AND hold_id=", sqlStringValue(record.holdId));
+        final HtmlBuilder sql = new HtmlBuilder(100);
 
-                result = doUpdateOneRow(cache, ESchema.LEGACY, sql);
-            }
+        final String tableName = getTableName(cache);
 
-            return result;
+        sql.add("DELETE FROM ", tableName, " WHERE hold_id=", sqlStringValue(holdId));
+
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final int count;
+        try (final Statement stmt = conn.createStatement()) {
+            count = stmt.executeUpdate(sql.toString());
+            conn.commit();
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
+        } finally {
+            Cache.checkInConnection(conn);
         }
 
-        /**
-         * Extracts a record from a result set.
-         *
-         * @param rs the result set from which to retrieve the record
-         * @return the record
-         * @throws SQLException if there is an error accessing the database
-         */
-        @Override
-        public StudentHoldRec fromResultSet(final ResultSet rs) throws SQLException {
+        return count;
+    }
 
-            final StudentHoldRec result = new StudentHoldRec();
+    /**
+     * Updates the date on an admin hold record.
+     *
+     * @param cache  the data cache
+     * @param record the record to delete
+     * @return {@code true} if successful; {@code false} otherwise
+     * @throws SQLException if there is an error accessing the database
+     */
+    public boolean updateAdminHoldDate(final Cache cache, final StudentHoldRec record) throws SQLException {
 
-            result.stuId = getStringField(rs, FLD_STU_ID);
-            result.holdId = getStringField(rs, FLD_HOLD_ID);
-            result.sevAdminHold = getStringField(rs, FLD_SEV_ADMIN_HOLD);
-            result.timesDisplay = getIntegerField(rs, FLD_TIMES_DISPLAY);
-            result.createDt = getDateField(rs, FLD_CREATE_DT);
+        final boolean result;
 
-            return result;
+        if (record.stuId.startsWith("99")) {
+            result = false;
+        } else {
+            final String tableName = getTableName(cache);
+
+            final String sql = SimpleBuilder.concat("UPDATE ",tableName,
+                    " SET create_dt=", sqlDateValue(record.createDt),
+                    " WHERE stu_id=", sqlStringValue(record.stuId),
+                    " AND hold_id=", sqlStringValue(record.holdId));
+
+            result = doUpdateOneRow(cache, sql);
         }
+
+        return result;
+    }
+
+    /**
+     * Extracts a record from a result set.
+     *
+     * @param rs the result set from which to retrieve the record
+     * @return the record
+     * @throws SQLException if there is an error accessing the database
+     */
+    @Override
+    public StudentHoldRec fromResultSet(final ResultSet rs) throws SQLException {
+
+        final StudentHoldRec result = new StudentHoldRec();
+
+        result.stuId = getStringField(rs, FLD_STU_ID);
+        result.holdId = getStringField(rs, FLD_HOLD_ID);
+        result.sevAdminHold = getStringField(rs, FLD_SEV_ADMIN_HOLD);
+        result.timesDisplay = getIntegerField(rs, FLD_TIMES_DISPLAY);
+        result.createDt = getDateField(rs, FLD_CREATE_DT);
+
+        return result;
     }
 }

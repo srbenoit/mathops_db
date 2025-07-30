@@ -125,7 +125,7 @@ final class TestStudentCourseMasteryLogic {
                 }
                 conn.commit();
 
-                final StuCourseMasteryLogic logic = StuCourseMasteryLogic.get(cache);
+                final StuCourseMasteryLogic logic = StuCourseMasteryLogic.INSTANCE;
 
                 assertTrue(logic.insert(cache, RAW1), "Failed to insert Informix stu_course_mastery");
                 assertTrue(logic.insert(cache, RAW2), "Failed to insert Informix stu_course_mastery");
@@ -145,7 +145,7 @@ final class TestStudentCourseMasteryLogic {
         void test0003() {
 
             final Cache cache = new Cache(informixProfile);
-            final StuCourseMasteryLogic logic = StuCourseMasteryLogic.get(cache);
+            final StuCourseMasteryLogic logic = StuCourseMasteryLogic.INSTANCE;
 
             try {
                 final List<StuCourseMasteryRec> all = logic.queryAll(cache);
@@ -184,7 +184,7 @@ final class TestStudentCourseMasteryLogic {
         void test0004() {
 
             final Cache cache = new Cache(informixProfile);
-            final StuCourseMasteryLogic logic = StuCourseMasteryLogic.get(cache);
+            final StuCourseMasteryLogic logic = StuCourseMasteryLogic.INSTANCE;
 
             try {
                 final List<StuCourseMasteryRec> all = logic.queryByStudent(cache,
@@ -221,7 +221,7 @@ final class TestStudentCourseMasteryLogic {
         void test0005() {
 
             final Cache cache = new Cache(informixProfile);
-            final StuCourseMasteryLogic logic = StuCourseMasteryLogic.get(cache);
+            final StuCourseMasteryLogic logic = StuCourseMasteryLogic.INSTANCE;
 
             try {
                 final StuCourseMasteryRec r = logic.query(cache, "111111111", "M 125");
@@ -244,7 +244,7 @@ final class TestStudentCourseMasteryLogic {
         void test0006() {
 
             final Cache cache = new Cache(informixProfile);
-            final StuCourseMasteryLogic logic = StuCourseMasteryLogic.get(cache);
+            final StuCourseMasteryLogic logic = StuCourseMasteryLogic.INSTANCE;
 
             try {
                 final boolean result = logic.updateMastery(cache, RAW1, RAW1NEWMASTERY.nbrMasteredH1,
@@ -271,7 +271,7 @@ final class TestStudentCourseMasteryLogic {
         void test0008() {
 
             final Cache cache = new Cache(informixProfile);
-            final StuCourseMasteryLogic logic = StuCourseMasteryLogic.get(cache);
+            final StuCourseMasteryLogic logic = StuCourseMasteryLogic.INSTANCE;
 
             try {
                 final boolean result = logic.updateScore(cache, RAW1NEWEXP, RAW1NEWSCORE.score);
@@ -297,7 +297,7 @@ final class TestStudentCourseMasteryLogic {
         void test0009() {
 
             final Cache cache = new Cache(informixProfile);
-            final StuCourseMasteryLogic logic = StuCourseMasteryLogic.get(cache);
+            final StuCourseMasteryLogic logic = StuCourseMasteryLogic.INSTANCE;
 
             try {
                 final boolean result = logic.delete(cache, RAW2);

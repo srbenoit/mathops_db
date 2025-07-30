@@ -266,7 +266,7 @@ public enum MilestoneLogic {
         }
 
         final List<StuStandardMilestoneRec> stmilestones =
-                StuStandardMilestoneLogic.get(cache).queryByStuPaceTrackPaceIndex(cache, stuId, paceTrack, paceObj,
+                StuStandardMilestoneLogic.INSTANCE.queryByStuPaceTrackPaceIndex(cache, stuId, paceTrack, paceObj,
                         indexObj);
 
         for (final StuStandardMilestoneRec row : stmilestones) {
@@ -1270,7 +1270,7 @@ public enum MilestoneLogic {
                                                 final int pace, final int index, final int unit, final int objective,
                                                 final String msType, final LocalDate newDeadline) throws SQLException {
 
-        final StuStandardMilestoneLogic logic = StuStandardMilestoneLogic.get(cache);
+        final StuStandardMilestoneLogic logic = StuStandardMilestoneLogic.INSTANCE;
         final Integer paceObj = Integer.valueOf(pace);
         final Integer indexObj = Integer.valueOf(index);
         final Integer unitObj = Integer.valueOf(unit);

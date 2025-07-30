@@ -11,7 +11,6 @@ import dev.mathops.db.rec.main.StandardsCourseModuleRec;
 import dev.mathops.db.rec.main.StandardsCourseRec;
 import dev.mathops.db.rec.term.StandardAssignmentAttemptRec;
 import dev.mathops.db.rec.term.StudentCourseMasteryRec;
-import dev.mathops.db.reclogic.IRecLogic;
 import dev.mathops.text.builder.HtmlBuilder;
 import dev.mathops.text.builder.SimpleBuilder;
 
@@ -46,7 +45,7 @@ import java.util.List;
  * ) TABLESPACE primary_ts;
  * </pre>
  */
-public final class StudentCourseMasteryLogic implements IRecLogic<StudentCourseMasteryRec> {
+public final class StudentCourseMasteryLogic implements ITermRecLogic<StudentCourseMasteryRec> {
 
     /** A single instance. */
     public static final StudentCourseMasteryLogic INSTANCE = new StudentCourseMasteryLogic();
@@ -90,7 +89,7 @@ public final class StudentCourseMasteryLogic implements IRecLogic<StudentCourseM
                     sqlStringValue(record.completed), ",",
                     sqlIntegerValue(record.score), ")");
 
-            result = doUpdateOneRow(cache, ESchema.TERM, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;
@@ -118,7 +117,7 @@ public final class StudentCourseMasteryLogic implements IRecLogic<StudentCourseM
                     ".student_course_mastery WHERE student_id=", sqlStringValue(record.studentId),
                     " AND course_id=", sqlStringValue(record.courseId));
 
-            result = doUpdateOneRow(cache, ESchema.TERM, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;
@@ -143,7 +142,7 @@ public final class StudentCourseMasteryLogic implements IRecLogic<StudentCourseM
         } else {
             final String sql = SimpleBuilder.concat("SELECT * FROM ", schemaPrefix, ".student_course_mastery");
 
-            result = doListQuery(cache, ESchema.TERM, sql);
+            result = doListQuery(cache, sql);
         }
 
         return result;
@@ -169,7 +168,7 @@ public final class StudentCourseMasteryLogic implements IRecLogic<StudentCourseM
             final String sql = SimpleBuilder.concat("SELECT * FROM ", schemaPrefix,
                     ".student_course_mastery WHERE student_id=", sqlStringValue(studentId));
 
-            result = doListQuery(cache, ESchema.TERM, sql);
+            result = doListQuery(cache, sql);
         }
 
         return result;
@@ -198,7 +197,7 @@ public final class StudentCourseMasteryLogic implements IRecLogic<StudentCourseM
                     ".student_course_mastery WHERE student_id=", sqlStringValue(studentId),
                     " AND course_id=", sqlStringValue(courseId));
 
-            result = doSingleQuery(cache, ESchema.TERM, sql);
+            result = doSingleQuery(cache, sql);
         }
 
         return result;
@@ -230,7 +229,7 @@ public final class StudentCourseMasteryLogic implements IRecLogic<StudentCourseM
                     " WHERE student_id=", sqlStringValue(record.studentId),
                     " AND course_id=", sqlStringValue(record.courseId));
 
-            result = doUpdateOneRow(cache, ESchema.TERM, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;

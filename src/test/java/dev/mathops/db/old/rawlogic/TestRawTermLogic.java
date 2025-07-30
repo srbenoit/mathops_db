@@ -90,7 +90,7 @@ final class TestRawTermLogic {
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement()) {
-            final String termName = TermLogic.Postgres.getTableName(cache);
+            final String termName = TermLogic.getTableName(cache);
             stmt.executeUpdate("DELETE FROM " + termName);
             conn.commit();
 
@@ -99,9 +99,9 @@ final class TestRawTermLogic {
             final TermRec raw3 = new TermRec(termSP22, date9, date10, "2122", Integer.valueOf(1), date11, date12,
                     date13);
 
-            assertTrue(TermLogic.get(cache).insert(cache, raw1), "Failed to insert term");
-            assertTrue(TermLogic.get(cache).insert(cache, raw2), "Failed to insert term");
-            assertTrue(TermLogic.get(cache).insert(cache, raw3), "Failed to insert term");
+            assertTrue(TermLogic.INSTANCE.insert(cache, raw1), "Failed to insert term");
+            assertTrue(TermLogic.INSTANCE.insert(cache, raw2), "Failed to insert term");
+            assertTrue(TermLogic.INSTANCE.insert(cache, raw3), "Failed to insert term");
         } catch (final SQLException ex) {
             Log.warning(ex);
             fail("Exception while initializing tables: " + ex.getMessage());
@@ -118,7 +118,7 @@ final class TestRawTermLogic {
         final Cache cache = new Cache(profile);
 
         try {
-            final List<TermRec> all = TermLogic.get(cache).queryAll(cache);
+            final List<TermRec> all = TermLogic.INSTANCE.queryAll(cache);
 
             assertEquals(3, all.size(), "Incorrect record count from queryAll");
 
@@ -189,7 +189,7 @@ final class TestRawTermLogic {
         final Cache cache = new Cache(profile);
 
         try {
-            final TermRec test = TermLogic.get(cache).queryActive(cache);
+            final TermRec test = TermLogic.INSTANCE.queryActive(cache);
 
             assertNotNull(test, "queryActive by term returned no record");
 
@@ -217,7 +217,7 @@ final class TestRawTermLogic {
         final Cache cache = new Cache(profile);
 
         try {
-            final TermRec test = TermLogic.get(cache).queryPrior(cache);
+            final TermRec test = TermLogic.INSTANCE.queryPrior(cache);
 
             assertNotNull(test, "queryPrior by term returned no record");
 
@@ -245,7 +245,7 @@ final class TestRawTermLogic {
         final Cache cache = new Cache(profile);
 
         try {
-            final TermRec test = TermLogic.get(cache).queryNext(cache);
+            final TermRec test = TermLogic.INSTANCE.queryNext(cache);
 
             assertNotNull(test, "queryNext by term returned no record");
 
@@ -273,7 +273,7 @@ final class TestRawTermLogic {
         final Cache cache = new Cache(profile);
 
         try {
-            final TermRec test = TermLogic.get(cache).query(cache, termSM21);
+            final TermRec test = TermLogic.INSTANCE.query(cache, termSM21);
 
             assertNotNull(test, "query by term returned no record");
 
@@ -301,7 +301,7 @@ final class TestRawTermLogic {
         final Cache cache = new Cache(profile);
 
         try {
-            final TermRec test = TermLogic.get(cache).queryByIndex(cache, -1);
+            final TermRec test = TermLogic.INSTANCE.queryByIndex(cache, -1);
 
             assertNotNull(test, "queryByIndex returned no record");
 
@@ -329,7 +329,7 @@ final class TestRawTermLogic {
         final Cache cache = new Cache(profile);
 
         try {
-            final List<TermRec> all = TermLogic.get(cache).getFutureTerms(cache);
+            final List<TermRec> all = TermLogic.INSTANCE.getFutureTerms(cache);
 
             assertEquals(1, all.size(), "Incorrect record count from getFutureTerms");
 
@@ -368,10 +368,10 @@ final class TestRawTermLogic {
         try {
             final TermRec raw2 = new TermRec(termSM21, date5, date6, "2122", Integer.valueOf(-1), date7, date8, date13);
 
-            final boolean result = TermLogic.get(cache).delete(cache, raw2);
+            final boolean result = TermLogic.INSTANCE.delete(cache, raw2);
             assertTrue(result, "delete returned false");
 
-            final List<TermRec> all = TermLogic.get(cache).queryAll(cache);
+            final List<TermRec> all = TermLogic.INSTANCE.queryAll(cache);
 
             assertEquals(2, all.size(), "Incorrect record count from queryAll after delete");
 
@@ -429,7 +429,7 @@ final class TestRawTermLogic {
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement()) {
-            final String tableName = TermLogic.Postgres.getTableName(cache);
+            final String tableName = TermLogic.getTableName(cache);
             stmt.executeUpdate("DELETE FROM " + tableName);
             conn.commit();
         } catch (final SQLException ex) {

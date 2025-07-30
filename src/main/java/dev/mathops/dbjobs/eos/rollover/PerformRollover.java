@@ -54,7 +54,7 @@ public class PerformRollover implements Runnable {
      */
     public void run() {
 
-        final TermLogic termLogic = TermLogic.get(this.cache);
+        final TermLogic termLogic = TermLogic.INSTANCE;
 
         try {
             final TermRec activeTerm = termLogic.queryActive(this.cache);

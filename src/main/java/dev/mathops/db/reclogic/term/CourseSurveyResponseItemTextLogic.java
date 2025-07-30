@@ -5,7 +5,6 @@ import dev.mathops.db.Cache;
 import dev.mathops.db.DataDict;
 import dev.mathops.db.ESchema;
 import dev.mathops.db.rec.term.CourseSurveyResponseItemTextRec;
-import dev.mathops.db.reclogic.IRecLogic;
 import dev.mathops.text.builder.SimpleBuilder;
 
 import java.sql.ResultSet;
@@ -25,7 +24,7 @@ import java.util.List;
  * ) TABLESPACE primary_ts;
  * </pre>
  */
-public final class CourseSurveyResponseItemTextLogic implements IRecLogic<CourseSurveyResponseItemTextRec> {
+public final class CourseSurveyResponseItemTextLogic implements ITermRecLogic<CourseSurveyResponseItemTextRec> {
 
     /** A single instance. */
     public static final CourseSurveyResponseItemTextLogic INSTANCE = new CourseSurveyResponseItemTextLogic();
@@ -62,7 +61,7 @@ public final class CourseSurveyResponseItemTextLogic implements IRecLogic<Course
                     sqlIntegerValue(record.itemNbr), ",",
                     sqlStringValue(record.responseText), ")");
 
-            result = doUpdateOneRow(cache, ESchema.TERM, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;
@@ -90,7 +89,7 @@ public final class CourseSurveyResponseItemTextLogic implements IRecLogic<Course
                     ".course_survey_response_item_text WHERE serial_nbr=", sqlIntegerValue(record.serialNbr),
                     " AND item_nbr=", sqlIntegerValue(record.itemNbr));
 
-            result = doUpdateOneRow(cache, ESchema.TERM, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;
@@ -116,7 +115,7 @@ public final class CourseSurveyResponseItemTextLogic implements IRecLogic<Course
             final String sql = SimpleBuilder.concat("SELECT * FROM ", schemaPrefix,
                     ".course_survey_response_item_text");
 
-            result = doListQuery(cache, ESchema.TERM, sql);
+            result = doListQuery(cache, sql);
         }
 
         return result;
@@ -145,7 +144,7 @@ public final class CourseSurveyResponseItemTextLogic implements IRecLogic<Course
                     ".course_survey_response_item_text WHERE serial_nbr=", sqlIntegerValue(serialNbr),
                     " AND item_nbr=", sqlIntegerValue(itemNbr));
 
-            result = doSingleQuery(cache, ESchema.TERM, sql);
+            result = doSingleQuery(cache, sql);
         }
 
         return result;
@@ -172,7 +171,7 @@ public final class CourseSurveyResponseItemTextLogic implements IRecLogic<Course
             final String sql = SimpleBuilder.concat("SELECT * FROM ", schemaPrefix,
                     ".course_survey_response_item_text WHERE serial_nbr=", sqlIntegerValue(serialNbr));
 
-            result = doListQuery(cache, ESchema.TERM, sql);
+            result = doListQuery(cache, sql);
         }
 
         return result;
@@ -200,7 +199,7 @@ public final class CourseSurveyResponseItemTextLogic implements IRecLogic<Course
                     " WHERE serial_nbr=", sqlIntegerValue(record.serialNbr),
                     " AND item_nbr=", sqlIntegerValue(record.itemNbr));
 
-            result = doUpdateOneRow(cache, ESchema.TERM, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;

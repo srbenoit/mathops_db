@@ -5,7 +5,6 @@ import dev.mathops.db.Cache;
 import dev.mathops.db.DataDict;
 import dev.mathops.db.ESchema;
 import dev.mathops.db.rec.main.CourseSurveyRec;
-import dev.mathops.db.reclogic.IRecLogic;
 import dev.mathops.text.builder.SimpleBuilder;
 
 import java.sql.ResultSet;
@@ -25,7 +24,7 @@ import java.util.List;
  * ) TABLESPACE primary_ts;
  * </pre>
  */
-public final class CourseSurveyLogic implements IRecLogic<CourseSurveyRec> {
+public final class CourseSurveyLogic implements IMainRecLogic<CourseSurveyRec> {
 
     /** A single instance. */
     public static final CourseSurveyLogic INSTANCE = new CourseSurveyLogic();
@@ -62,7 +61,7 @@ public final class CourseSurveyLogic implements IRecLogic<CourseSurveyRec> {
                     sqlStringValue(record.surveyTitle), ",",
                     sqlStringValue(record.promptHtml), ")");
 
-            result = doUpdateOneRow(cache, ESchema.MAIN, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;
@@ -89,7 +88,7 @@ public final class CourseSurveyLogic implements IRecLogic<CourseSurveyRec> {
             final String sql = SimpleBuilder.concat("DELETE FROM ", schemaPrefix, ".course_survey WHERE survey_id=",
                     sqlStringValue(record.surveyId));
 
-            result = doUpdateOneRow(cache, ESchema.MAIN, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;
@@ -114,7 +113,7 @@ public final class CourseSurveyLogic implements IRecLogic<CourseSurveyRec> {
         } else {
             final String sql = SimpleBuilder.concat("SELECT * FROM ", schemaPrefix, ".course_survey");
 
-            result = doListQuery(cache, ESchema.MAIN, sql);
+            result = doListQuery(cache, sql);
         }
 
         return result;
@@ -140,7 +139,7 @@ public final class CourseSurveyLogic implements IRecLogic<CourseSurveyRec> {
             final String sql = SimpleBuilder.concat("SELECT * FROM ", schemaPrefix,
                     ".course_survey WHERE survey_id=", sqlStringValue(surveyId));
 
-            result = doSingleQuery(cache, ESchema.MAIN, sql);
+            result = doSingleQuery(cache, sql);
         }
 
         return result;
@@ -168,7 +167,7 @@ public final class CourseSurveyLogic implements IRecLogic<CourseSurveyRec> {
                     ",prompt_html=", sqlStringValue(record.promptHtml),
                     " WHERE survey_id=", sqlStringValue(record.surveyId));
 
-            result = doUpdateOneRow(cache, ESchema.MAIN, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;

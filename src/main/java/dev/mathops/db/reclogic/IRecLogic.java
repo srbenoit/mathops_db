@@ -1,7 +1,6 @@
 package dev.mathops.db.reclogic;
 
 import dev.mathops.db.Cache;
-import dev.mathops.db.DbConnection;
 import dev.mathops.db.EDbProduct;
 import dev.mathops.db.ESchema;
 import dev.mathops.db.cfg.Facet;
@@ -12,13 +11,11 @@ import dev.mathops.text.builder.HtmlBuilder;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -256,8 +253,7 @@ public interface IRecLogic<T extends RecBase> {
      * @return the value
      * @throws SQLException if there is an error retrieving the value
      */
-    default String getStringField(final ResultSet rs, final String name)
-            throws SQLException {
+    default String getStringField(final ResultSet rs, final String name) throws SQLException {
 
         final String tmp = rs.getString(name);
 
@@ -289,29 +285,12 @@ public interface IRecLogic<T extends RecBase> {
      * @return the value
      * @throws SQLException if there is an error retrieving the value
      */
-    default Integer getIntegerField(final ResultSet rs, final String name)
-            throws SQLException {
+    default Integer getIntegerField(final ResultSet rs, final String name) throws SQLException {
 
         final int tmp = rs.getInt(name);
 
         return rs.wasNull() ? null : Integer.valueOf(tmp);
     }
-
-//    /**
-//     * Retrieves a Float field value from a result set, returning null if the result set indicates a null value was
-//     * present.
-//     *
-//     * @param rs   the result set
-//     * @param name the field name
-//     * @return the value
-//     * @throws SQLException if there is an error retrieving the value
-//     */
-//    default Float getFloatField(final ResultSet rs, final String name) throws SQLException {
-//
-//        final float tmp = rs.getFloat(name);
-//
-//        return rs.wasNull() ? null : Float.valueOf(tmp);
-//    }
 
     /**
      * Retrieves a LocalDate field value from a result set, returning null if the result set indicates a null value was
@@ -322,8 +301,7 @@ public interface IRecLogic<T extends RecBase> {
      * @return the value
      * @throws SQLException if there is an error retrieving the value
      */
-    default LocalDate getDateField(final ResultSet rs, final String name)
-            throws SQLException {
+    default LocalDate getDateField(final ResultSet rs, final String name) throws SQLException {
 
         final Date tmp = rs.getDate(name);
 
@@ -339,8 +317,7 @@ public interface IRecLogic<T extends RecBase> {
      * @return the value
      * @throws SQLException if there is an error retrieving the value
      */
-    default LocalTime getTimeField(final ResultSet rs, final String name)
-            throws SQLException {
+    default LocalTime getTimeField(final ResultSet rs, final String name) throws SQLException {
 
         final Time tmp = rs.getTime(name);
 
@@ -356,97 +333,11 @@ public interface IRecLogic<T extends RecBase> {
      * @return the value
      * @throws SQLException if there is an error retrieving the value
      */
-    default LocalDateTime getDateTimeField(final ResultSet rs, final String name)
-            throws SQLException {
+    default LocalDateTime getDateTimeField(final ResultSet rs, final String name) throws SQLException {
 
         final Timestamp tmp = rs.getTimestamp(name);
 
         return tmp == null ? null : tmp.toLocalDateTime();
-    }
-
-    /**
-     * Executes an update SQL statement that SHOULD alter one row.
-     *
-     * @param cache  the data cache
-     * @param schema the schema
-     * @param sql    the query SQL
-     * @return true of the statement succeeded and indicated one row was changed; false otherwise
-     * @throws SQLException if there is an error performing the update
-     */
-    default boolean doUpdateOneRow(final Cache cache, final ESchema schema, final String sql) throws SQLException {
-
-        final DbConnection conn = cache.checkOutConnection(schema);
-
-        try (final Statement stmt = conn.createStatement()) {
-            final boolean result = stmt.executeUpdate(sql) == 1;
-
-            if (result) {
-                conn.commit();
-            } else {
-                conn.rollback();
-            }
-
-            return result;
-        } finally {
-            Cache.checkInConnection(conn);
-        }
-    }
-
-    /**
-     * Performs a query that returns single record.
-     *
-     * @param cache  the data cache
-     * @param schema the schema
-     * @param sql    the query SQL
-     * @return the record; null if none returned
-     * @throws SQLException if there is an error performing the query
-     */
-    default T doSingleQuery(final Cache cache, final ESchema schema, final String sql) throws SQLException {
-
-        T result = null;
-
-        final DbConnection conn = cache.checkOutConnection(schema);
-
-        try (final Statement stmt = conn.createStatement();
-             final ResultSet rs = stmt.executeQuery(sql)) {
-
-            if (rs.next()) {
-                result = fromResultSet(rs);
-            }
-        } finally {
-            Cache.checkInConnection(conn);
-        }
-
-        return result;
-    }
-
-    /**
-     * Performs a query that returns list of records.
-     *
-     * @param cache  the data cache
-     * @param schema the schema
-     * @param sql    the query SQL
-     * @return the list of records returned
-     * @throws SQLException if there is an error performing the query
-     */
-    default List<T> doListQuery(final Cache cache, final ESchema schema, final String sql) throws SQLException {
-
-        final List<T> result = new ArrayList<>(10);
-
-        final DbConnection conn = cache.checkOutConnection(schema);
-
-        try (final Statement stmt = conn.createStatement();
-             final ResultSet rs = stmt.executeQuery(sql)) {
-
-            while (rs.next()) {
-                final T rec = fromResultSet(rs);
-                result.add(rec);
-            }
-        } finally {
-            Cache.checkInConnection(conn);
-        }
-
-        return result;
     }
 
     /**
@@ -481,7 +372,7 @@ public interface IRecLogic<T extends RecBase> {
     /**
      * Gets all records.
      *
-     * @param cache  the data cache
+     * @param cache the data cache
      * @return the list of records
      * @throws SQLException if there is an error accessing the database
      */

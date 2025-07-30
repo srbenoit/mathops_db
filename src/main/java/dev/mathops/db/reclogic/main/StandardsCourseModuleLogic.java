@@ -5,7 +5,6 @@ import dev.mathops.db.Cache;
 import dev.mathops.db.DataDict;
 import dev.mathops.db.ESchema;
 import dev.mathops.db.rec.main.StandardsCourseModuleRec;
-import dev.mathops.db.reclogic.IRecLogic;
 import dev.mathops.text.builder.SimpleBuilder;
 
 import java.sql.ResultSet;
@@ -27,7 +26,7 @@ import java.util.List;
  * ) TABLESPACE primary_ts;
  * </pre>
  */
-public final class StandardsCourseModuleLogic implements IRecLogic<StandardsCourseModuleRec> {
+public final class StandardsCourseModuleLogic implements IMainRecLogic<StandardsCourseModuleRec> {
 
     /** A single instance. */
     public static final StandardsCourseModuleLogic INSTANCE = new StandardsCourseModuleLogic();
@@ -66,7 +65,7 @@ public final class StandardsCourseModuleLogic implements IRecLogic<StandardsCour
                     sqlIntegerValue(record.nbrEssential), ",",
                     sqlStringValue(record.modulePath), ")");
 
-            result = doUpdateOneRow(cache, ESchema.MAIN, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;
@@ -94,7 +93,7 @@ public final class StandardsCourseModuleLogic implements IRecLogic<StandardsCour
                     ".standards_course_module WHERE course_id=", sqlStringValue(record.courseId),
                     " AND module_nbr=", sqlIntegerValue(record.moduleNbr));
 
-            result = doUpdateOneRow(cache, ESchema.MAIN, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;
@@ -119,7 +118,7 @@ public final class StandardsCourseModuleLogic implements IRecLogic<StandardsCour
         } else {
             final String sql = SimpleBuilder.concat("SELECT * FROM ", schemaPrefix, ".standards_course_module");
 
-            result = doListQuery(cache, ESchema.MAIN, sql);
+            result = doListQuery(cache, sql);
         }
 
         return result;
@@ -145,7 +144,7 @@ public final class StandardsCourseModuleLogic implements IRecLogic<StandardsCour
             final String sql = SimpleBuilder.concat("SELECT * FROM ", schemaPrefix,
                     ".standards_course_module WHERE course_id=", sqlStringValue(courseId));
 
-            result = doListQuery(cache, ESchema.MAIN, sql);
+            result = doListQuery(cache, sql);
             result.sort(null);
         }
 
@@ -175,7 +174,7 @@ public final class StandardsCourseModuleLogic implements IRecLogic<StandardsCour
                     ".standards_course_module WHERE course_id=", sqlStringValue(courseId), " AND module_nbr=",
                     sqlIntegerValue(moduleNbr));
 
-            result = doSingleQuery(cache, ESchema.MAIN, sql);
+            result = doSingleQuery(cache, sql);
         }
 
         return result;
@@ -205,7 +204,7 @@ public final class StandardsCourseModuleLogic implements IRecLogic<StandardsCour
                     " WHERE course_id=", sqlStringValue(record.courseId),
                     " AND module_nbr=", sqlIntegerValue(record.moduleNbr));
 
-            result = doUpdateOneRow(cache, ESchema.MAIN, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;

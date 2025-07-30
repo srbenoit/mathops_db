@@ -1,7 +1,6 @@
 package dev.mathops.db.reclogic;
 
 import dev.mathops.db.Cache;
-import dev.mathops.db.EDbProduct;
 import dev.mathops.db.ESchema;
 import dev.mathops.db.logic.SystemData;
 import dev.mathops.db.rec.PaceTrackRuleRec;
@@ -15,7 +14,25 @@ import java.util.List;
 /**
  * A utility class to work with pace track rule records.
  */
-public abstract class PaceTrackRuleLogic implements IRecLogic<PaceTrackRuleRec> {
+public final class PaceTrackRuleLogic implements ILegacyRecLogic<PaceTrackRuleRec> {
+
+    /** A single instance. */
+    public static final PaceTrackRuleLogic INSTANCE = new PaceTrackRuleLogic();
+
+    /** The table name. */
+    public static final String TABLE_NAME = "pace_track_rule";
+
+    /** A field name. */
+    private static final String FLD_SUBTERM = "subterm";
+
+    /** A field name. */
+    private static final String FLD_PACE = "pace";
+
+    /** A field name. */
+    private static final String FLD_PACE_TRACK = "pace_track";
+
+    /** A field name. */
+    private static final String FLD_CRITERIA = "criteria";
 
     /**
      * Private constructor to prevent direct instantiation.
@@ -26,253 +43,108 @@ public abstract class PaceTrackRuleLogic implements IRecLogic<PaceTrackRuleRec> 
     }
 
     /**
-     * Gets the instance of {@code TermLogic} appropriate to a cache. The result will depend on the database
-     * installation type of the PRIMARY schema configuration in cache's database profile.
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
      *
-     * @param cache the cache
-     * @return the appropriate {@code TermLogic} object (null if none found)
+     * @param cache the data cache
+     * @return the table name
      */
-    public static PaceTrackRuleLogic get(final Cache cache) {
+    public static String getTableName(final Cache cache) {
 
-        final EDbProduct type = IRecLogic.getDbType(cache, ESchema.LEGACY);
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
 
-        PaceTrackRuleLogic result = null;
-        if (type == EDbProduct.INFORMIX) {
-            result = Informix.INSTANCE;
-        } else if (type == EDbProduct.POSTGRESQL) {
-            result = Postgres.INSTANCE;
-        }
-
-        return result;
+        return schemaPrefix == null ? "pace_track_rule" : (schemaPrefix + ".pace_track_rule");
     }
 
     /**
-     * A subclass of {@code TermWeekLogic} designed for the Informix schema.
+     * Inserts a new record.
+     *
+     * @param cache  the data cache
+     * @param record the record to insert
+     * @return {@code true} if successful; {@code false} if not
+     * @throws SQLException if there is an error accessing the database
      */
-    public static final class Informix extends PaceTrackRuleLogic {
+    @Override
+    public boolean insert(final Cache cache, final PaceTrackRuleRec record) throws SQLException {
 
-        /** A single instance. */
-        public static final Informix INSTANCE = new Informix();
-
-        /** The table name. */
-        public static final String TABLE_NAME = "pace_track_rule";
-
-        /** A field name. */
-        private static final String FLD_SUBTERM = "subterm";
-
-        /** A field name. */
-        private static final String FLD_PACE = "pace";
-
-        /** A field name. */
-        private static final String FLD_PACE_TRACK = "pace_track";
-
-        /** A field name. */
-        private static final String FLD_CRITERIA = "criteria";
-
-        /**
-         * Constructs a new {@code Informix}.
-         */
-        Informix() {
-
-            super();
+        if (record.subterm == null || record.pace == null || record.paceTrack == null || record.criteria == null) {
+            throw new SQLException("Null value in required field.");
         }
 
-        /**
-         * Inserts a new record.
-         *
-         * @param cache  the data cache
-         * @param record the record to insert
-         * @return {@code true} if successful; {@code false} if not
-         * @throws SQLException if there is an error accessing the database
-         */
-        @Override
-        public boolean insert(final Cache cache, final PaceTrackRuleRec record) throws SQLException {
-
-            if (record.subterm == null || record.pace == null || record.paceTrack == null || record.criteria == null) {
-                throw new SQLException("Null value in required field.");
-            }
-
-            final SystemData systemData = cache.getSystemData();
-            final TermRec activeTerm = systemData.getActiveTerm();
-            if (activeTerm == null) {
-                throw new SQLException("No active term found.");
-            }
-
-            final String sql = SimpleBuilder.concat(
-                    "INSERT INTO pace_track_rule (term,term_yr,subterm,pace,pace_track,criteria) VALUES (",
-                    sqlStringValue(activeTerm.term.termCode), ",",
-                    sqlIntegerValue(activeTerm.term.shortYear), ",",
-                    sqlStringValue(record.subterm), ",",
-                    sqlIntegerValue(record.pace), ",",
-                    sqlStringValue(record.paceTrack), ",",
-                    sqlStringValue(record.criteria), ")");
-
-            return doUpdateOneRow(cache, ESchema.LEGACY, sql);
+        final SystemData systemData = cache.getSystemData();
+        final TermRec activeTerm = systemData.getActiveTerm();
+        if (activeTerm == null) {
+            throw new SQLException("No active term found.");
         }
 
-        /**
-         * Deletes a record.
-         *
-         * @param cache  the data cache
-         * @param record the record to delete
-         * @return {@code true} if successful; {@code false} if not
-         * @throws SQLException if there is an error accessing the database
-         */
-        @Override
-        public boolean delete(final Cache cache, final PaceTrackRuleRec record) throws SQLException {
+        final String tableName = getTableName(cache);
 
-            final String sql = SimpleBuilder.concat("DELETE FROM pace_track_rule ",
-                    "WHERE subterm=", sqlStringValue(record.subterm),
-                    "  AND pace=", sqlIntegerValue(record.pace),
-                    "  AND pace_track=", sqlStringValue(record.paceTrack));
+        final String sql = SimpleBuilder.concat(
+                "INSERT INTO ", tableName, " (term,term_yr,subterm,pace,pace_track,criteria) VALUES (",
+                sqlStringValue(activeTerm.term.termCode), ",",
+                sqlIntegerValue(activeTerm.term.shortYear), ",",
+                sqlStringValue(record.subterm), ",",
+                sqlIntegerValue(record.pace), ",",
+                sqlStringValue(record.paceTrack), ",",
+                sqlStringValue(record.criteria), ")");
 
-            return doUpdateOneRow(cache, ESchema.LEGACY, sql);
-        }
-
-        /**
-         * Queries every record in the database.
-         *
-         * @param cache the data cache
-         * @return the complete set of records in the database
-         * @throws SQLException if there is an error performing the query
-         */
-        @Override
-        public List<PaceTrackRuleRec> queryAll(final Cache cache) throws SQLException {
-
-            return doListQuery(cache, ESchema.LEGACY, "SELECT * FROM pace_track_rule");
-        }
-
-        /**
-         * Extracts a record from a result set.
-         *
-         * @param rs the result set from which to retrieve the record
-         * @return the record
-         * @throws SQLException if there is an error accessing the database
-         */
-        @Override
-        public PaceTrackRuleRec fromResultSet(final ResultSet rs) throws SQLException {
-
-            final String subterm = getStringField(rs, FLD_SUBTERM);
-            final Integer pace = getIntegerField(rs, FLD_PACE);
-            final String paceTrack = getStringField(rs, FLD_PACE_TRACK);
-            final String criteria = getStringField(rs, FLD_CRITERIA);
-
-            if (subterm == null || pace == null || paceTrack == null || criteria == null) {
-                throw new SQLException("PaceTrackRule record found with null subterm, pace, pace track, or criteria");
-            }
-
-            return new PaceTrackRuleRec(subterm, pace, paceTrack, criteria);
-        }
+        return doUpdateOneRow(cache, sql);
     }
 
     /**
-     * A subclass of {@code TermWeekLogic} designed for the PostgreSQL schema.
+     * Deletes a record.
+     *
+     * @param cache  the data cache
+     * @param record the record to delete
+     * @return {@code true} if successful; {@code false} if not
+     * @throws SQLException if there is an error accessing the database
      */
-    public static final class Postgres extends PaceTrackRuleLogic {
+    @Override
+    public boolean delete(final Cache cache, final PaceTrackRuleRec record) throws SQLException {
 
-        /** A single instance. */
-        public static final Postgres INSTANCE = new Postgres();
+        final String tableName = getTableName(cache);
 
-        /** The table name. */
-        public static final String TABLE_NAME = "pace_track_rule";
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE subterm=", sqlStringValue(record.subterm),
+                "  AND pace=", sqlIntegerValue(record.pace),
+                "  AND pace_track=", sqlStringValue(record.paceTrack));
 
-        /** A field name. */
-        private static final String FLD_SUBTERM = "subterm";
+        return doUpdateOneRow(cache, sql);
+    }
 
-        /** A field name. */
-        private static final String FLD_PACE = "pace";
+    /**
+     * Queries every record in the database.
+     *
+     * @param cache the data cache
+     * @return the complete set of records in the database
+     * @throws SQLException if there is an error performing the query
+     */
+    @Override
+    public List<PaceTrackRuleRec> queryAll(final Cache cache) throws SQLException {
 
-        /** A field name. */
-        private static final String FLD_PACE_TRACK = "pace_track";
+        final String tableName = getTableName(cache);
 
-        /** A field name. */
-        private static final String FLD_CRITERIA = "criteria";
+        return doListQuery(cache, "SELECT * FROM " + tableName);
+    }
 
-        /**
-         * Constructs a new {@code Postgres}.
-         */
-        Postgres() {
+    /**
+     * Extracts a record from a result set.
+     *
+     * @param rs the result set from which to retrieve the record
+     * @return the record
+     * @throws SQLException if there is an error accessing the database
+     */
+    @Override
+    public PaceTrackRuleRec fromResultSet(final ResultSet rs) throws SQLException {
 
-            super();
+        final String subterm = getStringField(rs, FLD_SUBTERM);
+        final Integer pace = getIntegerField(rs, FLD_PACE);
+        final String paceTrack = getStringField(rs, FLD_PACE_TRACK);
+        final String criteria = getStringField(rs, FLD_CRITERIA);
+
+        if (subterm == null || pace == null || paceTrack == null || criteria == null) {
+            throw new SQLException("PaceTrackRule record found with null subterm, pace, pace track, or criteria");
         }
 
-        /**
-         * Inserts a new record.
-         *
-         * @param cache  the data cache
-         * @param record the record to insert
-         * @return {@code true} if successful; {@code false} if not
-         * @throws SQLException if there is an error accessing the database
-         */
-        @Override
-        public boolean insert(final Cache cache, final PaceTrackRuleRec record) throws SQLException {
-
-            if (record.subterm == null || record.pace == null || record.paceTrack == null || record.criteria == null) {
-                throw new SQLException("Null value in required field.");
-            }
-
-            final String sql = SimpleBuilder.concat(
-                    "INSERT INTO pace_track_rule (subterm,pace,pace_track,criteria) VALUES (",
-                    sqlStringValue(record.subterm), ",",
-                    sqlIntegerValue(record.pace), ",",
-                    sqlStringValue(record.paceTrack), ",",
-                    sqlStringValue(record.criteria), ")");
-
-            return doUpdateOneRow(cache, ESchema.LEGACY, sql);
-        }
-
-        /**
-         * Deletes a record.
-         *
-         * @param cache  the data cache
-         * @param record the record to delete
-         * @return {@code true} if successful; {@code false} if not
-         * @throws SQLException if there is an error accessing the database
-         */
-        @Override
-        public boolean delete(final Cache cache, final PaceTrackRuleRec record) throws SQLException {
-
-            final String sql = SimpleBuilder.concat("DELETE FROM pace_track_rule ",
-                    "WHERE subterm=", sqlStringValue(record.subterm),
-                    "  AND pace=", sqlIntegerValue(record.pace),
-                    "  AND pace_track=", sqlStringValue(record.paceTrack));
-
-            return doUpdateOneRow(cache, ESchema.LEGACY, sql);
-        }
-
-        /**
-         * Queries every record in the database.
-         *
-         * @param cache the data cache
-         * @return the complete set of records in the database
-         * @throws SQLException if there is an error performing the query
-         */
-        @Override
-        public List<PaceTrackRuleRec> queryAll(final Cache cache) throws SQLException {
-
-            return doListQuery(cache, ESchema.LEGACY, "SELECT * FROM pace_track_rule");
-        }
-
-        /**
-         * Extracts a record from a result set.
-         *
-         * @param rs the result set from which to retrieve the record
-         * @return the record
-         * @throws SQLException if there is an error accessing the database
-         */
-        @Override
-        public PaceTrackRuleRec fromResultSet(final ResultSet rs) throws SQLException {
-
-            final String subterm = getStringField(rs, FLD_SUBTERM);
-            final Integer pace = getIntegerField(rs, FLD_PACE);
-            final String paceTrack = getStringField(rs, FLD_PACE_TRACK);
-            final String criteria = getStringField(rs, FLD_CRITERIA);
-
-            if (subterm == null || pace == null || paceTrack == null || criteria == null) {
-                throw new SQLException("PaceTrackRule record found with null subterm, pace, pace track, or criteria");
-            }
-
-            return new PaceTrackRuleRec(subterm, pace, paceTrack, criteria);
-        }
+        return new PaceTrackRuleRec(subterm, pace, paceTrack, criteria);
     }
 }

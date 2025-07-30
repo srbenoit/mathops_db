@@ -126,7 +126,7 @@ final class TestMasteryAttemptLogic {
                 }
                 conn.commit();
 
-                final MasteryAttemptLogic logic = MasteryAttemptLogic.get(cache);
+                final MasteryAttemptLogic logic = MasteryAttemptLogic.INSTANCE;
 
                 assertTrue(logic.insert(cache, RAW1), "Failed to insert Informix mastery_attempt");
                 assertTrue(logic.insert(cache, RAW2), "Failed to insert Informix mastery_attempt");
@@ -147,7 +147,7 @@ final class TestMasteryAttemptLogic {
         void test0003() {
 
             final Cache cache = new Cache(informixProfile);
-            final MasteryAttemptLogic logic = MasteryAttemptLogic.get(cache);
+            final MasteryAttemptLogic logic = MasteryAttemptLogic.INSTANCE;
 
             try {
                 final List<MasteryAttemptRec> all = logic.queryAll(cache);
@@ -190,7 +190,7 @@ final class TestMasteryAttemptLogic {
         void test0004() {
 
             final Cache cache = new Cache(informixProfile);
-            final MasteryAttemptLogic logic = MasteryAttemptLogic.get(cache);
+            final MasteryAttemptLogic logic = MasteryAttemptLogic.INSTANCE;
 
             try {
                 final List<MasteryAttemptRec> all = logic.queryByStudent(cache, "STU1");
@@ -229,7 +229,7 @@ final class TestMasteryAttemptLogic {
         void test0005() {
 
             final Cache cache = new Cache(informixProfile);
-            final MasteryAttemptLogic logic = MasteryAttemptLogic.get(cache);
+            final MasteryAttemptLogic logic = MasteryAttemptLogic.INSTANCE;
 
             try {
                 final List<MasteryAttemptRec> all = logic.queryByExam(cache, "EXAM1");
@@ -264,7 +264,7 @@ final class TestMasteryAttemptLogic {
         void test0006() {
 
             final Cache cache = new Cache(informixProfile);
-            final MasteryAttemptLogic logic = MasteryAttemptLogic.get(cache);
+            final MasteryAttemptLogic logic = MasteryAttemptLogic.INSTANCE;
 
             try {
                 final List<MasteryAttemptRec> all = logic.queryByStudentExam(cache, "STU1", "EXAM1", false);
@@ -300,7 +300,7 @@ final class TestMasteryAttemptLogic {
         void test0007() {
 
             final Cache cache = new Cache(informixProfile);
-            final MasteryAttemptLogic logic = MasteryAttemptLogic.get(cache);
+            final MasteryAttemptLogic logic = MasteryAttemptLogic.INSTANCE;
 
             try {
                 final List<MasteryAttemptRec> all = logic.queryByStudentExam(cache, "STU1", "EXAM1", true);
@@ -332,7 +332,7 @@ final class TestMasteryAttemptLogic {
         void test0008() {
 
             final Cache cache = new Cache(informixProfile);
-            final MasteryAttemptLogic logic = MasteryAttemptLogic.get(cache);
+            final MasteryAttemptLogic logic = MasteryAttemptLogic.INSTANCE;
 
             try {
                 final MasteryAttemptRec r = logic.query(cache, Integer.valueOf(11111), "EXAM1");
@@ -355,7 +355,7 @@ final class TestMasteryAttemptLogic {
         void test0009() {
 
             final Cache cache = new Cache(informixProfile);
-            final MasteryAttemptLogic logic = MasteryAttemptLogic.get(cache);
+            final MasteryAttemptLogic logic = MasteryAttemptLogic.INSTANCE;
 
             try {
                 final boolean result = logic.delete(cache, RAW3);

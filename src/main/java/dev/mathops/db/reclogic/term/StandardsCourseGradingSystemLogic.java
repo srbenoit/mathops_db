@@ -5,7 +5,6 @@ import dev.mathops.db.Cache;
 import dev.mathops.db.DataDict;
 import dev.mathops.db.ESchema;
 import dev.mathops.db.rec.term.StandardsCourseGradingSystemRec;
-import dev.mathops.db.reclogic.IRecLogic;
 import dev.mathops.text.builder.SimpleBuilder;
 
 import java.sql.ResultSet;
@@ -44,7 +43,7 @@ import java.util.List;
  * ) TABLESPACE primary_ts;
  * </pre>
  */
-public final class StandardsCourseGradingSystemLogic implements IRecLogic<StandardsCourseGradingSystemRec> {
+public final class StandardsCourseGradingSystemLogic implements ITermRecLogic<StandardsCourseGradingSystemRec> {
 
     /** A single instance. */
     public static final StandardsCourseGradingSystemLogic INSTANCE = new StandardsCourseGradingSystemLogic();
@@ -93,7 +92,7 @@ public final class StandardsCourseGradingSystemLogic implements IRecLogic<Standa
                     sqlIntegerValue(record.uMinScore), ",",
                     sqlIntegerValue(record.minStandardsForInc), ")");
 
-            result = doUpdateOneRow(cache, ESchema.TERM, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;
@@ -121,7 +120,7 @@ public final class StandardsCourseGradingSystemLogic implements IRecLogic<Standa
                     ".standards_course_grading_system WHERE grading_system_id=",
                     sqlStringValue(record.gradingSystemId));
 
-            result = doUpdateOneRow(cache, ESchema.TERM, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;
@@ -146,7 +145,7 @@ public final class StandardsCourseGradingSystemLogic implements IRecLogic<Standa
         } else {
             final String sql = SimpleBuilder.concat("SELECT * FROM ", schemaPrefix, ".standards_course_grading_system");
 
-            result = doListQuery(cache, ESchema.TERM, sql);
+            result = doListQuery(cache, sql);
         }
 
         return result;
@@ -172,7 +171,7 @@ public final class StandardsCourseGradingSystemLogic implements IRecLogic<Standa
             final String sql = SimpleBuilder.concat("SELECT * FROM ", schemaPrefix,
                     ".standards_course_grading_system WHERE grading_system_id=", sqlStringValue(gradingSystemId));
 
-            result = doSingleQuery(cache, ESchema.TERM, sql);
+            result = doSingleQuery(cache, sql);
         }
 
         return result;
@@ -210,7 +209,7 @@ public final class StandardsCourseGradingSystemLogic implements IRecLogic<Standa
                     ",min_standards_for_inc=", sqlIntegerValue(record.minStandardsForInc),
                     " WHERE grading_system_id=", sqlStringValue(record.gradingSystemId));
 
-            result = doUpdateOneRow(cache, ESchema.TERM, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;

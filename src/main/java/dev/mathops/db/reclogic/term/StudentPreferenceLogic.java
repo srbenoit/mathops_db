@@ -5,7 +5,6 @@ import dev.mathops.db.Cache;
 import dev.mathops.db.DataDict;
 import dev.mathops.db.ESchema;
 import dev.mathops.db.rec.term.StudentPreferenceRec;
-import dev.mathops.db.reclogic.IRecLogic;
 import dev.mathops.text.builder.SimpleBuilder;
 
 import java.sql.ResultSet;
@@ -25,7 +24,7 @@ import java.util.List;
  * ) TABLESPACE primary_ts;
  * </pre>
  */
-public final class StudentPreferenceLogic implements IRecLogic<StudentPreferenceRec> {
+public final class StudentPreferenceLogic implements ITermRecLogic<StudentPreferenceRec> {
 
     /** A single instance. */
     public static final StudentPreferenceLogic INSTANCE = new StudentPreferenceLogic();
@@ -62,7 +61,7 @@ public final class StudentPreferenceLogic implements IRecLogic<StudentPreference
                     sqlStringValue(record.prefKey), ",",
                     sqlIntegerValue(record.prefValue), ")");
 
-            result = doUpdateOneRow(cache, ESchema.TERM, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;
@@ -90,7 +89,7 @@ public final class StudentPreferenceLogic implements IRecLogic<StudentPreference
                     ".student_preference WHERE student_id=", sqlStringValue(record.studentId),
                     " AND pref_key=", sqlStringValue(record.prefKey));
 
-            result = doUpdateOneRow(cache, ESchema.TERM, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;
@@ -115,7 +114,7 @@ public final class StudentPreferenceLogic implements IRecLogic<StudentPreference
         } else {
             final String sql = SimpleBuilder.concat("SELECT * FROM ", schemaPrefix, ".student_preference");
 
-            result = doListQuery(cache, ESchema.TERM, sql);
+            result = doListQuery(cache, sql);
         }
 
         return result;
@@ -143,7 +142,7 @@ public final class StudentPreferenceLogic implements IRecLogic<StudentPreference
                     ".student_preference WHERE student_id=", sqlStringValue(studentId),
                     " AND pref_key=", sqlStringValue(prefKey));
 
-            result = doSingleQuery(cache, ESchema.TERM, sql);
+            result = doSingleQuery(cache, sql);
         }
 
         return result;
@@ -169,7 +168,7 @@ public final class StudentPreferenceLogic implements IRecLogic<StudentPreference
             final String sql = SimpleBuilder.concat("SELECT * FROM ", schemaPrefix,
                     ".student_preference WHERE student_id=", sqlStringValue(studentId));
 
-            result = doListQuery(cache, ESchema.TERM, sql);
+            result = doListQuery(cache, sql);
         }
 
         return result;
@@ -197,7 +196,7 @@ public final class StudentPreferenceLogic implements IRecLogic<StudentPreference
                     " WHERE student_id=", sqlStringValue(record.studentId),
                     " AND pref_key=", sqlStringValue(record.prefKey));
 
-            result = doUpdateOneRow(cache, ESchema.TERM, sql);
+            result = doUpdateOneRow(cache, sql);
         }
 
         return result;
