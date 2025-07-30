@@ -62,18 +62,18 @@ public enum RawCuobjectiveLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat("INSERT INTO ", tableName,
                 " (course,unit,term,term_yr,objective,lesson_id,lesson_nbr,start_dt) VALUES (",
-                LogicUtils.sqlStringValue(record.course), ",",
+                conn.sqlStringValue(record.course), ",",
                 record.unit, ",",
-                LogicUtils.sqlStringValue(record.termKey.termCode), ",",
+                conn.sqlStringValue(record.termKey.termCode), ",",
                 record.termKey.shortYear, ",",
                 record.objective, ",",
-                LogicUtils.sqlStringValue(record.lessonId), ",",
-                LogicUtils.sqlStringValue(record.lessonNbr), ",",
-                LogicUtils.sqlDateValue(record.startDt), ")");
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                conn.sqlStringValue(record.lessonId), ",",
+                conn.sqlStringValue(record.lessonNbr), ",",
+                conn.sqlDateValue(record.startDt), ")");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -102,14 +102,14 @@ public enum RawCuobjectiveLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE course=", LogicUtils.sqlStringValue(record.course),
-                "  AND unit=", LogicUtils.sqlIntegerValue(record.unit),
-                "  AND term=", LogicUtils.sqlStringValue(record.termKey.termCode),
-                "  AND term_yr=", LogicUtils.sqlIntegerValue(record.termKey.shortYear),
-                "  AND objective=", LogicUtils.sqlIntegerValue(record.objective));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE course=", conn.sqlStringValue(record.course),
+                "  AND unit=", conn.sqlIntegerValue(record.unit),
+                "  AND term=", conn.sqlStringValue(record.termKey.termCode),
+                "  AND term_yr=", conn.sqlIntegerValue(record.termKey.shortYear),
+                "  AND objective=", conn.sqlIntegerValue(record.objective));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -137,7 +137,13 @@ public enum RawCuobjectiveLogic {
 
         final String tableName = getTableName(cache);
 
-        return executeListQuery(cache, "SELECT * FROM " + tableName);
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return executeListQuery(conn, "SELECT * FROM " + tableName);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -152,27 +158,32 @@ public enum RawCuobjectiveLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat(
                 "SELECT * FROM ", tableName,
-                " WHERE term=", LogicUtils.sqlStringValue(termKey.termCode),
-                " AND term_yr=", LogicUtils.sqlIntegerValue(termKey.shortYear));
+                " WHERE term=", conn.sqlStringValue(termKey.termCode),
+                " AND term_yr=", conn.sqlIntegerValue(termKey.shortYear));
 
-        return executeListQuery(cache, sql);
+        try {
+            return executeListQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
      * Executes a query that returns a list of records.
      *
-     * @param cache the data cache
-     * @param sql   the query
+     * @param conn the database connection
+     * @param sql  the query
      * @return the list of records
      * @throws SQLException if there is an error accessing the database
      */
-    private static List<RawCuobjective> executeListQuery(final Cache cache, final String sql) throws SQLException {
+    private static List<RawCuobjective> executeListQuery(final DbConnection conn, final String sql)
+            throws SQLException {
 
         final List<RawCuobjective> result = new ArrayList<>(50);
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -180,8 +191,6 @@ public enum RawCuobjectiveLogic {
             while (rs.next()) {
                 result.add(RawCuobjective.fromResultSet(rs));
             }
-        } finally {
-            Cache.checkInConnection(conn);
         }
 
         return result;

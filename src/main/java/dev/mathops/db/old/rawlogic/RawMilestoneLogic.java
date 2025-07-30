@@ -1,6 +1,5 @@
 package dev.mathops.db.old.rawlogic;
 
-import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
 import dev.mathops.db.DbConnection;
 import dev.mathops.db.ESchema;
@@ -64,18 +63,18 @@ public enum RawMilestoneLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat("INSERT INTO ", tableName,
                 " (term,term_yr,pace,pace_track,ms_nbr,ms_type,ms_date,nbr_atmpts_allow)", " VALUES (",
-                LogicUtils.sqlStringValue(record.termKey.termCode), ",",
+                conn.sqlStringValue(record.termKey.termCode), ",",
                 record.termKey.shortYear, ",",
-                LogicUtils.sqlIntegerValue(record.pace), ",",
-                LogicUtils.sqlStringValue(record.paceTrack), ",",
+                conn.sqlIntegerValue(record.pace), ",",
+                conn.sqlStringValue(record.paceTrack), ",",
                 record.msNbr, ",",
-                LogicUtils.sqlStringValue(record.msType), ",",
-                LogicUtils.sqlDateValue(record.msDate), ",",
-                LogicUtils.sqlIntegerValue(record.nbrAtmptsAllow), ")");
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                conn.sqlStringValue(record.msType), ",",
+                conn.sqlDateValue(record.msDate), ",",
+                conn.sqlIntegerValue(record.nbrAtmptsAllow), ")");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -87,6 +86,9 @@ public enum RawMilestoneLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -104,15 +106,15 @@ public enum RawMilestoneLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE term=", LogicUtils.sqlStringValue(record.termKey.termCode),
-                "  AND term_yr=", LogicUtils.sqlIntegerValue(record.termKey.shortYear),
-                "  AND pace=", LogicUtils.sqlIntegerValue(record.pace),
-                "  AND pace_track=", LogicUtils.sqlStringValue(record.paceTrack),
-                "  AND ms_nbr=", LogicUtils.sqlIntegerValue(record.msNbr),
-                "  AND ms_type=", LogicUtils.sqlStringValue(record.msType));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE term=", conn.sqlStringValue(record.termKey.termCode),
+                "  AND term_yr=", conn.sqlIntegerValue(record.termKey.shortYear),
+                "  AND pace=", conn.sqlIntegerValue(record.pace),
+                "  AND pace_track=", conn.sqlStringValue(record.paceTrack),
+                "  AND ms_nbr=", conn.sqlIntegerValue(record.msNbr),
+                "  AND ms_type=", conn.sqlStringValue(record.msType));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -124,6 +126,9 @@ public enum RawMilestoneLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -140,7 +145,13 @@ public enum RawMilestoneLogic {
 
         final String tableName = getTableName(cache);
 
-        return executeListQuery(cache, "SELECT * FROM " + tableName);
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return executeListQuery(conn, "SELECT * FROM " + tableName);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -155,11 +166,17 @@ public enum RawMilestoneLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM " + tableName,
-                " WHERE term=", LogicUtils.sqlStringValue(termKey.termCode),
-                "   AND term_yr=", LogicUtils.sqlIntegerValue(termKey.shortYear));
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
-        return executeListQuery(cache, sql);
+        final String sql = SimpleBuilder.concat("SELECT * FROM " + tableName,
+                " WHERE term=", conn.sqlStringValue(termKey.termCode),
+                "   AND term_yr=", conn.sqlIntegerValue(termKey.shortYear));
+
+        try {
+            return executeListQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -177,13 +194,19 @@ public enum RawMilestoneLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
-                " WHERE term=", LogicUtils.sqlStringValue(termKey.termCode),
-                "   AND term_yr=", LogicUtils.sqlIntegerValue(termKey.shortYear),
-                "   AND pace=", LogicUtils.sqlIntegerValue(Integer.valueOf(pace)),
-                "   AND pace_track=", LogicUtils.sqlStringValue(paceTrack));
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
-        return executeListQuery(cache, sql);
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
+                " WHERE term=", conn.sqlStringValue(termKey.termCode),
+                "   AND term_yr=", conn.sqlIntegerValue(termKey.shortYear),
+                "   AND pace=", conn.sqlIntegerValue(Integer.valueOf(pace)),
+                "   AND pace_track=", conn.sqlStringValue(paceTrack));
+
+        try {
+            return executeListQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -200,20 +223,18 @@ public enum RawMilestoneLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("UPDATE ", tableName,
-                " SET ms_date=", LogicUtils.sqlDateValue(newMsDate),
-                " WHERE term=", LogicUtils.sqlStringValue(milestone.termKey.termCode),
-                "   AND term_yr=", LogicUtils.sqlIntegerValue(milestone.termKey.shortYear),
-                "   AND pace=", LogicUtils.sqlIntegerValue(milestone.pace),
-                "   AND pace_track=", LogicUtils.sqlStringValue(milestone.paceTrack),
-                "   AND ms_nbr=", LogicUtils.sqlIntegerValue(milestone.msNbr),
-                "   AND ms_type=", LogicUtils.sqlStringValue(milestone.msType));
-
-        boolean result = false;
-
-        Log.info(sql);
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("UPDATE ", tableName,
+                " SET ms_date=", conn.sqlDateValue(newMsDate),
+                " WHERE term=", conn.sqlStringValue(milestone.termKey.termCode),
+                "   AND term_yr=", conn.sqlIntegerValue(milestone.termKey.shortYear),
+                "   AND pace=", conn.sqlIntegerValue(milestone.pace),
+                "   AND pace_track=", conn.sqlStringValue(milestone.paceTrack),
+                "   AND ms_nbr=", conn.sqlIntegerValue(milestone.msNbr),
+                "   AND ms_type=", conn.sqlStringValue(milestone.msType));
+
+        boolean result;
 
         try (final Statement stmt = conn.createStatement()) {
             final int numRows = stmt.executeUpdate(sql);
@@ -224,6 +245,9 @@ public enum RawMilestoneLogic {
             } else {
                 conn.rollback();
             }
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -234,16 +258,14 @@ public enum RawMilestoneLogic {
     /**
      * Executes a query that returns a list of records.
      *
-     * @param cache the data cache
-     * @param sql   the query
+     * @param conn the database connection
+     * @param sql  the query
      * @return the list of records
      * @throws SQLException if there is an error accessing the database
      */
-    private static List<RawMilestone> executeListQuery(final Cache cache, final String sql) throws SQLException {
+    private static List<RawMilestone> executeListQuery(final DbConnection conn, final String sql) throws SQLException {
 
         final List<RawMilestone> result = new ArrayList<>(10);
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -251,8 +273,6 @@ public enum RawMilestoneLogic {
             while (rs.next()) {
                 result.add(RawMilestone.fromResultSet(rs));
             }
-        } finally {
-            Cache.checkInConnection(conn);
         }
 
         return result;

@@ -65,21 +65,21 @@ public enum RawMpeLogLogic {
         } else {
             final String tableName = getTableName(cache);
 
+            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
             final String sql = SimpleBuilder.concat(
                     "INSERT INTO ", tableName, " (stu_id,academic_yr,course,version,start_dt,",
                     "exam_dt,recover_dt,serial_nbr,start_time,calc_nbr) VALUES (",
-                    LogicUtils.sqlStringValue(record.stuId), ",",
-                    LogicUtils.sqlStringValue(record.academicYr), ",",
-                    LogicUtils.sqlStringValue(record.course), ",",
-                    LogicUtils.sqlStringValue(record.version), ",",
-                    LogicUtils.sqlDateValue(record.startDt), ",",
-                    LogicUtils.sqlDateValue(record.examDt), ",",
-                    LogicUtils.sqlDateValue(record.recoverDt), ",",
-                    LogicUtils.sqlLongValue(record.serialNbr), ",",
-                    LogicUtils.sqlIntegerValue(record.startTime), ",",
-                    LogicUtils.sqlStringValue(record.calcNbr), ")");
-
-            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                    conn.sqlStringValue(record.stuId), ",",
+                    conn.sqlStringValue(record.academicYr), ",",
+                    conn.sqlStringValue(record.course), ",",
+                    conn.sqlStringValue(record.version), ",",
+                    conn.sqlDateValue(record.startDt), ",",
+                    conn.sqlDateValue(record.examDt), ",",
+                    conn.sqlDateValue(record.recoverDt), ",",
+                    conn.sqlLongValue(record.serialNbr), ",",
+                    conn.sqlIntegerValue(record.startTime), ",",
+                    conn.sqlStringValue(record.calcNbr), ")");
 
             try (final Statement stmt = conn.createStatement()) {
                 result = stmt.executeUpdate(sql) == 1;
@@ -89,6 +89,9 @@ public enum RawMpeLogLogic {
                 } else {
                     conn.rollback();
                 }
+            } catch (final SQLException ex) {
+                conn.rollback();
+                throw ex;
             } finally {
                 Cache.checkInConnection(conn);
             }
@@ -111,15 +114,15 @@ public enum RawMpeLogLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
-                "  AND course=", LogicUtils.sqlStringValue(record.course),
-                "  AND version=", LogicUtils.sqlStringValue(record.version),
-                "  AND start_dt=", LogicUtils.sqlDateValue(record.startDt),
-                "  AND start_time=", LogicUtils.sqlIntegerValue(record.startTime),
-                "  AND serial_nbr=", LogicUtils.sqlLongValue(record.serialNbr));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE stu_id=", conn.sqlStringValue(record.stuId),
+                "  AND course=", conn.sqlStringValue(record.course),
+                "  AND version=", conn.sqlStringValue(record.version),
+                "  AND start_dt=", conn.sqlDateValue(record.startDt),
+                "  AND start_time=", conn.sqlIntegerValue(record.startTime),
+                "  AND serial_nbr=", conn.sqlLongValue(record.serialNbr));
 
         try (final Statement stmt = conn.createStatement()) {
             result = stmt.executeUpdate(sql) == 1;
@@ -129,6 +132,9 @@ public enum RawMpeLogLogic {
             } else {
                 conn.rollback();
             }
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -190,15 +196,15 @@ public enum RawMpeLogLogic {
         } else {
             final String tableName = getTableName(cache);
 
+            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
             final String sql = SimpleBuilder.concat(
                     "UPDATE ", tableName, " SET exam_dt=",
-                    LogicUtils.sqlDateValue(examDt), ", recover_dt=",
-                    LogicUtils.sqlDateValue(recoverDt), " WHERE stu_id=",
-                    LogicUtils.sqlStringValue(stuId), " AND start_dt=",
-                    LogicUtils.sqlDateValue(startDt), " AND start_time=",
-                    LogicUtils.sqlIntegerValue(startTime));
-
-            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                    conn.sqlDateValue(examDt), ", recover_dt=",
+                    conn.sqlDateValue(recoverDt), " WHERE stu_id=",
+                    conn.sqlStringValue(stuId), " AND start_dt=",
+                    conn.sqlDateValue(startDt), " AND start_time=",
+                    conn.sqlIntegerValue(startTime));
 
             try (final Statement stmt = conn.createStatement()) {
                 result = stmt.executeUpdate(sql) == 1;
@@ -208,6 +214,9 @@ public enum RawMpeLogLogic {
                 } else {
                     conn.rollback();
                 }
+            } catch (final SQLException ex) {
+                conn.rollback();
+                throw ex;
             } finally {
                 Cache.checkInConnection(conn);
             }

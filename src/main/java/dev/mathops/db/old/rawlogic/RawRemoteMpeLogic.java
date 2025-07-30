@@ -60,16 +60,16 @@ public enum RawRemoteMpeLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat(
                 "INSERT INTO ", tableName, " (term,term_yr,apln_term,course,start_dt,end_dt) VALUES (",
-                LogicUtils.sqlStringValue(record.termKey.termCode), ",",
+                conn.sqlStringValue(record.termKey.termCode), ",",
                 record.termKey.shortYear, ",",
-                LogicUtils.sqlTermValue(record.aplnTerm), ",",
-                LogicUtils.sqlStringValue(record.course), ",",
-                LogicUtils.sqlDateValue(record.startDt), ",",
-                LogicUtils.sqlDateValue(record.endDt), ")");
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                conn.sqlTermValue(record.aplnTerm), ",",
+                conn.sqlStringValue(record.course), ",",
+                conn.sqlDateValue(record.startDt), ",",
+                conn.sqlDateValue(record.endDt), ")");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -81,6 +81,9 @@ public enum RawRemoteMpeLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -98,14 +101,14 @@ public enum RawRemoteMpeLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE term=", LogicUtils.sqlStringValue(record.termKey.termCode),
-                "  AND term_yr=", LogicUtils.sqlIntegerValue(record.termKey.shortYear),
-                "  AND apln_term=", LogicUtils.sqlStringValue(record.aplnTerm.shortString),
-                "  AND course=", LogicUtils.sqlStringValue(record.course),
-                "  AND start_dt=", LogicUtils.sqlDateValue(record.startDt));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE term=", conn.sqlStringValue(record.termKey.termCode),
+                "  AND term_yr=", conn.sqlIntegerValue(record.termKey.shortYear),
+                "  AND apln_term=", conn.sqlStringValue(record.aplnTerm.shortString),
+                "  AND course=", conn.sqlStringValue(record.course),
+                "  AND start_dt=", conn.sqlDateValue(record.startDt));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -117,6 +120,9 @@ public enum RawRemoteMpeLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }

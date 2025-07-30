@@ -59,15 +59,15 @@ public enum RawCalcsLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat("INSERT INTO ", tableName,
                 " (stu_id,issued_nbr,return_nbr,serial_nbr,exam_dt) VALUES (",
-                LogicUtils.sqlStringValue(record.stuId), ",",
-                LogicUtils.sqlStringValue(record.issuedNbr), ",",
-                LogicUtils.sqlStringValue(record.returnNbr), ",",
-                LogicUtils.sqlLongValue(record.serialNbr), ",",
-                LogicUtils.sqlDateValue(record.examDt), ")");
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                conn.sqlStringValue(record.stuId), ",",
+                conn.sqlStringValue(record.issuedNbr), ",",
+                conn.sqlStringValue(record.returnNbr), ",",
+                conn.sqlLongValue(record.serialNbr), ",",
+                conn.sqlDateValue(record.examDt), ")");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -79,6 +79,9 @@ public enum RawCalcsLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -96,14 +99,14 @@ public enum RawCalcsLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
-                "   AND issued_nbr=", LogicUtils.sqlStringValue(record.issuedNbr),
-                "   AND return_nbr=", LogicUtils.sqlStringValue(record.returnNbr),
-                "   AND serial_nbr=", LogicUtils.sqlLongValue(record.serialNbr),
-                "   AND exam_dt=", LogicUtils.sqlDateValue(record.examDt));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE stu_id=", conn.sqlStringValue(record.stuId),
+                "   AND issued_nbr=", conn.sqlStringValue(record.issuedNbr),
+                "   AND return_nbr=", conn.sqlStringValue(record.returnNbr),
+                "   AND serial_nbr=", conn.sqlLongValue(record.serialNbr),
+                "   AND exam_dt=", conn.sqlDateValue(record.examDt));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) > 0;
@@ -115,6 +118,9 @@ public enum RawCalcsLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -164,10 +170,10 @@ public enum RawCalcsLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
-                " WHERE stu_id=", LogicUtils.sqlStringValue(stuId));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
+                " WHERE stu_id=", conn.sqlStringValue(stuId));
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -196,10 +202,10 @@ public enum RawCalcsLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
-                " WHERE issued_nbr=", LogicUtils.sqlStringValue(calculatorId));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
+                " WHERE issued_nbr=", conn.sqlStringValue(calculatorId));
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {

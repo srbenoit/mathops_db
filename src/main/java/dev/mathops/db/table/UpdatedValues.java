@@ -72,23 +72,25 @@ public final class UpdatedValues {
             }
 
             final Field field = theTable.getField(i);
+            final FieldDef def = field.getDef();
             if (value instanceof NullValue) {
                 if (field.getRole().isNullable()) {
                     throw new IllegalArgumentException("May not update a non-nullable field to a null value.");
                 }
-            } else if (field.isValidType(value)) {
+            } else if (def.isValidType(value)) {
                 // Check that the target value satisfies all constraints
-                final int numConstraints = field.getNumConstraints();
+                final int numConstraints = def.getNumConstraints();
                 for (int j = 0; j < numConstraints; ++j) {
-                    final AbstractFieldConstraint<?> constraint = field.getConstraint(j);
+                    final AbstractFieldConstraint<?> constraint = def.getConstraint(j);
                     if (!constraint.isValidValue(value)) {
-                        throw new IllegalArgumentException("Value of '" + field.getName()
+                        throw new IllegalArgumentException("Value of '" + def.getName()
                                                            + "' field does not satisfy field constraints");
                     }
                 }
             } else {
-                throw new IllegalArgumentException("A field of type " + field.getType().cls.getSimpleName()
-                                                   + " may not be updated to a value of type " + value.getClass().getSimpleName());
+                throw new IllegalArgumentException("A field of type " + def.getType().cls.getSimpleName()
+                                                   + " may not be updated to a value of type "
+                                                   + value.getClass().getSimpleName());
             }
 
             ++numberToUpdate;

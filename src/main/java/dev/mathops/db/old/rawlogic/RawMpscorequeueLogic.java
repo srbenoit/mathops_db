@@ -100,14 +100,14 @@ public enum RawMpscorequeueLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat(
                 "INSERT INTO ", tableName, " (pidm,test_code,test_date,test_score) VALUES (",
-                LogicUtils.sqlIntegerValue(record.pidm), ",",
-                LogicUtils.sqlStringValue(record.testCode), ",",
-                LogicUtils.sqlDateTimeValue(record.testDate), ",",
-                LogicUtils.sqlStringValue(record.testScore), ")");
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                conn.sqlIntegerValue(record.pidm), ",",
+                conn.sqlStringValue(record.testCode), ",",
+                conn.sqlDateTimeValue(record.testDate), ",",
+                conn.sqlStringValue(record.testScore), ")");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -119,6 +119,9 @@ public enum RawMpscorequeueLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -136,13 +139,13 @@ public enum RawMpscorequeueLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE pidm=", LogicUtils.sqlIntegerValue(record.pidm),
-                " AND test_code=", LogicUtils.sqlStringValue(record.testCode),
-                " AND test_date=", LogicUtils.sqlDateTimeValue(record.testDate),
-                " AND test_score=", LogicUtils.sqlStringValue(record.testScore));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE pidm=", conn.sqlIntegerValue(record.pidm),
+                " AND test_code=", conn.sqlStringValue(record.testCode),
+                " AND test_date=", conn.sqlDateTimeValue(record.testDate),
+                " AND test_score=", conn.sqlStringValue(record.testScore));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -154,6 +157,9 @@ public enum RawMpscorequeueLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -201,10 +207,10 @@ public enum RawMpscorequeueLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
-                " WHERE pidm=", LogicUtils.sqlIntegerValue(pidm));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
+                " WHERE pidm=", conn.sqlIntegerValue(pidm));
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -711,6 +717,9 @@ public enum RawMpscorequeueLogic {
                 // This is critical - evidently the "auto-commit" setting does not apply to calls
                 conn.commit();
                 result = true;
+            } catch (final SQLException ex) {
+                conn.rollback();
+                throw ex;
             }
         }
 

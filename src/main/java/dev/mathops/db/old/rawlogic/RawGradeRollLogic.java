@@ -63,17 +63,17 @@ public enum RawGradeRollLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat("INSERT INTO ", tableName, " (",
                 "stu_id,course,sect,fullname,grade_opt,term,term_yr) VALUES (",
-                LogicUtils.sqlStringValue(record.stuId), ",",
-                LogicUtils.sqlStringValue(record.course), ",",
-                LogicUtils.sqlStringValue(record.sect), ",",
-                LogicUtils.sqlStringValue(record.fullname), ",",
-                LogicUtils.sqlStringValue(record.gradeOpt), ",",
-                LogicUtils.sqlStringValue(record.termKey.termCode), ",",
-                LogicUtils.sqlIntegerValue(record.termKey.shortYear), ")");
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                conn.sqlStringValue(record.stuId), ",",
+                conn.sqlStringValue(record.course), ",",
+                conn.sqlStringValue(record.sect), ",",
+                conn.sqlStringValue(record.fullname), ",",
+                conn.sqlStringValue(record.gradeOpt), ",",
+                conn.sqlStringValue(record.termKey.termCode), ",",
+                conn.sqlIntegerValue(record.termKey.shortYear), ")");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -85,6 +85,9 @@ public enum RawGradeRollLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -106,14 +109,14 @@ public enum RawGradeRollLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
-                "  AND course=", LogicUtils.sqlStringValue(record.course),
-                "  AND sect=", LogicUtils.sqlStringValue(record.sect),
-                "  AND term=", LogicUtils.sqlStringValue(record.termKey.termCode),
-                "  AND term_yr=", LogicUtils.sqlIntegerValue(record.termKey.shortYear));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE stu_id=", conn.sqlStringValue(record.stuId),
+                "  AND course=", conn.sqlStringValue(record.course),
+                "  AND sect=", conn.sqlStringValue(record.sect),
+                "  AND term=", conn.sqlStringValue(record.termKey.termCode),
+                "  AND term_yr=", conn.sqlIntegerValue(record.termKey.shortYear));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -125,6 +128,9 @@ public enum RawGradeRollLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }

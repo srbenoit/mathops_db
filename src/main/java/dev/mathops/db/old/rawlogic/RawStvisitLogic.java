@@ -67,15 +67,15 @@ public enum RawStvisitLogic {
         } else {
             final String tableName = getTableName(cache);
 
+            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
             final String sql = SimpleBuilder.concat(
                     "INSERT INTO ", tableName, " (stu_id,when_started,when_ended,location,seat) VALUES (",
-                    LogicUtils.sqlStringValue(record.stuId), ",",
-                    LogicUtils.sqlDateTimeValue(record.whenStarted), ",",
-                    LogicUtils.sqlDateTimeValue(record.whenEnded), ",",
-                    LogicUtils.sqlStringValue(record.location), ",",
-                    LogicUtils.sqlStringValue(record.seat), ")");
-
-            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                    conn.sqlStringValue(record.stuId), ",",
+                    conn.sqlDateTimeValue(record.whenStarted), ",",
+                    conn.sqlDateTimeValue(record.whenEnded), ",",
+                    conn.sqlStringValue(record.location), ",",
+                    conn.sqlStringValue(record.seat), ")");
 
             try (final Statement stmt = conn.createStatement()) {
                 result = stmt.executeUpdate(sql) == 1;
@@ -85,6 +85,9 @@ public enum RawStvisitLogic {
                 } else {
                     conn.rollback();
                 }
+            } catch (final SQLException ex) {
+                conn.rollback();
+                throw ex;
             } finally {
                 Cache.checkInConnection(conn);
             }
@@ -105,11 +108,11 @@ public enum RawStvisitLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName, " WHERE stu_id=",
-                LogicUtils.sqlStringValue(record.stuId),
-                "  AND when_started=", LogicUtils.sqlDateTimeValue(record.whenStarted));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName, " WHERE stu_id=",
+                conn.sqlStringValue(record.stuId),
+                "  AND when_started=", conn.sqlDateTimeValue(record.whenStarted));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -121,6 +124,9 @@ public enum RawStvisitLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -137,7 +143,13 @@ public enum RawStvisitLogic {
 
         final String tableName = getTableName(cache);
 
-        return executeListQuery(cache, "SELECT * FROM " + tableName);
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return executeListQuery(conn, "SELECT * FROM " + tableName);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -152,10 +164,16 @@ public enum RawStvisitLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE stu_id=",
-                LogicUtils.sqlStringValue(stuId));
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
-        return executeListQuery(cache, sql);
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE stu_id=",
+                conn.sqlStringValue(stuId));
+
+        try {
+            return executeListQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -172,11 +190,16 @@ public enum RawStvisitLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE stu_id=",
-                LogicUtils.sqlStringValue(stuId),
-                " AND when_ended IS NULL");
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
-        return executeListQuery(cache, sql);
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE stu_id=",
+                conn.sqlStringValue(stuId), " AND when_ended IS NULL");
+
+        try {
+            return executeListQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -222,9 +245,9 @@ public enum RawStvisitLogic {
             for (final RawStvisit rec : getInProgressStudentVisits(cache, stuId)) {
 
                 final String sql = SimpleBuilder.concat(
-                        "UPDATE ", tableName, " SET when_ended=", LogicUtils.sqlDateTimeValue(endDateTime),
-                        " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
-                        " AND when_started=", LogicUtils.sqlDateTimeValue(rec.whenStarted));
+                        "UPDATE ", tableName, " SET when_ended=", conn.sqlDateTimeValue(endDateTime),
+                        " WHERE stu_id=", conn.sqlStringValue(stuId),
+                        " AND when_started=", conn.sqlDateTimeValue(rec.whenStarted));
 
                 if (stmt.executeUpdate(sql) == 1) {
                     conn.commit();
@@ -234,6 +257,9 @@ public enum RawStvisitLogic {
                     break;
                 }
             }
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -244,16 +270,14 @@ public enum RawStvisitLogic {
     /**
      * Executes a query that returns a list of records.
      *
-     * @param cache the data cache
-     * @param sql   the SQL to execute
+     * @param conn the database connection
+     * @param sql  the SQL to execute
      * @return the list of matching records
      * @throws SQLException if there is an error accessing the database
      */
-    private static List<RawStvisit> executeListQuery(final Cache cache, final String sql) throws SQLException {
+    private static List<RawStvisit> executeListQuery(final DbConnection conn, final String sql) throws SQLException {
 
         final List<RawStvisit> result = new ArrayList<>(500);
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -261,8 +285,6 @@ public enum RawStvisitLogic {
             while (rs.next()) {
                 result.add(RawStvisit.fromResultSet(rs));
             }
-        } finally {
-            Cache.checkInConnection(conn);
         }
 
         return result;

@@ -2,6 +2,7 @@ package dev.mathops.db.table.criteria;
 
 import dev.mathops.db.table.EFieldType;
 import dev.mathops.db.table.Field;
+import dev.mathops.db.table.FieldDef;
 
 /**
  *  A criterion that can be used to match a String field.
@@ -25,7 +26,8 @@ public class StringFieldCriterion extends AbstractFieldCriterion {
 
         super(theField);
 
-        if (theField.getType() != EFieldType.STRING) {
+        final FieldDef def = theField.getDef();
+        if (def.getType() != EFieldType.STRING) {
             throw new IllegalArgumentException("A String field criterion must be used with a String field");
         }
         if (theMatchType == null) {

@@ -4,7 +4,6 @@ import dev.mathops.commons.CoreConstants;
 import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
 import dev.mathops.db.DbConnection;
-import dev.mathops.db.EDbProduct;
 import dev.mathops.db.ESchema;
 import dev.mathops.db.old.rawrecord.RawAdminHold;
 import dev.mathops.text.builder.HtmlBuilder;
@@ -245,27 +244,13 @@ public enum RawAdminHoldLogic {
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
             try {
-                final String sql;
-
-                if (conn.getProduct() == EDbProduct.POSTGRESQL) {
-                    sql = SimpleBuilder.concat(
-                            "INSERT INTO ", tableName,
-                            " (stu_id,hold_id,sev_admin_hold,times_display,create_dt) VALUES (",
-                            LogicUtils.sqlStringValue(record.stuId), ",",
-                            LogicUtils.sqlStringValue(record.holdId), ",",
-                            LogicUtils.sqlStringValue(record.sevAdminHold), ",",
-                            LogicUtils.sqlIntegerValue(record.timesDisplay), ",",
-                            LogicUtils.sqlPgDateValue(record.createDt), ")");
-                } else {
-                    sql = SimpleBuilder.concat(
-                            "INSERT INTO ", tableName,
-                            " (stu_id,hold_id,sev_admin_hold,times_display,create_dt) VALUES (",
-                            LogicUtils.sqlStringValue(record.stuId), ",",
-                            LogicUtils.sqlStringValue(record.holdId), ",",
-                            LogicUtils.sqlStringValue(record.sevAdminHold), ",",
-                            LogicUtils.sqlIntegerValue(record.timesDisplay), ",",
-                            LogicUtils.sqlDateValue(record.createDt), ")");
-                }
+                final String sql = SimpleBuilder.concat(
+                        "INSERT INTO ", tableName, " (stu_id,hold_id,sev_admin_hold,times_display,create_dt) VALUES (",
+                        conn.sqlStringValue(record.stuId), ",",
+                        conn.sqlStringValue(record.holdId), ",",
+                        conn.sqlStringValue(record.sevAdminHold), ",",
+                        conn.sqlIntegerValue(record.timesDisplay), ",",
+                        conn.sqlDateValue(record.createDt), ")");
 
                 try (final Statement stmt = conn.createStatement()) {
                     result = stmt.executeUpdate(sql) == 1;
@@ -276,6 +261,9 @@ public enum RawAdminHoldLogic {
                         conn.rollback();
                     }
                 }
+            } catch (final SQLException ex) {
+                conn.rollback();
+                throw ex;
             } finally {
                 Cache.checkInConnection(conn);
             }
@@ -296,15 +284,14 @@ public enum RawAdminHoldLogic {
 
         final boolean result;
 
-        final HtmlBuilder sql = new HtmlBuilder(100);
-
         final String tableName = getTableName(cache);
 
-        sql.add("DELETE FROM ", tableName,
-                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
-                "   AND hold_id=", LogicUtils.sqlStringValue(record.holdId));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final HtmlBuilder sql = new HtmlBuilder(100);
+        sql.add("DELETE FROM ", tableName,
+                " WHERE stu_id=", conn.sqlStringValue(record.stuId),
+                "   AND hold_id=", conn.sqlStringValue(record.holdId));
 
         try (final Statement stmt = conn.createStatement()) {
             result = stmt.executeUpdate(sql.toString()) == 1;
@@ -314,6 +301,9 @@ public enum RawAdminHoldLogic {
             } else {
                 conn.rollback();
             }
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -370,12 +360,12 @@ public enum RawAdminHoldLogic {
         } else {
             final String tableName = getTableName(cache);
 
-            final String sql = SimpleBuilder.concat(
-                    "SELECT * FROM ", tableName, " WHERE stu_id=", LogicUtils.sqlStringValue(stuId));
-
             result = new ArrayList<>(10);
 
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+            final String sql = SimpleBuilder.concat(
+                    "SELECT * FROM ", tableName, " WHERE stu_id=", conn.sqlStringValue(stuId));
 
             try (final Statement stmt = conn.createStatement();
                  final ResultSet rs = stmt.executeQuery(sql)) {
@@ -411,11 +401,11 @@ public enum RawAdminHoldLogic {
 
             final String tableName = getTableName(cache);
 
-            sql.add("SELECT * FROM ", tableName,
-                    " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
-                    "   AND hold_id=", LogicUtils.sqlStringValue(holdId));
-
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+            sql.add("SELECT * FROM ", tableName,
+                    " WHERE stu_id=", conn.sqlStringValue(stuId),
+                    "   AND hold_id=", conn.sqlStringValue(holdId));
 
             try (final Statement stmt = conn.createStatement();
                  final ResultSet rs = stmt.executeQuery(sql.toString())) {
@@ -445,13 +435,13 @@ public enum RawAdminHoldLogic {
 
         final String tableName = getTableName(cache);
 
-        sql.add("SELECT count(*) FROM ", tableName,
-                " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
-                "   AND sev_admin_hold='F'");
-
         boolean result = false;
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        sql.add("SELECT count(*) FROM ", tableName,
+                " WHERE stu_id=", conn.sqlStringValue(stuId),
+                "   AND sev_admin_hold='F'");
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql.toString())) {
@@ -480,15 +470,18 @@ public enum RawAdminHoldLogic {
 
         final String tableName = getTableName(cache);
 
-        sql.add("DELETE FROM ", tableName,
-                " WHERE hold_id=", LogicUtils.sqlStringValue(holdId));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        sql.add("DELETE FROM ", tableName,
+                " WHERE hold_id=", conn.sqlStringValue(holdId));
 
         final int count;
         try (final Statement stmt = conn.createStatement()) {
             count = stmt.executeUpdate(sql.toString());
             conn.commit();
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -517,17 +510,10 @@ public enum RawAdminHoldLogic {
 
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
             try {
-                if (conn.getProduct() == EDbProduct.POSTGRESQL) {
-                    sql.add("UPDATE ", tableName,
-                            "   SET create_dt=", LogicUtils.sqlPgDateValue(record.createDt),
-                            " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
-                            "   AND hold_id=", LogicUtils.sqlStringValue(record.holdId));
-                } else {
-                    sql.add("UPDATE ", tableName,
-                            "   SET create_dt=", LogicUtils.sqlDateValue(record.createDt),
-                            " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
-                            "   AND hold_id=", LogicUtils.sqlStringValue(record.holdId));
-                }
+                sql.add("UPDATE ", tableName,
+                        "   SET create_dt=", conn.sqlDateValue(record.createDt),
+                        " WHERE stu_id=", conn.sqlStringValue(record.stuId),
+                        "   AND hold_id=", conn.sqlStringValue(record.holdId));
 
                 try (final Statement stmt = conn.createStatement()) {
                     result = stmt.executeUpdate(sql.toString()) == 1;
@@ -538,6 +524,9 @@ public enum RawAdminHoldLogic {
                         conn.rollback();
                     }
                 }
+            } catch (final SQLException ex) {
+                conn.rollback();
+                throw ex;
             } finally {
                 Cache.checkInConnection(conn);
             }

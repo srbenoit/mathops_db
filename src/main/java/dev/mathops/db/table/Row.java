@@ -58,19 +58,20 @@ public final class Row {
         for (int i = 0; i < numDefined; ++i) {
             final Field field = theTable.getField(i);
             final Object value = this.fieldValues[i];
+            final FieldDef def = field.getDef();
 
             if (value == null) {
                 if (field.getRole() != EFieldRole.NULLABLE) {
-                    final String fieldName = field.getName();
+                    final String fieldName = def.getName();
                     throw new IllegalArgumentException("Value of '" + fieldName
                             + "' field was null but this field does not allow nulls");
                 }
             } else {
-                final int numConstraints = field.getNumConstraints();
+                final int numConstraints = def.getNumConstraints();
                 for (int j = 0; j < numConstraints; ++j) {
-                    final AbstractFieldConstraint<?> constraint = field.getConstraint(j);
+                    final AbstractFieldConstraint<?> constraint = def.getConstraint(j);
                     if (!constraint.isValidValue(value)) {
-                        final String fieldName = field.getName();
+                        final String fieldName = def.getName();
                         throw new IllegalArgumentException("Value of '" + fieldName
                                 + "' field does not satisfy field constraints");
                     }

@@ -88,43 +88,43 @@ public enum RawDupRegistrLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat(
                 "INSERT INTO ", tableName, " (stu_id,course,sect,term,term_yr,pace_order,open_status,grading_option,",
                 "completed,score,course_grade,prereq_satis,init_class_roll,stu_provided,final_class_roll,exam_placed,",
                 "zero_unit,timeout_factor,forfeit_i,i_in_progress,i_counted,ctrl_test,deferred_f_dt,bypass_timeout,",
                 "instrn_type,registration_status,last_class_roll_dt,i_term,i_term_yr,i_deadline_dt) VALUES (",
-                LogicUtils.sqlStringValue(record.stuId), ",",
-                LogicUtils.sqlStringValue(record.course), ",",
-                LogicUtils.sqlStringValue(record.sect), ",",
-                LogicUtils.sqlStringValue(record.termKey.termCode), ",",
-                LogicUtils.sqlIntegerValue(record.termKey.shortYear), ",",
-                LogicUtils.sqlIntegerValue(record.paceOrder), ",",
-                LogicUtils.sqlStringValue(record.openStatus), ",",
-                LogicUtils.sqlStringValue(record.gradingOption), ",",
-                LogicUtils.sqlStringValue(record.completed), ",",
-                LogicUtils.sqlIntegerValue(record.score), ",",
-                LogicUtils.sqlStringValue(record.courseGrade), ",",
-                LogicUtils.sqlStringValue(record.prereqSatis), ",",
-                LogicUtils.sqlStringValue(record.initClassRoll), ",",
-                LogicUtils.sqlStringValue(record.stuProvided), ",",
-                LogicUtils.sqlStringValue(record.finalClassRoll), ",",
-                LogicUtils.sqlStringValue(record.examPlaced), ",",
-                LogicUtils.sqlIntegerValue(record.zeroUnit), ",",
-                LogicUtils.sqlFloatValue(record.timeoutFactor), ",",
-                LogicUtils.sqlStringValue(record.forfeitI), ",",
-                LogicUtils.sqlStringValue(record.iInProgress), ",",
-                LogicUtils.sqlStringValue(record.iCounted), ",",
-                LogicUtils.sqlStringValue(record.ctrlTest), ",",
-                LogicUtils.sqlDateValue(record.deferredFDt), ",",
-                LogicUtils.sqlIntegerValue(record.bypassTimeout), ",",
-                LogicUtils.sqlStringValue(record.instrnType), ",",
-                LogicUtils.sqlStringValue(record.registrationStatus), ",",
-                LogicUtils.sqlDateValue(record.lastClassRollDt), ",",
-                LogicUtils.sqlStringValue(record.iTermKey == null ? null : record.iTermKey.termCode), ",",
-                LogicUtils.sqlIntegerValue(record.iTermKey == null ? null : record.iTermKey.shortYear), ",",
-                LogicUtils.sqlDateValue(record.iDeadlineDt), ")");
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                conn.sqlStringValue(record.stuId), ",",
+                conn.sqlStringValue(record.course), ",",
+                conn.sqlStringValue(record.sect), ",",
+                conn.sqlStringValue(record.termKey.termCode), ",",
+                conn.sqlIntegerValue(record.termKey.shortYear), ",",
+                conn.sqlIntegerValue(record.paceOrder), ",",
+                conn.sqlStringValue(record.openStatus), ",",
+                conn.sqlStringValue(record.gradingOption), ",",
+                conn.sqlStringValue(record.completed), ",",
+                conn.sqlIntegerValue(record.score), ",",
+                conn.sqlStringValue(record.courseGrade), ",",
+                conn.sqlStringValue(record.prereqSatis), ",",
+                conn.sqlStringValue(record.initClassRoll), ",",
+                conn.sqlStringValue(record.stuProvided), ",",
+                conn.sqlStringValue(record.finalClassRoll), ",",
+                conn.sqlStringValue(record.examPlaced), ",",
+                conn.sqlIntegerValue(record.zeroUnit), ",",
+                conn.sqlFloatValue(record.timeoutFactor), ",",
+                conn.sqlStringValue(record.forfeitI), ",",
+                conn.sqlStringValue(record.iInProgress), ",",
+                conn.sqlStringValue(record.iCounted), ",",
+                conn.sqlStringValue(record.ctrlTest), ",",
+                conn.sqlDateValue(record.deferredFDt), ",",
+                conn.sqlIntegerValue(record.bypassTimeout), ",",
+                conn.sqlStringValue(record.instrnType), ",",
+                conn.sqlStringValue(record.registrationStatus), ",",
+                conn.sqlDateValue(record.lastClassRollDt), ",",
+                conn.sqlStringValue(record.iTermKey == null ? null : record.iTermKey.termCode), ",",
+                conn.sqlIntegerValue(record.iTermKey == null ? null : record.iTermKey.shortYear), ",",
+                conn.sqlDateValue(record.iDeadlineDt), ")");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -136,6 +136,9 @@ public enum RawDupRegistrLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -157,28 +160,28 @@ public enum RawDupRegistrLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         builder.add("DELETE FROM ", tableName,
-                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
-                "   AND course=", LogicUtils.sqlStringValue(record.course),
-                "   AND sect=", LogicUtils.sqlStringValue(record.sect),
-                "   AND term=", LogicUtils.sqlStringValue(record.termKey.termCode),
-                "   AND term_yr=", LogicUtils.sqlIntegerValue(record.termKey.shortYear));
+                " WHERE stu_id=", conn.sqlStringValue(record.stuId),
+                "   AND course=", conn.sqlStringValue(record.course),
+                "   AND sect=", conn.sqlStringValue(record.sect),
+                "   AND term=", conn.sqlStringValue(record.termKey.termCode),
+                "   AND term_yr=", conn.sqlIntegerValue(record.termKey.shortYear));
 
         if (record.openStatus == null) {
             builder.add("   AND open_status IS NULL");
         } else {
-            builder.add("   AND open_status=", LogicUtils.sqlStringValue(record.openStatus));
+            builder.add("   AND open_status=", conn.sqlStringValue(record.openStatus));
         }
 
         if (record.lastClassRollDt == null) {
             builder.add("   AND last_class_roll_dt IS NULL");
         } else {
-            builder.add("   AND last_class_roll_dt=", LogicUtils.sqlDateValue(record.lastClassRollDt));
+            builder.add("   AND last_class_roll_dt=", conn.sqlDateValue(record.lastClassRollDt));
         }
 
         final String sql = builder.toString();
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement()) {
             result = stmt.executeUpdate(sql) == 1;
@@ -188,6 +191,9 @@ public enum RawDupRegistrLogic {
             } else {
                 conn.rollback();
             }
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -241,6 +247,9 @@ public enum RawDupRegistrLogic {
         try (final Statement stmt = conn.createStatement()) {
             stmt.executeUpdate("DELETE FROM " + tableName);
             conn.commit();
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }

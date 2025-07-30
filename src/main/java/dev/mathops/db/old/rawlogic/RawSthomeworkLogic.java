@@ -104,29 +104,29 @@ public enum RawSthomeworkLogic {
 
             final String tableName = getTableName(cache);
 
+            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
             final String sql = SimpleBuilder.concat(
                     "INSERT INTO ", tableName,
                     " (serial_nbr,version,stu_id,hw_dt,hw_score,start_time,finish_time,time_ok,",
                     "passed,hw_type,course,sect,unit,objective,hw_coupon,used_dt,used_serial_nbr) VALUES (",
-                    LogicUtils.sqlLongValue(record.serialNbr), ",",
-                    LogicUtils.sqlStringValue(record.version), ",",
-                    LogicUtils.sqlStringValue(record.stuId), ",",
-                    LogicUtils.sqlDateValue(record.hwDt), ",",
-                    LogicUtils.sqlIntegerValue(record.hwScore), ",",
-                    LogicUtils.sqlIntegerValue(record.startTime), ",",
-                    LogicUtils.sqlIntegerValue(record.finishTime), ",",
-                    LogicUtils.sqlStringValue(record.timeOk), ",",
-                    LogicUtils.sqlStringValue(record.passed), ",",
-                    LogicUtils.sqlStringValue(record.hwType), ",",
-                    LogicUtils.sqlStringValue(record.course), ",",
-                    LogicUtils.sqlStringValue(record.sect), ",",
-                    LogicUtils.sqlIntegerValue(record.unit), ",",
-                    LogicUtils.sqlStringValue(obj), ",",
-                    LogicUtils.sqlStringValue(record.hwCoupon), ",",
-                    LogicUtils.sqlDateValue(record.usedDt), ",",
-                    LogicUtils.sqlLongValue(record.usedSerialNbr), ")");
-
-            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                    conn.sqlLongValue(record.serialNbr), ",",
+                    conn.sqlStringValue(record.version), ",",
+                    conn.sqlStringValue(record.stuId), ",",
+                    conn.sqlDateValue(record.hwDt), ",",
+                    conn.sqlIntegerValue(record.hwScore), ",",
+                    conn.sqlIntegerValue(record.startTime), ",",
+                    conn.sqlIntegerValue(record.finishTime), ",",
+                    conn.sqlStringValue(record.timeOk), ",",
+                    conn.sqlStringValue(record.passed), ",",
+                    conn.sqlStringValue(record.hwType), ",",
+                    conn.sqlStringValue(record.course), ",",
+                    conn.sqlStringValue(record.sect), ",",
+                    conn.sqlIntegerValue(record.unit), ",",
+                    conn.sqlStringValue(obj), ",",
+                    conn.sqlStringValue(record.hwCoupon), ",",
+                    conn.sqlDateValue(record.usedDt), ",",
+                    conn.sqlLongValue(record.usedSerialNbr), ")");
 
             try (final Statement stmt = conn.createStatement()) {
                 result = stmt.executeUpdate(sql) == 1;
@@ -136,6 +136,9 @@ public enum RawSthomeworkLogic {
                 } else {
                     conn.rollback();
                 }
+            } catch (final SQLException ex) {
+                conn.rollback();
+                throw ex;
             } finally {
                 Cache.checkInConnection(conn);
             }
@@ -156,12 +159,12 @@ public enum RawSthomeworkLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE serial_nbr=", LogicUtils.sqlLongValue(record.serialNbr),
-                " AND version=", LogicUtils.sqlStringValue(record.version),
-                " AND stu_id=", LogicUtils.sqlStringValue(record.stuId));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE serial_nbr=", conn.sqlLongValue(record.serialNbr),
+                " AND version=", conn.sqlStringValue(record.version),
+                " AND stu_id=", conn.sqlStringValue(record.stuId));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -173,6 +176,9 @@ public enum RawSthomeworkLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -189,7 +195,13 @@ public enum RawSthomeworkLogic {
 
         final String tableName = getTableName(cache);
 
-        return executeQuery(cache, "SELECT * FROM " + tableName);
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return executeQuery(conn, "SELECT * FROM " + tableName);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -207,11 +219,17 @@ public enum RawSthomeworkLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE stu_id=",
-                LogicUtils.sqlStringValue(stuId), (all ? CoreConstants.EMPTY : " AND (passed='Y' OR passed='N')"),
+                conn.sqlStringValue(stuId), (all ? CoreConstants.EMPTY : " AND (passed='Y' OR passed='N')"),
                 " ORDER BY hw_dt,finish_time");
 
-        return executeQuery(cache, sql);
+        try {
+            return executeQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -231,13 +249,19 @@ public enum RawSthomeworkLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
-                " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
-                "   AND course=", LogicUtils.sqlStringValue(course),
+                " WHERE stu_id=", conn.sqlStringValue(stuId),
+                "   AND course=", conn.sqlStringValue(course),
                 (all ? CoreConstants.EMPTY : " AND (passed='Y' OR passed='N')"),
                 " ORDER BY hw_dt,finish_time");
 
-        return executeQuery(cache, sql);
+        try {
+            return executeQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -259,14 +283,20 @@ public enum RawSthomeworkLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
-                " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
-                "   AND course=", LogicUtils.sqlStringValue(course),
-                "   AND unit=", LogicUtils.sqlIntegerValue(unit),
+                " WHERE stu_id=", conn.sqlStringValue(stuId),
+                "   AND course=", conn.sqlStringValue(course),
+                "   AND unit=", conn.sqlIntegerValue(unit),
                 (all ? CoreConstants.EMPTY : " AND (passed='Y' OR passed='N')"),
                 " ORDER BY hw_dt,finish_time");
 
-        return executeQuery(cache, sql);
+        try {
+            return executeQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -290,15 +320,21 @@ public enum RawSthomeworkLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
-                " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
-                "   AND course=", LogicUtils.sqlStringValue(course),
-                "   AND unit=", LogicUtils.sqlIntegerValue(unit),
-                "   AND objective=", LogicUtils.sqlIntegerValue(objective),
+                " WHERE stu_id=", conn.sqlStringValue(stuId),
+                "   AND course=", conn.sqlStringValue(course),
+                "   AND unit=", conn.sqlIntegerValue(unit),
+                "   AND objective=", conn.sqlIntegerValue(objective),
                 (all ? CoreConstants.EMPTY : " AND (passed='Y' OR passed='N')"),
                 " ORDER BY hw_dt,finish_time");
 
-        return executeQuery(cache, sql);
+        try {
+            return executeQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -408,41 +444,47 @@ public enum RawSthomeworkLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final HtmlBuilder sql = new HtmlBuilder(200);
         sql.add("SELECT * FROM ", tableName);
 
         final int numCourses = courses.length;
         if (numCourses == 1) {
-            sql.add(" WHERE course=", LogicUtils.sqlStringValue(courses[0]));
+            sql.add(" WHERE course=", conn.sqlStringValue(courses[0]));
         } else {
-            sql.add(" WHERE course IN (", LogicUtils.sqlStringValue(courses[0]));
+            sql.add(" WHERE course IN (", conn.sqlStringValue(courses[0]));
             for (int i = 1; i < numCourses; ++i) {
-                sql.add(CoreConstants.COMMA_CHAR).add(LogicUtils.sqlStringValue(courses[i]));
+                sql.add(CoreConstants.COMMA_CHAR).add(conn.sqlStringValue(courses[i]));
             }
             sql.add(')');
         }
 
-        sql.add(" AND hw_dt>=", LogicUtils.sqlDateValue(earliest), " ORDER BY hw_dt,finish_time");
+        sql.add(" AND hw_dt>=", conn.sqlDateValue(earliest), " ORDER BY hw_dt,finish_time");
 
-        final List<RawSthomework> all = executeQuery(cache, sql.toString());
-        all.sort(new RawSthomework.FinishDateTimeComparator());
+        try {
+            final List<RawSthomework> all = executeQuery(conn, sql.toString());
+            all.sort(new RawSthomework.FinishDateTimeComparator());
 
-        int start = 0;
-        int position = 0;
-        final int size = all.size();
-        for (int i = 0; i < numDays; ++i) {
-            while (position < size && all.get(position).hwDt.equals(earliest)) {
-                ++position;
+            int start = 0;
+            int position = 0;
+            final int size = all.size();
+            for (int i = 0; i < numDays; ++i) {
+                while (position < size && all.get(position).hwDt.equals(earliest)) {
+                    ++position;
+                }
+
+                final List<RawSthomework> daily = new ArrayList<>(position - start);
+                for (int j = start; j < position; ++j) {
+                    daily.add(all.get(j));
+                }
+                history.add(daily);
+                start = position;
+
+                earliest = earliest.plusDays(1L);
             }
-
-            final List<RawSthomework> daily = new ArrayList<>(position - start);
-            for (int j = start; j < position; ++j) {
-                daily.add(all.get(j));
-            }
-            history.add(daily);
-            start = position;
-
-            earliest = earliest.plusDays(1L);
+        } finally {
+            Cache.checkInConnection(conn);
         }
     }
 
@@ -466,15 +508,15 @@ public enum RawSthomeworkLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat("UPDATE ", tableName,
                 " SET finish_time=", Integer.toString(newFinishTime),
                 ", hw_score=", Integer.toString(newScore),
-                ", passed=", LogicUtils.sqlStringValue(newPassed),
-                " WHERE serial_nbr=", LogicUtils.sqlLongValue(serial),
-                "   AND version=", LogicUtils.sqlStringValue(version),
-                "   AND stu_id=", LogicUtils.sqlStringValue(stuId));
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                ", passed=", conn.sqlStringValue(newPassed),
+                " WHERE serial_nbr=", conn.sqlLongValue(serial),
+                "   AND version=", conn.sqlStringValue(version),
+                "   AND stu_id=", conn.sqlStringValue(stuId));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -486,6 +528,9 @@ public enum RawSthomeworkLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -493,7 +538,7 @@ public enum RawSthomeworkLogic {
 
     /**
      * Updates the "passed" field of a record. The fields in the record that constitute its primary key are used to
-     * select the record to update. This method does not commit the update.
+     * select the record to update.
      *
      * @param cache     the data cache
      * @param rec       the object to update
@@ -513,13 +558,13 @@ public enum RawSthomeworkLogic {
         } else {
             final String tableName = getTableName(cache);
 
-            final String sql = SimpleBuilder.concat("UPDATE ",tableName,
-                    " SET passed=", LogicUtils.sqlStringValue(newPassed),
-                    " WHERE serial_nbr=", LogicUtils.sqlLongValue(rec.serialNbr),
-                    "   AND version=", LogicUtils.sqlStringValue(rec.version),
-                    "   AND stu_id=", LogicUtils.sqlStringValue(rec.stuId));
-
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+            final String sql = SimpleBuilder.concat("UPDATE ", tableName,
+                    " SET passed=", conn.sqlStringValue(newPassed),
+                    " WHERE serial_nbr=", conn.sqlLongValue(rec.serialNbr),
+                    "   AND version=", conn.sqlStringValue(rec.version),
+                    "   AND stu_id=", conn.sqlStringValue(rec.stuId));
 
             try (final Statement stmt = conn.createStatement()) {
                 result = stmt.executeUpdate(sql) > 0;
@@ -529,6 +574,9 @@ public enum RawSthomeworkLogic {
                 } else {
                     conn.rollback();
                 }
+            } catch (final SQLException ex) {
+                conn.rollback();
+                throw ex;
             } finally {
                 Cache.checkInConnection(conn);
             }
@@ -540,16 +588,14 @@ public enum RawSthomeworkLogic {
     /**
      * Executes a query that returns a list of records.
      *
-     * @param cache the data cache
-     * @param sql   the SQL to execute
+     * @param conn the database connection
+     * @param sql  the SQL to execute
      * @return the list of matching records
      * @throws SQLException if there is an error accessing the database
      */
-    private static List<RawSthomework> executeQuery(final Cache cache, final String sql) throws SQLException {
+    private static List<RawSthomework> executeQuery(final DbConnection conn, final String sql) throws SQLException {
 
         final List<RawSthomework> result = new ArrayList<>(50);
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -557,8 +603,6 @@ public enum RawSthomeworkLogic {
             while (rs.next()) {
                 result.add(RawSthomework.fromResultSet(rs));
             }
-        } finally {
-            Cache.checkInConnection(conn);
         }
 
         return result;

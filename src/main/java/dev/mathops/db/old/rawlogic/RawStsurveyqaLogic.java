@@ -67,16 +67,16 @@ public enum RawStsurveyqaLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat("INSERT INTO ", tableName,
                 " (stu_id,version,exam_dt,survey_nbr,stu_answer,finish_time) VALUES (",
-                LogicUtils.sqlStringValue(record.stuId), ",",
-                LogicUtils.sqlStringValue(record.version), ",",
-                LogicUtils.sqlDateValue(record.examDt), ",",
-                LogicUtils.sqlIntegerValue(record.surveyNbr), ",",
-                LogicUtils.sqlStringValue(record.stuAnswer), ",",
-                LogicUtils.sqlIntegerValue(record.finishTime), ")");
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                conn.sqlStringValue(record.stuId), ",",
+                conn.sqlStringValue(record.version), ",",
+                conn.sqlDateValue(record.examDt), ",",
+                conn.sqlIntegerValue(record.surveyNbr), ",",
+                conn.sqlStringValue(record.stuAnswer), ",",
+                conn.sqlIntegerValue(record.finishTime), ")");
 
         try (final Statement stmt = conn.createStatement()) {
             result = stmt.executeUpdate(sql) == 1;
@@ -86,6 +86,9 @@ public enum RawStsurveyqaLogic {
             } else {
                 conn.rollback();
             }
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -107,14 +110,14 @@ public enum RawStsurveyqaLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
-                "  AND version=", LogicUtils.sqlStringValue(record.version),
-                "  AND exam_dt=", LogicUtils.sqlDateValue(record.examDt),
-                "  AND finish_time=", LogicUtils.sqlIntegerValue(record.finishTime),
-                "  AND survey_nbr=", LogicUtils.sqlIntegerValue(record.surveyNbr));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE stu_id=", conn.sqlStringValue(record.stuId),
+                "  AND version=", conn.sqlStringValue(record.version),
+                "  AND exam_dt=", conn.sqlDateValue(record.examDt),
+                "  AND finish_time=", conn.sqlIntegerValue(record.finishTime),
+                "  AND survey_nbr=", conn.sqlIntegerValue(record.surveyNbr));
 
         try (final Statement stmt = conn.createStatement()) {
             result = stmt.executeUpdate(sql) == 1;
@@ -124,6 +127,9 @@ public enum RawStsurveyqaLogic {
             } else {
                 conn.rollback();
             }
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -142,7 +148,13 @@ public enum RawStsurveyqaLogic {
 
         final String tableName = getTableName(cache);
 
-        return executeListQuery(cache, "SELECT * FROM " + tableName);
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return executeListQuery(conn, "SELECT * FROM " + tableName);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -157,23 +169,29 @@ public enum RawStsurveyqaLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
-                " WHERE stu_id=", LogicUtils.sqlStringValue(stuId));
+                " WHERE stu_id=", conn.sqlStringValue(stuId));
 
-        final List<RawStsurveyqa> all = executeListQuery(cache, sql);
+        try {
+            final List<RawStsurveyqa> all = executeListQuery(conn, sql);
 
-        // Filter for only the most recent response for each question
-        final Map<Integer, RawStsurveyqa> questions = new TreeMap<>();
+            // Filter for only the most recent response for each question
+            final Map<Integer, RawStsurveyqa> questions = new TreeMap<>();
 
-        for (final RawStsurveyqa record : all) {
-            final RawStsurveyqa existing = questions.get(record.surveyNbr);
+            for (final RawStsurveyqa record : all) {
+                final RawStsurveyqa existing = questions.get(record.surveyNbr);
 
-            if ((existing == null) || (record.compareTo(existing) > 0)) {
-                questions.put(record.surveyNbr, record);
+                if ((existing == null) || (record.compareTo(existing) > 0)) {
+                    questions.put(record.surveyNbr, record);
+                }
             }
-        }
 
-        return new ArrayList<>(questions.values());
+            return new ArrayList<>(questions.values());
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -191,39 +209,43 @@ public enum RawStsurveyqaLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
-                " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
-                "  AND version=", LogicUtils.sqlStringValue(version));
+                " WHERE stu_id=", conn.sqlStringValue(stuId),
+                "  AND version=", conn.sqlStringValue(version));
 
-        final List<RawStsurveyqa> all = executeListQuery(cache, sql);
+        try {
+            final List<RawStsurveyqa> all = executeListQuery(conn, sql);
 
-        // Filter for only the most recent response for each question
-        final Map<Integer, RawStsurveyqa> questions = new TreeMap<>();
+            // Filter for only the most recent response for each question
+            final Map<Integer, RawStsurveyqa> questions = new TreeMap<>();
 
-        for (final RawStsurveyqa record : all) {
-            final RawStsurveyqa existing = questions.get(record.surveyNbr);
+            for (final RawStsurveyqa record : all) {
+                final RawStsurveyqa existing = questions.get(record.surveyNbr);
 
-            if ((existing == null) || (record.compareTo(existing) > 0)) {
-                questions.put(record.surveyNbr, record);
+                if ((existing == null) || (record.compareTo(existing) > 0)) {
+                    questions.put(record.surveyNbr, record);
+                }
             }
-        }
 
-        return new ArrayList<>(questions.values());
+            return new ArrayList<>(questions.values());
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
      * Executes a query that returns a list of records.
      *
-     * @param cache the data cache
-     * @param sql   the SQL to execute
+     * @param conn the database connection
+     * @param sql  the SQL to execute
      * @return the list of matching records
      * @throws SQLException if there is an error accessing the database
      */
-    private static List<RawStsurveyqa> executeListQuery(final Cache cache, final String sql) throws SQLException {
+    private static List<RawStsurveyqa> executeListQuery(final DbConnection conn, final String sql) throws SQLException {
 
         final List<RawStsurveyqa> result = new ArrayList<>(20);
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -231,8 +253,6 @@ public enum RawStsurveyqaLogic {
             while (rs.next()) {
                 result.add(RawStsurveyqa.fromResultSet(rs));
             }
-        } finally {
-            Cache.checkInConnection(conn);
         }
 
         return result;

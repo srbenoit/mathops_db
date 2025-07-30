@@ -63,19 +63,19 @@ public enum RawStchallengeqaLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat(
                 "INSERT INTO ", tableName, " (stu_id,course,version,exam_dt,finish_time,",
                 "question_nbr,stu_answer,ans_correct) VALUES (",
-                LogicUtils.sqlStringValue(record.stuId), ",",
-                LogicUtils.sqlStringValue(record.course), ",",
-                LogicUtils.sqlStringValue(record.version), ",",
-                LogicUtils.sqlDateValue(record.examDt), ",",
-                LogicUtils.sqlIntegerValue(record.finishTime), ",",
-                LogicUtils.sqlIntegerValue(record.questionNbr), ",",
-                LogicUtils.sqlStringValue(record.stuAnswer), ",",
-                LogicUtils.sqlStringValue(record.ansCorrect), ")");
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                conn.sqlStringValue(record.stuId), ",",
+                conn.sqlStringValue(record.course), ",",
+                conn.sqlStringValue(record.version), ",",
+                conn.sqlDateValue(record.examDt), ",",
+                conn.sqlIntegerValue(record.finishTime), ",",
+                conn.sqlIntegerValue(record.questionNbr), ",",
+                conn.sqlStringValue(record.stuAnswer), ",",
+                conn.sqlStringValue(record.ansCorrect), ")");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -87,6 +87,9 @@ public enum RawStchallengeqaLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -104,14 +107,14 @@ public enum RawStchallengeqaLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
-                "  AND course=", LogicUtils.sqlStringValue(record.course),
-                "  AND exam_dt=", LogicUtils.sqlDateValue(record.examDt),
-                "  AND finish_time=", LogicUtils.sqlIntegerValue(record.finishTime),
-                "  AND question_nbr=", LogicUtils.sqlIntegerValue(record.questionNbr));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE stu_id=", conn.sqlStringValue(record.stuId),
+                "  AND course=", conn.sqlStringValue(record.course),
+                "  AND exam_dt=", conn.sqlDateValue(record.examDt),
+                "  AND finish_time=", conn.sqlIntegerValue(record.finishTime),
+                "  AND question_nbr=", conn.sqlIntegerValue(record.questionNbr));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -123,6 +126,9 @@ public enum RawStchallengeqaLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -140,16 +146,19 @@ public enum RawStchallengeqaLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
-                "  AND course=", LogicUtils.sqlStringValue(record.course),
-                "  AND exam_dt=", LogicUtils.sqlDateValue(record.examDt));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE stu_id=", conn.sqlStringValue(record.stuId),
+                "  AND course=", conn.sqlStringValue(record.course),
+                "  AND exam_dt=", conn.sqlDateValue(record.examDt));
 
         try (final Statement stmt = conn.createStatement()) {
             stmt.executeUpdate(sql);
             conn.commit();
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }

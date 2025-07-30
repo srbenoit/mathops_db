@@ -59,15 +59,15 @@ public enum RawHoldTypeLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat("INSERT INTO ", tableName,
                 " (hold_id,sev_admin_hold,hold_type,add_hold,delete_hold) VALUES (",
-                LogicUtils.sqlStringValue(record.holdId), ",",
-                LogicUtils.sqlStringValue(record.sevAdminHold), ",",
-                LogicUtils.sqlStringValue(record.holdType), ",",
-                LogicUtils.sqlStringValue(record.addHold), ",",
-                LogicUtils.sqlStringValue(record.deleteHold), ")");
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                conn.sqlStringValue(record.holdId), ",",
+                conn.sqlStringValue(record.sevAdminHold), ",",
+                conn.sqlStringValue(record.holdType), ",",
+                conn.sqlStringValue(record.addHold), ",",
+                conn.sqlStringValue(record.deleteHold), ")");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -79,6 +79,9 @@ public enum RawHoldTypeLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -96,10 +99,10 @@ public enum RawHoldTypeLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE hold_id=", LogicUtils.sqlStringValue(record.holdId));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE hold_id=", conn.sqlStringValue(record.holdId));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -111,6 +114,9 @@ public enum RawHoldTypeLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }

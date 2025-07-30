@@ -67,19 +67,19 @@ public enum RawStmpeqaLogic {
         } else {
             final String tableName = getTableName(cache);
 
+            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
             final String sql = SimpleBuilder.concat("INSERT INTO ", tableName, " (stu_id,version,exam_dt,finish_time,",
                     "question_nbr,stu_answer,ans_correct,subtest,tree_ref) VALUES (",
-                    LogicUtils.sqlStringValue(record.stuId), ",",
-                    LogicUtils.sqlStringValue(record.version), ",",
-                    LogicUtils.sqlDateValue(record.examDt), ",",
-                    LogicUtils.sqlIntegerValue(record.finishTime), ",",
-                    LogicUtils.sqlIntegerValue(record.questionNbr), ",",
-                    LogicUtils.sqlStringValue(record.stuAnswer), ",",
-                    LogicUtils.sqlStringValue(record.ansCorrect), ",",
-                    LogicUtils.sqlStringValue(record.subtest), ",",
-                    LogicUtils.sqlStringValue(record.treeRef), ")");
-
-            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                    conn.sqlStringValue(record.stuId), ",",
+                    conn.sqlStringValue(record.version), ",",
+                    conn.sqlDateValue(record.examDt), ",",
+                    conn.sqlIntegerValue(record.finishTime), ",",
+                    conn.sqlIntegerValue(record.questionNbr), ",",
+                    conn.sqlStringValue(record.stuAnswer), ",",
+                    conn.sqlStringValue(record.ansCorrect), ",",
+                    conn.sqlStringValue(record.subtest), ",",
+                    conn.sqlStringValue(record.treeRef), ")");
 
             try (final Statement stmt = conn.createStatement()) {
                 result = stmt.executeUpdate(sql) == 1;
@@ -89,6 +89,9 @@ public enum RawStmpeqaLogic {
                 } else {
                     conn.rollback();
                 }
+            } catch (final SQLException ex) {
+                conn.rollback();
+                throw ex;
             } finally {
                 Cache.checkInConnection(conn);
             }
@@ -109,14 +112,14 @@ public enum RawStmpeqaLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql1 = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE version=", LogicUtils.sqlStringValue(record.version),
-                "  AND stu_id=", LogicUtils.sqlStringValue(record.stuId),
-                "  AND exam_dt=", LogicUtils.sqlDateValue(record.examDt),
-                "  AND finish_time=", LogicUtils.sqlIntegerValue(record.finishTime),
-                "  AND question_nbr=", LogicUtils.sqlIntegerValue(record.questionNbr));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql1 = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE version=", conn.sqlStringValue(record.version),
+                "  AND stu_id=", conn.sqlStringValue(record.stuId),
+                "  AND exam_dt=", conn.sqlDateValue(record.examDt),
+                "  AND finish_time=", conn.sqlIntegerValue(record.finishTime),
+                "  AND question_nbr=", conn.sqlIntegerValue(record.questionNbr));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql1) == 1;
@@ -128,6 +131,9 @@ public enum RawStmpeqaLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -174,13 +180,13 @@ public enum RawStmpeqaLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql1 = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE version=", LogicUtils.sqlStringValue(record.version),
-                "  AND stu_id=", LogicUtils.sqlStringValue(record.stuId),
-                "  AND exam_dt=", LogicUtils.sqlDateValue(record.examDt),
-                "  AND finish_time=", LogicUtils.sqlIntegerValue(record.finishTime));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql1 = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE version=", conn.sqlStringValue(record.version),
+                "  AND stu_id=", conn.sqlStringValue(record.stuId),
+                "  AND exam_dt=", conn.sqlDateValue(record.examDt),
+                "  AND finish_time=", conn.sqlIntegerValue(record.finishTime));
 
         try (final Statement stmt = conn.createStatement()) {
             stmt.executeUpdate(sql1);

@@ -73,27 +73,27 @@ public enum RawStpaceSummaryLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat(
                 "INSERT INTO ", tableName, " (stu_id,course,sect,term,term_yr,",
                 "i_in_progress,pace,pace_track,pace_order,ms_nbr,ms_unit,ms_date,",
                 "new_ms_date,exam_dt,re_points) VALUES (",
-                LogicUtils.sqlStringValue(record.stuId), ",",
-                LogicUtils.sqlStringValue(record.course), ",",
-                LogicUtils.sqlStringValue(record.sect), ",",
-                LogicUtils.sqlStringValue(record.termKey.termCode), ",",
-                LogicUtils.sqlIntegerValue(record.termKey.shortYear), ",",
-                LogicUtils.sqlStringValue(record.iInProgress), ",",
-                LogicUtils.sqlIntegerValue(record.pace), ",",
-                LogicUtils.sqlStringValue(record.paceTrack), ",",
-                LogicUtils.sqlIntegerValue(record.paceOrder), ",",
-                LogicUtils.sqlIntegerValue(record.msNbr), ",",
-                LogicUtils.sqlIntegerValue(record.msUnit), ",",
-                LogicUtils.sqlDateValue(record.msDate), ",",
-                LogicUtils.sqlStringValue(record.newMsDate), ",",
-                LogicUtils.sqlDateValue(record.examDt), ",",
-                LogicUtils.sqlIntegerValue(record.rePoints), ")");
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                conn.sqlStringValue(record.stuId), ",",
+                conn.sqlStringValue(record.course), ",",
+                conn.sqlStringValue(record.sect), ",",
+                conn.sqlStringValue(record.termKey.termCode), ",",
+                conn.sqlIntegerValue(record.termKey.shortYear), ",",
+                conn.sqlStringValue(record.iInProgress), ",",
+                conn.sqlIntegerValue(record.pace), ",",
+                conn.sqlStringValue(record.paceTrack), ",",
+                conn.sqlIntegerValue(record.paceOrder), ",",
+                conn.sqlIntegerValue(record.msNbr), ",",
+                conn.sqlIntegerValue(record.msUnit), ",",
+                conn.sqlDateValue(record.msDate), ",",
+                conn.sqlStringValue(record.newMsDate), ",",
+                conn.sqlDateValue(record.examDt), ",",
+                conn.sqlIntegerValue(record.rePoints), ")");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -105,6 +105,9 @@ public enum RawStpaceSummaryLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -126,17 +129,17 @@ public enum RawStpaceSummaryLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         builder.add("DELETE FROM ", tableName,
-                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
-                "  AND course=", LogicUtils.sqlStringValue(record.course),
-                "  AND sect=", LogicUtils.sqlStringValue(record.sect),
-                "  AND term=", LogicUtils.sqlStringValue(record.termKey.termCode),
-                "  AND term_yr=", LogicUtils.sqlIntegerValue(record.termKey.shortYear),
-                "  AND ms_nbr=", LogicUtils.sqlIntegerValue(record.msNbr));
+                " WHERE stu_id=", conn.sqlStringValue(record.stuId),
+                "  AND course=", conn.sqlStringValue(record.course),
+                "  AND sect=", conn.sqlStringValue(record.sect),
+                "  AND term=", conn.sqlStringValue(record.termKey.termCode),
+                "  AND term_yr=", conn.sqlIntegerValue(record.termKey.shortYear),
+                "  AND ms_nbr=", conn.sqlIntegerValue(record.msNbr));
 
         final String sql = builder.toString();
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement()) {
             result = stmt.executeUpdate(sql) == 1;
@@ -146,6 +149,9 @@ public enum RawStpaceSummaryLogic {
             } else {
                 conn.rollback();
             }
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -164,9 +170,15 @@ public enum RawStpaceSummaryLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = "SELECT * FROM " + tableName;
 
-        return executeQuery(cache, sql);
+        try {
+            return executeQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -189,31 +201,35 @@ public enum RawStpaceSummaryLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         builder.add("SELECT * FROM ", tableName,
-                " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
-                "  AND course=", LogicUtils.sqlStringValue(course),
-                "  AND sect=", LogicUtils.sqlStringValue(sect),
-                "  AND term=", LogicUtils.sqlStringValue(termKey.termCode),
-                "  AND term_yr=", LogicUtils.sqlIntegerValue(termKey.shortYear));
+                " WHERE stu_id=", conn.sqlStringValue(stuId),
+                "  AND course=", conn.sqlStringValue(course),
+                "  AND sect=", conn.sqlStringValue(sect),
+                "  AND term=", conn.sqlStringValue(termKey.termCode),
+                "  AND term_yr=", conn.sqlIntegerValue(termKey.shortYear));
 
         final String sql = builder.toString();
 
-        return executeQuery(cache, sql);
+        try {
+            return executeQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
      * Executes a query that returns a list of records.
      *
-     * @param cache the data cache
-     * @param sql   the SQL to execute
+     * @param conn the database connection
+     * @param sql  the SQL to execute
      * @return the list of matching records
      * @throws SQLException if there is an error accessing the database
      */
-    private static List<RawStpaceSummary> executeQuery(final Cache cache, final String sql) throws SQLException {
+    private static List<RawStpaceSummary> executeQuery(final DbConnection conn, final String sql) throws SQLException {
 
         final List<RawStpaceSummary> result = new ArrayList<>(50);
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -221,8 +237,6 @@ public enum RawStpaceSummaryLogic {
             while (rs.next()) {
                 result.add(RawStpaceSummary.fromResultSet(rs));
             }
-        } finally {
-            Cache.checkInConnection(conn);
         }
 
         return result;

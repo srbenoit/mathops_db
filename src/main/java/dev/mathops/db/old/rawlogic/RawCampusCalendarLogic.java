@@ -61,19 +61,19 @@ public enum RawCampusCalendarLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat(
                 "INSERT INTO ", tableName, " (campus_dt,dt_desc,open_time1,open_time2,",
                 "close_time1,close_time2,weekdays_1,weekdays_2) VALUES (",
-                LogicUtils.sqlDateValue(record.campusDt), ",",
-                LogicUtils.sqlStringValue(record.dtDesc), ",",
-                LogicUtils.sqlStringValue(record.openTime1), ",",
-                LogicUtils.sqlStringValue(record.openTime2), ",",
-                LogicUtils.sqlStringValue(record.closeTime1), ",",
-                LogicUtils.sqlStringValue(record.closeTime2), ",",
-                LogicUtils.sqlStringValue(record.weekdays1), ",",
-                LogicUtils.sqlStringValue(record.weekdays2), ")");
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                conn.sqlDateValue(record.campusDt), ",",
+                conn.sqlStringValue(record.dtDesc), ",",
+                conn.sqlStringValue(record.openTime1), ",",
+                conn.sqlStringValue(record.openTime2), ",",
+                conn.sqlStringValue(record.closeTime1), ",",
+                conn.sqlStringValue(record.closeTime2), ",",
+                conn.sqlStringValue(record.weekdays1), ",",
+                conn.sqlStringValue(record.weekdays2), ")");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -85,6 +85,9 @@ public enum RawCampusCalendarLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -102,11 +105,11 @@ public enum RawCampusCalendarLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE campus_dt=", LogicUtils.sqlDateValue(record.campusDt),
-                "  AND dt_desc=", LogicUtils.sqlStringValue(record.dtDesc));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE campus_dt=", conn.sqlDateValue(record.campusDt),
+                "  AND dt_desc=", conn.sqlStringValue(record.dtDesc));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -118,6 +121,9 @@ public enum RawCampusCalendarLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }

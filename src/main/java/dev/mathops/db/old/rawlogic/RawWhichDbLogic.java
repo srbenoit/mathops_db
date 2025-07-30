@@ -29,8 +29,9 @@ public enum RawWhichDbLogic {
      * Gets the qualified table name for a LEGACY table based on the Cache being used.
      *
      * @param cache the data cache
+     * @return the table name
      */
-    static String getTableName(final Cache cache) {
+    public static String getTableName(final Cache cache) {
 
         final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
 
@@ -61,6 +62,9 @@ public enum RawWhichDbLogic {
                     Log.warning("Multiple 'which_db' rows found!");
                 }
             }
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }

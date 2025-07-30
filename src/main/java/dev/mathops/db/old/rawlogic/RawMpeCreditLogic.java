@@ -3,6 +3,7 @@ package dev.mathops.db.old.rawlogic;
 import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
 import dev.mathops.db.DbConnection;
+import dev.mathops.db.EDbProduct;
 import dev.mathops.db.ESchema;
 import dev.mathops.db.old.rawrecord.RawMpeCredit;
 import dev.mathops.db.old.rawrecord.RawRecordConstants;
@@ -126,18 +127,18 @@ public enum RawMpeCreditLogic {
         } else {
             final String tableName = getTableName(cache);
 
+            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
             final String sql = SimpleBuilder.concat("INSERT INTO ", tableName, " (stu_id,course,exam_placed,exam_dt,",
                     "dt_cr_refused,serial_nbr,version,exam_source) VALUES (",
-                    LogicUtils.sqlStringValue(record.stuId), ",",
-                    LogicUtils.sqlStringValue(record.course), ",",
-                    LogicUtils.sqlStringValue(record.examPlaced), ",",
-                    LogicUtils.sqlDateValue(record.examDt), ",",
-                    LogicUtils.sqlDateValue(record.dtCrRefused), ",",
-                    LogicUtils.sqlLongValue(record.serialNbr), ",",
-                    LogicUtils.sqlStringValue(record.version), ",",
-                    LogicUtils.sqlStringValue(record.examSource), ")");
-
-            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                    conn.sqlStringValue(record.stuId), ",",
+                    conn.sqlStringValue(record.course), ",",
+                    conn.sqlStringValue(record.examPlaced), ",",
+                    conn.sqlDateValue(record.examDt), ",",
+                    conn.sqlDateValue(record.dtCrRefused), ",",
+                    conn.sqlLongValue(record.serialNbr), ",",
+                    conn.sqlStringValue(record.version), ",",
+                    conn.sqlStringValue(record.examSource), ")");
 
             try (final Statement stmt = conn.createStatement()) {
                 result = stmt.executeUpdate(sql) == 1;
@@ -147,6 +148,9 @@ public enum RawMpeCreditLogic {
                 } else {
                     conn.rollback();
                 }
+            } catch (final SQLException ex) {
+                conn.rollback();
+                throw ex;
             } finally {
                 Cache.checkInConnection(conn);
             }
@@ -169,14 +173,14 @@ public enum RawMpeCreditLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName, " WHERE stu_id=",
-                LogicUtils.sqlStringValue(record.stuId), " AND course=",
-                LogicUtils.sqlStringValue(record.course), "AND exam_dt=",
-                LogicUtils.sqlDateValue(record.examDt), " AND serial_nbr=",
-                LogicUtils.sqlLongValue(record.serialNbr), " AND version=",
-                LogicUtils.sqlStringValue(record.version));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName, " WHERE stu_id=",
+                conn.sqlStringValue(record.stuId), " AND course=",
+                conn.sqlStringValue(record.course), "AND exam_dt=",
+                conn.sqlDateValue(record.examDt), " AND serial_nbr=",
+                conn.sqlLongValue(record.serialNbr), " AND version=",
+                conn.sqlStringValue(record.version));
 
         try (final Statement stmt = conn.createStatement()) {
             result = stmt.executeUpdate(sql) == 1;
@@ -186,6 +190,9 @@ public enum RawMpeCreditLogic {
             } else {
                 conn.rollback();
             }
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -204,7 +211,13 @@ public enum RawMpeCreditLogic {
 
         final String tableName = getTableName(cache);
 
-        return executeSimpleQuery(cache, "SELECT * FROM " + tableName);
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return executeSimpleQuery(conn, "SELECT * FROM " + tableName);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -225,10 +238,16 @@ public enum RawMpeCreditLogic {
         } else {
             final String tableName = getTableName(cache);
 
-            final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE stu_id=",
-                    LogicUtils.sqlStringValue(stuId));
+            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
-            result = executeSimpleQuery(cache, sql);
+            final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE stu_id=",
+                    conn.sqlStringValue(stuId));
+
+            try {
+                result = executeSimpleQuery(conn, sql);
+            } finally {
+                Cache.checkInConnection(conn);
+            }
         }
 
         return result;
@@ -247,10 +266,16 @@ public enum RawMpeCreditLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE serial_nbr=",
-                LogicUtils.sqlLongValue(serialNbr));
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
-        return executeSimpleQuery(cache, sql);
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE serial_nbr=",
+                conn.sqlLongValue(serialNbr));
+
+        try {
+            return executeSimpleQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -266,10 +291,16 @@ public enum RawMpeCreditLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE course=",
-                LogicUtils.sqlStringValue(courseId));
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
-        return executeSimpleQuery(cache, sql);
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE course=",
+                conn.sqlStringValue(courseId));
+
+        try {
+            return executeSimpleQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -299,12 +330,18 @@ public enum RawMpeCreditLogic {
                     case RawRecordConstants.M100C -> {
                         final String student = credit.stuId;
 
+                        final String match = conn.getProduct() == EDbProduct.INFORMIX
+                                ? "MATCHES 'M 100*'" : "LIKE 'M 100%'";
+
                         final String sql1 = SimpleBuilder.concat("DELETE FROM ", tableName, " WHERE stu_id=",
-                                LogicUtils.sqlStringValue(student), " AND course MATCHES 'M 100*'");
+                                conn.sqlStringValue(student), " AND course ", match);
 
                         try (final Statement stmt = conn.createStatement()) {
                             stmt.executeUpdate(sql1);
                             conn.commit();
+                        } catch (final SQLException ex) {
+                            conn.rollback();
+                            throw ex;
                         }
 
                         insert(cache, credit);
@@ -313,8 +350,8 @@ public enum RawMpeCreditLogic {
                         final String student = credit.stuId;
 
                         final String sql2 = SimpleBuilder.concat("SELECT exam_placed FROM ", tableName,
-                                " WHERE stu_id=", LogicUtils.sqlStringValue(student),
-                                " AND course=", LogicUtils.sqlStringValue(course));
+                                " WHERE stu_id=", conn.sqlStringValue(student),
+                                " AND course=", conn.sqlStringValue(course));
 
                         final boolean found;
                         String orig = null;
@@ -354,42 +391,46 @@ public enum RawMpeCreditLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         // If there exists an M 100C or M 100M row, do nothing
         final String sql1 = SimpleBuilder.concat("SELECT * FROM ", tableName,
-                " WHERE stu_id=", LogicUtils.sqlStringValue(student),
+                " WHERE stu_id=", conn.sqlStringValue(student),
                 "   AND (course='M 100C' OR course='M 100M')");
 
-        final List<RawMpeCredit> m100cm = executeSimpleQuery(cache, sql1);
+        try {
+            final List<RawMpeCredit> m100cm = executeSimpleQuery(conn, sql1);
 
-        if (m100cm.isEmpty()) {
-            // If there exists an M 100T row, update its date; otherwise, insert a new M 100T row
+            if (m100cm.isEmpty()) {
+                // If there exists an M 100T row, update its date; otherwise, insert a new M 100T row
 
-            final String sql2 = SimpleBuilder.concat("SELECT * FROM ", tableName,
-                    " WHERE stu_id=", LogicUtils.sqlStringValue(student),
-                    "   AND course='M 100T'");
+                final String sql2 = SimpleBuilder.concat("SELECT * FROM ", tableName,
+                        " WHERE stu_id=", conn.sqlStringValue(student), " AND course='M 100T'");
 
-            final List<RawMpeCredit> m100t = executeSimpleQuery(cache, sql2);
+                final List<RawMpeCredit> m100t = executeSimpleQuery(conn, sql2);
 
-            if (m100t.isEmpty()) {
-                insert(cache, credit);
-            } else {
-                final String sql3 = SimpleBuilder.concat("UPDATE ", tableName,
-                        " SET exam_dt=", LogicUtils.sqlDateValue(credit.examDt),
-                        ",serial_nbr=", LogicUtils.sqlLongValue(credit.serialNbr),
-                        ",version=", LogicUtils.sqlStringValue(credit.version),
-                        ",exam_source=", LogicUtils.sqlStringValue(credit.examSource),
-                        " WHERE stu_id=", LogicUtils.sqlStringValue(student),
-                        " AND course='M 100T'");
+                if (m100t.isEmpty()) {
+                    insert(cache, credit);
+                } else {
+                    final String sql3 = SimpleBuilder.concat("UPDATE ", tableName,
+                            " SET exam_dt=", conn.sqlDateValue(credit.examDt),
+                            ",serial_nbr=", conn.sqlLongValue(credit.serialNbr),
+                            ",version=", conn.sqlStringValue(credit.version),
+                            ",exam_source=", conn.sqlStringValue(credit.examSource),
+                            " WHERE stu_id=", conn.sqlStringValue(student),
+                            " AND course='M 100T'");
 
-                final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
-
-                try (final Statement stmt = conn.createStatement()) {
-                    stmt.executeUpdate(sql3);
-                    conn.commit();
-                } finally {
-                    Cache.checkInConnection(conn);
+                    try (final Statement stmt = conn.createStatement()) {
+                        stmt.executeUpdate(sql3);
+                        conn.commit();
+                    } catch (final SQLException ex) {
+                        conn.rollback();
+                        throw ex;
+                    }
                 }
             }
+        } finally {
+            Cache.checkInConnection(conn);
         }
     }
 
@@ -407,58 +448,61 @@ public enum RawMpeCreditLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         // If there exists an M 100C row, we do nothing
         final String sql2 = SimpleBuilder.concat("SELECT * FROM ", tableName,
-                " WHERE stu_id=", LogicUtils.sqlStringValue(student),
-                "   AND course='M 100C'");
+                " WHERE stu_id=", conn.sqlStringValue(student), " AND course='M 100C'");
 
-        final List<RawMpeCredit> m100c = executeSimpleQuery(cache, sql2);
+        final List<RawMpeCredit> m100c = executeSimpleQuery(conn, sql2);
 
-        if (m100c.isEmpty()) {
-            // If there exists an M 100T row, we delete it.
-            final String sql3 = SimpleBuilder.concat("DELETE FROM ", tableName,
-                    " WHERE stu_id='", student, "'",
-                    " AND course='M 100T'");
+        try {
+            if (m100c.isEmpty()) {
+                // If there exists an M 100T row, we delete it.
+                final String sql3 = SimpleBuilder.concat("DELETE FROM ", tableName,
+                        " WHERE stu_id='", student, "' AND course='M 100T'");
 
-            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
-
-            try (final Statement statement = conn.createStatement()) {
-                statement.executeUpdate(sql3);
-                conn.commit();
-            } finally {
-                Cache.checkInConnection(conn);
-            }
-
-            // If there exists an M 100M row, we update placed and date
-
-            final String sql4 = SimpleBuilder.concat("SELECT * FROM ", tableName,
-                    " WHERE stu_id=", LogicUtils.sqlStringValue(student),
-                    "   AND course='M 100M'");
-
-            final List<RawMpeCredit> m100m = executeSimpleQuery(cache, sql4);
-
-            if (m100m.isEmpty()) {
-                insert(cache, credit);
-            } else {
-                // Result has improved, so update placed & exam date.
-                final String sql5 = SimpleBuilder.concat("UPDATE ", tableName,
-                        " SET exam_placed=", LogicUtils.sqlStringValue(credit.examPlaced),
-                        ",exam_dt=", LogicUtils.sqlDateValue(credit.examDt),
-                        ",serial_nbr=", LogicUtils.sqlLongValue(credit.serialNbr),
-                        ",version=", LogicUtils.sqlStringValue(credit.version),
-                        ",exam_source=", LogicUtils.sqlStringValue(credit.examSource),
-                        " WHERE stu_id=", LogicUtils.sqlStringValue(credit.stuId),
-                        " AND course='M 100M'");
-
-                final DbConnection conn2 = cache.checkOutConnection(ESchema.LEGACY);
-
-                try (final Statement stmt = conn2.createStatement()) {
-                    stmt.executeUpdate(sql5);
-                    conn2.commit();
+                try (final Statement statement = conn.createStatement()) {
+                    statement.executeUpdate(sql3);
+                    conn.commit();
+                } catch (final SQLException ex) {
+                    conn.rollback();
+                    throw ex;
                 } finally {
-                    Cache.checkInConnection(conn2);
+                    Cache.checkInConnection(conn);
+                }
+
+                // If there exists an M 100M row, we update placed and date
+
+                final String sql4 = SimpleBuilder.concat("SELECT * FROM ", tableName,
+                        " WHERE stu_id=", conn.sqlStringValue(student), " AND course='M 100M'");
+
+                final List<RawMpeCredit> m100m = executeSimpleQuery(conn, sql4);
+
+                if (m100m.isEmpty()) {
+                    insert(cache, credit);
+                } else {
+                    // Result has improved, so update placed & exam date.
+                    final String sql5 = SimpleBuilder.concat("UPDATE ", tableName,
+                            " SET exam_placed=", conn.sqlStringValue(credit.examPlaced),
+                            ",exam_dt=", conn.sqlDateValue(credit.examDt),
+                            ",serial_nbr=", conn.sqlLongValue(credit.serialNbr),
+                            ",version=", conn.sqlStringValue(credit.version),
+                            ",exam_source=", conn.sqlStringValue(credit.examSource),
+                            " WHERE stu_id=", conn.sqlStringValue(credit.stuId),
+                            " AND course='M 100M'");
+
+                    try (final Statement stmt = conn.createStatement()) {
+                        stmt.executeUpdate(sql5);
+                        conn.commit();
+                    } catch (final SQLException ex) {
+                        conn.rollback();
+                        throw ex;
+                    }
                 }
             }
+        } finally {
+            Cache.checkInConnection(conn);
         }
     }
 
@@ -482,20 +526,22 @@ public enum RawMpeCreditLogic {
 
         if (credit.examPlaced.equals(orig)) {
             // Result is unchanged, so update existing record
+            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
             final String sql = SimpleBuilder.concat("UPDATE ", tableName,
-                    " SET exam_dt=", LogicUtils.sqlDateValue(credit.examDt),
-                    ",serial_nbr=", LogicUtils.sqlLongValue(credit.serialNbr),
-                    ",version=", LogicUtils.sqlStringValue(credit.version),
-                    ",exam_source=", LogicUtils.sqlStringValue(credit.examSource),
-                    " WHERE stu_id=", LogicUtils.sqlStringValue(student),
-                    " AND course=", LogicUtils.sqlStringValue(course));
-
-            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                    " SET exam_dt=", conn.sqlDateValue(credit.examDt),
+                    ",serial_nbr=", conn.sqlLongValue(credit.serialNbr),
+                    ",version=", conn.sqlStringValue(credit.version),
+                    ",exam_source=", conn.sqlStringValue(credit.examSource),
+                    " WHERE stu_id=", conn.sqlStringValue(student),
+                    " AND course=", conn.sqlStringValue(course));
 
             try (final Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate(sql);
                 conn.commit();
+            } catch (final SQLException ex) {
+                conn.rollback();
+                throw ex;
             } finally {
                 Cache.checkInConnection(conn);
             }
@@ -503,20 +549,22 @@ public enum RawMpeCreditLogic {
         } else if ("P".equals(orig) && "C".equals(credit.examPlaced)) {
 
             // Result has improved, so update placed & exam date.
+            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
             final String sql = SimpleBuilder.concat("UPDATE ", tableName,
-                    " SET exam_placed='C',exam_dt=", LogicUtils.sqlDateValue(credit.examDt),
-                    ",serial_nbr=", LogicUtils.sqlLongValue(credit.serialNbr),
-                    ",version=", LogicUtils.sqlStringValue(credit.version),
-                    ",exam_source=", LogicUtils.sqlStringValue(credit.examSource),
-                    " WHERE stu_id=", LogicUtils.sqlStringValue(student),
-                    " AND course=", LogicUtils.sqlStringValue(course));
-
-            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                    " SET exam_placed='C',exam_dt=", conn.sqlDateValue(credit.examDt),
+                    ",serial_nbr=", conn.sqlLongValue(credit.serialNbr),
+                    ",version=", conn.sqlStringValue(credit.version),
+                    ",exam_source=", conn.sqlStringValue(credit.examSource),
+                    " WHERE stu_id=", conn.sqlStringValue(student),
+                    " AND course=", conn.sqlStringValue(course));
 
             try (final Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate(sql);
                 conn.commit();
+            } catch (final SQLException ex) {
+                conn.rollback();
+                throw ex;
             } finally {
                 Cache.checkInConnection(conn);
             }
@@ -525,21 +573,23 @@ public enum RawMpeCreditLogic {
             // Result has worsened, so take no action
         } else {
             // New P or C status, so update row
+            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
             final String sql = SimpleBuilder.concat("UPDATE ", tableName,
-                    " SET exam_placed=", LogicUtils.sqlStringValue(credit.examPlaced),
-                    ",exam_dt=", LogicUtils.sqlDateValue(credit.examDt),
-                    ",serial_nbr=", LogicUtils.sqlLongValue(credit.serialNbr),
-                    ",version=", LogicUtils.sqlStringValue(credit.version),
-                    ",exam_source=", LogicUtils.sqlStringValue(credit.examSource),
-                    " WHERE stu_id=", LogicUtils.sqlStringValue(student),
-                    " AND course=", LogicUtils.sqlStringValue(course));
-
-            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                    " SET exam_placed=", conn.sqlStringValue(credit.examPlaced),
+                    ",exam_dt=", conn.sqlDateValue(credit.examDt),
+                    ",serial_nbr=", conn.sqlLongValue(credit.serialNbr),
+                    ",version=", conn.sqlStringValue(credit.version),
+                    ",exam_source=", conn.sqlStringValue(credit.examSource),
+                    " WHERE stu_id=", conn.sqlStringValue(student),
+                    " AND course=", conn.sqlStringValue(course));
 
             try (final Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate(sql);
                 conn.commit();
+            } catch (final SQLException ex) {
+                conn.rollback();
+                throw ex;
             } finally {
                 Cache.checkInConnection(conn);
             }
@@ -549,16 +599,14 @@ public enum RawMpeCreditLogic {
     /**
      * Executes a simple query that returns a list of records.
      *
-     * @param cache the data cache
-     * @param sql   the SQL statement to execute
+     * @param conn the database connection
+     * @param sql  the SQL statement to execute
      * @return the list of matching records
      * @throws SQLException if there is an error accessing the database
      */
-    private static List<RawMpeCredit> executeSimpleQuery(final Cache cache, final String sql) throws SQLException {
+    private static List<RawMpeCredit> executeSimpleQuery(final DbConnection conn, final String sql) throws SQLException {
 
         final List<RawMpeCredit> result = new ArrayList<>(50);
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -566,8 +614,6 @@ public enum RawMpeCreditLogic {
             while (rs.next()) {
                 result.add(RawMpeCredit.fromResultSet(rs));
             }
-        } finally {
-            Cache.checkInConnection(conn);
         }
 
         return result;

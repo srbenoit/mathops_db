@@ -72,30 +72,30 @@ public enum RawClientPcLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat("INSERT INTO ", tableName, " (computer_id,testing_center_id,",
                 "station_nbr,computer_desc,icon_x,icon_y,pc_usage,current_status,dtime_created,dtime_approved,",
                 "mac_address,power_status,power_on_due,last_ping,current_stu_id,current_course,",
                 "current_unit,current_version) VALUES (",
-                LogicUtils.sqlStringValue(record.computerId), ",",
-                LogicUtils.sqlStringValue(record.testingCenterId), ",",
-                LogicUtils.sqlStringValue(record.stationNbr), ",",
-                LogicUtils.sqlStringValue(record.computerDesc), ",",
-                LogicUtils.sqlIntegerValue(record.iconX), ",",
-                LogicUtils.sqlIntegerValue(record.iconY), ",",
-                LogicUtils.sqlStringValue(record.pcUsage), ",",
-                LogicUtils.sqlIntegerValue(record.currentStatus), ",",
-                LogicUtils.sqlDateTimeValue(record.dtimeCreated), ",",
-                LogicUtils.sqlDateTimeValue(record.dtimeApproved), ",",
-                LogicUtils.sqlStringValue(record.macAddress), ",",
-                LogicUtils.sqlStringValue(record.powerStatus), ",",
-                LogicUtils.sqlIntegerValue(record.powerOnDue), ",",
-                LogicUtils.sqlIntegerValue(record.lastPing), ",",
-                LogicUtils.sqlStringValue(record.currentStuId), ",",
-                LogicUtils.sqlStringValue(record.currentCourse), ",",
-                LogicUtils.sqlIntegerValue(record.currentUnit), ",",
-                LogicUtils.sqlStringValue(record.currentVersion), ")");
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                conn.sqlStringValue(record.computerId), ",",
+                conn.sqlStringValue(record.testingCenterId), ",",
+                conn.sqlStringValue(record.stationNbr), ",",
+                conn.sqlStringValue(record.computerDesc), ",",
+                conn.sqlIntegerValue(record.iconX), ",",
+                conn.sqlIntegerValue(record.iconY), ",",
+                conn.sqlStringValue(record.pcUsage), ",",
+                conn.sqlIntegerValue(record.currentStatus), ",",
+                conn.sqlDateTimeValue(record.dtimeCreated), ",",
+                conn.sqlDateTimeValue(record.dtimeApproved), ",",
+                conn.sqlStringValue(record.macAddress), ",",
+                conn.sqlStringValue(record.powerStatus), ",",
+                conn.sqlIntegerValue(record.powerOnDue), ",",
+                conn.sqlIntegerValue(record.lastPing), ",",
+                conn.sqlStringValue(record.currentStuId), ",",
+                conn.sqlStringValue(record.currentCourse), ",",
+                conn.sqlIntegerValue(record.currentUnit), ",",
+                conn.sqlStringValue(record.currentVersion), ")");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -107,6 +107,9 @@ public enum RawClientPcLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -124,10 +127,10 @@ public enum RawClientPcLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE computer_id=", LogicUtils.sqlStringValue(record.computerId));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE computer_id=", conn.sqlStringValue(record.computerId));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -139,6 +142,9 @@ public enum RawClientPcLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -237,7 +243,7 @@ public enum RawClientPcLogic {
     }
 
     /**
-     * Updates the 'current_status' field of a client_pc record. This call does not commit the update.
+     * Updates the 'current_status' field of a client_pc record.
      *
      * @param cache            the data cache
      * @param computerId       the computer ID of the record to update
@@ -267,6 +273,9 @@ public enum RawClientPcLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -293,15 +302,15 @@ public enum RawClientPcLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("UPDATE ", tableName,
-                " SET current_status=", LogicUtils.sqlIntegerValue(newCurrentStatus), ",",
-                " current_stu_id=", LogicUtils.sqlStringValue(newCurrentStuId), ",",
-                " current_course=", LogicUtils.sqlStringValue(newCurrentCourse), ",",
-                " current_unit=", LogicUtils.sqlIntegerValue(newCurrentUnit), ",",
-                " current_version=", LogicUtils.sqlStringValue(newCurrentVersion),
-                " WHERE computer_id='", computerId, "'");
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("UPDATE ", tableName,
+                " SET current_status=", conn.sqlIntegerValue(newCurrentStatus), ",",
+                " current_stu_id=", conn.sqlStringValue(newCurrentStuId), ",",
+                " current_course=", conn.sqlStringValue(newCurrentCourse), ",",
+                " current_unit=", conn.sqlIntegerValue(newCurrentUnit), ",",
+                " current_version=", conn.sqlStringValue(newCurrentVersion),
+                " WHERE computer_id='", computerId, "'");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -313,6 +322,9 @@ public enum RawClientPcLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -332,11 +344,11 @@ public enum RawClientPcLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("UPDATE ", tableName,
-                " SET pc_usage=", LogicUtils.sqlStringValue(newPcUsage),
-                " WHERE computer_id='", computerId, "'");
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("UPDATE ", tableName,
+                " SET pc_usage=", conn.sqlStringValue(newPcUsage),
+                " WHERE computer_id='", computerId, "'");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -348,6 +360,9 @@ public enum RawClientPcLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -367,11 +382,11 @@ public enum RawClientPcLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("UPDATE ", tableName,
-                " SET power_status=", LogicUtils.sqlStringValue(newPowerStatus),
-                " WHERE computer_id='", computerId, "'");
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("UPDATE ", tableName,
+                " SET power_status=", conn.sqlStringValue(newPowerStatus),
+                " WHERE computer_id='", computerId, "'");
 
         try (final Statement stmt = conn.createStatement()) {
             final int numRows = stmt.executeUpdate(sql);
@@ -385,6 +400,9 @@ public enum RawClientPcLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -404,11 +422,11 @@ public enum RawClientPcLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("UPDATE ", tableName,
-                " SET power_on_due=", LogicUtils.sqlIntegerValue(newPowerOnDue),
-                " WHERE computer_id='", computerId, "'");
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("UPDATE ", tableName,
+                " SET power_on_due=", conn.sqlIntegerValue(newPowerOnDue),
+                " WHERE computer_id='", computerId, "'");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -420,6 +438,9 @@ public enum RawClientPcLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -440,14 +461,14 @@ public enum RawClientPcLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final HtmlBuilder htm = new HtmlBuilder(50);
-        htm.add("UPDATE ", tableName, " SET last_ping=", LogicUtils.sqlIntegerValue(newLastPing));
+        htm.add("UPDATE ", tableName, " SET last_ping=", conn.sqlIntegerValue(newLastPing));
         if (newLastPing != null) {
             htm.add(", power_status=2");
         }
         htm.add(" WHERE computer_id='", computerId, "'");
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(htm.toString()) == 1;
@@ -459,6 +480,9 @@ public enum RawClientPcLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }

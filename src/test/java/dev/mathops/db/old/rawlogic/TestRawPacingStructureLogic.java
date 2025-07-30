@@ -2,12 +2,11 @@ package dev.mathops.db.old.rawlogic;
 
 import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
-import dev.mathops.db.Contexts;
 import dev.mathops.db.DbConnection;
 import dev.mathops.db.ESchema;
-import dev.mathops.db.cfg.DatabaseConfig;
-import dev.mathops.db.cfg.Login;
 import dev.mathops.db.cfg.Profile;
+import dev.mathops.db.logic.SystemData;
+import dev.mathops.db.old.TestUtils;
 import dev.mathops.db.old.rawrecord.RawPacingStructure;
 import dev.mathops.db.rec.TermRec;
 import dev.mathops.db.reclogic.TermLogic;
@@ -17,7 +16,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
@@ -46,44 +44,21 @@ final class TestRawPacingStructureLogic {
     @BeforeAll
     static void initTests() {
 
-        final DatabaseConfig config = DatabaseConfig.getDefault();
-        profile = config.getCodeProfile(Contexts.INFORMIX_TEST_PATH);
-        if (profile == null) {
-            throw new IllegalArgumentException(TestRes.get(TestRes.ERR_NO_TEST_PROFILE));
-        }
+        final Cache cache = TestUtils.ensureConnectedToTest();
+        profile = cache.getProfile();
 
-        final Login login = profile.getLogin(ESchema.LEGACY);
-        final DbConnection conn = login.checkOutConnection();
-        final Cache cache = new Cache(profile);
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
-        final String whichDbName = RawWhichDbLogic.getTableName(cache);
-
-        // Make sure we're in the TEST database
-        try {
-            try (final Statement stmt = conn.createStatement();
-                 final ResultSet rs = stmt.executeQuery("SELECT descr FROM " + whichDbName)) {
-
-                if (rs.next()) {
-                    final String which = rs.getString(1);
-                    if (which != null && !"TEST".equals(which.trim())) {
-                        throw new IllegalArgumentException(TestRes.fmt(TestRes.ERR_NOT_CONNECTED_TO_TEST, which));
-                    }
-                } else {
-                    throw new IllegalArgumentException(TestRes.get(TestRes.ERR_CANT_QUERY_WHICH_DB));
-                }
-            }
-
-            try (final Statement stmt = conn.createStatement()) {
-                final String tableName = RawPacingStructureLogic.getTableName(cache);
-                stmt.executeUpdate("DELETE FROM " + tableName);
-                final String termName = TermLogic.Postgres.getTableName(cache);
-                stmt.executeUpdate("DELETE FROM " + termName);
-            }
+        try (final Statement stmt = conn.createStatement()) {
+            final String tableName = RawPacingStructureLogic.getTableName(cache);
+            stmt.executeUpdate("DELETE FROM " + tableName);
+            final String termName = TermLogic.Postgres.getTableName(cache);
+            stmt.executeUpdate("DELETE FROM " + termName);
             conn.commit();
 
             final TermRec term1 = new TermRec(fa21, LocalDate.of(2021, 8, 11), LocalDate.of(2021, 12, 14), "2122",
-                    Integer.valueOf(0), LocalDate.of(2021, 11, 13), LocalDate.of(2021, 11, 14)
-                    , LocalDate.of(2022, 10, 12));
+                    Integer.valueOf(0), LocalDate.of(2021, 11, 13), LocalDate.of(2021, 11, 14),
+                    LocalDate.of(2022, 10, 12));
 
             final RawPacingStructure raw1 = new RawPacingStructure(fa21, "A", "B", "C", "D", Integer.valueOf(1),
                     "E", Integer.valueOf(2), Integer.valueOf(3), "F", "G", "H", "I", Integer.valueOf(4),
@@ -100,7 +75,8 @@ final class TestRawPacingStructureLogic {
                     Integer.valueOf(4), Integer.valueOf(5), Integer.valueOf(6), Integer.valueOf(7), "Q", "P", "O",
                     "N", "M", "L", "K", null);
 
-            assertTrue(cache.getSystemData().insertTerm(term1), "Failed to insert term 1");
+            final SystemData systemData = cache.getSystemData();
+            assertTrue(systemData.insertTerm(term1), "Failed to insert term 1");
 
             assertTrue(RawPacingStructureLogic.insert(cache, raw1), "Failed to insert pacing_structure 1");
             assertTrue(RawPacingStructureLogic.insert(cache, raw2), "Failed to insert pacing_structure 2");
@@ -109,7 +85,7 @@ final class TestRawPacingStructureLogic {
             Log.warning(ex);
             fail("Exception while initializing tables: " + ex.getMessage());
         } finally {
-            login.checkInConnection(conn);
+            Cache.checkInConnection(conn);
         }
     }
 
@@ -564,24 +540,20 @@ final class TestRawPacingStructureLogic {
     @AfterAll
     static void cleanUp() {
 
-        final Login login = profile.getLogin(ESchema.LEGACY);
-        final DbConnection conn = login.checkOutConnection();
-        final Cache cache = new Cache(profile);
+        final Cache cache = TestUtils.ensureConnectedToTest();
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
-        try {
-            try (final Statement stmt = conn.createStatement()) {
-                final String tableName = RawPacingStructureLogic.getTableName(cache);
-                stmt.executeUpdate("DELETE FROM " + tableName);
-                final String termName = TermLogic.Postgres.getTableName(cache);
-                stmt.executeUpdate("DELETE FROM " + termName);
-            }
-
+        try (final Statement stmt = conn.createStatement()) {
+            final String tableName = RawPacingStructureLogic.getTableName(cache);
+            stmt.executeUpdate("DELETE FROM " + tableName);
+            final String termName = TermLogic.Postgres.getTableName(cache);
+            stmt.executeUpdate("DELETE FROM " + termName);
             conn.commit();
         } catch (final SQLException ex) {
             Log.warning(ex);
             fail("Exception while cleaning tables: " + ex.getMessage());
         } finally {
-            login.checkInConnection(conn);
+            Cache.checkInConnection(conn);
         }
     }
 }

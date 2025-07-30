@@ -60,14 +60,14 @@ public enum RawPrereqLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat(
                 "INSERT INTO ", tableName, " (term,term_yr,course,prerequisite) VALUES (",
-                LogicUtils.sqlStringValue(record.termKey.termCode), ",",
+                conn.sqlStringValue(record.termKey.termCode), ",",
                 record.termKey.shortYear, ",",
-                LogicUtils.sqlStringValue(record.course), ",",
-                LogicUtils.sqlStringValue(record.prerequisite), ")");
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                conn.sqlStringValue(record.course), ",",
+                conn.sqlStringValue(record.prerequisite), ")");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -79,6 +79,9 @@ public enum RawPrereqLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -96,13 +99,13 @@ public enum RawPrereqLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE course=", LogicUtils.sqlStringValue(record.course),
-                "  AND term=", LogicUtils.sqlStringValue(record.termKey.termCode),
-                "  AND term_yr=", LogicUtils.sqlIntegerValue(record.termKey.shortYear),
-                "  AND prerequisite=", LogicUtils.sqlStringValue(record.prerequisite));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE course=", conn.sqlStringValue(record.course),
+                "  AND term=", conn.sqlStringValue(record.termKey.termCode),
+                "  AND term_yr=", conn.sqlIntegerValue(record.termKey.shortYear),
+                "  AND prerequisite=", conn.sqlStringValue(record.prerequisite));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -114,6 +117,9 @@ public enum RawPrereqLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -130,7 +136,13 @@ public enum RawPrereqLogic {
 
         final String tableName = getTableName(cache);
 
-        return executeListQuery(cache, "SELECT * FROM " + tableName);
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return executeListQuery(conn, "SELECT * FROM " + tableName);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -145,11 +157,17 @@ public enum RawPrereqLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
-                " WHERE term=", LogicUtils.sqlStringValue(termKey.termCode),
+                " WHERE term=", conn.sqlStringValue(termKey.termCode),
                 "   AND term_yr=", termKey.shortYear);
 
-        return executeListQuery(cache, sql);
+        try {
+            return executeListQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -166,12 +184,18 @@ public enum RawPrereqLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
-                " WHERE term=", LogicUtils.sqlStringValue(termKey.termCode),
-                "   AND term_yr=", termKey.shortYear,
-                "   AND course=", LogicUtils.sqlStringValue(course));
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
-        return executeListQuery(cache, sql);
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
+                " WHERE term=", conn.sqlStringValue(termKey.termCode),
+                "   AND term_yr=", termKey.shortYear,
+                "   AND course=", conn.sqlStringValue(course));
+
+        try {
+            return executeListQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -201,16 +225,14 @@ public enum RawPrereqLogic {
     /**
      * Executes a query that returns a list of records.
      *
-     * @param cache the data cache
-     * @param sql   the query
+     * @param conn the database connection
+     * @param sql  the query
      * @return the list of records
      * @throws SQLException if there is an error accessing the database
      */
-    private static List<RawPrereq> executeListQuery(final Cache cache, final String sql) throws SQLException {
+    private static List<RawPrereq> executeListQuery(final DbConnection conn, final String sql) throws SQLException {
 
         final List<RawPrereq> result = new ArrayList<>(50);
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -218,8 +240,6 @@ public enum RawPrereqLogic {
             while (rs.next()) {
                 result.add(RawPrereq.fromResultSet(rs));
             }
-        } finally {
-            Cache.checkInConnection(conn);
         }
 
         return result;

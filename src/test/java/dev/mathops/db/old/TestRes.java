@@ -1,4 +1,4 @@
-package dev.mathops.db.old.rawlogic;
+package dev.mathops.db.old;
 
 import dev.mathops.commons.res.ResBundle;
 

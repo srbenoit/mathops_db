@@ -70,26 +70,26 @@ public enum RawPendingExamLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat(
                 "INSERT INTO ", tableName, " (serial_nbr,version,stu_id,exam_dt,exam_score,start_time,finish_time,",
                 "time_ok,passed,seq_nbr,course,unit,exam_type,timelimit_factor,stu_type) VALUES (",
-                LogicUtils.sqlLongValue(record.serialNbr), ",",
-                LogicUtils.sqlStringValue(record.version), ",",
-                LogicUtils.sqlStringValue(record.stuId), ",",
-                LogicUtils.sqlDateValue(record.examDt), ",",
-                LogicUtils.sqlIntegerValue(record.examScore), ",",
-                LogicUtils.sqlIntegerValue(record.startTime), ",",
-                LogicUtils.sqlIntegerValue(record.finishTime), ",",
-                LogicUtils.sqlStringValue(record.timeOk), ",",
-                LogicUtils.sqlStringValue(record.passed), ",",
-                LogicUtils.sqlIntegerValue(record.seqNbr), ",",
-                LogicUtils.sqlStringValue(record.course), ",",
-                LogicUtils.sqlIntegerValue(record.unit), ",",
-                LogicUtils.sqlStringValue(record.examType), ",",
-                LogicUtils.sqlFloatValue(record.timelimitFactor), ",",
-                LogicUtils.sqlStringValue(record.stuType), ")");
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                conn.sqlLongValue(record.serialNbr), ",",
+                conn.sqlStringValue(record.version), ",",
+                conn.sqlStringValue(record.stuId), ",",
+                conn.sqlDateValue(record.examDt), ",",
+                conn.sqlIntegerValue(record.examScore), ",",
+                conn.sqlIntegerValue(record.startTime), ",",
+                conn.sqlIntegerValue(record.finishTime), ",",
+                conn.sqlStringValue(record.timeOk), ",",
+                conn.sqlStringValue(record.passed), ",",
+                conn.sqlIntegerValue(record.seqNbr), ",",
+                conn.sqlStringValue(record.course), ",",
+                conn.sqlIntegerValue(record.unit), ",",
+                conn.sqlStringValue(record.examType), ",",
+                conn.sqlFloatValue(record.timelimitFactor), ",",
+                conn.sqlStringValue(record.stuType), ")");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -101,6 +101,9 @@ public enum RawPendingExamLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -118,11 +121,11 @@ public enum RawPendingExamLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE serial_nbr=", LogicUtils.sqlLongValue(record.serialNbr),
-                "   AND stu_id=", LogicUtils.sqlStringValue(record.stuId));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE serial_nbr=", conn.sqlLongValue(record.serialNbr),
+                "   AND stu_id=", conn.sqlStringValue(record.stuId));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -134,13 +137,16 @@ public enum RawPendingExamLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
     }
 
     /**
-     * Deletes a pending_exam record. This call does not commit the deletion.
+     * Deletes a pending_exam record.
      *
      * @param cache     the data cache
      * @param serialNbr the serial number of the record to delete
@@ -152,11 +158,11 @@ public enum RawPendingExamLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE serial_nbr=", LogicUtils.sqlLongValue(serialNbr),
-                "   AND stu_id=", LogicUtils.sqlStringValue(stuId));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE serial_nbr=", conn.sqlLongValue(serialNbr),
+                "   AND stu_id=", conn.sqlStringValue(stuId));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -168,6 +174,9 @@ public enum RawPendingExamLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -216,9 +225,9 @@ public enum RawPendingExamLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = "SELECT * FROM " + tableName + " WHERE stu_id=" + LogicUtils.sqlStringValue(stuId);
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = "SELECT * FROM " + tableName + " WHERE stu_id=" + conn.sqlStringValue(stuId);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {

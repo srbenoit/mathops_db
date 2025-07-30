@@ -55,11 +55,11 @@ public enum RawEtextCourseLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("INSERT INTO ", tableName, " (etext_id,course) VALUES (",
-                LogicUtils.sqlStringValue(record.etextId), ",",
-                LogicUtils.sqlStringValue(record.course), ")");
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("INSERT INTO ", tableName, " (etext_id,course) VALUES (",
+                conn.sqlStringValue(record.etextId), ",",
+                conn.sqlStringValue(record.course), ")");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -71,6 +71,9 @@ public enum RawEtextCourseLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -88,11 +91,11 @@ public enum RawEtextCourseLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE etext_id=", LogicUtils.sqlStringValue(record.etextId),
-                "  AND course=", LogicUtils.sqlStringValue(record.course));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE etext_id=", conn.sqlStringValue(record.etextId),
+                "  AND course=", conn.sqlStringValue(record.course));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -104,6 +107,9 @@ public enum RawEtextCourseLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -120,7 +126,13 @@ public enum RawEtextCourseLogic {
 
         final String tableName = getTableName(cache);
 
-        return executeQuery(cache, "SELECT * FROM " + tableName);
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return executeQuery(conn, "SELECT * FROM " + tableName);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -135,8 +147,14 @@ public enum RawEtextCourseLogic {
 
         final String tableName = getTableName(cache);
 
-        return executeQuery(cache, SimpleBuilder.concat(
-                "SELECT * FROM ", tableName, " WHERE etext_id=", LogicUtils.sqlStringValue(etextId)));
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return executeQuery(conn, SimpleBuilder.concat(
+                    "SELECT * FROM ", tableName, " WHERE etext_id=", conn.sqlStringValue(etextId)));
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -151,23 +169,27 @@ public enum RawEtextCourseLogic {
 
         final String tableName = getTableName(cache);
 
-        return executeQuery(cache, SimpleBuilder.concat(
-                "SELECT * FROM ", tableName, " WHERE course=", LogicUtils.sqlStringValue(courseId)));
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return executeQuery(conn, SimpleBuilder.concat(
+                    "SELECT * FROM ", tableName, " WHERE course=", conn.sqlStringValue(courseId)));
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
      * Executes a query that returns a list of records.
      *
-     * @param cache the data cache
-     * @param sql   the SQL to execute
+     * @param conn the database connection
+     * @param sql  the SQL to execute
      * @return the list of matching records
      * @throws SQLException if there is an error accessing the database
      */
-    private static List<RawEtextCourse> executeQuery(final Cache cache, final String sql) throws SQLException {
+    private static List<RawEtextCourse> executeQuery(final DbConnection conn, final String sql) throws SQLException {
 
         final List<RawEtextCourse> result = new ArrayList<>(10);
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -175,8 +197,6 @@ public enum RawEtextCourseLogic {
             while (rs.next()) {
                 result.add(RawEtextCourse.fromResultSet(rs));
             }
-        } finally {
-            Cache.checkInConnection(conn);
         }
 
         return result;

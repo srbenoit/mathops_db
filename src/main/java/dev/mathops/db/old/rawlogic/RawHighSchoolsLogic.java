@@ -59,18 +59,18 @@ public enum RawHighSchoolsLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         // FIXME: This needs to be a prepared statement! Address or HS name could include apostrophes or SQL escapes.
 
         final String sql = SimpleBuilder.concat(
                 "INSERT INTO ", tableName, " (hs_code,hs_name,addres_1,city,state,zip_code) VALUES (",
-                LogicUtils.sqlStringValue(record.hsCode), ",",
-                LogicUtils.sqlStringValue(record.hsName), ",",
-                LogicUtils.sqlStringValue(record.addres1), ",",
-                LogicUtils.sqlStringValue(record.city), ",",
-                LogicUtils.sqlStringValue(record.state), ",",
-                LogicUtils.sqlStringValue(record.zipCode), ")");
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                conn.sqlStringValue(record.hsCode), ",",
+                conn.sqlStringValue(record.hsName), ",",
+                conn.sqlStringValue(record.addres1), ",",
+                conn.sqlStringValue(record.city), ",",
+                conn.sqlStringValue(record.state), ",",
+                conn.sqlStringValue(record.zipCode), ")");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -82,6 +82,9 @@ public enum RawHighSchoolsLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -99,10 +102,10 @@ public enum RawHighSchoolsLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE hs_code=", LogicUtils.sqlStringValue(record.hsCode));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE hs_code=", conn.sqlStringValue(record.hsCode));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -114,6 +117,11 @@ public enum RawHighSchoolsLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
+        } finally {
+            Cache.checkInConnection(conn);
         }
     }
 

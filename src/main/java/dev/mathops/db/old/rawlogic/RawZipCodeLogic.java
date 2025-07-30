@@ -56,12 +56,12 @@ public enum RawZipCodeLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("INSERT INTO ", tableName, " (zip_code,city,state) VALUES (",
-                LogicUtils.sqlStringValue(record.zipCode), ",",
-                LogicUtils.sqlStringValue(record.city), ",",
-                LogicUtils.sqlStringValue(record.state), ")");
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("INSERT INTO ", tableName, " (zip_code,city,state) VALUES (",
+                conn.sqlStringValue(record.zipCode), ",",
+                conn.sqlStringValue(record.city), ",",
+                conn.sqlStringValue(record.state), ")");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -73,6 +73,9 @@ public enum RawZipCodeLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -90,10 +93,10 @@ public enum RawZipCodeLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName, " WHERE zip_code=",
-                LogicUtils.sqlStringValue(record.zipCode));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName, " WHERE zip_code=",
+                conn.sqlStringValue(record.zipCode));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -105,6 +108,9 @@ public enum RawZipCodeLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -131,6 +137,9 @@ public enum RawZipCodeLogic {
             while (rs.next()) {
                 result.add(RawZipCode.fromResultSet(rs));
             }
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }

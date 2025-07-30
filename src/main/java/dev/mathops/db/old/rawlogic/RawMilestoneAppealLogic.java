@@ -105,6 +105,9 @@ public enum RawMilestoneAppealLogic {
                 } else {
                     conn.rollback();
                 }
+            } catch (final SQLException ex) {
+                conn.rollback();
+                throw ex;
             } finally {
                 Cache.checkInConnection(conn);
             }
@@ -129,13 +132,13 @@ public enum RawMilestoneAppealLogic {
 
         final String tableName = getTableName(cache);
 
-        sql.add("DELETE FROM ", tableName,
-                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
-                "   AND term=", LogicUtils.sqlStringValue(record.termKey.termCode),
-                "   AND term_yr=", LogicUtils.sqlIntegerValue(record.termKey.shortYear),
-                "   AND appeal_date_time=", LogicUtils.sqlDateTimeValue(record.appealDateTime));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        sql.add("DELETE FROM ", tableName,
+                " WHERE stu_id=", conn.sqlStringValue(record.stuId),
+                "   AND term=", conn.sqlStringValue(record.termKey.termCode),
+                "   AND term_yr=", conn.sqlIntegerValue(record.termKey.shortYear),
+                "   AND appeal_date_time=", conn.sqlDateTimeValue(record.appealDateTime));
 
         try (final Statement stmt = conn.createStatement()) {
             result = stmt.executeUpdate(sql.toString()) == 1;
@@ -145,6 +148,9 @@ public enum RawMilestoneAppealLogic {
             } else {
                 conn.rollback();
             }
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -168,26 +174,26 @@ public enum RawMilestoneAppealLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         sql.add("UPDATE ", tableName,
-                " SET pace=", LogicUtils.sqlIntegerValue(record.pace),
-                ", pace_track=", LogicUtils.sqlStringValue(record.paceTrack),
-                ", appeal_type=", LogicUtils.sqlStringValue(record.appealType),
-                ", ms_nbr=", LogicUtils.sqlIntegerValue(record.msNbr),
-                ", ms_type=", LogicUtils.sqlStringValue(record.msType),
-                ", prior_ms_dt=", LogicUtils.sqlDateValue(record.priorMsDt),
-                ", new_ms_dt=", LogicUtils.sqlDateValue(record.newMsDt),
-                ", attempts_allowed=", LogicUtils.sqlIntegerValue(record.attemptsAllowed),
-                ", circumstances=", LogicUtils.sqlStringValue(record.circumstances),
-                ", comment=", LogicUtils.sqlStringValue(record.comment),
-                ", interviewer=", LogicUtils.sqlStringValue(record.interviewer),
-                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
-                "   AND term=", LogicUtils.sqlStringValue(record.termKey.termCode),
-                "   AND term_yr=", LogicUtils.sqlIntegerValue(record.termKey.shortYear),
-                "   AND appeal_date_time=", LogicUtils.sqlDateTimeValue(record.appealDateTime));
+                " SET pace=", conn.sqlIntegerValue(record.pace),
+                ", pace_track=", conn.sqlStringValue(record.paceTrack),
+                ", appeal_type=", conn.sqlStringValue(record.appealType),
+                ", ms_nbr=", conn.sqlIntegerValue(record.msNbr),
+                ", ms_type=", conn.sqlStringValue(record.msType),
+                ", prior_ms_dt=", conn.sqlDateValue(record.priorMsDt),
+                ", new_ms_dt=", conn.sqlDateValue(record.newMsDt),
+                ", attempts_allowed=", conn.sqlIntegerValue(record.attemptsAllowed),
+                ", circumstances=", conn.sqlStringValue(record.circumstances),
+                ", comment=", conn.sqlStringValue(record.comment),
+                ", interviewer=", conn.sqlStringValue(record.interviewer),
+                " WHERE stu_id=", conn.sqlStringValue(record.stuId),
+                "   AND term=", conn.sqlStringValue(record.termKey.termCode),
+                "   AND term_yr=", conn.sqlIntegerValue(record.termKey.shortYear),
+                "   AND appeal_date_time=", conn.sqlDateTimeValue(record.appealDateTime));
 
         final String sqlString = sql.toString();
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement()) {
             final int count = stmt.executeUpdate(sqlString);
@@ -200,6 +206,9 @@ public enum RawMilestoneAppealLogic {
                 conn.rollback();
                 Log.warning("Update to milestone_appeal indicated " + count + " rows would be changed - rolling back");
             }
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -218,7 +227,13 @@ public enum RawMilestoneAppealLogic {
 
         final String tableName = getTableName(cache);
 
-        return executeQuery(cache, "SELECT * FROM " + tableName);
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return executeQuery(conn, "SELECT * FROM " + tableName);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -233,25 +248,29 @@ public enum RawMilestoneAppealLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat(
-                "SELECT * FROM ", tableName, " WHERE stu_id=", LogicUtils.sqlStringValue(stuId));
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
-        return executeQuery(cache, sql);
+        final String sql = SimpleBuilder.concat(
+                "SELECT * FROM ", tableName, " WHERE stu_id=", conn.sqlStringValue(stuId));
+
+        try {
+            return executeQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
      * Executes a query that returns a list of records.
      *
-     * @param cache the data cache
-     * @param sql   the SQL to execute
+     * @param conn the database connection
+     * @param sql  the SQL to execute
      * @return the list of matching records
      * @throws SQLException if there is an error accessing the database
      */
-    private static List<RawMilestoneAppeal> executeQuery(final Cache cache, final String sql) throws SQLException {
+    private static List<RawMilestoneAppeal> executeQuery(final DbConnection conn, final String sql) throws SQLException {
 
         final List<RawMilestoneAppeal> result = new ArrayList<>(50);
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -259,8 +278,6 @@ public enum RawMilestoneAppealLogic {
             while (rs.next()) {
                 result.add(RawMilestoneAppeal.fromResultSet(rs));
             }
-        } finally {
-            Cache.checkInConnection(conn);
         }
 
         return result;

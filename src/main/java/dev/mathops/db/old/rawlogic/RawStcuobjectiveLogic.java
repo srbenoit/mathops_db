@@ -69,17 +69,17 @@ public enum RawStcuobjectiveLogic {
         } else {
             final String tableName = getTableName(cache);
 
+            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
             final String sql = SimpleBuilder.concat("INSERT INTO ", tableName, " (stu_id,course,unit,objective,",
                     "lecture_viewed_dt,seed,last_component_finished) VALUES (",
-                    LogicUtils.sqlStringValue(record.stuId), ",",
-                    LogicUtils.sqlStringValue(record.course), ",",
-                    LogicUtils.sqlIntegerValue(record.unit), ",",
-                    LogicUtils.sqlIntegerValue(record.objective), ",",
-                    LogicUtils.sqlDateValue(record.lectureViewedDt), ",",
-                    LogicUtils.sqlIntegerValue(record.seed), ",",
-                    LogicUtils.sqlIntegerValue(record.lastComponentFinished), ")");
-
-            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                    conn.sqlStringValue(record.stuId), ",",
+                    conn.sqlStringValue(record.course), ",",
+                    conn.sqlIntegerValue(record.unit), ",",
+                    conn.sqlIntegerValue(record.objective), ",",
+                    conn.sqlDateValue(record.lectureViewedDt), ",",
+                    conn.sqlIntegerValue(record.seed), ",",
+                    conn.sqlIntegerValue(record.lastComponentFinished), ")");
 
             try (final Statement stmt = conn.createStatement()) {
                 result = stmt.executeUpdate(sql) == 1;
@@ -89,6 +89,9 @@ public enum RawStcuobjectiveLogic {
                 } else {
                     conn.rollback();
                 }
+            } catch (final SQLException ex) {
+                conn.rollback();
+                throw ex;
             } finally {
                 Cache.checkInConnection(conn);
             }
@@ -111,13 +114,13 @@ public enum RawStcuobjectiveLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
-                "  AND course=", LogicUtils.sqlStringValue(record.course),
-                "  AND unit=", LogicUtils.sqlIntegerValue(record.unit),
-                "  AND objective=", LogicUtils.sqlIntegerValue(record.objective));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE stu_id=", conn.sqlStringValue(record.stuId),
+                "  AND course=", conn.sqlStringValue(record.course),
+                "  AND unit=", conn.sqlIntegerValue(record.unit),
+                "  AND objective=", conn.sqlIntegerValue(record.objective));
 
         try (final Statement stmt = conn.createStatement()) {
             result = stmt.executeUpdate(sql) == 1;
@@ -127,6 +130,9 @@ public enum RawStcuobjectiveLogic {
             } else {
                 conn.rollback();
             }
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -162,8 +168,10 @@ public enum RawStcuobjectiveLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE stu_id=",
-                LogicUtils.sqlStringValue(studentId));
+                conn.sqlStringValue(studentId));
 
         return doListQuery(cache, sql);
     }
@@ -184,14 +192,20 @@ public enum RawStcuobjectiveLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat(
                 "SELECT * FROM ", tableName,
-                " WHERE stu_id=", LogicUtils.sqlStringValue(studentId),
-                " AND course=", LogicUtils.sqlStringValue(courseId),
-                " AND unit=", LogicUtils.sqlIntegerValue(unit),
-                " AND objective=", LogicUtils.sqlIntegerValue(objective));
+                " WHERE stu_id=", conn.sqlStringValue(studentId),
+                " AND course=", conn.sqlStringValue(courseId),
+                " AND unit=", conn.sqlIntegerValue(unit),
+                " AND objective=", conn.sqlIntegerValue(objective));
 
-        return doSingleQuery(cache, sql);
+        try {
+            return doSingleQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -214,8 +228,7 @@ public enum RawStcuobjectiveLogic {
     }
 
     /**
-     * Records the fact that the instructional lecture has been viewed by a student. This method does not commit the
-     * update.
+     * Records the fact that the instructional lecture has been viewed by a student.
      *
      * @param cache     the data cache
      * @param studentId the ID of the student
@@ -241,26 +254,26 @@ public enum RawStcuobjectiveLogic {
 
             final RawStcuobjective existing = query(cache, studentId, courseId, unit, objective);
 
+            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
             final String sql;
             if (existing == null) {
                 sql = SimpleBuilder.concat(
                         "INSERT INTO ", tableName, " (stu_id,course,unit,objective,",
                         "lecture_viewed_dt) VALUES (",
-                        LogicUtils.sqlStringValue(studentId), ",",
-                        LogicUtils.sqlStringValue(courseId), ",",
-                        LogicUtils.sqlIntegerValue(unit), ",",
-                        LogicUtils.sqlIntegerValue(objective), ",",
-                        LogicUtils.sqlDateValue(now.toLocalDate()), ")");
+                        conn.sqlStringValue(studentId), ",",
+                        conn.sqlStringValue(courseId), ",",
+                        conn.sqlIntegerValue(unit), ",",
+                        conn.sqlIntegerValue(objective), ",",
+                        conn.sqlDateValue(now.toLocalDate()), ")");
             } else {
                 sql = SimpleBuilder.concat("UPDATE ", tableName,
-                        " SET lecture_viewed_dt=", LogicUtils.sqlDateValue(now.toLocalDate()),
-                        " WHERE stu_id=", LogicUtils.sqlStringValue(studentId),
-                        " AND course=", LogicUtils.sqlStringValue(courseId),
-                        " AND unit=", LogicUtils.sqlIntegerValue(unit),
-                        " AND objective=", LogicUtils.sqlIntegerValue(objective));
+                        " SET lecture_viewed_dt=", conn.sqlDateValue(now.toLocalDate()),
+                        " WHERE stu_id=", conn.sqlStringValue(studentId),
+                        " AND course=", conn.sqlStringValue(courseId),
+                        " AND unit=", conn.sqlIntegerValue(unit),
+                        " AND objective=", conn.sqlIntegerValue(objective));
             }
-
-            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
             try (final Statement stmt = conn.createStatement()) {
                 result = stmt.executeUpdate(sql) == 1;
@@ -270,6 +283,9 @@ public enum RawStcuobjectiveLogic {
                 } else {
                     conn.rollback();
                 }
+            } catch (final SQLException ex) {
+                conn.rollback();
+                throw ex;
             } finally {
                 Cache.checkInConnection(conn);
             }
@@ -281,16 +297,14 @@ public enum RawStcuobjectiveLogic {
     /**
      * Executes a query that returns a single records.
      *
-     * @param cache the data cache
-     * @param sql   the SQL to execute
+     * @param conn the database connection
+     * @param sql  the SQL to execute
      * @return the list of matching records
      * @throws SQLException if there is an error accessing the database
      */
-    private static RawStcuobjective doSingleQuery(final Cache cache, final String sql) throws SQLException {
+    private static RawStcuobjective doSingleQuery(final DbConnection conn, final String sql) throws SQLException {
 
         RawStcuobjective result = null;
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -298,8 +312,6 @@ public enum RawStcuobjectiveLogic {
             if (rs.next()) {
                 result = RawStcuobjective.fromResultSet(rs);
             }
-        } finally {
-            Cache.checkInConnection(conn);
         }
 
         return result;

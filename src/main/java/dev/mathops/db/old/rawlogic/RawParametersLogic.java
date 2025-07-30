@@ -65,21 +65,21 @@ public enum RawParametersLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat("INSERT INTO ", tableName,
                 " (pgm_name,parm1,parm2,parm3,parm4,parm5,parm6,parm7,parm8,parm9,parm10) VALUES (",
-                LogicUtils.sqlStringValue(record.pgmName), ",",
-                LogicUtils.sqlStringValue(record.parm1), ",",
-                LogicUtils.sqlStringValue(record.parm2), ",",
-                LogicUtils.sqlStringValue(record.parm3), ",",
-                LogicUtils.sqlStringValue(record.parm4), ",",
-                LogicUtils.sqlStringValue(record.parm5), ",",
-                LogicUtils.sqlStringValue(record.parm6), ",",
-                LogicUtils.sqlStringValue(record.parm7), ",",
-                LogicUtils.sqlStringValue(record.parm8), ",",
-                LogicUtils.sqlStringValue(record.parm9), ",",
-                LogicUtils.sqlDateValue(record.parm10), ")");
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                conn.sqlStringValue(record.pgmName), ",",
+                conn.sqlStringValue(record.parm1), ",",
+                conn.sqlStringValue(record.parm2), ",",
+                conn.sqlStringValue(record.parm3), ",",
+                conn.sqlStringValue(record.parm4), ",",
+                conn.sqlStringValue(record.parm5), ",",
+                conn.sqlStringValue(record.parm6), ",",
+                conn.sqlStringValue(record.parm7), ",",
+                conn.sqlStringValue(record.parm8), ",",
+                conn.sqlStringValue(record.parm9), ",",
+                conn.sqlDateValue(record.parm10), ")");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -91,6 +91,9 @@ public enum RawParametersLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -108,10 +111,10 @@ public enum RawParametersLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE pgm_name=", LogicUtils.sqlStringValue(record.pgmName));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE pgm_name=", conn.sqlStringValue(record.pgmName));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -123,6 +126,9 @@ public enum RawParametersLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -170,8 +176,14 @@ public enum RawParametersLogic {
 
         final String tableName = getTableName(cache);
 
-        return doSingleQuery(cache, SimpleBuilder.concat(
-                "SELECT * FROM ", tableName, " WHERE pgm_name=", LogicUtils.sqlStringValue(pgmName)));
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSingleQuery(conn, SimpleBuilder.concat(
+                    "SELECT * FROM ", tableName, " WHERE pgm_name=", conn.sqlStringValue(pgmName)));
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -188,11 +200,11 @@ public enum RawParametersLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat(
-                "UPDATE ", tableName, " SET parm1=", LogicUtils.sqlStringValue(newParm1),
-                " WHERE pgm_name=", LogicUtils.sqlStringValue(pgmName));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat(
+                "UPDATE ", tableName, " SET parm1=", conn.sqlStringValue(newParm1),
+                " WHERE pgm_name=", conn.sqlStringValue(pgmName));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) > 0;
@@ -204,6 +216,9 @@ public enum RawParametersLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -223,11 +238,11 @@ public enum RawParametersLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat(
-                "UPDATE ", tableName, " SET parm2=", LogicUtils.sqlStringValue(newParm2),
-                " WHERE pgm_name=", LogicUtils.sqlStringValue(pgmName));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat(
+                "UPDATE ", tableName, " SET parm2=", conn.sqlStringValue(newParm2),
+                " WHERE pgm_name=", conn.sqlStringValue(pgmName));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) > 0;
@@ -239,6 +254,9 @@ public enum RawParametersLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -258,11 +276,11 @@ public enum RawParametersLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat(
-                "UPDATE ", tableName, " SET parm10=", LogicUtils.sqlDateValue(newParm10),
-                " WHERE pgm_name=", LogicUtils.sqlStringValue(pgmName));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat(
+                "UPDATE ", tableName, " SET parm10=", conn.sqlDateValue(newParm10),
+                " WHERE pgm_name=", conn.sqlStringValue(pgmName));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) > 0;
@@ -274,6 +292,9 @@ public enum RawParametersLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -282,16 +303,14 @@ public enum RawParametersLogic {
     /**
      * Performs a query that returns single record.
      *
-     * @param cache the data cache
-     * @param sql   the query SQL
+     * @param conn the database connection
+     * @param sql  the query SQL
      * @return the record; null if none returned
      * @throws SQLException if there is an error performing the query
      */
-    private static RawParameters doSingleQuery(final Cache cache, final String sql) throws SQLException {
+    private static RawParameters doSingleQuery(final DbConnection conn, final String sql) throws SQLException {
 
         RawParameters result = null;
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -299,8 +318,6 @@ public enum RawParametersLogic {
             if (rs.next()) {
                 result = RawParameters.fromResultSet(rs);
             }
-        } finally {
-            Cache.checkInConnection(conn);
         }
 
         return result;

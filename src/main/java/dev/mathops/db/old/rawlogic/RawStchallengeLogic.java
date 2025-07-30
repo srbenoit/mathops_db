@@ -90,27 +90,27 @@ public enum RawStchallengeLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat(
                 "INSERT INTO ", tableName, " (stu_id,course,version,academic_yr,exam_dt,",
                 "start_time,finish_time,last_name,first_name,middle_initial,seq_nbr,",
                 "serial_nbr,score,passed,how_validated) VALUES (",
-                LogicUtils.sqlStringValue(record.stuId), ",",
-                LogicUtils.sqlStringValue(record.course), ",",
-                LogicUtils.sqlStringValue(record.version), ",",
-                LogicUtils.sqlStringValue(record.academicYr), ",",
-                LogicUtils.sqlDateValue(record.examDt), ",",
-                LogicUtils.sqlIntegerValue(record.startTime), ",",
-                LogicUtils.sqlIntegerValue(record.finishTime), ",",
-                LogicUtils.sqlStringValue(record.lastName), ",",
-                LogicUtils.sqlStringValue(record.firstName), ",",
-                LogicUtils.sqlStringValue(record.middleInitial), ",",
-                LogicUtils.sqlIntegerValue(record.seqNbr), ",",
-                LogicUtils.sqlLongValue(record.serialNbr), ",",
-                LogicUtils.sqlIntegerValue(record.score), ",",
-                LogicUtils.sqlStringValue(record.passed), ",",
-                LogicUtils.sqlStringValue(record.howValidated), ")");
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                conn.sqlStringValue(record.stuId), ",",
+                conn.sqlStringValue(record.course), ",",
+                conn.sqlStringValue(record.version), ",",
+                conn.sqlStringValue(record.academicYr), ",",
+                conn.sqlDateValue(record.examDt), ",",
+                conn.sqlIntegerValue(record.startTime), ",",
+                conn.sqlIntegerValue(record.finishTime), ",",
+                conn.sqlStringValue(record.lastName), ",",
+                conn.sqlStringValue(record.firstName), ",",
+                conn.sqlStringValue(record.middleInitial), ",",
+                conn.sqlIntegerValue(record.seqNbr), ",",
+                conn.sqlLongValue(record.serialNbr), ",",
+                conn.sqlIntegerValue(record.score), ",",
+                conn.sqlStringValue(record.passed), ",",
+                conn.sqlStringValue(record.howValidated), ")");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -122,6 +122,9 @@ public enum RawStchallengeLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -139,13 +142,13 @@ public enum RawStchallengeLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
-                "  AND course=", LogicUtils.sqlStringValue(record.course),
-                "  AND exam_dt=", LogicUtils.sqlDateValue(record.examDt),
-                "  AND finish_time=", LogicUtils.sqlIntegerValue(record.finishTime));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE stu_id=", conn.sqlStringValue(record.stuId),
+                "  AND course=", conn.sqlStringValue(record.course),
+                "  AND exam_dt=", conn.sqlDateValue(record.examDt),
+                "  AND finish_time=", conn.sqlIntegerValue(record.finishTime));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -157,6 +160,9 @@ public enum RawStchallengeLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -187,7 +193,13 @@ public enum RawStchallengeLogic {
 
         final String tableName = getTableName(cache);
 
-        return executeQuery(cache, "SELECT * FROM " + tableName);
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return executeQuery(conn, "SELECT * FROM " + tableName);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -217,9 +229,9 @@ public enum RawStchallengeLogic {
         } else {
             final String tableName = getTableName(cache);
 
-            final String sql = "SELECT * FROM " + tableName + " WHERE stu_id=" + LogicUtils.sqlStringValue(stuId);
-
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+            final String sql = "SELECT * FROM " + tableName + " WHERE stu_id=" + conn.sqlStringValue(stuId);
 
             try (final Statement stmt = conn.createStatement();
                  final ResultSet rs = stmt.executeQuery(sql)) {
@@ -265,10 +277,10 @@ public enum RawStchallengeLogic {
         } else {
             final String tableName = getTableName(cache);
 
-            final String sql = "SELECT * FROM " + tableName + " WHERE stu_id="
-                               + LogicUtils.sqlStringValue(stuId) + " AND course=" + LogicUtils.sqlStringValue(course);
-
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+            final String sql = "SELECT * FROM " + tableName + " WHERE stu_id="
+                               + conn.sqlStringValue(stuId) + " AND course=" + conn.sqlStringValue(course);
 
             try (final Statement stmt = conn.createStatement();
                  final ResultSet rs = stmt.executeQuery(sql)) {
@@ -412,8 +424,10 @@ public enum RawStchallengeLogic {
             // Count legal attempts
             final String tableName = getTableName(cache);
 
-            final String sql1 = "SELECT COUNT(*) FROM " + tableName + " WHERE stu_id=" + LogicUtils.sqlStringValue(stuId)
-                                + " AND course=" + LogicUtils.sqlStringValue(
+            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+            final String sql1 = "SELECT COUNT(*) FROM " + tableName + " WHERE stu_id=" + conn.sqlStringValue(stuId)
+                                + " AND course=" + conn.sqlStringValue(
                     course) + " AND (passed='Y' OR passed='N')";
 
             result = LogicUtils.executeSimpleIntQuery(cache, sql1).intValue();
@@ -484,25 +498,29 @@ public enum RawStchallengeLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE exam_dt>=",
-                LogicUtils.sqlDateValue(earliest));
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
-        return executeQuery(cache, sql);
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE exam_dt>=",
+                conn.sqlDateValue(earliest));
+
+        try {
+            return executeQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
      * Executes a query that returns a list of records.
      *
-     * @param cache the data cache
-     * @param sql   the SQL to execute
+     * @param conn the database connection
+     * @param sql  the SQL to execute
      * @return the list of matching records
      * @throws SQLException if there is an error accessing the database
      */
-    private static List<RawStchallenge> executeQuery(final Cache cache, final String sql) throws SQLException {
+    private static List<RawStchallenge> executeQuery(final DbConnection conn, final String sql) throws SQLException {
 
         final List<RawStchallenge> result = new ArrayList<>(50);
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -510,8 +528,6 @@ public enum RawStchallengeLogic {
             while (rs.next()) {
                 result.add(RawStchallenge.fromResultSet(rs));
             }
-        } finally {
-            Cache.checkInConnection(conn);
         }
 
         return result;

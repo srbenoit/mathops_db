@@ -60,17 +60,17 @@ public enum RawEtextLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat("INSERT INTO ", tableName,
                 " (etext_id,retention,purchase_url,refund_period,key_entry,active,button_label) VALUES (",
-                LogicUtils.sqlStringValue(record.etextId), ",",
-                LogicUtils.sqlStringValue(record.retention), ",",
-                LogicUtils.sqlStringValue(record.purchaseUrl), ",",
-                LogicUtils.sqlIntegerValue(record.refundPeriod), ",",
-                LogicUtils.sqlStringValue(record.keyEntry), ",",
-                LogicUtils.sqlStringValue(record.active), ",",
-                LogicUtils.sqlStringValue(record.buttonLabel), ")");
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                conn.sqlStringValue(record.etextId), ",",
+                conn.sqlStringValue(record.retention), ",",
+                conn.sqlStringValue(record.purchaseUrl), ",",
+                conn.sqlIntegerValue(record.refundPeriod), ",",
+                conn.sqlStringValue(record.keyEntry), ",",
+                conn.sqlStringValue(record.active), ",",
+                conn.sqlStringValue(record.buttonLabel), ")");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -82,6 +82,9 @@ public enum RawEtextLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -99,10 +102,10 @@ public enum RawEtextLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE etext_id=", LogicUtils.sqlStringValue(record.etextId));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE etext_id=", conn.sqlStringValue(record.etextId));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -114,6 +117,9 @@ public enum RawEtextLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -163,10 +169,10 @@ public enum RawEtextLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat(
-                "SELECT * FROM ", tableName, " WHERE etext_id=", LogicUtils.sqlStringValue(etextId));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat(
+                "SELECT * FROM ", tableName, " WHERE etext_id=", conn.sqlStringValue(etextId));
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {

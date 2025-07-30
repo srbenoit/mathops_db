@@ -62,21 +62,21 @@ public enum RawCourseLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat(
                 "INSERT INTO ", tableName,
                 " (course,nbr_units,course_name,nbr_credits,calc_ok,course_label,inline_prefix,",
                 "is_tutorial,require_etext) VALUES (",
-                LogicUtils.sqlStringValue(record.course), ",",
-                LogicUtils.sqlIntegerValue(record.nbrUnits), ",",
-                LogicUtils.sqlStringValue(record.courseName), ",",
-                LogicUtils.sqlIntegerValue(record.nbrCredits), ",",
-                LogicUtils.sqlStringValue(record.calcOk), ",",
-                LogicUtils.sqlStringValue(record.courseLabel), ",",
-                LogicUtils.sqlStringValue(record.inlinePrefix), ",",
-                LogicUtils.sqlStringValue(record.isTutorial), ",",
-                LogicUtils.sqlStringValue(record.requireEtext), ")");
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                conn.sqlStringValue(record.course), ",",
+                conn.sqlIntegerValue(record.nbrUnits), ",",
+                conn.sqlStringValue(record.courseName), ",",
+                conn.sqlIntegerValue(record.nbrCredits), ",",
+                conn.sqlStringValue(record.calcOk), ",",
+                conn.sqlStringValue(record.courseLabel), ",",
+                conn.sqlStringValue(record.inlinePrefix), ",",
+                conn.sqlStringValue(record.isTutorial), ",",
+                conn.sqlStringValue(record.requireEtext), ")");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -88,6 +88,9 @@ public enum RawCourseLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -105,10 +108,10 @@ public enum RawCourseLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE course=", LogicUtils.sqlStringValue(record.course));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE course=", conn.sqlStringValue(record.course));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -120,6 +123,9 @@ public enum RawCourseLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }

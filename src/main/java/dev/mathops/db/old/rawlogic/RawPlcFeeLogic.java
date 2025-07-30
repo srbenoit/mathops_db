@@ -60,14 +60,14 @@ public enum RawPlcFeeLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat(
                 "INSERT INTO ", tableName, " (stu_id,course,exam_dt,bill_dt) VALUES (",
-                LogicUtils.sqlStringValue(record.stuId), ",",
-                LogicUtils.sqlStringValue(record.course), ",",
-                LogicUtils.sqlDateValue(record.examDt), ",",
-                LogicUtils.sqlDateValue(record.billDt), ")");
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                conn.sqlStringValue(record.stuId), ",",
+                conn.sqlStringValue(record.course), ",",
+                conn.sqlDateValue(record.examDt), ",",
+                conn.sqlDateValue(record.billDt), ")");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -79,6 +79,9 @@ public enum RawPlcFeeLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -96,11 +99,11 @@ public enum RawPlcFeeLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
-                "  AND course=", LogicUtils.sqlStringValue(record.course));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE stu_id=", conn.sqlStringValue(record.stuId),
+                "  AND course=", conn.sqlStringValue(record.course));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -112,6 +115,9 @@ public enum RawPlcFeeLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -159,8 +165,14 @@ public enum RawPlcFeeLogic {
 
         final String tableName = getTableName(cache);
 
-        return executeSingleQuery(cache,
-                "SELECT * FROM " + tableName + " WHERE stu_id=" + LogicUtils.sqlStringValue(stuId));
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return executeSingleQuery(conn,
+                    "SELECT * FROM " + tableName + " WHERE stu_id=" + conn.sqlStringValue(stuId));
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -197,16 +209,14 @@ public enum RawPlcFeeLogic {
     /**
      * Executes a query that returns a single record.
      *
-     * @param cache the data cache
-     * @param sql   the query
+     * @param conn the database connection
+     * @param sql  the query
      * @return the record
      * @throws SQLException if there is an error accessing the database
      */
-    private static RawPlcFee executeSingleQuery(final Cache cache, final String sql) throws SQLException {
+    private static RawPlcFee executeSingleQuery(final DbConnection conn, final String sql) throws SQLException {
 
         RawPlcFee result = null;
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -214,8 +224,6 @@ public enum RawPlcFeeLogic {
             if (rs.next()) {
                 result = RawPlcFee.fromResultSet(rs);
             }
-        } finally {
-            Cache.checkInConnection(conn);
         }
 
         return result;

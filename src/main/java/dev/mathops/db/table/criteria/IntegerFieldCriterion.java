@@ -2,6 +2,7 @@ package dev.mathops.db.table.criteria;
 
 import dev.mathops.db.table.EFieldType;
 import dev.mathops.db.table.Field;
+import dev.mathops.db.table.FieldDef;
 
 /**
  *  A criterion that can be used to match an Integer field.
@@ -26,7 +27,8 @@ public class IntegerFieldCriterion extends AbstractFieldCriterion {
 
         super(theField);
 
-        if (theField.getType() != EFieldType.INTEGER) {
+        final FieldDef def = theField.getDef();
+        if (def.getType() != EFieldType.INTEGER) {
             throw new IllegalArgumentException("An Integer field criterion must be used with a Byte field");
         }
         if (theMatchType == null) {

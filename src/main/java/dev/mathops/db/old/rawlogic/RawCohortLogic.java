@@ -56,13 +56,13 @@ public enum RawCohortLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat(
                 "INSERT INTO ", tableName, " (cohort,size,instructor) VALUES (",
-                LogicUtils.sqlStringValue(record.cohort), ",",
-                LogicUtils.sqlIntegerValue(record.size), ",",
-                LogicUtils.sqlStringValue(record.instructor), ")");
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                conn.sqlStringValue(record.cohort), ",",
+                conn.sqlIntegerValue(record.size), ",",
+                conn.sqlStringValue(record.instructor), ")");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -74,6 +74,9 @@ public enum RawCohortLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -91,10 +94,10 @@ public enum RawCohortLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE cohort=", LogicUtils.sqlStringValue(record.cohort));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE cohort=", conn.sqlStringValue(record.cohort));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -106,6 +109,9 @@ public enum RawCohortLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -155,10 +161,10 @@ public enum RawCohortLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat(
-                "SELECT * FROM ", tableName, " WHERE cohort=", LogicUtils.sqlStringValue(cohort));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat(
+                "SELECT * FROM ", tableName, " WHERE cohort=", conn.sqlStringValue(cohort));
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -187,10 +193,10 @@ public enum RawCohortLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("UPDATE ", tableName, " SET size=",
-                LogicUtils.sqlIntegerValue(newSize), " WHERE cohort=", LogicUtils.sqlStringValue(cohort));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("UPDATE ", tableName, " SET size=",
+                conn.sqlIntegerValue(newSize), " WHERE cohort=", conn.sqlStringValue(cohort));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -202,6 +208,9 @@ public enum RawCohortLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }

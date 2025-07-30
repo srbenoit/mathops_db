@@ -57,14 +57,14 @@ public enum RawChallengeFeeLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat(
                 "INSERT INTO ", tableName, " (stu_id,course,exam_dt,bill_dt) VALUES (",
-                LogicUtils.sqlStringValue(record.stuId), ",",
-                LogicUtils.sqlStringValue(record.course), ",",
-                LogicUtils.sqlDateValue(record.examDt), ",",
-                LogicUtils.sqlDateValue(record.billDt), ")");
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                conn.sqlStringValue(record.stuId), ",",
+                conn.sqlStringValue(record.course), ",",
+                conn.sqlDateValue(record.examDt), ",",
+                conn.sqlDateValue(record.billDt), ")");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -76,6 +76,9 @@ public enum RawChallengeFeeLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -93,11 +96,11 @@ public enum RawChallengeFeeLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
-                " AND course=", LogicUtils.sqlStringValue(record.course));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE stu_id=", conn.sqlStringValue(record.stuId),
+                " AND course=", conn.sqlStringValue(record.course));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -109,6 +112,9 @@ public enum RawChallengeFeeLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -125,7 +131,13 @@ public enum RawChallengeFeeLogic {
 
         final String tableName = getTableName(cache);
 
-        return executeListQuery(cache, "SELECT * FROM " + tableName);
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return executeListQuery(conn, "SELECT * FROM " + tableName);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -140,8 +152,14 @@ public enum RawChallengeFeeLogic {
 
         final String tableName = getTableName(cache);
 
-        return executeListQuery(cache,
-                "SELECT * FROM " + tableName + " WHERE stu_id=" + LogicUtils.sqlStringValue(stuId));
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return executeListQuery(conn,
+                    "SELECT * FROM " + tableName + " WHERE stu_id=" + conn.sqlStringValue(stuId));
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -158,24 +176,28 @@ public enum RawChallengeFeeLogic {
 
         final String tableName = getTableName(cache);
 
-        return executeSingleQuery(cache, "SELECT * FROM " + tableName + " WHERE stu_id="
-                                         + LogicUtils.sqlStringValue(stuId)
-                                         + " AND course=" + LogicUtils.sqlStringValue(course));
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return executeSingleQuery(conn, "SELECT * FROM " + tableName + " WHERE stu_id=" + conn.sqlStringValue(stuId)
+                                            + " AND course=" + conn.sqlStringValue(course));
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
      * Executes a query that returns a list of records.
      *
-     * @param cache the data cache
-     * @param sql   the query
+     * @param conn the database connection
+     * @param sql  the query
      * @return the list of records
      * @throws SQLException if there is an error accessing the database
      */
-    private static List<RawChallengeFee> executeListQuery(final Cache cache, final String sql) throws SQLException {
+    private static List<RawChallengeFee> executeListQuery(final DbConnection conn, final String sql)
+            throws SQLException {
 
         final List<RawChallengeFee> result = new ArrayList<>(50);
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -183,8 +205,6 @@ public enum RawChallengeFeeLogic {
             while (rs.next()) {
                 result.add(RawChallengeFee.fromResultSet(rs));
             }
-        } finally {
-            Cache.checkInConnection(conn);
         }
 
         return result;
@@ -193,16 +213,14 @@ public enum RawChallengeFeeLogic {
     /**
      * Executes a query that returns a single record.
      *
-     * @param cache the data cache
-     * @param sql   the query
+     * @param conn the database connection
+     * @param sql  the query
      * @return the record
      * @throws SQLException if there is an error accessing the database
      */
-    private static RawChallengeFee executeSingleQuery(final Cache cache, final String sql) throws SQLException {
+    private static RawChallengeFee executeSingleQuery(final DbConnection conn, final String sql) throws SQLException {
 
         RawChallengeFee result = null;
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -210,8 +228,6 @@ public enum RawChallengeFeeLogic {
             if (rs.next()) {
                 result = RawChallengeFee.fromResultSet(rs);
             }
-        } finally {
-            Cache.checkInConnection(conn);
         }
 
         return result;

@@ -1,8 +1,10 @@
 package dev.mathops.db.old.rawlogic;
 
+import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
 import dev.mathops.db.DbConnection;
 import dev.mathops.db.ESchema;
+import dev.mathops.db.logic.SystemData;
 import dev.mathops.db.old.rawrecord.RawPacingStructure;
 import dev.mathops.db.rec.TermRec;
 import dev.mathops.db.type.TermKey;
@@ -85,40 +87,40 @@ public enum RawPacingStructureLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat(
                 "INSERT INTO ", tableName, " (term,term_yr,pacing_structure,def_pace_track,require_licensed,",
                 "require_partic,max_partic_missed,allow_inc,max_courses,nbr_open_allowed,require_unit_exams,",
                 "use_midterms,allow_coupons,coupons_after_window,users_progress_cr,hw_progress_cr,re_progress_cr,",
                 "ue_progress_cr,fin_progress_cr,pacing_name,schedule_source,sr_due_date_enforced,re_due_date_enforced,",
                 "ue_due_date_enforced,fe_due_date_enforced,first_obj_avail) VALUES (",
-                LogicUtils.sqlStringValue(record.termKey.termCode), ",",
+                conn.sqlStringValue(record.termKey.termCode), ",",
                 record.termKey.shortYear, ",",
-                LogicUtils.sqlStringValue(record.pacingStructure), ",",
-                LogicUtils.sqlStringValue(record.defPaceTrack), ",",
-                LogicUtils.sqlStringValue(record.requireLicensed), ",",
-                LogicUtils.sqlStringValue(record.requirePartic), ",",
-                LogicUtils.sqlIntegerValue(record.maxParticMissed), ",",
-                LogicUtils.sqlStringValue(record.allowInc), ",",
-                LogicUtils.sqlIntegerValue(record.maxCourses), ",",
-                LogicUtils.sqlIntegerValue(record.nbrOpenAllowed), ",",
-                LogicUtils.sqlStringValue(record.requireUnitExams), ",",
-                LogicUtils.sqlStringValue(record.useMidterms), ",",
-                LogicUtils.sqlStringValue(record.allowCoupons), ",",
-                LogicUtils.sqlStringValue(record.couponsAfterWindow), ",",
-                LogicUtils.sqlIntegerValue(record.usersProgressCr), ",",
-                LogicUtils.sqlIntegerValue(record.hwProgressCr), ",",
-                LogicUtils.sqlIntegerValue(record.reProgressCr), ",",
-                LogicUtils.sqlIntegerValue(record.ueProgressCr), ",",
-                LogicUtils.sqlIntegerValue(record.finProgressCr), ",",
-                LogicUtils.sqlStringValue(record.pacingName), ",",
-                LogicUtils.sqlStringValue(record.scheduleSource), ",",
-                LogicUtils.sqlStringValue(record.srDueDateEnforced), ",",
-                LogicUtils.sqlStringValue(record.reDueDateEnforced), ",",
-                LogicUtils.sqlStringValue(record.ueDueDateEnforced), ",",
-                LogicUtils.sqlStringValue(record.feDueDateEnforced), ",",
-                LogicUtils.sqlStringValue(record.firstObjAvail), ")");
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                conn.sqlStringValue(record.pacingStructure), ",",
+                conn.sqlStringValue(record.defPaceTrack), ",",
+                conn.sqlStringValue(record.requireLicensed), ",",
+                conn.sqlStringValue(record.requirePartic), ",",
+                conn.sqlIntegerValue(record.maxParticMissed), ",",
+                conn.sqlStringValue(record.allowInc), ",",
+                conn.sqlIntegerValue(record.maxCourses), ",",
+                conn.sqlIntegerValue(record.nbrOpenAllowed), ",",
+                conn.sqlStringValue(record.requireUnitExams), ",",
+                conn.sqlStringValue(record.useMidterms), ",",
+                conn.sqlStringValue(record.allowCoupons), ",",
+                conn.sqlStringValue(record.couponsAfterWindow), ",",
+                conn.sqlIntegerValue(record.usersProgressCr), ",",
+                conn.sqlIntegerValue(record.hwProgressCr), ",",
+                conn.sqlIntegerValue(record.reProgressCr), ",",
+                conn.sqlIntegerValue(record.ueProgressCr), ",",
+                conn.sqlIntegerValue(record.finProgressCr), ",",
+                conn.sqlStringValue(record.pacingName), ",",
+                conn.sqlStringValue(record.scheduleSource), ",",
+                conn.sqlStringValue(record.srDueDateEnforced), ",",
+                conn.sqlStringValue(record.reDueDateEnforced), ",",
+                conn.sqlStringValue(record.ueDueDateEnforced), ",",
+                conn.sqlStringValue(record.feDueDateEnforced), ",",
+                conn.sqlStringValue(record.firstObjAvail), ")");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -130,6 +132,9 @@ public enum RawPacingStructureLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -147,12 +152,12 @@ public enum RawPacingStructureLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE pacing_structure=", LogicUtils.sqlStringValue(record.pacingStructure),
-                "  AND term=", LogicUtils.sqlStringValue(record.termKey.termCode),
-                "  AND term_yr=", LogicUtils.sqlIntegerValue(record.termKey.shortYear));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE pacing_structure=", conn.sqlStringValue(record.pacingStructure),
+                "  AND term=", conn.sqlStringValue(record.termKey.termCode),
+                "  AND term_yr=", conn.sqlIntegerValue(record.termKey.shortYear));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -164,6 +169,9 @@ public enum RawPacingStructureLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -195,8 +203,10 @@ public enum RawPacingStructureLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
-                " WHERE term=", LogicUtils.sqlStringValue(termKey.termCode),
+                " WHERE term=", conn.sqlStringValue(termKey.termCode),
                 "   AND term_yr=", termKey.shortYear);
 
         return executeListQuery(cache, sql);
@@ -216,12 +226,18 @@ public enum RawPacingStructureLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
-                " WHERE pacing_structure=", LogicUtils.sqlStringValue(pacingStructure),
-                "   AND term=", LogicUtils.sqlStringValue(termKey.termCode),
+                " WHERE pacing_structure=", conn.sqlStringValue(pacingStructure),
+                "   AND term=", conn.sqlStringValue(termKey.termCode),
                 "   AND term_yr=", termKey.shortYear);
 
-        return executeSingleQuery(cache, sql);
+        try {
+            return executeSingleQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -234,7 +250,10 @@ public enum RawPacingStructureLogic {
      */
     public static RawPacingStructure query(final Cache cache, final String pacingStructure) throws SQLException {
 
-        final TermRec activeTerm = cache.getSystemData().getActiveTerm();
+        final SystemData systemData = cache.getSystemData();
+        final TermRec activeTerm = systemData.getActiveTerm();
+
+        Log.info("The active term is ", activeTerm);
 
         return query(cache, activeTerm.term, pacingStructure);
     }
@@ -269,16 +288,15 @@ public enum RawPacingStructureLogic {
     /**
      * Executes a query that returns a single records.
      *
-     * @param cache the data cache
-     * @param sql   the query
+     * @param conn the database connection
+     * @param sql  the query
      * @return the record found; null if none returned
      * @throws SQLException if there is an error accessing the database
      */
-    private static RawPacingStructure executeSingleQuery(final Cache cache, final String sql) throws SQLException {
+    private static RawPacingStructure executeSingleQuery(final DbConnection conn, final String sql)
+            throws SQLException {
 
         RawPacingStructure result = null;
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -286,8 +304,6 @@ public enum RawPacingStructureLogic {
             if (rs.next()) {
                 result = RawPacingStructure.fromResultSet(rs);
             }
-        } finally {
-            Cache.checkInConnection(conn);
         }
 
         return result;

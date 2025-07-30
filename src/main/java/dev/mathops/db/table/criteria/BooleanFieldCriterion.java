@@ -2,6 +2,7 @@ package dev.mathops.db.table.criteria;
 
 import dev.mathops.db.table.EFieldType;
 import dev.mathops.db.table.Field;
+import dev.mathops.db.table.FieldDef;
 
 /**
  *  A criterion that can be used to match a Boolean field.
@@ -21,7 +22,8 @@ public class BooleanFieldCriterion extends AbstractFieldCriterion {
 
         super(theField);
 
-        if (theField.getType() != EFieldType.BOOLEAN) {
+        final FieldDef def = theField.getDef();
+        if (def.getType() != EFieldType.BOOLEAN) {
             throw new IllegalArgumentException("A Boolean field criterion must be used with a Boolean field");
         }
         if (theMatchType == null) {

@@ -88,16 +88,16 @@ public enum RawFfrTrnsLogic {
         } else {
             final String tableName = getTableName(cache);
 
+            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
             final String sql = SimpleBuilder.concat("INSERT INTO ", tableName,
                     " (stu_id,course,exam_placed,exam_dt,dt_cr_refused,grade) VALUES (",
-                    LogicUtils.sqlStringValue(record.stuId), ",",
-                    LogicUtils.sqlStringValue(record.course), ",",
-                    LogicUtils.sqlStringValue(record.examPlaced), ",",
-                    LogicUtils.sqlDateValue(record.examDt), ",",
-                    LogicUtils.sqlDateValue(record.dtCrRefused), ",",
-                    LogicUtils.sqlStringValue(record.grade), ")");
-
-            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                    conn.sqlStringValue(record.stuId), ",",
+                    conn.sqlStringValue(record.course), ",",
+                    conn.sqlStringValue(record.examPlaced), ",",
+                    conn.sqlDateValue(record.examDt), ",",
+                    conn.sqlDateValue(record.dtCrRefused), ",",
+                    conn.sqlStringValue(record.grade), ")");
 
             try (final Statement stmt = conn.createStatement()) {
                 result = stmt.executeUpdate(sql) == 1;
@@ -107,6 +107,9 @@ public enum RawFfrTrnsLogic {
                 } else {
                     conn.rollback();
                 }
+            } catch (final SQLException ex) {
+                conn.rollback();
+                throw ex;
             } finally {
                 Cache.checkInConnection(conn);
             }
@@ -136,12 +139,12 @@ public enum RawFfrTrnsLogic {
         } else {
             final String tableName = getTableName(cache);
 
-            final String sql = SimpleBuilder.concat("UPDATE ", tableName, " set grade=",
-                    LogicUtils.sqlStringValue(newGrade),
-                    " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
-                    "  AND course=", LogicUtils.sqlStringValue(record.course));
-
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+            final String sql = SimpleBuilder.concat("UPDATE ", tableName, " set grade=",
+                    conn.sqlStringValue(newGrade),
+                    " WHERE stu_id=", conn.sqlStringValue(record.stuId),
+                    "  AND course=", conn.sqlStringValue(record.course));
 
             try (final Statement stmt = conn.createStatement()) {
                 result = stmt.executeUpdate(sql) == 1;
@@ -151,6 +154,9 @@ public enum RawFfrTrnsLogic {
                 } else {
                     conn.rollback();
                 }
+            } catch (final SQLException ex) {
+                conn.rollback();
+                throw ex;
             } finally {
                 Cache.checkInConnection(conn);
             }
@@ -171,11 +177,11 @@ public enum RawFfrTrnsLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
-                "  AND course=", LogicUtils.sqlStringValue(record.course));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE stu_id=", conn.sqlStringValue(record.stuId),
+                "  AND course=", conn.sqlStringValue(record.course));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -187,6 +193,9 @@ public enum RawFfrTrnsLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -203,7 +212,13 @@ public enum RawFfrTrnsLogic {
 
         final String tableName = getTableName(cache);
 
-        return executeListQuery(cache, "SELECT * FROM " + tableName);
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return executeListQuery(conn, "SELECT * FROM " + tableName);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -223,10 +238,16 @@ public enum RawFfrTrnsLogic {
         } else {
             final String tableName = getTableName(cache);
 
-            final String sql = SimpleBuilder.concat("SELECT * FROM ",tableName,
-                    " WHERE stu_id=", LogicUtils.sqlStringValue(stuId));
+            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
-            result = executeListQuery(cache, sql);
+            final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
+                    " WHERE stu_id=", conn.sqlStringValue(stuId));
+
+            try {
+                result = executeListQuery(conn, sql);
+            } finally {
+                Cache.checkInConnection(conn);
+            }
         }
 
         return result;
@@ -235,17 +256,15 @@ public enum RawFfrTrnsLogic {
     /**
      * Executes a query that returns a list of records.
      *
-     * @param cache the data cache
-     * @param sql   the SQL to execute
+     * @param conn the database connection
+     * @param sql  the SQL to execute
      * @return the list of matching records
      * @throws SQLException if there is an error accessing the database
      */
-    private static List<RawFfrTrns> executeListQuery(final Cache cache, final String sql)
+    private static List<RawFfrTrns> executeListQuery(final DbConnection conn, final String sql)
             throws SQLException {
 
         final List<RawFfrTrns> result = new ArrayList<>(50);
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -253,8 +272,6 @@ public enum RawFfrTrnsLogic {
             while (rs.next()) {
                 result.add(RawFfrTrns.fromResultSet(rs));
             }
-        } finally {
-            Cache.checkInConnection(conn);
         }
 
         return result;

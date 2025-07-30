@@ -78,6 +78,9 @@ public enum RawDontSubmitLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -99,13 +102,13 @@ public enum RawDontSubmitLogic {
 
         final String tableName = getTableName(cache);
 
-        sql.add("DELETE FROM ", tableName,
-                " WHERE course=", LogicUtils.sqlStringValue(record.course),
-                " AND sect=", LogicUtils.sqlStringValue(record.sect),
-                " AND term=", LogicUtils.sqlStringValue(record.termKey.termCode),
-                " AND term_yr=", LogicUtils.sqlIntegerValue(record.termKey.shortYear));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        sql.add("DELETE FROM ", tableName,
+                " WHERE course=", conn.sqlStringValue(record.course),
+                " AND sect=", conn.sqlStringValue(record.sect),
+                " AND term=", conn.sqlStringValue(record.termKey.termCode),
+                " AND term_yr=", conn.sqlIntegerValue(record.termKey.shortYear));
 
         try (final Statement stmt = conn.createStatement()) {
             result = stmt.executeUpdate(sql.toString()) == 1;
@@ -115,6 +118,9 @@ public enum RawDontSubmitLogic {
             } else {
                 conn.rollback();
             }
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -133,7 +139,13 @@ public enum RawDontSubmitLogic {
 
         final String tableName = getTableName(cache);
 
-        return executeListQuery(cache, "SELECT * FROM " + tableName);
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return executeListQuery(conn, "SELECT * FROM " + tableName);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -148,26 +160,30 @@ public enum RawDontSubmitLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
-                " WHERE term=", LogicUtils.sqlStringValue(termKey.termCode),
-                " AND term_yr=", LogicUtils.sqlIntegerValue(termKey.shortYear));
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
-        return executeListQuery(cache, sql);
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
+                " WHERE term=", conn.sqlStringValue(termKey.termCode),
+                " AND term_yr=", conn.sqlIntegerValue(termKey.shortYear));
+
+        try {
+            return executeListQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
      * Executes a query that returns a list of records.
      *
-     * @param cache the data cache
-     * @param sql   the query
+     * @param conn the database connection
+     * @param sql  the query
      * @return the list of records
      * @throws SQLException if there is an error accessing the database
      */
-    private static List<RawDontSubmit> executeListQuery(final Cache cache, final String sql) throws SQLException {
+    private static List<RawDontSubmit> executeListQuery(final DbConnection conn, final String sql) throws SQLException {
 
         final List<RawDontSubmit> result = new ArrayList<>(50);
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -175,8 +191,6 @@ public enum RawDontSubmitLogic {
             while (rs.next()) {
                 result.add(RawDontSubmit.fromResultSet(rs));
             }
-        } finally {
-            Cache.checkInConnection(conn);
         }
 
         return result;

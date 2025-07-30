@@ -68,18 +68,18 @@ public enum RawMpecrDeniedLogic {
         } else {
             final String tableName = getTableName(cache);
 
+            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
             final String sql = SimpleBuilder.concat("INSERT INTO ", tableName, " (stu_id,course,exam_placed,exam_dt,",
                     "why_denied,serial_nbr,version,exam_source) VALUES (",
-                    LogicUtils.sqlStringValue(record.stuId), ",",
-                    LogicUtils.sqlStringValue(record.course), ",",
-                    LogicUtils.sqlStringValue(record.examPlaced), ",",
-                    LogicUtils.sqlDateValue(record.examDt), ",",
-                    LogicUtils.sqlStringValue(record.whyDenied), ",",
-                    LogicUtils.sqlLongValue(record.serialNbr), ",",
-                    LogicUtils.sqlStringValue(record.version), ",",
-                    LogicUtils.sqlStringValue(record.examSource), ")");
-
-            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                    conn.sqlStringValue(record.stuId), ",",
+                    conn.sqlStringValue(record.course), ",",
+                    conn.sqlStringValue(record.examPlaced), ",",
+                    conn.sqlDateValue(record.examDt), ",",
+                    conn.sqlStringValue(record.whyDenied), ",",
+                    conn.sqlLongValue(record.serialNbr), ",",
+                    conn.sqlStringValue(record.version), ",",
+                    conn.sqlStringValue(record.examSource), ")");
 
             try (final Statement stmt = conn.createStatement()) {
                 result = stmt.executeUpdate(sql) == 1;
@@ -89,6 +89,9 @@ public enum RawMpecrDeniedLogic {
                 } else {
                     conn.rollback();
                 }
+            } catch (final SQLException ex) {
+                conn.rollback();
+                throw ex;
             } finally {
                 Cache.checkInConnection(conn);
             }
@@ -111,13 +114,13 @@ public enum RawMpecrDeniedLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
-                "  AND course=", LogicUtils.sqlStringValue(record.course),
-                "  AND exam_dt=", LogicUtils.sqlDateValue(record.examDt),
-                "  AND serial_nbr=", LogicUtils.sqlLongValue(record.serialNbr));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE stu_id=", conn.sqlStringValue(record.stuId),
+                "  AND course=", conn.sqlStringValue(record.course),
+                "  AND exam_dt=", conn.sqlDateValue(record.examDt),
+                "  AND serial_nbr=", conn.sqlLongValue(record.serialNbr));
 
         try (final Statement stmt = conn.createStatement()) {
             result = stmt.executeUpdate(sql) == 1;
@@ -127,6 +130,9 @@ public enum RawMpecrDeniedLogic {
             } else {
                 conn.rollback();
             }
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -174,12 +180,12 @@ public enum RawMpecrDeniedLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE stu_id=",
-                LogicUtils.sqlStringValue(stuId));
+                conn.sqlStringValue(stuId));
 
         final List<RawMpecrDenied> result = new ArrayList<>(50);
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -206,12 +212,12 @@ public enum RawMpecrDeniedLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE serial_nbr=",
-                LogicUtils.sqlLongValue(serialNbr));
+                conn.sqlLongValue(serialNbr));
 
         final List<RawMpecrDenied> result = new ArrayList<>(50);
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {

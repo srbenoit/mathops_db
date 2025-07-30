@@ -2,12 +2,11 @@ package dev.mathops.db.old.rawlogic;
 
 import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
-import dev.mathops.db.Contexts;
 import dev.mathops.db.DbConnection;
 import dev.mathops.db.ESchema;
-import dev.mathops.db.cfg.DatabaseConfig;
 import dev.mathops.db.cfg.Login;
 import dev.mathops.db.cfg.Profile;
+import dev.mathops.db.old.TestUtils;
 import dev.mathops.db.old.rawrecord.RawMpscorequeue;
 import dev.mathops.db.old.rawrecord.RawRecordConstants;
 import dev.mathops.db.old.rawrecord.RawStudent;
@@ -17,7 +16,6 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDateTime;
@@ -50,37 +48,14 @@ final class TestRawMpscorequeueLogic {
     @BeforeAll
     static void initTests() {
 
-        final DatabaseConfig config = DatabaseConfig.getDefault();
-        profile = config.getCodeProfile(Contexts.INFORMIX_TEST_PATH);
-        if (profile == null) {
-            throw new IllegalArgumentException(TestRes.get(TestRes.ERR_NO_TEST_PROFILE));
-        }
+        final Cache cache = TestUtils.ensureConnectedToTest();
+        profile = cache.getProfile();
 
-        final Login login = profile.getLogin(ESchema.LEGACY);
-        final DbConnection conn = login.checkOutConnection();
-        final Cache cache = new Cache(profile);
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
-        final String whichDbName = RawWhichDbLogic.getTableName(cache);
-
-        // Make sure we're in the TEST database
-        try {
-            try (final Statement stmt = conn.createStatement();
-                 final ResultSet rs = stmt.executeQuery("SELECT descr FROM " + whichDbName)) {
-
-                if (rs.next()) {
-                    final String which = rs.getString(1);
-                    if (which != null && !"TEST".equals(which.trim())) {
-                        throw new IllegalArgumentException(TestRes.fmt(TestRes.ERR_NOT_CONNECTED_TO_TEST, which));
-                    }
-                } else {
-                    throw new IllegalArgumentException(TestRes.get(TestRes.ERR_CANT_QUERY_WHICH_DB));
-                }
-            }
-
-            try (final Statement stmt = conn.createStatement()) {
-                final String tableName = RawMpscorequeueLogic.getTableName(cache);
-                stmt.executeUpdate("DELETE FROM " + tableName);
-            }
+        try (final Statement stmt = conn.createStatement()) {
+            final String tableName = RawMpscorequeueLogic.getTableName(cache);
+            stmt.executeUpdate("DELETE FROM " + tableName);
             conn.commit();
 
             final RawMpscorequeue raw1 = new RawMpscorequeue(Integer.valueOf(123456), "MC00", datetime1, "2");
@@ -94,7 +69,7 @@ final class TestRawMpscorequeueLogic {
             Log.warning(ex);
             fail("Exception while initializing tables: " + ex.getMessage());
         } finally {
-            login.checkInConnection(conn);
+            Cache.checkInConnection(conn);
         }
     }
 
@@ -880,22 +855,18 @@ final class TestRawMpscorequeueLogic {
     @AfterAll
     static void cleanUp() {
 
-        final Login login = profile.getLogin(ESchema.LEGACY);
-        final DbConnection conn = login.checkOutConnection();
-        final Cache cache = new Cache(profile);
+        final Cache cache = TestUtils.ensureConnectedToTest();
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
-        try {
-            try (final Statement stmt = conn.createStatement()) {
-                final String tableName = RawMpscorequeueLogic.getTableName(cache);
-                stmt.executeUpdate("DELETE FROM " + tableName);
-            }
-
+        try (final Statement stmt = conn.createStatement()) {
+            final String tableName = RawMpscorequeueLogic.getTableName(cache);
+            stmt.executeUpdate("DELETE FROM " + tableName);
             conn.commit();
         } catch (final SQLException ex) {
             Log.warning(ex);
             fail("Exception while cleaning tables: " + ex.getMessage());
         } finally {
-            login.checkInConnection(conn);
+            Cache.checkInConnection(conn);
         }
     }
 }

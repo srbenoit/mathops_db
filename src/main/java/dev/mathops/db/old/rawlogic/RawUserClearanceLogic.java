@@ -57,14 +57,14 @@ public enum RawUserClearanceLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat("INSERT INTO ", tableName,
                 " (login,clear_function,clear_type,clear_passwd) VALUES (",
-                LogicUtils.sqlStringValue(record.login), ",",
-                LogicUtils.sqlStringValue(record.clearFunction), ",",
-                LogicUtils.sqlIntegerValue(record.clearType), ",",
-                LogicUtils.sqlStringValue(record.clearPasswd), ")");
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                conn.sqlStringValue(record.login), ",",
+                conn.sqlStringValue(record.clearFunction), ",",
+                conn.sqlIntegerValue(record.clearType), ",",
+                conn.sqlStringValue(record.clearPasswd), ")");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -76,6 +76,9 @@ public enum RawUserClearanceLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -93,11 +96,11 @@ public enum RawUserClearanceLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE login=", LogicUtils.sqlStringValue(record.login),
-                "  AND clear_function=", LogicUtils.sqlStringValue(record.clearFunction));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE login=", conn.sqlStringValue(record.login),
+                "  AND clear_function=", conn.sqlStringValue(record.clearFunction));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -109,6 +112,9 @@ public enum RawUserClearanceLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -154,12 +160,12 @@ public enum RawUserClearanceLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE login=",
-                LogicUtils.sqlStringValue(login));
-
         final List<RawUserClearance> result = new ArrayList<>(10);
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE login=",
+                conn.sqlStringValue(login));
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {

@@ -64,21 +64,21 @@ public enum RawCunitLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat("INSERT INTO ", tableName,
                 " (course,unit,term,term_yr,unit_exam_wgt,unit_desc,unit_timelimit,possible_score,",
                 "nbr_questions,unit_type) VALUES (",
-                LogicUtils.sqlStringValue(record.course), ",",
+                conn.sqlStringValue(record.course), ",",
                 record.unit, ",",
-                LogicUtils.sqlStringValue(record.termKey.termCode), ",",
+                conn.sqlStringValue(record.termKey.termCode), ",",
                 record.termKey.shortYear, ",",
-                LogicUtils.sqlFloatValue(record.unitExamWgt), ",",
-                LogicUtils.sqlStringValue(record.unitDesc), ",",
-                LogicUtils.sqlIntegerValue(record.unitTimelimit), ",",
-                LogicUtils.sqlIntegerValue(record.possibleScore), ",",
-                LogicUtils.sqlIntegerValue(record.nbrQuestions), ",",
-                LogicUtils.sqlStringValue(record.unitType), ")");
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                conn.sqlFloatValue(record.unitExamWgt), ",",
+                conn.sqlStringValue(record.unitDesc), ",",
+                conn.sqlIntegerValue(record.unitTimelimit), ",",
+                conn.sqlIntegerValue(record.possibleScore), ",",
+                conn.sqlIntegerValue(record.nbrQuestions), ",",
+                conn.sqlStringValue(record.unitType), ")");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -90,6 +90,9 @@ public enum RawCunitLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -107,13 +110,13 @@ public enum RawCunitLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE course=", LogicUtils.sqlStringValue(record.course),
-                "  AND unit=", LogicUtils.sqlIntegerValue(record.unit),
-                "  AND term=", LogicUtils.sqlStringValue(record.termKey.termCode),
-                "  AND term_yr=", LogicUtils.sqlIntegerValue(record.termKey.shortYear));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE course=", conn.sqlStringValue(record.course),
+                "  AND unit=", conn.sqlIntegerValue(record.unit),
+                "  AND term=", conn.sqlStringValue(record.termKey.termCode),
+                "  AND term_yr=", conn.sqlIntegerValue(record.termKey.shortYear));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -125,6 +128,9 @@ public enum RawCunitLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }

@@ -71,20 +71,20 @@ public enum RawStlessonAssignLogic {
         } else {
             final String tableName = getTableName(cache);
 
+            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
             final String sql = SimpleBuilder.concat("INSERT INTO ", tableName, " (stu_id,course,lesson_id,when_shown,",
                     "when_open,when_closed,when_hidden,when_started,when_finished,score_tenths) VALUES (",
-                    LogicUtils.sqlStringValue(record.stuId), ",",
-                    LogicUtils.sqlStringValue(record.course), ",",
-                    LogicUtils.sqlStringValue(record.lessonId), ",",
-                    LogicUtils.sqlDateTimeValue(record.whenShown), ",",
-                    LogicUtils.sqlDateTimeValue(record.whenOpen), ",",
-                    LogicUtils.sqlDateTimeValue(record.whenClosed), ",",
-                    LogicUtils.sqlDateTimeValue(record.whenHidden), ",",
-                    LogicUtils.sqlDateTimeValue(record.whenStarted), ",",
-                    LogicUtils.sqlDateTimeValue(record.whenFinished), ",",
-                    LogicUtils.sqlIntegerValue(record.scoreTenths), ")");
-
-            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                    conn.sqlStringValue(record.stuId), ",",
+                    conn.sqlStringValue(record.course), ",",
+                    conn.sqlStringValue(record.lessonId), ",",
+                    conn.sqlDateTimeValue(record.whenShown), ",",
+                    conn.sqlDateTimeValue(record.whenOpen), ",",
+                    conn.sqlDateTimeValue(record.whenClosed), ",",
+                    conn.sqlDateTimeValue(record.whenHidden), ",",
+                    conn.sqlDateTimeValue(record.whenStarted), ",",
+                    conn.sqlDateTimeValue(record.whenFinished), ",",
+                    conn.sqlIntegerValue(record.scoreTenths), ")");
 
             try (final Statement stmt = conn.createStatement()) {
                 result = stmt.executeUpdate(sql) == 1;
@@ -94,6 +94,9 @@ public enum RawStlessonAssignLogic {
                 } else {
                     conn.rollback();
                 }
+            } catch (final SQLException ex) {
+                conn.rollback();
+                throw ex;
             } finally {
                 Cache.checkInConnection(conn);
             }
@@ -114,12 +117,12 @@ public enum RawStlessonAssignLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
-                "  AND course=", LogicUtils.sqlStringValue(record.course),
-                "  AND lesson_id=", LogicUtils.sqlStringValue(record.lessonId));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE stu_id=", conn.sqlStringValue(record.stuId),
+                "  AND course=", conn.sqlStringValue(record.course),
+                "  AND lesson_id=", conn.sqlStringValue(record.lessonId));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -131,6 +134,9 @@ public enum RawStlessonAssignLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -147,7 +153,13 @@ public enum RawStlessonAssignLogic {
 
         final String tableName = getTableName(cache);
 
-        return executeListQuery(cache, "SELECT * FROM " + tableName);
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return executeListQuery(conn, "SELECT * FROM " + tableName);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -162,10 +174,16 @@ public enum RawStlessonAssignLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
-                " WHERE stu_id=", LogicUtils.sqlStringValue(stuId));
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
-        return executeListQuery(cache, sql);
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
+                " WHERE stu_id=", conn.sqlStringValue(stuId));
+
+        try {
+            return executeListQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -183,27 +201,31 @@ public enum RawStlessonAssignLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
-                " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
-                " AND course=", LogicUtils.sqlStringValue(course),
-                " AND lessod_id=", LogicUtils.sqlStringValue(lessonId));
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
-        return executeSingleQuery(cache, sql);
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
+                " WHERE stu_id=", conn.sqlStringValue(stuId),
+                " AND course=", conn.sqlStringValue(course),
+                " AND lessod_id=", conn.sqlStringValue(lessonId));
+
+        try {
+            return executeSingleQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
      * Executes a query that returns a single record.
      *
-     * @param cache the data cache
-     * @param sql   the SQL to execute
+     * @param conn the database connection
+     * @param sql  the SQL to execute
      * @return the list of matching records
      * @throws SQLException if there is an error accessing the database
      */
-    private static RawStlessonAssign executeSingleQuery(final Cache cache, final String sql) throws SQLException {
+    private static RawStlessonAssign executeSingleQuery(final DbConnection conn, final String sql) throws SQLException {
 
         RawStlessonAssign result = null;
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -211,8 +233,6 @@ public enum RawStlessonAssignLogic {
             if (rs.next()) {
                 result = RawStlessonAssign.fromResultSet(rs);
             }
-        } finally {
-            Cache.checkInConnection(conn);
         }
 
         return result;
@@ -221,16 +241,15 @@ public enum RawStlessonAssignLogic {
     /**
      * Executes a query that returns a list of records.
      *
-     * @param cache the data cache
-     * @param sql   the SQL to execute
+     * @param conn the database connection
+     * @param sql  the SQL to execute
      * @return the list of matching records
      * @throws SQLException if there is an error accessing the database
      */
-    private static List<RawStlessonAssign> executeListQuery(final Cache cache, final String sql) throws SQLException {
+    private static List<RawStlessonAssign> executeListQuery(final DbConnection conn, final String sql)
+            throws SQLException {
 
         final List<RawStlessonAssign> result = new ArrayList<>(50);
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -238,8 +257,6 @@ public enum RawStlessonAssignLogic {
             while (rs.next()) {
                 result.add(RawStlessonAssign.fromResultSet(rs));
             }
-        } finally {
-            Cache.checkInConnection(conn);
         }
 
         return result;

@@ -61,15 +61,15 @@ public enum RawPacingRulesLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat(
                 "INSERT INTO ", tableName, " (term,term_yr,pacing_structure,activity_type,requirement) VALUES (",
-                LogicUtils.sqlStringValue(record.termKey.termCode), ",",
+                conn.sqlStringValue(record.termKey.termCode), ",",
                 record.termKey.shortYear, ",",
-                LogicUtils.sqlStringValue(record.pacingStructure), ",",
-                LogicUtils.sqlStringValue(record.activityType), ",",
-                LogicUtils.sqlStringValue(record.requirement), ")");
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                conn.sqlStringValue(record.pacingStructure), ",",
+                conn.sqlStringValue(record.activityType), ",",
+                conn.sqlStringValue(record.requirement), ")");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -81,6 +81,9 @@ public enum RawPacingRulesLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -98,14 +101,14 @@ public enum RawPacingRulesLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE term=", LogicUtils.sqlStringValue(record.termKey.termCode),
-                "  AND term_yr=", LogicUtils.sqlIntegerValue(record.termKey.shortYear),
-                "  AND pacing_structure=", LogicUtils.sqlStringValue(record.pacingStructure),
-                "  AND activity_type=", LogicUtils.sqlStringValue(record.activityType),
-                "  AND requirement=", LogicUtils.sqlStringValue(record.requirement));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE term=", conn.sqlStringValue(record.termKey.termCode),
+                "  AND term_yr=", conn.sqlIntegerValue(record.termKey.shortYear),
+                "  AND pacing_structure=", conn.sqlStringValue(record.pacingStructure),
+                "  AND activity_type=", conn.sqlStringValue(record.activityType),
+                "  AND requirement=", conn.sqlStringValue(record.requirement));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -117,6 +120,9 @@ public enum RawPacingRulesLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -133,7 +139,13 @@ public enum RawPacingRulesLogic {
 
         final String tableName = getTableName(cache);
 
-        return executeListQuery(cache, "SELECT * FROM " + tableName);
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return executeListQuery(conn, "SELECT * FROM " + tableName);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -148,10 +160,16 @@ public enum RawPacingRulesLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE term=",
-                LogicUtils.sqlStringValue(termKey.termCode), " AND term_yr=", termKey.shortYear);
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
-        return executeListQuery(cache, sql);
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE term=",
+                conn.sqlStringValue(termKey.termCode), " AND term_yr=", termKey.shortYear);
+
+        try {
+            return executeListQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -168,11 +186,17 @@ public enum RawPacingRulesLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE term=",
-                LogicUtils.sqlStringValue(termKey.termCode), " AND term_yr=", termKey.shortYear,
-                " AND pacing_structure=", LogicUtils.sqlStringValue(pacingStructure));
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
-        return executeListQuery(cache, sql);
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE term=",
+                conn.sqlStringValue(termKey.termCode), " AND term_yr=", termKey.shortYear,
+                " AND pacing_structure=", conn.sqlStringValue(pacingStructure));
+
+        try {
+            return executeListQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -191,14 +215,14 @@ public enum RawPacingRulesLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
-                " WHERE term=", LogicUtils.sqlStringValue(termKey.termCode),
-                "   AND term_yr=", termKey.shortYear,
-                "   AND pacing_structure=", LogicUtils.sqlStringValue(pacingStructure),
-                "   AND activity_type=", LogicUtils.sqlStringValue(activityType),
-                "   AND requirement=", LogicUtils.sqlStringValue(requirement));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
+                " WHERE term=", conn.sqlStringValue(termKey.termCode),
+                "   AND term_yr=", termKey.shortYear,
+                "   AND pacing_structure=", conn.sqlStringValue(pacingStructure),
+                "   AND activity_type=", conn.sqlStringValue(activityType),
+                "   AND requirement=", conn.sqlStringValue(requirement));
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -212,16 +236,15 @@ public enum RawPacingRulesLogic {
     /**
      * Executes a query that returns a list of records.
      *
-     * @param cache the data cache
-     * @param sql   the query
+     * @param conn the database connection
+     * @param sql  the query
      * @return the list of records
      * @throws SQLException if there is an error accessing the database
      */
-    private static List<RawPacingRules> executeListQuery(final Cache cache, final String sql) throws SQLException {
+    private static List<RawPacingRules> executeListQuery(final DbConnection conn, final String sql)
+            throws SQLException {
 
         final List<RawPacingRules> result = new ArrayList<>(20);
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -229,8 +252,6 @@ public enum RawPacingRulesLogic {
             while (rs.next()) {
                 result.add(RawPacingRules.fromResultSet(rs));
             }
-        } finally {
-            Cache.checkInConnection(conn);
         }
 
         return result;

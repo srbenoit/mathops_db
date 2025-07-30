@@ -82,32 +82,32 @@ public enum RawApplicantLogic {
             final int aplnValue = record.aplnTerm.toNumeric();
             final String apln = Integer.toString(aplnValue);
 
+            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
             final String sql = SimpleBuilder.concat(
                     "INSERT INTO ", tableName, " (stu_id,first_name,last_name,birthdate,ethnicity,gender,college,",
                     "prog_study,hs_code,tr_credits,resident,resident_state,resident_county,hs_gpa,hs_class_rank,",
                     "hs_size_class,act_score,sat_score,pidm,apln_term) VALUES (",
-                    LogicUtils.sqlStringValue(record.stuId), ",",
-                    LogicUtils.sqlStringValue(record.firstName), ",",
-                    LogicUtils.sqlStringValue(record.lastName), ",",
-                    LogicUtils.sqlDateValue(record.birthdate), ",",
-                    LogicUtils.sqlStringValue(record.ethnicity), ",",
-                    LogicUtils.sqlStringValue(record.gender), ",",
-                    LogicUtils.sqlStringValue(record.college), ",",
-                    LogicUtils.sqlStringValue(record.progStudy), ",",
-                    LogicUtils.sqlStringValue(record.hsCode), ",",
-                    LogicUtils.sqlStringValue(record.trCredits), ",",
-                    LogicUtils.sqlStringValue(record.resident), ",",
-                    LogicUtils.sqlStringValue(record.residentState), ",",
-                    LogicUtils.sqlStringValue(record.residentCounty), ",",
-                    LogicUtils.sqlStringValue(record.hsGpa), ",",
-                    LogicUtils.sqlIntegerValue(record.hsClassRank), ",",
-                    LogicUtils.sqlIntegerValue(record.hsSizeClass), ",",
-                    LogicUtils.sqlIntegerValue(record.actScore), ",",
-                    LogicUtils.sqlIntegerValue(record.satScore), ",",
-                    LogicUtils.sqlIntegerValue(record.pidm), ",",
-                    LogicUtils.sqlStringValue(apln), ")");
-
-            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                    conn.sqlStringValue(record.stuId), ",",
+                    conn.sqlStringValue(record.firstName), ",",
+                    conn.sqlStringValue(record.lastName), ",",
+                    conn.sqlDateValue(record.birthdate), ",",
+                    conn.sqlStringValue(record.ethnicity), ",",
+                    conn.sqlStringValue(record.gender), ",",
+                    conn.sqlStringValue(record.college), ",",
+                    conn.sqlStringValue(record.progStudy), ",",
+                    conn.sqlStringValue(record.hsCode), ",",
+                    conn.sqlStringValue(record.trCredits), ",",
+                    conn.sqlStringValue(record.resident), ",",
+                    conn.sqlStringValue(record.residentState), ",",
+                    conn.sqlStringValue(record.residentCounty), ",",
+                    conn.sqlStringValue(record.hsGpa), ",",
+                    conn.sqlIntegerValue(record.hsClassRank), ",",
+                    conn.sqlIntegerValue(record.hsSizeClass), ",",
+                    conn.sqlIntegerValue(record.actScore), ",",
+                    conn.sqlIntegerValue(record.satScore), ",",
+                    conn.sqlIntegerValue(record.pidm), ",",
+                    conn.sqlStringValue(apln), ")");
 
             try (final Statement stmt = conn.createStatement()) {
                 result = stmt.executeUpdate(sql) == 1;
@@ -117,6 +117,9 @@ public enum RawApplicantLogic {
                 } else {
                     conn.rollback();
                 }
+            } catch (final SQLException ex) {
+                conn.rollback();
+                throw ex;
             } finally {
                 Cache.checkInConnection(conn);
             }
@@ -140,9 +143,9 @@ public enum RawApplicantLogic {
         final HtmlBuilder sql = new HtmlBuilder(100);
         final String tableName = getTableName(cache);
 
-        sql.add("DELETE FROM ", tableName, " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        sql.add("DELETE FROM ", tableName, " WHERE stu_id=", conn.sqlStringValue(record.stuId));
 
         try (final Statement stmt = conn.createStatement()) {
             result = stmt.executeUpdate(sql.toString()) == 1;
@@ -152,6 +155,9 @@ public enum RawApplicantLogic {
             } else {
                 conn.rollback();
             }
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -170,7 +176,13 @@ public enum RawApplicantLogic {
 
         final String tableName = getTableName(cache);
 
-        return executeQuery(cache, "SELECT * FROM " + tableName);
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return executeQuery(conn, "SELECT * FROM " + tableName);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -185,25 +197,29 @@ public enum RawApplicantLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE stu_id=",
-                LogicUtils.sqlStringValue(stuId));
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
-        return executeQuery(cache, sql);
+        try {
+            final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE stu_id=",
+                    conn.sqlStringValue(stuId));
+
+            return executeQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
      * Executes a query that returns a list of records.
      *
-     * @param cache the data cache
-     * @param sql   the SQL to execute
+     * @param conn the database connection
+     * @param sql  the SQL to execute
      * @return the list of matching records
      * @throws SQLException if there is an error accessing the database
      */
-    private static List<RawApplicant> executeQuery(final Cache cache, final String sql) throws SQLException {
+    private static List<RawApplicant> executeQuery(final DbConnection conn, final String sql) throws SQLException {
 
         final List<RawApplicant> result = new ArrayList<>(50);
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -211,8 +227,6 @@ public enum RawApplicantLogic {
             while (rs.next()) {
                 result.add(RawApplicant.fromResultSet(rs));
             }
-        } finally {
-            Cache.checkInConnection(conn);
         }
 
         return result;

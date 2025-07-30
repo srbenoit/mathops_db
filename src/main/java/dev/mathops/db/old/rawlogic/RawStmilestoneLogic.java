@@ -1,6 +1,5 @@
 package dev.mathops.db.old.rawlogic;
 
-import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
 import dev.mathops.db.DbConnection;
 import dev.mathops.db.ESchema;
@@ -65,18 +64,18 @@ public enum RawStmilestoneLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat("INSERT INTO ", tableName,
                 " (stu_id,term,term_yr,pace_track,ms_nbr,ms_type,ms_date,nbr_atmpts_allow) VALUES (",
-                LogicUtils.sqlStringValue(record.stuId), ",",
-                LogicUtils.sqlStringValue(record.termKey.termCode), ",",
+                conn.sqlStringValue(record.stuId), ",",
+                conn.sqlStringValue(record.termKey.termCode), ",",
                 record.termKey.shortYear, ",",
-                LogicUtils.sqlStringValue(record.paceTrack), ",",
+                conn.sqlStringValue(record.paceTrack), ",",
                 record.msNbr, ",",
-                LogicUtils.sqlStringValue(record.msType), ",",
-                LogicUtils.sqlDateValue(record.msDate), ",",
-                LogicUtils.sqlIntegerValue(record.nbrAtmptsAllow), ")");
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                conn.sqlStringValue(record.msType), ",",
+                conn.sqlDateValue(record.msDate), ",",
+                conn.sqlIntegerValue(record.nbrAtmptsAllow), ")");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -88,6 +87,9 @@ public enum RawStmilestoneLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -107,15 +109,15 @@ public enum RawStmilestoneLogic {
 
         final String tableName = getTableName(cache);
 
-        sql.add("DELETE FROM ", tableName,
-                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
-                "   AND term=", LogicUtils.sqlStringValue(record.termKey.termCode),
-                "   AND term_yr=", LogicUtils.sqlIntegerValue(record.termKey.shortYear),
-                "   AND pace_track=", LogicUtils.sqlStringValue(record.paceTrack),
-                "   AND ms_nbr=", LogicUtils.sqlIntegerValue(record.msNbr),
-                "   AND ms_type=", LogicUtils.sqlStringValue(record.msType));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        sql.add("DELETE FROM ", tableName,
+                " WHERE stu_id=", conn.sqlStringValue(record.stuId),
+                "   AND term=", conn.sqlStringValue(record.termKey.termCode),
+                "   AND term_yr=", conn.sqlIntegerValue(record.termKey.shortYear),
+                "   AND pace_track=", conn.sqlStringValue(record.paceTrack),
+                "   AND ms_nbr=", conn.sqlIntegerValue(record.msNbr),
+                "   AND ms_type=", conn.sqlStringValue(record.msType));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql.toString()) == 1;
@@ -127,6 +129,9 @@ public enum RawStmilestoneLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -143,10 +148,12 @@ public enum RawStmilestoneLogic {
 
         final List<RawStmilestone> result = new ArrayList<>(500);
 
+        final String tableName = getTableName(cache);
+
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
-             final ResultSet rs = stmt.executeQuery("SELECT * FROM stmilestone")) {
+             final ResultSet rs = stmt.executeQuery("SELECT * FROM "+ tableName)) {
 
             while (rs.next()) {
                 result.add(RawStmilestone.fromResultSet(rs));
@@ -172,11 +179,11 @@ public enum RawStmilestoneLogic {
 
         final String tableName = getTableName(cache);
 
-        sql.add("SELECT * FROM ", tableName, " WHERE stu_id=", LogicUtils.sqlStringValue(stuId));
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        sql.add("SELECT * FROM ", tableName, " WHERE stu_id=", conn.sqlStringValue(stuId));
 
         final List<RawStmilestone> result = new ArrayList<>(20);
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql.toString())) {
@@ -207,14 +214,14 @@ public enum RawStmilestoneLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         sql.add("SELECT * FROM ", tableName,
-                " WHERE term=", LogicUtils.sqlStringValue(termKey.termCode),
+                " WHERE term=", conn.sqlStringValue(termKey.termCode),
                 "   AND term_yr=", termKey.shortYear,
-                "   AND stu_id=", LogicUtils.sqlStringValue(stuId));
+                "   AND stu_id=", conn.sqlStringValue(stuId));
 
         final List<RawStmilestone> result = new ArrayList<>(20);
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql.toString())) {
@@ -247,15 +254,15 @@ public enum RawStmilestoneLogic {
 
         final String tableName = getTableName(cache);
 
-        sql.add("SELECT * FROM ",tableName,
-                " WHERE term=", LogicUtils.sqlStringValue(termKey.termCode),
-                "   AND term_yr=", LogicUtils.sqlIntegerValue(termKey.shortYear),
-                "   AND pace_track=", LogicUtils.sqlStringValue(paceTrack),
-                "   AND stu_id=", LogicUtils.sqlStringValue(stuId));
-
         final List<RawStmilestone> result = new ArrayList<>(20);
 
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        sql.add("SELECT * FROM ",tableName,
+                " WHERE term=", conn.sqlStringValue(termKey.termCode),
+                "   AND term_yr=", conn.sqlIntegerValue(termKey.shortYear),
+                "   AND pace_track=", conn.sqlStringValue(paceTrack),
+                "   AND stu_id=", conn.sqlStringValue(stuId));
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql.toString())) {
@@ -284,18 +291,16 @@ public enum RawStmilestoneLogic {
 
         final String tableName = getTableName(cache);
 
-        sql.add("UPDATE ", tableName, " SET ms_date=", LogicUtils.sqlDateValue(record.msDate),
-                ", nbr_atmpts_allow=", LogicUtils.sqlIntegerValue(record.nbrAtmptsAllow),
-                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
-                "   AND term=", LogicUtils.sqlStringValue(record.termKey.termCode),
-                "   AND term_yr=", LogicUtils.sqlIntegerValue(record.termKey.shortYear),
-                "   AND pace_track=", LogicUtils.sqlStringValue(record.paceTrack),
-                "   AND ms_nbr=", LogicUtils.sqlIntegerValue(record.msNbr),
-                "   AND ms_type=", LogicUtils.sqlStringValue(record.msType));
-
-        Log.info(sql.toString());
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        sql.add("UPDATE ", tableName, " SET ms_date=", conn.sqlDateValue(record.msDate),
+                ", nbr_atmpts_allow=", conn.sqlIntegerValue(record.nbrAtmptsAllow),
+                " WHERE stu_id=", conn.sqlStringValue(record.stuId),
+                "   AND term=", conn.sqlStringValue(record.termKey.termCode),
+                "   AND term_yr=", conn.sqlIntegerValue(record.termKey.shortYear),
+                "   AND pace_track=", conn.sqlStringValue(record.paceTrack),
+                "   AND ms_nbr=", conn.sqlIntegerValue(record.msNbr),
+                "   AND ms_type=", conn.sqlStringValue(record.msType));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql.toString()) == 1;
@@ -307,6 +312,9 @@ public enum RawStmilestoneLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }

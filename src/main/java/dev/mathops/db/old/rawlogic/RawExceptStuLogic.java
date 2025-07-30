@@ -62,19 +62,19 @@ public enum RawExceptStuLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat("INSERT INTO ", tableName,
                 " (term,term_yr,stu_id,course,unit,course_enroll,hwork_status,sect,sect_enroll) VALUES (",
-                LogicUtils.sqlStringValue(record.termKey.termCode), ",",
-                LogicUtils.sqlIntegerValue(record.termKey.shortYear), ",",
-                LogicUtils.sqlStringValue(record.stuId), ",",
-                LogicUtils.sqlStringValue(record.course), ",",
-                LogicUtils.sqlIntegerValue(record.unit), ",",
-                LogicUtils.sqlStringValue(record.courseEnroll), ",",
-                LogicUtils.sqlStringValue(record.hworkStatus), ",",
-                LogicUtils.sqlStringValue(record.sect), ",",
-                LogicUtils.sqlStringValue(record.sectEnroll), ")");
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                conn.sqlStringValue(record.termKey.termCode), ",",
+                conn.sqlIntegerValue(record.termKey.shortYear), ",",
+                conn.sqlStringValue(record.stuId), ",",
+                conn.sqlStringValue(record.course), ",",
+                conn.sqlIntegerValue(record.unit), ",",
+                conn.sqlStringValue(record.courseEnroll), ",",
+                conn.sqlStringValue(record.hworkStatus), ",",
+                conn.sqlStringValue(record.sect), ",",
+                conn.sqlStringValue(record.sectEnroll), ")");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -86,6 +86,9 @@ public enum RawExceptStuLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -103,12 +106,12 @@ public enum RawExceptStuLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
-                "  AND course=", LogicUtils.sqlStringValue(record.course),
-                "  AND unit=", LogicUtils.sqlIntegerValue(record.unit));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE stu_id=", conn.sqlStringValue(record.stuId),
+                "  AND course=", conn.sqlStringValue(record.course),
+                "  AND unit=", conn.sqlIntegerValue(record.unit));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -120,6 +123,9 @@ public enum RawExceptStuLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -136,7 +142,13 @@ public enum RawExceptStuLogic {
 
         final String tableName = getTableName(cache);
 
-        return doListQuery(cache, "SELECT * FROM " + tableName);
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doListQuery(conn, "SELECT * FROM " + tableName);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -151,10 +163,16 @@ public enum RawExceptStuLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE stu_id=",
-                LogicUtils.sqlStringValue(stuId));
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
-        return doListQuery(cache, sql);
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE stu_id=",
+                conn.sqlStringValue(stuId));
+
+        try {
+            return doListQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -171,26 +189,29 @@ public enum RawExceptStuLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE stu_id=",
-                LogicUtils.sqlStringValue(stuId), " AND course=",
-                LogicUtils.sqlStringValue(course));
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
-        return doListQuery(cache, sql);
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE stu_id=",
+                conn.sqlStringValue(stuId), " AND course=", conn.sqlStringValue(course));
+
+        try {
+            return doListQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
      * Performs a query that returns list of records.
      *
-     * @param cache the data cache
-     * @param sql   the query SQL
+     * @param conn the database connection
+     * @param sql  the query SQL
      * @return the list of records returned
      * @throws SQLException if there is an error performing the query
      */
-    private static List<RawExceptStu> doListQuery(final Cache cache, final String sql) throws SQLException {
+    private static List<RawExceptStu> doListQuery(final DbConnection conn, final String sql) throws SQLException {
 
         final List<RawExceptStu> result = new ArrayList<>(20);
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -198,8 +219,6 @@ public enum RawExceptStuLogic {
             while (rs.next()) {
                 result.add(RawExceptStu.fromResultSet(rs));
             }
-        } finally {
-            Cache.checkInConnection(conn);
         }
 
         return result;

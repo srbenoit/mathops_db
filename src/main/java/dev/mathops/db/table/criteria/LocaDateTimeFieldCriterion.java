@@ -2,6 +2,7 @@ package dev.mathops.db.table.criteria;
 
 import dev.mathops.db.table.EFieldType;
 import dev.mathops.db.table.Field;
+import dev.mathops.db.table.FieldDef;
 
 import java.time.LocalDateTime;
 
@@ -28,7 +29,8 @@ public class LocaDateTimeFieldCriterion extends AbstractFieldCriterion {
 
         super(theField);
 
-        if (theField.getType() != EFieldType.LOCAL_DATE_TIME) {
+        final FieldDef def = theField.getDef();
+        if (def.getType() != EFieldType.LOCAL_DATE_TIME) {
             throw new IllegalArgumentException("A LocalDateTime field criterion must be used with a Long field");
         }
         if (theMatchType == null) {

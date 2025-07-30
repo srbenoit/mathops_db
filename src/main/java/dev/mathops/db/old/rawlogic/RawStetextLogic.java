@@ -73,18 +73,18 @@ public enum RawStetextLogic {
         } else {
             final String tableName = getTableName(cache);
 
+            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
             final String sql = SimpleBuilder.concat("INSERT INTO ", tableName, " (stu_id,etext_id,active_dt,",
                     "etext_key,expiration_dt,refund_deadline_dt,refund_dt,refund_reason) VALUES (",
-                    LogicUtils.sqlStringValue(record.stuId), ",",
-                    LogicUtils.sqlStringValue(record.etextId), ",",
-                    LogicUtils.sqlDateValue(record.activeDt), ",",
-                    LogicUtils.sqlStringValue(record.etextKey), ",",
-                    LogicUtils.sqlDateValue(record.expirationDt), ",",
-                    LogicUtils.sqlDateValue(record.refundDeadlineDt), ",",
-                    LogicUtils.sqlDateValue(record.refundDt), ",",
-                    LogicUtils.sqlStringValue(record.refundReason), ")");
-
-            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                    conn.sqlStringValue(record.stuId), ",",
+                    conn.sqlStringValue(record.etextId), ",",
+                    conn.sqlDateValue(record.activeDt), ",",
+                    conn.sqlStringValue(record.etextKey), ",",
+                    conn.sqlDateValue(record.expirationDt), ",",
+                    conn.sqlDateValue(record.refundDeadlineDt), ",",
+                    conn.sqlDateValue(record.refundDt), ",",
+                    conn.sqlStringValue(record.refundReason), ")");
 
             try (final Statement stmt = conn.createStatement()) {
                 result = stmt.executeUpdate(sql) == 1;
@@ -94,6 +94,9 @@ public enum RawStetextLogic {
                 } else {
                     conn.rollback();
                 }
+            } catch (final SQLException ex) {
+                conn.rollback();
+                throw ex;
             } finally {
                 Cache.checkInConnection(conn);
             }
@@ -116,12 +119,12 @@ public enum RawStetextLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat(
-                "DELETE FROM ", tableName, " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
-                "   AND etext_id=", LogicUtils.sqlStringValue(record.etextId),
-                "   AND active_dt=", LogicUtils.sqlDateValue(record.activeDt));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat(
+                "DELETE FROM ", tableName, " WHERE stu_id=", conn.sqlStringValue(record.stuId),
+                "   AND etext_id=", conn.sqlStringValue(record.etextId),
+                "   AND active_dt=", conn.sqlDateValue(record.activeDt));
 
         try (final Statement stmt = conn.createStatement()) {
             result = stmt.executeUpdate(sql) == 1;
@@ -131,6 +134,9 @@ public enum RawStetextLogic {
             } else {
                 conn.rollback();
             }
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -149,7 +155,13 @@ public enum RawStetextLogic {
 
         final String tableName = getTableName(cache);
 
-        return executeQuery(cache, "SELECT * FROM " + tableName);
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return executeQuery(conn, "SELECT * FROM " + tableName);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -168,14 +180,20 @@ public enum RawStetextLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat(
-                "SELECT * FROM ", tableName, " WHERE stu_id=", LogicUtils.sqlStringValue(studentId),
-                " AND etext_id=", LogicUtils.sqlStringValue(etextId),
+                "SELECT * FROM ", tableName, " WHERE stu_id=", conn.sqlStringValue(studentId),
+                " AND etext_id=", conn.sqlStringValue(etextId),
                 " AND refund_dt IS NULL ",
                 " AND (expiration_dt IS NULL OR expiration_dt>=",
-                LogicUtils.sqlDateValue(now.toLocalDate()), ")");
+                conn.sqlDateValue(now.toLocalDate()), ")");
 
-        return executeQuery(cache, sql);
+        try {
+            return executeQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -191,11 +209,17 @@ public enum RawStetextLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat(
-                "SELECT * FROM ", tableName, " WHERE stu_id=", LogicUtils.sqlStringValue(studentId),
+                "SELECT * FROM ", tableName, " WHERE stu_id=", conn.sqlStringValue(studentId),
                 " ORDER BY etext_id");
 
-        return executeQuery(cache, sql);
+        try {
+            return executeQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -210,11 +234,17 @@ public enum RawStetextLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat(
-                "SELECT * FROM ", tableName, " WHERE etext_key=", LogicUtils.sqlStringValue(key),
+                "SELECT * FROM ", tableName, " WHERE etext_key=", conn.sqlStringValue(key),
                 "   AND refund_dt IS NULL");
 
-        return executeQuery(cache, sql);
+        try {
+            return executeQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -293,14 +323,14 @@ public enum RawStetextLogic {
         } else {
             final String tableName = getTableName(cache);
 
-            final String sql = SimpleBuilder.concat(
-                    "UPDATE ", tableName, " SET refund_dt=", LogicUtils.sqlDateValue(now.toLocalDate()),
-                    ", refund_reason=", LogicUtils.sqlStringValue(refundReason),
-                    " WHERE stu_id=", LogicUtils.sqlStringValue(rec.stuId),
-                    "   AND etext_id=", LogicUtils.sqlStringValue(rec.etextId),
-                    "   AND active_dt=", LogicUtils.sqlDateValue(rec.activeDt));
-
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+            final String sql = SimpleBuilder.concat(
+                    "UPDATE ", tableName, " SET refund_dt=", conn.sqlDateValue(now.toLocalDate()),
+                    ", refund_reason=", conn.sqlStringValue(refundReason),
+                    " WHERE stu_id=", conn.sqlStringValue(rec.stuId),
+                    "   AND etext_id=", conn.sqlStringValue(rec.etextId),
+                    "   AND active_dt=", conn.sqlDateValue(rec.activeDt));
 
             try (final Statement stmt = conn.createStatement()) {
                 result = stmt.executeUpdate(sql) == 1;
@@ -310,6 +340,9 @@ public enum RawStetextLogic {
                 } else {
                     conn.rollback();
                 }
+            } catch (final SQLException ex) {
+                conn.rollback();
+                throw ex;
             } finally {
                 Cache.checkInConnection(conn);
             }
@@ -342,13 +375,13 @@ public enum RawStetextLogic {
         } else {
             final String tableName = getTableName(cache);
 
-            final String sql = SimpleBuilder.concat(
-                    "UPDATE ", tableName, " SET refund_deadline_dt=", LogicUtils.sqlDateValue(refundDeadline),
-                    " WHERE stu_id=", LogicUtils.sqlStringValue(studentId),
-                    "   AND etext_id=", LogicUtils.sqlStringValue(eTextId),
-                    "   AND active_dt=", LogicUtils.sqlDateValue(whenActive));
-
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+            final String sql = SimpleBuilder.concat(
+                    "UPDATE ", tableName, " SET refund_deadline_dt=", conn.sqlDateValue(refundDeadline),
+                    " WHERE stu_id=", conn.sqlStringValue(studentId),
+                    "   AND etext_id=", conn.sqlStringValue(eTextId),
+                    "   AND active_dt=", conn.sqlDateValue(whenActive));
 
             try (final Statement stmt = conn.createStatement()) {
                 result = stmt.executeUpdate(sql) > 0;
@@ -358,6 +391,9 @@ public enum RawStetextLogic {
                 } else {
                     conn.rollback();
                 }
+            } catch (final SQLException ex) {
+                conn.rollback();
+                throw ex;
             } finally {
                 Cache.checkInConnection(conn);
             }
@@ -391,14 +427,14 @@ public enum RawStetextLogic {
         } else {
             final String tableName = getTableName(cache);
 
-            final String sql = SimpleBuilder.concat(
-                    "UPDATE ", tableName, " SET refund_dt=", LogicUtils.sqlDateValue(refundDate),
-                    ", refund_reason=", LogicUtils.sqlStringValue(refundReason),
-                    " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
-                    "   AND etext_id=", LogicUtils.sqlStringValue(etextId),
-                    "   AND active_dt=", LogicUtils.sqlDateValue(activeDt));
-
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+            final String sql = SimpleBuilder.concat(
+                    "UPDATE ", tableName, " SET refund_dt=", conn.sqlDateValue(refundDate),
+                    ", refund_reason=", conn.sqlStringValue(refundReason),
+                    " WHERE stu_id=", conn.sqlStringValue(stuId),
+                    "   AND etext_id=", conn.sqlStringValue(etextId),
+                    "   AND active_dt=", conn.sqlDateValue(activeDt));
 
             try (final Statement stmt = conn.createStatement()) {
                 result = stmt.executeUpdate(sql) > 0;
@@ -408,6 +444,9 @@ public enum RawStetextLogic {
                 } else {
                     conn.rollback();
                 }
+            } catch (final SQLException ex) {
+                conn.rollback();
+                throw ex;
             } finally {
                 Cache.checkInConnection(conn);
             }
@@ -419,16 +458,14 @@ public enum RawStetextLogic {
     /**
      * Executes a query that returns a list of records.
      *
-     * @param cache the data cache
-     * @param sql   the SQL to execute
+     * @param conn the database connection
+     * @param sql  the SQL to execute
      * @return the list of matching records
      * @throws SQLException if there is an error accessing the database
      */
-    private static List<RawStetext> executeQuery(final Cache cache, final String sql) throws SQLException {
+    private static List<RawStetext> executeQuery(final DbConnection conn, final String sql) throws SQLException {
 
         final List<RawStetext> result = new ArrayList<>(10);
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -436,8 +473,6 @@ public enum RawStetextLogic {
             while (rs.next()) {
                 result.add(RawStetext.fromResultSet(rs));
             }
-        } finally {
-            Cache.checkInConnection(conn);
         }
 
         return result;

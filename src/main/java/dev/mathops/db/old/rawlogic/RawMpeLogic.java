@@ -56,13 +56,13 @@ public enum RawMpeLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat(
                 "INSERT INTO ", tableName, " (version,max_online_atmpts,max_proctored_atmpts) VALUES (",
-                LogicUtils.sqlStringValue(record.version), ",",
-                LogicUtils.sqlIntegerValue(record.maxOnlineAtmpts), ",",
-                LogicUtils.sqlIntegerValue(record.maxProctoredAtmpts), ")");
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                conn.sqlStringValue(record.version), ",",
+                conn.sqlIntegerValue(record.maxOnlineAtmpts), ",",
+                conn.sqlIntegerValue(record.maxProctoredAtmpts), ")");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -74,6 +74,9 @@ public enum RawMpeLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -91,10 +94,10 @@ public enum RawMpeLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE version=", LogicUtils.sqlStringValue(record.version));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE version=", conn.sqlStringValue(record.version));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -106,6 +109,9 @@ public enum RawMpeLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }

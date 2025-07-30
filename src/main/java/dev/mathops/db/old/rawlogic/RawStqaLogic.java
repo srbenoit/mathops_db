@@ -69,21 +69,21 @@ public enum RawStqaLogic {
         } else {
             final String tableName = getTableName(cache);
 
+            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
             final String sql = SimpleBuilder.concat("INSERT INTO ", tableName, " (serial_nbr,question_nbr,",
                     "answer_nbr,objective,stu_answer,stu_id,version,ans_correct,exam_dt,subtest,finish_time) VALUES (",
-                    LogicUtils.sqlLongValue(record.serialNbr), ",",
-                    LogicUtils.sqlIntegerValue(record.questionNbr), ",",
-                    LogicUtils.sqlIntegerValue(record.answerNbr), ",",
-                    LogicUtils.sqlStringValue(record.objective), ",",
-                    LogicUtils.sqlStringValue(record.stuAnswer), ",",
-                    LogicUtils.sqlStringValue(record.stuId), ",",
-                    LogicUtils.sqlStringValue(record.version), ",",
-                    LogicUtils.sqlStringValue(record.ansCorrect), ",",
-                    LogicUtils.sqlDateValue(record.examDt), ",",
-                    LogicUtils.sqlStringValue(record.subtest), ",",
-                    LogicUtils.sqlIntegerValue(record.finishTime), ")");
-
-            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                    conn.sqlLongValue(record.serialNbr), ",",
+                    conn.sqlIntegerValue(record.questionNbr), ",",
+                    conn.sqlIntegerValue(record.answerNbr), ",",
+                    conn.sqlStringValue(record.objective), ",",
+                    conn.sqlStringValue(record.stuAnswer), ",",
+                    conn.sqlStringValue(record.stuId), ",",
+                    conn.sqlStringValue(record.version), ",",
+                    conn.sqlStringValue(record.ansCorrect), ",",
+                    conn.sqlDateValue(record.examDt), ",",
+                    conn.sqlStringValue(record.subtest), ",",
+                    conn.sqlIntegerValue(record.finishTime), ")");
 
             try (final Statement stmt = conn.createStatement()) {
                 result = stmt.executeUpdate(sql) == 1;
@@ -93,6 +93,9 @@ public enum RawStqaLogic {
                 } else {
                     conn.rollback();
                 }
+            } catch (final SQLException ex) {
+                conn.rollback();
+                throw ex;
             } finally {
                 Cache.checkInConnection(conn);
             }
@@ -113,12 +116,12 @@ public enum RawStqaLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE serial_nbr=", LogicUtils.sqlLongValue(record.serialNbr),
-                " AND question_nbr=", LogicUtils.sqlIntegerValue(record.questionNbr),
-                " AND answer_nbr=", LogicUtils.sqlIntegerValue(record.answerNbr));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE serial_nbr=", conn.sqlLongValue(record.serialNbr),
+                " AND question_nbr=", conn.sqlIntegerValue(record.questionNbr),
+                " AND answer_nbr=", conn.sqlIntegerValue(record.answerNbr));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -130,6 +133,9 @@ public enum RawStqaLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -146,7 +152,13 @@ public enum RawStqaLogic {
 
         final String tableName = getTableName(cache);
 
-        return executeQuery(cache, "SELECT * FROM " + tableName);
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return executeQuery(conn, "SELECT * FROM " + tableName);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -161,10 +173,16 @@ public enum RawStqaLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE stu_id=",
-                LogicUtils.sqlStringValue(stuId));
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
-        return executeQuery(cache, sql);
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE stu_id=",
+                conn.sqlStringValue(stuId));
+
+        try {
+            return executeQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -179,10 +197,16 @@ public enum RawStqaLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE serial_nbr=",
-                LogicUtils.sqlLongValue(serial));
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
-        return executeQuery(cache, sql);
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE serial_nbr=",
+                conn.sqlLongValue(serial));
+
+        try {
+            return executeQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -197,12 +221,12 @@ public enum RawStqaLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql1 = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE serial_nbr=", LogicUtils.sqlLongValue(record.serialNbr),
-                " AND version=", LogicUtils.sqlStringValue(record.version),
-                " AND stu_id=", LogicUtils.sqlStringValue(record.stuId));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql1 = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE serial_nbr=", conn.sqlLongValue(record.serialNbr),
+                " AND version=", conn.sqlStringValue(record.version),
+                " AND stu_id=", conn.sqlStringValue(record.stuId));
 
         try (final Statement stmt = conn.createStatement()) {
             stmt.executeUpdate(sql1);
@@ -235,16 +259,16 @@ public enum RawStqaLogic {
         } else {
             final String tableName = getTableName(cache);
 
+            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
             // TODO: We don't match on subtest here - should be moot, but this could update
             //  more than one row if an answer applies to multiple subtests
 
             final String sql = SimpleBuilder.concat("UPDATE ", tableName,
-                    " SET ans_correct=", LogicUtils.sqlStringValue(newCorrect),
-                    " WHERE serial_nbr=", LogicUtils.sqlLongValue(record.serialNbr),
-                    " AND question_nbr=", LogicUtils.sqlIntegerValue(record.questionNbr),
-                    " AND answer_nbr=", LogicUtils.sqlIntegerValue(record.answerNbr));
-
-            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                    " SET ans_correct=", conn.sqlStringValue(newCorrect),
+                    " WHERE serial_nbr=", conn.sqlLongValue(record.serialNbr),
+                    " AND question_nbr=", conn.sqlIntegerValue(record.questionNbr),
+                    " AND answer_nbr=", conn.sqlIntegerValue(record.answerNbr));
 
             try (final Statement stmt = conn.createStatement()) {
                 result = stmt.executeUpdate(sql) > 0;
@@ -254,6 +278,9 @@ public enum RawStqaLogic {
                 } else {
                     conn.rollback();
                 }
+            } catch (final SQLException ex) {
+                conn.rollback();
+                throw ex;
             } finally {
                 Cache.checkInConnection(conn);
             }
@@ -265,16 +292,14 @@ public enum RawStqaLogic {
     /**
      * Executes a query that returns a list of records.
      *
-     * @param cache the data cache
-     * @param sql   the SQL to execute
+     * @param conn the database connection
+     * @param sql  the SQL to execute
      * @return the list of matching records
      * @throws SQLException if there is an error accessing the database
      */
-    private static List<RawStqa> executeQuery(final Cache cache, final String sql) throws SQLException {
+    private static List<RawStqa> executeQuery(final DbConnection conn, final String sql) throws SQLException {
 
         final List<RawStqa> result = new ArrayList<>(20);
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement statement = conn.createStatement();
              final ResultSet rs = statement.executeQuery(sql)) {
@@ -282,11 +307,6 @@ public enum RawStqaLogic {
             while (rs.next()) {
                 result.add(RawStqa.fromResultSet(rs));
             }
-        } catch (final SQLException ex) {
-            Log.warning("Query failed: [", sql, "]", ex);
-            throw ex;
-        } finally {
-            Cache.checkInConnection(conn);
         }
 
         return result;

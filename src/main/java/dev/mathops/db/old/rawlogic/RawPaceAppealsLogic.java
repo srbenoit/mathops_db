@@ -104,6 +104,9 @@ public enum RawPaceAppealsLogic {
                 } else {
                     conn.rollback();
                 }
+            } catch (final SQLException ex) {
+                conn.rollback();
+                throw ex;
             } finally {
                 Cache.checkInConnection(conn);
             }
@@ -128,17 +131,17 @@ public enum RawPaceAppealsLogic {
 
         final String tableName = getTableName(cache);
 
-        sql.add("DELETE FROM ", tableName,
-                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
-                "   AND term=", LogicUtils.sqlStringValue(record.termKey.termCode),
-                "   AND term_yr=", LogicUtils.sqlIntegerValue(record.termKey.shortYear),
-                "   AND appeal_dt=", LogicUtils.sqlDateValue(record.appealDt),
-                "   AND pace=", LogicUtils.sqlIntegerValue(record.pace),
-                "   AND pace_track=", LogicUtils.sqlStringValue(record.paceTrack),
-                "   AND ms_nbr=", LogicUtils.sqlIntegerValue(record.msNbr),
-                "   AND ms_type=", LogicUtils.sqlStringValue(record.msType));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        sql.add("DELETE FROM ", tableName,
+                " WHERE stu_id=", conn.sqlStringValue(record.stuId),
+                "   AND term=", conn.sqlStringValue(record.termKey.termCode),
+                "   AND term_yr=", conn.sqlIntegerValue(record.termKey.shortYear),
+                "   AND appeal_dt=", conn.sqlDateValue(record.appealDt),
+                "   AND pace=", conn.sqlIntegerValue(record.pace),
+                "   AND pace_track=", conn.sqlStringValue(record.paceTrack),
+                "   AND ms_nbr=", conn.sqlIntegerValue(record.msNbr),
+                "   AND ms_type=", conn.sqlStringValue(record.msType));
 
         try (final Statement stmt = conn.createStatement()) {
             result = stmt.executeUpdate(sql.toString()) == 1;
@@ -148,6 +151,9 @@ public enum RawPaceAppealsLogic {
             } else {
                 conn.rollback();
             }
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -171,25 +177,25 @@ public enum RawPaceAppealsLogic {
 
         final String tableName = getTableName(cache);
 
-        sql.add("UPDATE ",tableName,
-                " SET relief_given=", LogicUtils.sqlStringValue(record.reliefGiven),
-                ", new_deadline_dt=", LogicUtils.sqlDateValue(record.newDeadlineDt),
-                ", nbr_atmpts_allow=", LogicUtils.sqlIntegerValue(record.nbrAtmptsAllow),
-                ", interviewer=", LogicUtils.sqlStringValue(record.interviewer),
-                ", circumstances=", LogicUtils.sqlStringValue(record.circumstances),
-                ", comment=", LogicUtils.sqlStringValue(record.comment),
-                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
-                "   AND term=", LogicUtils.sqlStringValue(record.termKey.termCode),
-                "   AND term_yr=", LogicUtils.sqlIntegerValue(record.termKey.shortYear),
-                "   AND appeal_dt=", LogicUtils.sqlDateValue(record.appealDt),
-                "   AND pace=", LogicUtils.sqlIntegerValue(record.pace),
-                "   AND pace_track=", LogicUtils.sqlStringValue(record.paceTrack),
-                "   AND ms_nbr=", LogicUtils.sqlIntegerValue(record.msNbr),
-                "   AND ms_type=", LogicUtils.sqlStringValue(record.msType));
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        sql.add("UPDATE ", tableName,
+                " SET relief_given=", conn.sqlStringValue(record.reliefGiven),
+                ", new_deadline_dt=", conn.sqlDateValue(record.newDeadlineDt),
+                ", nbr_atmpts_allow=", conn.sqlIntegerValue(record.nbrAtmptsAllow),
+                ", interviewer=", conn.sqlStringValue(record.interviewer),
+                ", circumstances=", conn.sqlStringValue(record.circumstances),
+                ", comment=", conn.sqlStringValue(record.comment),
+                " WHERE stu_id=", conn.sqlStringValue(record.stuId),
+                "   AND term=", conn.sqlStringValue(record.termKey.termCode),
+                "   AND term_yr=", conn.sqlIntegerValue(record.termKey.shortYear),
+                "   AND appeal_dt=", conn.sqlDateValue(record.appealDt),
+                "   AND pace=", conn.sqlIntegerValue(record.pace),
+                "   AND pace_track=", conn.sqlStringValue(record.paceTrack),
+                "   AND ms_nbr=", conn.sqlIntegerValue(record.msNbr),
+                "   AND ms_type=", conn.sqlStringValue(record.msType));
 
         final String sqlString = sql.toString();
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement()) {
             result = stmt.executeUpdate(sqlString) == 1;
@@ -199,6 +205,9 @@ public enum RawPaceAppealsLogic {
             } else {
                 conn.rollback();
             }
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -217,7 +226,13 @@ public enum RawPaceAppealsLogic {
 
         final String tableName = getTableName(cache);
 
-        return executeQuery(cache, "SELECT * FROM " + tableName);
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return executeQuery(conn, "SELECT * FROM " + tableName);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -232,25 +247,29 @@ public enum RawPaceAppealsLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat(
-                "SELECT * FROM ", tableName, " WHERE stu_id=", LogicUtils.sqlStringValue(stuId));
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
-        return executeQuery(cache, sql);
+        final String sql = SimpleBuilder.concat(
+                "SELECT * FROM ", tableName, " WHERE stu_id=", conn.sqlStringValue(stuId));
+
+        try {
+            return executeQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
      * Executes a query that returns a list of records.
      *
-     * @param cache the data cache
-     * @param sql   the SQL to execute
+     * @param conn the database connection
+     * @param sql  the SQL to execute
      * @return the list of matching records
      * @throws SQLException if there is an error accessing the database
      */
-    private static List<RawPaceAppeals> executeQuery(final Cache cache, final String sql) throws SQLException {
+    private static List<RawPaceAppeals> executeQuery(final DbConnection conn, final String sql) throws SQLException {
 
         final List<RawPaceAppeals> result = new ArrayList<>(50);
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -258,8 +277,6 @@ public enum RawPaceAppealsLogic {
             while (rs.next()) {
                 result.add(RawPaceAppeals.fromResultSet(rs));
             }
-        } finally {
-            Cache.checkInConnection(conn);
         }
 
         return result;

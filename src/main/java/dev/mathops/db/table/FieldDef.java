@@ -191,13 +191,12 @@ public final class FieldDef implements Comparable<FieldDef> {
     @Override
     public int hashCode() {
 
-        return this.name.hashCode() + this.type.hashCode() + Objects.hashCode(this.description)
-               + Arrays.hashCode(this.constraints);
+        return this.name.hashCode() + this.type.hashCode() + Arrays.hashCode(this.constraints);
     }
 
     /**
      * Tests whether this object is equal to another.  To be equal, the other object must be a {@code Field} with the
-     * same values for all fields.
+     * same name, type, and constraints (the description is not considered).
      *
      * @return the hash code
      */
@@ -212,7 +211,6 @@ public final class FieldDef implements Comparable<FieldDef> {
             final AbstractFieldConstraint<?>[] objConstraints = objField.innerGetConstraints();
 
             equal = this.type == objField.type && this.name.equals(objField.name)
-                    && Objects.equals(this.description, objField.description)
                     && Arrays.equals(this.constraints, objConstraints);
         } else {
             equal = false;

@@ -67,23 +67,23 @@ public enum RawLoginsLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat("INSERT INTO ", tableName, " (user_id,user_type,user_name,stored_key,",
                 "server_key,dtime_created,dtime_expires,dtime_last_login,force_pw_change,email,salt,",
                 "nbr_invalid_atmpts) VALUES (",
-                LogicUtils.sqlStringValue(record.userId), ",",
-                LogicUtils.sqlStringValue(record.userType), ",",
-                LogicUtils.sqlStringValue(record.userName), ",",
-                LogicUtils.sqlStringValue(record.storedKey), ",",
-                LogicUtils.sqlStringValue(record.serverKey), ",",
-                LogicUtils.sqlDateTimeValue(record.dtimeCreated), ",",
-                LogicUtils.sqlDateTimeValue(record.dtimeExpires), ",",
-                LogicUtils.sqlDateTimeValue(record.dtimeLastLogin), ",",
-                LogicUtils.sqlStringValue(record.forcePwChange), ",",
-                LogicUtils.sqlStringValue(record.email), ",",
-                LogicUtils.sqlStringValue(record.salt), ",",
-                LogicUtils.sqlIntegerValue(record.nbrInvalidAtmpts), ")");
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                conn.sqlStringValue(record.userId), ",",
+                conn.sqlStringValue(record.userType), ",",
+                conn.sqlStringValue(record.userName), ",",
+                conn.sqlStringValue(record.storedKey), ",",
+                conn.sqlStringValue(record.serverKey), ",",
+                conn.sqlDateTimeValue(record.dtimeCreated), ",",
+                conn.sqlDateTimeValue(record.dtimeExpires), ",",
+                conn.sqlDateTimeValue(record.dtimeLastLogin), ",",
+                conn.sqlStringValue(record.forcePwChange), ",",
+                conn.sqlStringValue(record.email), ",",
+                conn.sqlStringValue(record.salt), ",",
+                conn.sqlIntegerValue(record.nbrInvalidAtmpts), ")");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -95,6 +95,9 @@ public enum RawLoginsLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -112,10 +115,10 @@ public enum RawLoginsLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE user_name=", LogicUtils.sqlStringValue(record.userName));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE user_name=", conn.sqlStringValue(record.userName));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -127,6 +130,9 @@ public enum RawLoginsLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -174,8 +180,14 @@ public enum RawLoginsLogic {
 
         final String tableName = getTableName(cache);
 
-        return doSingleQuery(cache, SimpleBuilder.concat(
-                "SELECT * FROM ", tableName, " WHERE user_name=", LogicUtils.sqlStringValue(username)));
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSingleQuery(conn, SimpleBuilder.concat(
+                    "SELECT * FROM ", tableName, " WHERE user_name=", conn.sqlStringValue(username)));
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -192,11 +204,11 @@ public enum RawLoginsLogic {
 
         final LocalDateTime now = LocalDateTime.now();
 
-        final String sql = SimpleBuilder.concat(
-                "UPDATE ", tableName, " SET dtime_last_login=", LogicUtils.sqlDateTimeValue(now),
-                " WHERE user_name=", LogicUtils.sqlStringValue(record.userName));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat(
+                "UPDATE ", tableName, " SET dtime_last_login=", conn.sqlDateTimeValue(now),
+                " WHERE user_name=", conn.sqlStringValue(record.userName));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) > 0;
@@ -208,6 +220,9 @@ public enum RawLoginsLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -227,11 +242,11 @@ public enum RawLoginsLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat(
-                "UPDATE ", tableName, " SET nbr_invalid_atmpts=", LogicUtils.sqlIntegerValue(fails),
-                " WHERE user_name=", LogicUtils.sqlStringValue(username));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat(
+                "UPDATE ", tableName, " SET nbr_invalid_atmpts=", conn.sqlIntegerValue(fails),
+                " WHERE user_name=", conn.sqlStringValue(username));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) > 0;
@@ -243,6 +258,9 @@ public enum RawLoginsLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -251,16 +269,14 @@ public enum RawLoginsLogic {
     /**
      * Performs a query that returns single record.
      *
-     * @param cache the data cache
-     * @param sql   the query SQL
+     * @param conn the database connection
+     * @param sql  the query SQL
      * @return the record; null if none returned
      * @throws SQLException if there is an error performing the query
      */
-    private static RawLogins doSingleQuery(final Cache cache, final String sql) throws SQLException {
+    private static RawLogins doSingleQuery(final DbConnection conn, final String sql) throws SQLException {
 
         RawLogins result = null;
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -268,8 +284,6 @@ public enum RawLoginsLogic {
             if (rs.next()) {
                 result = RawLogins.fromResultSet(rs);
             }
-        } finally {
-            Cache.checkInConnection(conn);
         }
 
         return result;

@@ -60,16 +60,16 @@ public enum RawResourceLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat("INSERT INTO ", tableName,
                 " (resource_id,resource_type,resource_desc,days_allowed,holds_allowed,hold_id) VALUES (",
-                LogicUtils.sqlStringValue(record.resourceId), ",",
-                LogicUtils.sqlStringValue(record.resourceType), ",",
-                LogicUtils.sqlStringValue(record.resourceDesc), ",",
-                LogicUtils.sqlIntegerValue(record.daysAllowed), ",",
-                LogicUtils.sqlIntegerValue(record.holdsAllowed), ",",
-                LogicUtils.sqlStringValue(record.holdId), ")");
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                conn.sqlStringValue(record.resourceId), ",",
+                conn.sqlStringValue(record.resourceType), ",",
+                conn.sqlStringValue(record.resourceDesc), ",",
+                conn.sqlIntegerValue(record.daysAllowed), ",",
+                conn.sqlIntegerValue(record.holdsAllowed), ",",
+                conn.sqlStringValue(record.holdId), ")");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -81,6 +81,9 @@ public enum RawResourceLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -98,10 +101,10 @@ public enum RawResourceLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE resource_id=", LogicUtils.sqlStringValue(record.resourceId));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE resource_id=", conn.sqlStringValue(record.resourceId));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -113,6 +116,9 @@ public enum RawResourceLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -160,25 +166,29 @@ public enum RawResourceLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
-                " WHERE resource_id=", LogicUtils.sqlStringValue(resourceId));
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
-        return executeSingleQuery(cache, sql);
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
+                " WHERE resource_id=", conn.sqlStringValue(resourceId));
+
+        try {
+            return executeSingleQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
      * Executes a query that returns a list of records.
      *
-     * @param cache the data cache
-     * @param sql   the SQL to execute
+     * @param conn the database connection
+     * @param sql  the SQL to execute
      * @return the list of matching records
      * @throws SQLException if there is an error accessing the database
      */
-    private static RawResource executeSingleQuery(final Cache cache, final String sql) throws SQLException {
+    private static RawResource executeSingleQuery(final DbConnection conn, final String sql) throws SQLException {
 
         RawResource result = null;
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -186,8 +196,6 @@ public enum RawResourceLogic {
             if (rs.next()) {
                 result = RawResource.fromResultSet(rs);
             }
-        } finally {
-            Cache.checkInConnection(conn);
         }
 
         return result;

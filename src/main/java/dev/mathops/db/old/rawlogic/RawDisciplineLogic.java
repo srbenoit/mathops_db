@@ -96,6 +96,9 @@ public enum RawDisciplineLogic {
             } else {
                 conn.rollback();
             }
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -119,14 +122,14 @@ public enum RawDisciplineLogic {
 
         final String tableName = getTableName(cache);
 
-        sql.add("DELETE FROM ",tableName,
-                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
-                " AND dt_incident=", LogicUtils.sqlDateValue(record.dtIncident),
-                " AND incident_type=", LogicUtils.sqlStringValue(record.incidentType),
-                " AND course=", LogicUtils.sqlStringValue(record.course),
-                " AND unit=", LogicUtils.sqlIntegerValue(record.unit));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        sql.add("DELETE FROM ", tableName,
+                " WHERE stu_id=", conn.sqlStringValue(record.stuId),
+                " AND dt_incident=", conn.sqlDateValue(record.dtIncident),
+                " AND incident_type=", conn.sqlStringValue(record.incidentType),
+                " AND course=", conn.sqlStringValue(record.course),
+                " AND unit=", conn.sqlIntegerValue(record.unit));
 
         try (final Statement stmt = conn.createStatement()) {
             result = stmt.executeUpdate(sql.toString()) == 1;
@@ -136,6 +139,9 @@ public enum RawDisciplineLogic {
             } else {
                 conn.rollback();
             }
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -154,7 +160,13 @@ public enum RawDisciplineLogic {
 
         final String tableName = getTableName(cache);
 
-        return executeQuery(cache, "SELECT * FROM " + tableName);
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return executeQuery(conn, "SELECT * FROM " + tableName);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -169,10 +181,16 @@ public enum RawDisciplineLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat(
-                "SELECT * FROM ", tableName, " WHERE stu_id=", LogicUtils.sqlStringValue(stuId));
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
-        return executeQuery(cache, sql);
+        final String sql = SimpleBuilder.concat(
+                "SELECT * FROM ", tableName, " WHERE stu_id=", conn.sqlStringValue(stuId));
+
+        try {
+            return executeQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -187,25 +205,29 @@ public enum RawDisciplineLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat(
-                "SELECT * FROM ", tableName, " WHERE action_type=", LogicUtils.sqlStringValue(action));
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
-        return executeQuery(cache, sql);
+        final String sql = SimpleBuilder.concat(
+                "SELECT * FROM ", tableName, " WHERE action_type=", conn.sqlStringValue(action));
+
+        try {
+            return executeQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
      * Executes a query that returns a list of records.
      *
-     * @param cache the data cache
-     * @param sql   the SQL to execute
+     * @param conn the database connection
+     * @param sql  the SQL to execute
      * @return the list of matching records
      * @throws SQLException if there is an error accessing the database
      */
-    private static List<RawDiscipline> executeQuery(final Cache cache, final String sql) throws SQLException {
+    private static List<RawDiscipline> executeQuery(final DbConnection conn, final String sql) throws SQLException {
 
         final List<RawDiscipline> result = new ArrayList<>(50);
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -213,8 +235,6 @@ public enum RawDisciplineLogic {
             while (rs.next()) {
                 result.add(RawDiscipline.fromResultSet(rs));
             }
-        } finally {
-            Cache.checkInConnection(conn);
         }
 
         return result;

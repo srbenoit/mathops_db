@@ -409,7 +409,7 @@ public abstract class TermLogic implements IRecLogic<TermRec> {
 
             final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
 
-            return schemaPrefix == null ? "which_db" : (schemaPrefix + ".which_db");
+            return schemaPrefix == null ? "term" : (schemaPrefix + ".term");
         }
 
         /**

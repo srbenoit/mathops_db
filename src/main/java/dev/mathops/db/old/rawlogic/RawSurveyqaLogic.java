@@ -69,25 +69,25 @@ public enum RawSurveyqaLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat(
                 "INSERT INTO ", tableName, " (term,term_yr,version,survey_nbr,question_desc,type_question,answer,",
                 "answer_desc,answer_meaning,must_answer,tree_ref) VALUES (",
-                LogicUtils.sqlStringValue(record.termKey.termCode), ",",
-                LogicUtils.sqlIntegerValue(record.termKey.shortYear), ",",
-                LogicUtils.sqlStringValue(record.version), ",",
-                LogicUtils.sqlIntegerValue(record.surveyNbr), ",",
-                LogicUtils.sqlStringValue(record.questionDesc), ",",
-                LogicUtils.sqlStringValue(record.typeQuestion), ",",
-                LogicUtils.sqlStringValue(record.answer), ",",
-                LogicUtils.sqlStringValue(record.answerDesc), ",",
-                LogicUtils.sqlStringValue(record.answerMeaning), ",",
-                LogicUtils.sqlStringValue(record.mustAnswer), ",",
-                LogicUtils.sqlStringValue(record.treeRef), ")");
+                conn.sqlStringValue(record.termKey.termCode), ",",
+                conn.sqlIntegerValue(record.termKey.shortYear), ",",
+                conn.sqlStringValue(record.version), ",",
+                conn.sqlIntegerValue(record.surveyNbr), ",",
+                conn.sqlStringValue(record.questionDesc), ",",
+                conn.sqlStringValue(record.typeQuestion), ",",
+                conn.sqlStringValue(record.answer), ",",
+                conn.sqlStringValue(record.answerDesc), ",",
+                conn.sqlStringValue(record.answerMeaning), ",",
+                conn.sqlStringValue(record.mustAnswer), ",",
+                conn.sqlStringValue(record.treeRef), ")");
 
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
-
-        try (final Statement s = conn.createStatement()) {
-            final boolean result = s.executeUpdate(sql) == 1;
+        try (final Statement stmt = conn.createStatement()) {
+            final boolean result = stmt.executeUpdate(sql) == 1;
 
             if (result) {
                 conn.commit();
@@ -96,6 +96,9 @@ public enum RawSurveyqaLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -113,14 +116,14 @@ public enum RawSurveyqaLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                "WHERE term=", LogicUtils.sqlStringValue(record.termKey.termCode),
-                "  AND term_yr=", LogicUtils.sqlIntegerValue(record.termKey.shortYear),
-                "  AND version=", LogicUtils.sqlStringValue(record.version),
-                "  AND survey_nbr=", LogicUtils.sqlIntegerValue(record.surveyNbr),
-                "  AND answer=", LogicUtils.sqlStringValue(record.answer));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE term=", conn.sqlStringValue(record.termKey.termCode),
+                "  AND term_yr=", conn.sqlIntegerValue(record.termKey.shortYear),
+                "  AND version=", conn.sqlStringValue(record.version),
+                "  AND survey_nbr=", conn.sqlIntegerValue(record.surveyNbr),
+                "  AND answer=", conn.sqlStringValue(record.answer));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -132,6 +135,9 @@ public enum RawSurveyqaLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -148,7 +154,13 @@ public enum RawSurveyqaLogic {
 
         final String tableName = getTableName(cache);
 
-        return executeQuery(cache, "SELECT * FROM " + tableName);
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return executeQuery(conn, "SELECT * FROM " + tableName);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -164,11 +176,17 @@ public enum RawSurveyqaLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat(
-                "SELECT * FROM ", tableName, " WHERE term=", LogicUtils.sqlStringValue(termKey.termCode),
-                "   AND term_yr=", LogicUtils.sqlIntegerValue(termKey.shortYear));
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
-        return executeQuery(cache, sql);
+        final String sql = SimpleBuilder.concat(
+                "SELECT * FROM ", tableName, " WHERE term=", conn.sqlStringValue(termKey.termCode),
+                "   AND term_yr=", conn.sqlIntegerValue(termKey.shortYear));
+
+        try {
+            return executeQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -186,12 +204,18 @@ public enum RawSurveyqaLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat(
-                "SELECT * FROM ", tableName, " WHERE version=", LogicUtils.sqlStringValue(theVersion),
-                "   AND term=", LogicUtils.sqlStringValue(active.term.termCode),
-                "   AND term_yr=", LogicUtils.sqlIntegerValue(active.term.shortYear));
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
-        return executeQuery(cache, sql);
+        final String sql = SimpleBuilder.concat(
+                "SELECT * FROM ", tableName, " WHERE version=", conn.sqlStringValue(theVersion),
+                "   AND term=", conn.sqlStringValue(active.term.termCode),
+                "   AND term_yr=", conn.sqlIntegerValue(active.term.shortYear));
+
+        try {
+            return executeQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -233,29 +257,33 @@ public enum RawSurveyqaLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat(
-                "SELECT * FROM ", tableName, " WHERE version=", LogicUtils.sqlStringValue(theVersion),
-                "   AND survey_nbr=", LogicUtils.sqlIntegerValue(theSurveyNbr),
-                "   AND term=", LogicUtils.sqlStringValue(active.term.termCode),
-                "   AND term_yr=", LogicUtils.sqlIntegerValue(active.term.shortYear),
+                "SELECT * FROM ", tableName, " WHERE version=", conn.sqlStringValue(theVersion),
+                "   AND survey_nbr=", conn.sqlIntegerValue(theSurveyNbr),
+                "   AND term=", conn.sqlStringValue(active.term.termCode),
+                "   AND term_yr=", conn.sqlIntegerValue(active.term.shortYear),
                 " ORDER BY answer DESC");
 
-        return executeQuery(cache, sql);
+        try {
+            return executeQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
      * Executes a query that returns a list of records.
      *
-     * @param cache the data cache
-     * @param sql   the SQL to execute
+     * @param conn the database connection
+     * @param sql  the SQL to execute
      * @return the list of matching records
      * @throws SQLException if there is an error accessing the database
      */
-    private static List<RawSurveyqa> executeQuery(final Cache cache, final String sql) throws SQLException {
+    private static List<RawSurveyqa> executeQuery(final DbConnection conn, final String sql) throws SQLException {
 
         final List<RawSurveyqa> result = new ArrayList<>(50);
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -263,8 +291,6 @@ public enum RawSurveyqaLogic {
             while (rs.next()) {
                 result.add(RawSurveyqa.fromResultSet(rs));
             }
-        } finally {
-            Cache.checkInConnection(conn);
         }
 
         return result;

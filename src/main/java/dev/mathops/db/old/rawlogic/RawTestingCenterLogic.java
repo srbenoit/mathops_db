@@ -69,26 +69,26 @@ public enum RawTestingCenterLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat("INSERT INTO ", tableName,
                 " (testing_center_id,tc_name,addres_1,addres_2,addres_3,city,state,zip_code,active,dtime_created,",
                 "dtime_approved,dtime_denied,dtime_revoked,is_remote,is_proctored) VALUES (",
-                LogicUtils.sqlStringValue(record.testingCenterId), ",",
-                LogicUtils.sqlStringValue(record.tcName), ",",
-                LogicUtils.sqlStringValue(record.addres1), ",",
-                LogicUtils.sqlStringValue(record.addres2), ",",
-                LogicUtils.sqlStringValue(record.addres3), ",",
-                LogicUtils.sqlStringValue(record.city), ",",
-                LogicUtils.sqlStringValue(record.state), ",",
-                LogicUtils.sqlStringValue(record.zipCode), ",",
-                LogicUtils.sqlStringValue(record.active), ",",
-                LogicUtils.sqlDateTimeValue(record.dtimeCreated), ",",
-                LogicUtils.sqlDateTimeValue(record.dtimeApproved), ",",
-                LogicUtils.sqlDateTimeValue(record.dtimeDenied), ",",
-                LogicUtils.sqlDateTimeValue(record.dtimeRevoked), ",",
-                LogicUtils.sqlStringValue(record.isRemote), ",",
-                LogicUtils.sqlStringValue(record.isProctored), ")");
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                conn.sqlStringValue(record.testingCenterId), ",",
+                conn.sqlStringValue(record.tcName), ",",
+                conn.sqlStringValue(record.addres1), ",",
+                conn.sqlStringValue(record.addres2), ",",
+                conn.sqlStringValue(record.addres3), ",",
+                conn.sqlStringValue(record.city), ",",
+                conn.sqlStringValue(record.state), ",",
+                conn.sqlStringValue(record.zipCode), ",",
+                conn.sqlStringValue(record.active), ",",
+                conn.sqlDateTimeValue(record.dtimeCreated), ",",
+                conn.sqlDateTimeValue(record.dtimeApproved), ",",
+                conn.sqlDateTimeValue(record.dtimeDenied), ",",
+                conn.sqlDateTimeValue(record.dtimeRevoked), ",",
+                conn.sqlStringValue(record.isRemote), ",",
+                conn.sqlStringValue(record.isProctored), ")");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -100,6 +100,9 @@ public enum RawTestingCenterLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -117,10 +120,10 @@ public enum RawTestingCenterLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName, " WHERE testing_center_id=",
-                LogicUtils.sqlStringValue(record.testingCenterId));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName, " WHERE testing_center_id=",
+                conn.sqlStringValue(record.testingCenterId));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -132,6 +135,9 @@ public enum RawTestingCenterLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -180,11 +186,11 @@ public enum RawTestingCenterLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat(
                 "SELECT * FROM ", tableName, " WHERE testing_center_id=",
-                LogicUtils.sqlStringValue(testingCenterId));
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                conn.sqlStringValue(testingCenterId));
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {

@@ -2,6 +2,7 @@ package dev.mathops.db.table.criteria;
 
 import dev.mathops.db.table.EFieldType;
 import dev.mathops.db.table.Field;
+import dev.mathops.db.table.FieldDef;
 
 /**
  *  A criterion that can be used to match a Float field.
@@ -25,7 +26,8 @@ public class FloatFieldCriterion extends AbstractFieldCriterion {
 
         super(theField);
 
-        if (theField.getType() != EFieldType.FLOAT) {
+        final FieldDef def = theField.getDef();
+        if (def.getType() != EFieldType.FLOAT) {
             throw new IllegalArgumentException("A Float field criterion must be used with a Float field");
         }
         if (theMatchType == null) {

@@ -84,44 +84,44 @@ public enum RawCsectionLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat(
                 "INSERT INTO ", tableName, " (course,sect,term,term_yr,section_id,aries_start_dt,aries_end_dt,",
                 "start_dt,exam_delete_dt,instrn_type,instructor,campus,pacing_structure,mtg_days,classroom_id,",
                 "lst_stcrs_creat_dt,grading_std,a_min_score,b_min_score,c_min_score,d_min_score,survey_id,",
                 "course_label_shown,display_score,display_grade_scale,count_in_max_courses,online,bogus,canvas_id,",
                 "subterm) VALUES (",
-                LogicUtils.sqlStringValue(record.course), ",",
-                LogicUtils.sqlStringValue(record.sect), ",",
-                LogicUtils.sqlStringValue(record.termKey.termCode), ",",
-                LogicUtils.sqlIntegerValue(record.termKey.shortYear), ",",
-                LogicUtils.sqlStringValue(record.sectionId), ",",
-                LogicUtils.sqlDateValue(record.ariesStartDt), ",",
-                LogicUtils.sqlDateValue(record.ariesEndDt), ",",
-                LogicUtils.sqlDateValue(record.startDt), ",",
-                LogicUtils.sqlDateValue(record.examDeleteDt), ",",
-                LogicUtils.sqlStringValue(record.instrnType), ",",
-                LogicUtils.sqlStringValue(record.instructor), ",",
-                LogicUtils.sqlStringValue(record.campus), ",",
-                LogicUtils.sqlStringValue(record.pacingStructure), ",",
-                LogicUtils.sqlStringValue(record.mtgDays), ",",
-                LogicUtils.sqlStringValue(record.classroomId), ",",
-                LogicUtils.sqlDateValue(record.lstStcrsCreatDt), ",",
-                LogicUtils.sqlStringValue(record.gradingStd), ",",
-                LogicUtils.sqlIntegerValue(record.aMinScore), ",",
-                LogicUtils.sqlIntegerValue(record.bMinScore), ",",
-                LogicUtils.sqlIntegerValue(record.cMinScore), ",",
-                LogicUtils.sqlIntegerValue(record.dMinScore), ",",
-                LogicUtils.sqlStringValue(record.surveyId), ",",
-                LogicUtils.sqlStringValue(record.courseLabelShown), ",",
-                LogicUtils.sqlStringValue(record.displayScore), ",",
-                LogicUtils.sqlStringValue(record.displayGradeScale), ",",
-                LogicUtils.sqlStringValue(record.countInMaxCourses), ",",
-                LogicUtils.sqlStringValue(record.online), ",",
-                LogicUtils.sqlStringValue(record.bogus), ",",
-                LogicUtils.sqlStringValue(record.canvasId), ",",
-                LogicUtils.sqlStringValue(record.subterm), ")");
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                conn.sqlStringValue(record.course), ",",
+                conn.sqlStringValue(record.sect), ",",
+                conn.sqlStringValue(record.termKey.termCode), ",",
+                conn.sqlIntegerValue(record.termKey.shortYear), ",",
+                conn.sqlStringValue(record.sectionId), ",",
+                conn.sqlDateValue(record.ariesStartDt), ",",
+                conn.sqlDateValue(record.ariesEndDt), ",",
+                conn.sqlDateValue(record.startDt), ",",
+                conn.sqlDateValue(record.examDeleteDt), ",",
+                conn.sqlStringValue(record.instrnType), ",",
+                conn.sqlStringValue(record.instructor), ",",
+                conn.sqlStringValue(record.campus), ",",
+                conn.sqlStringValue(record.pacingStructure), ",",
+                conn.sqlStringValue(record.mtgDays), ",",
+                conn.sqlStringValue(record.classroomId), ",",
+                conn.sqlDateValue(record.lstStcrsCreatDt), ",",
+                conn.sqlStringValue(record.gradingStd), ",",
+                conn.sqlIntegerValue(record.aMinScore), ",",
+                conn.sqlIntegerValue(record.bMinScore), ",",
+                conn.sqlIntegerValue(record.cMinScore), ",",
+                conn.sqlIntegerValue(record.dMinScore), ",",
+                conn.sqlStringValue(record.surveyId), ",",
+                conn.sqlStringValue(record.courseLabelShown), ",",
+                conn.sqlStringValue(record.displayScore), ",",
+                conn.sqlStringValue(record.displayGradeScale), ",",
+                conn.sqlStringValue(record.countInMaxCourses), ",",
+                conn.sqlStringValue(record.online), ",",
+                conn.sqlStringValue(record.bogus), ",",
+                conn.sqlStringValue(record.canvasId), ",",
+                conn.sqlStringValue(record.subterm), ")");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -133,6 +133,9 @@ public enum RawCsectionLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -150,13 +153,13 @@ public enum RawCsectionLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE course=", LogicUtils.sqlStringValue(record.course),
-                "  AND sect=", LogicUtils.sqlStringValue(record.sect),
-                "  AND term=", LogicUtils.sqlStringValue(record.termKey.termCode),
-                "  AND term_yr=", LogicUtils.sqlIntegerValue(record.termKey.shortYear));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE course=", conn.sqlStringValue(record.course),
+                "  AND sect=", conn.sqlStringValue(record.sect),
+                "  AND term=", conn.sqlStringValue(record.termKey.termCode),
+                "  AND term_yr=", conn.sqlIntegerValue(record.termKey.shortYear));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -168,6 +171,9 @@ public enum RawCsectionLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -249,28 +255,32 @@ public enum RawCsectionLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat(
-                "SELECT * FROM ", tableName, " WHERE term=", LogicUtils.sqlStringValue(termKey.termCode),
-                " AND term_yr=", LogicUtils.sqlIntegerValue(termKey.shortYear),
-                " AND course=", LogicUtils.sqlStringValue(course),
-                " AND sect=", LogicUtils.sqlStringValue(sect));
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
-        return executeSingleQuery(cache, sql);
+        final String sql = SimpleBuilder.concat(
+                "SELECT * FROM ", tableName, " WHERE term=", conn.sqlStringValue(termKey.termCode),
+                " AND term_yr=", conn.sqlIntegerValue(termKey.shortYear),
+                " AND course=", conn.sqlStringValue(course),
+                " AND sect=", conn.sqlStringValue(sect));
+
+        try {
+            return executeSingleQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
      * Executes a query that returns a single records.
      *
-     * @param cache the data cache
-     * @param sql   the query
+     * @param conn the database connection
+     * @param sql  the query
      * @return the record found; null if none returned
      * @throws SQLException if there is an error accessing the database
      */
-    private static RawCsection executeSingleQuery(final Cache cache, final String sql) throws SQLException {
+    private static RawCsection executeSingleQuery(final DbConnection conn, final String sql) throws SQLException {
 
         RawCsection result = null;
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -278,8 +288,6 @@ public enum RawCsectionLogic {
             if (rs.next()) {
                 result = RawCsection.fromResultSet(rs);
             }
-        } finally {
-            Cache.checkInConnection(conn);
         }
 
         return result;

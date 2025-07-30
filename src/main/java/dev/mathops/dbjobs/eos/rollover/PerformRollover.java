@@ -10,7 +10,6 @@ import dev.mathops.db.ESchema;
 import dev.mathops.db.cfg.DatabaseConfig;
 import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.logic.SystemData;
-import dev.mathops.db.old.rawlogic.LogicUtils;
 import dev.mathops.db.old.rawlogic.RawAdminHoldLogic;
 import dev.mathops.db.old.rawlogic.RawStcourseLogic;
 import dev.mathops.db.old.rawlogic.RawSthomeworkLogic;
@@ -217,7 +216,13 @@ public class PerformRollover implements Runnable {
         final String sql = SimpleBuilder.concat("DELETE FROM bogus_mapping WHERE term_yr=", deleteYearStr,
                 " AND term='", activeTerm.term.termCode, "'");
 
-        return doSql(sql, "bogus_mapping");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, sql, "bogus_mapping");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -228,7 +233,14 @@ public class PerformRollover implements Runnable {
     private ESuccessFailure cleanCalcs() {
 
         Log.info("> Cleaning the calcs table.");
-        return doSql("DELETE FROM calcs", "calcs");
+
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, "DELETE FROM calcs", "calcs");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -241,11 +253,17 @@ public class PerformRollover implements Runnable {
 
         Log.info("> Cleaning the challenge_fee table.");
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final LocalDate thresholdDate = activeTerm.startDate.minusYears(15L);
         final String sql = SimpleBuilder.concat("DELETE FROM challenge_fee WHERE bill_dt < ",
-                LogicUtils.sqlDateValue(thresholdDate));
+                conn.sqlDateValue(thresholdDate));
 
-        return doSql(sql, "challenge_fee");
+        try {
+            return doSql(conn, sql, "challenge_fee");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -263,7 +281,13 @@ public class PerformRollover implements Runnable {
         final String sql = SimpleBuilder.concat("DELETE FROM crsection WHERE term_yr=", deleteYearStr,
                 " AND term='", activeTerm.term.termCode, "'");
 
-        return doSql(sql, "crsection");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, sql, "crsection");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -281,7 +305,13 @@ public class PerformRollover implements Runnable {
         final String sql = SimpleBuilder.concat("DELETE FROM cusection WHERE term_yr=", deleteYearStr,
                 " AND term='", activeTerm.term.termCode, "'");
 
-        return doSql(sql, "cusection");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, sql, "cusection");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -299,7 +329,13 @@ public class PerformRollover implements Runnable {
         final String sql = SimpleBuilder.concat("DELETE FROM dont_submit WHERE term_yr=", deleteYearStr,
                 " AND term='", activeTerm.term.termCode, "'");
 
-        return doSql(sql, "dont_submit");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, sql, "dont_submit");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -312,11 +348,17 @@ public class PerformRollover implements Runnable {
 
         Log.info("> Cleaning the etext_key table.");
 
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
         final LocalDate threshold = activeTerm.startDate.minusYears(1L);
         final String sql = SimpleBuilder.concat("DELETE FROM etext_key WHERE active_dt IS NOT NULL AND active_dt<",
-                LogicUtils.sqlDateValue(threshold));
+                conn.sqlDateValue(threshold));
 
-        return doSql(sql, "etext_key");
+        try {
+            return doSql(conn, sql, "etext_key");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -328,7 +370,13 @@ public class PerformRollover implements Runnable {
 
         Log.info("> Cleaning the except_stu table.");
 
-        return doSql("DELETE FROM except_stu", "except_stu");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, "DELETE FROM except_stu", "except_stu");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -346,7 +394,13 @@ public class PerformRollover implements Runnable {
         final String sql = SimpleBuilder.concat("DELETE FROM milestone WHERE term_yr=", deleteYearStr,
                 " AND term='", activeTerm.term.termCode, "'");
 
-        return doSql(sql, "milestone");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, sql, "milestone");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -358,7 +412,13 @@ public class PerformRollover implements Runnable {
 
         Log.info("> Cleaning the mpe_log table.");
 
-        return doSql("DELETE FROM mpe_log", "mpe_log");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, "DELETE FROM mpe_log", "mpe_log");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -370,7 +430,13 @@ public class PerformRollover implements Runnable {
 
         Log.info("> Cleaning the newstu table.");
 
-        return doSql("DELETE FROM newstu", "newstu");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, "DELETE FROM newstu", "newstu");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -388,7 +454,13 @@ public class PerformRollover implements Runnable {
         final String sql = SimpleBuilder.concat("DELETE FROM pacing_rules WHERE term_yr=", deleteYearStr,
                 " AND term='", activeTerm.term.termCode, "'");
 
-        return doSql(sql, "pacing_rules");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, sql, "pacing_rules");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -406,7 +478,13 @@ public class PerformRollover implements Runnable {
         final String sql = SimpleBuilder.concat("DELETE FROM pacing_structure WHERE term_yr=", deleteYearStr,
                 " AND term='", activeTerm.term.termCode, "'");
 
-        return doSql(sql, "pacing_structure");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, sql, "pacing_structure");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -424,7 +502,13 @@ public class PerformRollover implements Runnable {
         final String sql = SimpleBuilder.concat("DELETE FROM pace_track_rule WHERE term_yr=", deleteYearStr,
                 " AND term='", activeTerm.term.termCode, "'");
 
-        return doSql(sql, "pace_track_rule");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, sql, "pace_track_rule");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -436,7 +520,13 @@ public class PerformRollover implements Runnable {
 
         Log.info("> Cleaning the milestone_appeal table.");
 
-        return doSql("DELETE FROM milestone_appeal", "milestone_appeal");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, "DELETE FROM milestone_appeal", "milestone_appeal");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -448,7 +538,13 @@ public class PerformRollover implements Runnable {
 
         Log.info("> Cleaning the pace_appeals table.");
 
-        return doSql("DELETE FROM pace_appeals", "pace_appeals");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, "DELETE FROM pace_appeals", "pace_appeals");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -460,7 +556,13 @@ public class PerformRollover implements Runnable {
 
         Log.info("> Cleaning the pending_exam table.");
 
-        return doSql("DELETE FROM pending_exam", "pending_exam");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, "DELETE FROM pending_exam", "pending_exam");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -472,7 +574,14 @@ public class PerformRollover implements Runnable {
 
         Log.info("> Cleaning the special_stus table.");
 
-        return doSql("DELETE FROM special_stus WHERE stu_type NOT IN ('ADMIN','STEVE','ADVISER')", "special_stus");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, "DELETE FROM special_stus WHERE stu_type NOT IN ('ADMIN','STEVE','ADVISER')",
+                    "special_stus");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -484,7 +593,13 @@ public class PerformRollover implements Runnable {
 
         Log.info("> Cleaning the stc table.");
 
-        return doSql("DELETE FROM stc", "stc");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, "DELETE FROM stc", "stc");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -496,20 +611,26 @@ public class PerformRollover implements Runnable {
 
         Log.info("> Cleaning the stetext table.");
 
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql1 = SimpleBuilder.concat("DELETE FROM stetext WHERE ((expiration_dt <= ",
-                LogicUtils.sqlDateValue(activeTerm.endDate), " AND expiration_dt IS NOT NULL) ",
+                conn.sqlDateValue(activeTerm.endDate), " AND expiration_dt IS NOT NULL) ",
                 "OR refund_dt IS NOT NULL) AND stu_id NOT IN (SELECT stu_id FROM stcourse WHERE course_grade = 'I')");
 
         final LocalDate threshold = activeTerm.startDate.minusYears(15L);
         final String sql2 = SimpleBuilder.concat("DELETE FROM stetext WHERE active_dt < ",
-                LogicUtils.sqlDateValue(threshold));
+                conn.sqlDateValue(threshold));
 
-        ESuccessFailure result = doSql(sql1, "stetext");
-        if (result == ESuccessFailure.SUCCESS) {
-            result = doSql(sql2, "stetext");
+        try {
+            ESuccessFailure result = doSql(conn, sql1, "stetext");
+            if (result == ESuccessFailure.SUCCESS) {
+                result = doSql(conn, sql2, "stetext");
+            }
+
+            return result;
+        } finally {
+            Cache.checkInConnection(conn);
         }
-
-        return result;
     }
 
     /**
@@ -525,7 +646,13 @@ public class PerformRollover implements Runnable {
                 " WHERE stu_id NOT IN (SELECT stu_id FROM stcourse WHERE course_grade = 'I')",
                 " AND stu_id NOT IN (SELECT stu_id FROM stcourse WHERE i_in_progress = 'Y')");
 
-        return doSql(sql, "stmilestone");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, sql, "stmilestone");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -541,7 +668,13 @@ public class PerformRollover implements Runnable {
                 " WHERE stu_id NOT IN (SELECT stu_id FROM stcourse WHERE course_grade = 'I')",
                 " AND stu_id NOT IN (SELECT stu_id FROM stcourse WHERE i_in_progress = 'Y')");
 
-        return doSql(sql, "stterm");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, sql, "stterm");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -559,7 +692,13 @@ public class PerformRollover implements Runnable {
         final String sql = SimpleBuilder.concat("DELETE FROM stpace_summary WHERE term_yr=", deleteYearStr,
                 " AND term='", activeTerm.term.termCode, "'");
 
-        return doSql(sql, "stpace_summary");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, sql, "stpace_summary");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -574,7 +713,13 @@ public class PerformRollover implements Runnable {
 
         final String sql = "DELETE FROM stresource WHERE return_dt IS NOT NULL";
 
-        return doSql(sql, "stresource");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, sql, "stresource");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -588,7 +733,13 @@ public class PerformRollover implements Runnable {
 
         final String sql = "DELETE FROM stsurveyqa";
 
-        return doSql(sql, "stsurveyqa");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, sql, "stsurveyqa");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -602,7 +753,13 @@ public class PerformRollover implements Runnable {
 
         final String sql = "DELETE FROM users";
 
-        return doSql(sql, "users");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, sql, "users");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -616,7 +773,13 @@ public class PerformRollover implements Runnable {
 
         final String sql = "DELETE FROM delphi";
 
-        return doSql(sql, "delphi");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, sql, "delphi");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -630,7 +793,13 @@ public class PerformRollover implements Runnable {
 
         final String sql = "DELETE FROM delphi_check";
 
-        return doSql(sql, "delphi_check");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, sql, "delphi_check");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -644,7 +813,13 @@ public class PerformRollover implements Runnable {
 
         final String sql = "DELETE FROM dup_registr";
 
-        return doSql(sql, "dup_registr");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, sql, "dup_registr");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -658,7 +833,13 @@ public class PerformRollover implements Runnable {
 
         final String sql = "DELETE FROM fcr_student";
 
-        return doSql(sql, "fcr_student");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, sql, "fcr_student");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -672,7 +853,13 @@ public class PerformRollover implements Runnable {
 
         final String sql = "DELETE FROM final_croll";
 
-        return doSql(sql, "final_croll");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, sql, "final_croll");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -685,11 +872,17 @@ public class PerformRollover implements Runnable {
 
         Log.info("> Cleaning the ffr_trns table.");
 
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
         final LocalDate threshold = activeTerm.startDate.minusYears(8L);
         final String sql = SimpleBuilder.concat("DELETE FROM ffr_trns WHERE exam_dt <= ",
-                LogicUtils.sqlDateValue(threshold));
+                conn.sqlDateValue(threshold));
 
-        return doSql(sql, "ffr_trns");
+        try {
+            return doSql(conn, sql, "ffr_trns");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -702,11 +895,17 @@ public class PerformRollover implements Runnable {
 
         Log.info("> Cleaning the mpe_credit table.");
 
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
         final LocalDate threshold = activeTerm.startDate.minusYears(8L);
         final String sql = SimpleBuilder.concat("DELETE FROM mpe_credit WHERE exam_dt <= ",
-                LogicUtils.sqlDateValue(threshold));
+                conn.sqlDateValue(threshold));
 
-        return doSql(sql, "mpe_credit");
+        try {
+            return doSql(conn, sql, "mpe_credit");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -719,11 +918,17 @@ public class PerformRollover implements Runnable {
 
         Log.info("> Cleaning the mpecr_denied table.");
 
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
         final LocalDate threshold = activeTerm.startDate.minusYears(8L);
         final String sql = SimpleBuilder.concat("DELETE FROM mpecr_denied WHERE exam_dt <= ",
-                LogicUtils.sqlDateValue(threshold));
+                conn.sqlDateValue(threshold));
 
-        return doSql(sql, "mpecr_denied");
+        try {
+            return doSql(conn, sql, "mpecr_denied");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -741,7 +946,13 @@ public class PerformRollover implements Runnable {
         final String sql = SimpleBuilder.concat("DELETE FROM grade_roll WHERE term_yr=", deleteYearStr,
                 " AND term='", activeTerm.term.termCode, "'");
 
-        return doSql(sql, "grade_roll");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, sql, "grade_roll");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -759,7 +970,13 @@ public class PerformRollover implements Runnable {
         final String sql = SimpleBuilder.concat("DELETE FROM prev_milestone_appeal WHERE term_yr=", deleteYearStr,
                 " AND term='", activeTerm.term.termCode, "'");
 
-        return doSql(sql, "prev_milestone_appeal");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, sql, "prev_milestone_appeal");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -777,7 +994,13 @@ public class PerformRollover implements Runnable {
         final String sql = SimpleBuilder.concat("DELETE FROM prev_extensions WHERE term_yr=", deleteYearStr,
                 " AND term='", activeTerm.term.termCode, "'");
 
-        return doSql(sql, "prev_extensions");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, sql, "prev_extensions");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -795,7 +1018,13 @@ public class PerformRollover implements Runnable {
         final String sql = SimpleBuilder.concat("DELETE FROM prev_stlmiss WHERE term_yr=", deleteYearStr,
                 " AND term='", activeTerm.term.termCode, "'");
 
-        return doSql(sql, "prev_stlmiss");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, sql, "prev_stlmiss");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -813,7 +1042,13 @@ public class PerformRollover implements Runnable {
         final String sql = SimpleBuilder.concat("DELETE FROM prev_stmilestone WHERE term_yr=", deleteYearStr,
                 " AND term='", activeTerm.term.termCode, "'");
 
-        return doSql(sql, "prev_stmilestone");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, sql, "prev_stmilestone");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -831,7 +1066,13 @@ public class PerformRollover implements Runnable {
         final String sql = SimpleBuilder.concat("DELETE FROM prev_stterm WHERE term_yr=", deleteYearStr,
                 " AND term='", activeTerm.term.termCode, "'");
 
-        return doSql(sql, "prev_stterm");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, sql, "prev_stterm");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -849,7 +1090,13 @@ public class PerformRollover implements Runnable {
         final String sql = SimpleBuilder.concat("DELETE FROM prev_stlock WHERE term_yr=", deleteYearStr,
                 " AND term='", activeTerm.term.termCode, "'");
 
-        return doSql(sql, "prev_stlock");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, sql, "prev_stlock");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -862,11 +1109,17 @@ public class PerformRollover implements Runnable {
 
         Log.info("> Cleaning the plc_fee table.");
 
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
         final LocalDate thresholdDate = activeTerm.startDate.minusYears(15L);
         final String sql = SimpleBuilder.concat("DELETE FROM plc_fee WHERE bill_dt < ",
-                LogicUtils.sqlDateValue(thresholdDate));
+                conn.sqlDateValue(thresholdDate));
 
-        return doSql(sql, "plc_fee");
+        try {
+            return doSql(conn, sql, "plc_fee");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -882,7 +1135,13 @@ public class PerformRollover implements Runnable {
         final String sql = SimpleBuilder.concat("DELETE FROM remote_mpe WHERE term_yr=", activeTerm.term.shortYear,
                 " AND term='", activeTerm.term.termCode, "'");
 
-        return doSql(sql, "remote_mpe");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, sql, "remote_mpe");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -896,7 +1155,13 @@ public class PerformRollover implements Runnable {
 
         final String sql = "DELETE FROM stchallengeqa";
 
-        return doSql(sql, "stchallengeqa");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, sql, "stchallengeqa");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -910,7 +1175,13 @@ public class PerformRollover implements Runnable {
 
         final String sql = "DELETE FROM stmpeqa";
 
-        return doSql(sql, "stmpeqa");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, sql, "stmpeqa");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -927,8 +1198,10 @@ public class PerformRollover implements Runnable {
 
         final LocalDate thresholdDate = activeTerm.startDate.minusYears(6L);
 
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat(
-                "DELETE FROM student WHERE create_dt <= ", LogicUtils.sqlDateValue(thresholdDate),
+                "DELETE FROM student WHERE create_dt <= ", conn.sqlDateValue(thresholdDate),
                 " AND stu_id NOT IN (SELECT DISTINCT stu_id FROM admin_hold)",
                 " AND stu_id NOT IN (SELECT DISTINCT stu_id FROM challenge_fee)",
                 " AND stu_id NOT IN (SELECT DISTINCT stu_id FROM discipline)",
@@ -958,7 +1231,11 @@ public class PerformRollover implements Runnable {
                 " AND stu_id NOT IN (SELECT DISTINCT stu_id FROM stsurveyqa)",
                 " AND stu_id NOT IN (SELECT DISTINCT stu_id FROM stterm)");
 
-        return doSql(sql, "student");
+        try {
+            return doSql(conn, sql, "student");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -979,24 +1256,30 @@ public class PerformRollover implements Runnable {
         final String sql5 = SimpleBuilder.concat("UPDATE student SET discip_status = '09' WHERE discip_status = '13'");
         final String sql6 = SimpleBuilder.concat("UPDATE student SET discip_status = '08' WHERE discip_status = '14'");
 
-        ESuccessFailure result = doSql(sql1, "student");
-        if (result == ESuccessFailure.SUCCESS) {
-            result = doSql(sql2, "student");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            ESuccessFailure result = doSql(conn, sql1, "student");
             if (result == ESuccessFailure.SUCCESS) {
-                result = doSql(sql3, "student");
+                result = doSql(conn, sql2, "student");
                 if (result == ESuccessFailure.SUCCESS) {
-                    result = doSql(sql4, "student");
+                    result = doSql(conn, sql3, "student");
                     if (result == ESuccessFailure.SUCCESS) {
-                        result = doSql(sql5, "student");
+                        result = doSql(conn, sql4, "student");
                         if (result == ESuccessFailure.SUCCESS) {
-                            result = doSql(sql6, "student");
+                            result = doSql(conn, sql5, "student");
+                            if (result == ESuccessFailure.SUCCESS) {
+                                result = doSql(conn, sql6, "student");
+                            }
                         }
                     }
                 }
             }
-        }
 
-        return result;
+            return result;
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -1023,18 +1306,19 @@ public class PerformRollover implements Runnable {
 
         Log.info("> Processing Incompletes.");
 
-        final String activeTermCode = LogicUtils.sqlStringValue(activeTerm.term.termCode);
-        final String activeTermYear = LogicUtils.sqlIntegerValue(activeTerm.term.shortYear);
-        final String nextTermCode = LogicUtils.sqlStringValue(nextTerm.term.termCode);
-        final String nextTermYear = LogicUtils.sqlIntegerValue(nextTerm.term.shortYear);
-        ;
-        final String activeIncDeadline = LogicUtils.sqlDateValue(activeTerm.incDeadline);
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        final String activeTermCode = conn.sqlStringValue(activeTerm.term.termCode);
+        final String activeTermYear = conn.sqlIntegerValue(activeTerm.term.shortYear);
+        final String nextTermCode = conn.sqlStringValue(nextTerm.term.termCode);
+        final String nextTermYear = conn.sqlIntegerValue(nextTerm.term.shortYear);
+        final String activeIncDeadline = conn.sqlDateValue(activeTerm.incDeadline);
 
         final String sql1 = SimpleBuilder.concat(
                 "UPDATE stcourse SET bypass_timeout=0, timeout_factor=NULL, course_grade=NULL, exam_placed=NULL, ",
                 "forfeit_i=NULL, term=", nextTermCode, ", term_yr=", nextTermYear,
                 " WHERE i_in_progress = 'Y' AND  (i_deadline_dt IS NOT NULL AND i_deadline_dt >= ",
-                LogicUtils.sqlDateValue(nextTerm.startDate), ")");
+                conn.sqlDateValue(nextTerm.startDate), ")");
 
         final String sql2 = SimpleBuilder.concat(
                 "UPDATE stcourse SET i_in_progress='Y', bypass_timeout=0, timeout_factor=NULL, course_grade=NULL, ",
@@ -1045,15 +1329,19 @@ public class PerformRollover implements Runnable {
         final String sql3 = SimpleBuilder.concat("UPDATE stcourse SET i_deadline_dt=",
                 activeIncDeadline, " WHERE i_in_progress = 'Y' AND i_deadline_dt IS NULL");
 
-        ESuccessFailure result = doSql(sql1, "stcourse");
-        if (result == ESuccessFailure.SUCCESS) {
-            result = doSql(sql2, "stcourse");
+        try {
+            ESuccessFailure result = doSql(conn, sql1, "stcourse");
             if (result == ESuccessFailure.SUCCESS) {
-                result = doSql(sql3, "stcourse");
+                result = doSql(conn, sql2, "stcourse");
+                if (result == ESuccessFailure.SUCCESS) {
+                    result = doSql(conn, sql3, "stcourse");
+                }
             }
-        }
 
-        return result;
+            return result;
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -1071,7 +1359,13 @@ public class PerformRollover implements Runnable {
         final String sql = SimpleBuilder.concat("DELETE FROM stcourse WHERE term_yr=", deleteYearStr,
                 " AND term='", activeTerm.term.termCode, "'");
 
-        return doSql(sql, "stcourse");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, sql, "stcourse");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -1116,189 +1410,195 @@ public class PerformRollover implements Runnable {
         final String sql1 = "UPDATE stexam SET passed = 'D' WHERE passed = 'Y'";
         final String sql2 = "UPDATE stexam SET passed = 'p' WHERE passed = 'P'";
 
-        ESuccessFailure result = doSql(sql1, "stexam");
-        if (result == ESuccessFailure.SUCCESS) {
-            result = doSql(sql2, "stexam");
-        }
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
 
-        final SystemData systemData = this.cache.getSystemData();
-
-        // Keep exams from ending term for Incompletes
-        if (result == ESuccessFailure.SUCCESS) {
-            try {
-                final List<RawStcourse> incompletes = RawStcourseLogic.queryOpenIncompletes(this.cache);
-                for (final RawStcourse inc : incompletes) {
-                    if (inc.iTermKey == null) {
-                        Log.warning("There was an Incomplete with no incomplete term set");
-                        continue;
-                    }
-                    final TermRec iTerm = systemData.getTerm(inc.iTermKey);
-                    final RawCsection cSection = systemData.getCourseSection(inc.course, inc.sect, inc.iTermKey);
-
-                    final String sql3 = SimpleBuilder.concat("UPDATE stexam SET passed = 'Y' ",
-                            "WHERE stexam.stu_id = ", LogicUtils.sqlStringValue(inc.stuId),
-                            " AND stexam.course = ", LogicUtils.sqlStringValue(inc.course),
-                            " AND passed='D' AND stexam.exam_dt >= ", LogicUtils.sqlDateValue(iTerm.startDate),
-                            " AND stexam.exam_dt <= ", LogicUtils.sqlDateValue(activeTerm.endDate));
-
-                    final String sql4 = SimpleBuilder.concat("UPDATE stexam SET passed = 'P' ",
-                            "WHERE stexam.stu_id = ", LogicUtils.sqlStringValue(inc.stuId),
-                            " AND stexam.course = ", LogicUtils.sqlStringValue(inc.course),
-                            " AND passed = 'p' AND stexam.exam_dt >= ", LogicUtils.sqlDateValue(iTerm.startDate),
-                            " AND stexam.exam_dt <= ", LogicUtils.sqlDateValue(activeTerm.endDate));
-
-                    final String sql5 = SimpleBuilder.concat("UPDATE stexam SET passed = 'F' ",
-                            "WHERE stexam.stu_id = ", LogicUtils.sqlStringValue(inc.stuId),
-                            " AND stexam.course = ", LogicUtils.sqlStringValue(inc.course), " AND passed = 'N'");
-
-                    final String sql6 = SimpleBuilder.concat("UPDATE stexam SET passed = 'g' ",
-                            "WHERE stexam.stu_id = ", LogicUtils.sqlStringValue(inc.stuId),
-                            " AND stexam.course = ", LogicUtils.sqlStringValue(inc.course), " AND passed = 'G'");
-
-                    final String sql7 = SimpleBuilder.concat("UPDATE stexam SET passed = 'v' ",
-                            "WHERE stexam.stu_id = ", LogicUtils.sqlStringValue(inc.stuId),
-                            " AND stexam.course = ", LogicUtils.sqlStringValue(inc.course), " AND passed = 'V'");
-
-                    final String sql8 = SimpleBuilder.concat(
-                            "UPDATE student SET pacing_structure = ",
-                            LogicUtils.sqlStringValue(cSection.pacingStructure),
-                            " WHERE student.stu_id =", LogicUtils.sqlStringValue(inc.stuId));
-
-                    result = doSql(sql3, "stexam");
-                    if (result == ESuccessFailure.SUCCESS) {
-                        result = doSql(sql4, "stexam");
-                        if (result == ESuccessFailure.SUCCESS) {
-                            result = doSql(sql5, "stexam");
-                            if (result == ESuccessFailure.SUCCESS) {
-                                result = doSql(sql6, "stexam");
-                                if (result == ESuccessFailure.SUCCESS) {
-                                    result = doSql(sql7, "stexam");
-                                    if (result == ESuccessFailure.SUCCESS) {
-                                        result = doSql(sql8, "student");
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            } catch (final SQLException ex) {
-                Log.warning("ERROR: failed to query open Incompletes", ex);
-                result = ESuccessFailure.FAILURE;
-            }
-        }
-
-        // ELM Tutorial -- keep history of those in progress to 4 years
-        if (result == ESuccessFailure.SUCCESS) {
-            final LocalDate threshold = activeTerm.startDate.minusYears(4L);
-
-            final String sql10 = SimpleBuilder.concat("UPDATE stexam SET passed = 'Y' ",
-                    "WHERE stexam.course = 'M 100T' AND passed = 'D'",
-                    " AND stexam.exam_dt >= ", LogicUtils.sqlDateValue(threshold),
-                    " AND stexam.stu_id NOT IN (SELECT stu_id FROM mpe_credit WHERE course = 'M 100C')");
-
-            final String sql11 = SimpleBuilder.concat("UPDATE stexam SET passed = 'F' ",
-                    "WHERE stexam.course = 'M 100T' AND passed = 'N'",
-                    " AND stexam.exam_dt >= ", LogicUtils.sqlDateValue(threshold),
-                    " AND stexam.stu_id NOT IN (SELECT stu_id FROM mpe_credit WHERE course = 'M 100C')");
-
-            final String sql12 = SimpleBuilder.concat("UPDATE stexam SET passed = 'P' ",
-                    "WHERE stexam.course = 'M 100T' AND passed = 'p'",
-                    " AND stexam.exam_dt >= ", LogicUtils.sqlDateValue(threshold),
-                    " AND stexam.stu_id NOT IN (SELECT stu_id FROM mpe_credit WHERE course = 'M 100C')");
-
-            final String sql13 = SimpleBuilder.concat("UPDATE stexam SET passed = 'v' ",
-                    "WHERE stexam.course = 'M 100T' AND passed = 'V'",
-                    " AND stexam.exam_dt >= ", LogicUtils.sqlDateValue(threshold),
-                    " AND stexam.stu_id NOT IN (SELECT stu_id FROM mpe_credit WHERE course = 'M 100C')");
-
-            final String sql14 = SimpleBuilder.concat("UPDATE stexam SET passed = 'g' ",
-                    "WHERE stexam.course = 'M 100T' AND passed = 'G'",
-                    " AND stexam.exam_dt >= ", LogicUtils.sqlDateValue(threshold),
-                    " AND stexam.stu_id NOT IN (SELECT stu_id FROM mpe_credit WHERE course = 'M 100C')");
-
-            result = doSql(sql10, "stexam");
+        try {
+            ESuccessFailure result = doSql(conn, sql1, "stexam");
             if (result == ESuccessFailure.SUCCESS) {
-                result = doSql(sql11, "stexam");
-                if (result == ESuccessFailure.SUCCESS) {
-                    result = doSql(sql12, "stexam");
-                    if (result == ESuccessFailure.SUCCESS) {
-                        result = doSql(sql13, "stexam");
-                        if (result == ESuccessFailure.SUCCESS) {
-                            result = doSql(sql14, "stexam");
-                        }
-                    }
-                }
+                result = doSql(conn, sql2, "stexam");
             }
-        }
 
-        // Precalculus Tutorial - keep history if this is a Summer -> Fall rollover
-        if (result == ESuccessFailure.SUCCESS) {
-            if ("SM".equals(activeTerm.term.termCode)) {
-                final String sql20 = SimpleBuilder.concat("UPDATE stexam SET passed = 'Y' ",
-                        "WHERE stexam.course IN ('M 1170','M 1180','M 1240','M 1250','M 1260') AND passed = 'D'");
+            final SystemData systemData = this.cache.getSystemData();
 
-                final String sql21 = SimpleBuilder.concat("UPDATE stexam SET passed = 'F' ",
-                        "WHERE stexam.course IN ('M 1170','M 1180','M 1240','M 1250','M 1260') AND passed = 'N'");
+            // Keep exams from ending term for Incompletes
+            if (result == ESuccessFailure.SUCCESS) {
+                try {
+                    final List<RawStcourse> incompletes = RawStcourseLogic.queryOpenIncompletes(this.cache);
+                    for (final RawStcourse inc : incompletes) {
+                        if (inc.iTermKey == null) {
+                            Log.warning("There was an Incomplete with no incomplete term set");
+                            continue;
+                        }
+                        final TermRec iTerm = systemData.getTerm(inc.iTermKey);
+                        final RawCsection cSection = systemData.getCourseSection(inc.course, inc.sect, inc.iTermKey);
 
-                final String sql22 = SimpleBuilder.concat("UPDATE stexam SET passed = 'P' ",
-                        "WHERE stexam.course IN ('M 1170','M 1180','M 1240','M 1250','M 1260') AND passed = 'p'");
+                        final String sql3 = SimpleBuilder.concat("UPDATE stexam SET passed = 'Y' ",
+                                "WHERE stexam.stu_id = ", conn.sqlStringValue(inc.stuId),
+                                " AND stexam.course = ", conn.sqlStringValue(inc.course),
+                                " AND passed='D' AND stexam.exam_dt >= ", conn.sqlDateValue(iTerm.startDate),
+                                " AND stexam.exam_dt <= ", conn.sqlDateValue(activeTerm.endDate));
 
-                final String sql23 = SimpleBuilder.concat("UPDATE stexam SET passed = 'v' ",
-                        "WHERE stexam.course IN ('M 1170','M 1180','M 1240','M 1250','M 1260') AND passed = 'V'");
+                        final String sql4 = SimpleBuilder.concat("UPDATE stexam SET passed = 'P' ",
+                                "WHERE stexam.stu_id = ", conn.sqlStringValue(inc.stuId),
+                                " AND stexam.course = ", conn.sqlStringValue(inc.course),
+                                " AND passed = 'p' AND stexam.exam_dt >= ", conn.sqlDateValue(iTerm.startDate),
+                                " AND stexam.exam_dt <= ", conn.sqlDateValue(activeTerm.endDate));
 
-                final String sql24 = SimpleBuilder.concat("UPDATE stexam SET passed = 'g' ",
-                        "WHERE stexam.course IN ('M 1170','M 1180','M 1240','M 1250','M 1260') AND passed = 'G'");
+                        final String sql5 = SimpleBuilder.concat("UPDATE stexam SET passed = 'F' ",
+                                "WHERE stexam.stu_id = ", conn.sqlStringValue(inc.stuId),
+                                " AND stexam.course = ", conn.sqlStringValue(inc.course), " AND passed = 'N'");
 
-                final String sql25 = SimpleBuilder.concat(
-                        "DELETE FROM stexam WHERE passed NOT IN ('Y','P','F','g','v') AND exam_dt >= ",
-                        LogicUtils.sqlDateValue(activeTerm.startDate));
+                        final String sql6 = SimpleBuilder.concat("UPDATE stexam SET passed = 'g' ",
+                                "WHERE stexam.stu_id = ", conn.sqlStringValue(inc.stuId),
+                                " AND stexam.course = ", conn.sqlStringValue(inc.course), " AND passed = 'G'");
 
-                final String sql26 = "UPDATE stexam SET passed = 'P' WHERE passed = 'D'";
-                final String sql27 = "UPDATE stexam SET passed = 'P' WHERE passed = 'p'";
+                        final String sql7 = SimpleBuilder.concat("UPDATE stexam SET passed = 'v' ",
+                                "WHERE stexam.stu_id = ", conn.sqlStringValue(inc.stuId),
+                                " AND stexam.course = ", conn.sqlStringValue(inc.course), " AND passed = 'V'");
 
-                result = doSql(sql20, "stexam");
-                if (result == ESuccessFailure.SUCCESS) {
-                    result = doSql(sql21, "stexam");
-                    if (result == ESuccessFailure.SUCCESS) {
-                        result = doSql(sql22, "stexam");
+                        final String sql8 = SimpleBuilder.concat(
+                                "UPDATE student SET pacing_structure = ",
+                                conn.sqlStringValue(cSection.pacingStructure),
+                                " WHERE student.stu_id =", conn.sqlStringValue(inc.stuId));
+
+                        result = doSql(conn, sql3, "stexam");
                         if (result == ESuccessFailure.SUCCESS) {
-                            result = doSql(sql23, "stexam");
+                            result = doSql(conn, sql4, "stexam");
                             if (result == ESuccessFailure.SUCCESS) {
-                                result = doSql(sql24, "stexam");
+                                result = doSql(conn, sql5, "stexam");
                                 if (result == ESuccessFailure.SUCCESS) {
-                                    result = doSql(sql25, "stexam");
+                                    result = doSql(conn, sql6, "stexam");
                                     if (result == ESuccessFailure.SUCCESS) {
-                                        result = doSql(sql26, "stexam");
+                                        result = doSql(conn, sql7, "stexam");
                                         if (result == ESuccessFailure.SUCCESS) {
-                                            result = doSql(sql27, "stexam");
+                                            result = doSql(conn, sql8, "student");
                                         }
                                     }
                                 }
                             }
                         }
                     }
+                } catch (final SQLException ex) {
+                    Log.warning("ERROR: failed to query open Incompletes", ex);
+                    result = ESuccessFailure.FAILURE;
                 }
-            } else {
-                final String sql28 = "DELETE FROM stexam WHERE passed NOT IN ('Y','P','F','g','v')";
-                result = doSql(sql28, "stexam");
             }
-        }
 
-        if (result == ESuccessFailure.SUCCESS) {
-            final String sql30 = "UPDATE stexam SET passed = 'N' WHERE passed = 'F'";
-            final String sql31 = "UPDATE stexam SET passed = 'V' WHERE passed = 'v'";
-            final String sql32 = "UPDATE stexam SET passed = 'G' WHERE passed = 'g'";
-
-            result = doSql(sql30, "stexam");
+            // ELM Tutorial -- keep history of those in progress to 4 years
             if (result == ESuccessFailure.SUCCESS) {
-                result = doSql(sql31, "stexam");
+                final LocalDate threshold = activeTerm.startDate.minusYears(4L);
+
+                final String sql10 = SimpleBuilder.concat("UPDATE stexam SET passed = 'Y' ",
+                        "WHERE stexam.course = 'M 100T' AND passed = 'D'",
+                        " AND stexam.exam_dt >= ", conn.sqlDateValue(threshold),
+                        " AND stexam.stu_id NOT IN (SELECT stu_id FROM mpe_credit WHERE course = 'M 100C')");
+
+                final String sql11 = SimpleBuilder.concat("UPDATE stexam SET passed = 'F' ",
+                        "WHERE stexam.course = 'M 100T' AND passed = 'N'",
+                        " AND stexam.exam_dt >= ", conn.sqlDateValue(threshold),
+                        " AND stexam.stu_id NOT IN (SELECT stu_id FROM mpe_credit WHERE course = 'M 100C')");
+
+                final String sql12 = SimpleBuilder.concat("UPDATE stexam SET passed = 'P' ",
+                        "WHERE stexam.course = 'M 100T' AND passed = 'p'",
+                        " AND stexam.exam_dt >= ", conn.sqlDateValue(threshold),
+                        " AND stexam.stu_id NOT IN (SELECT stu_id FROM mpe_credit WHERE course = 'M 100C')");
+
+                final String sql13 = SimpleBuilder.concat("UPDATE stexam SET passed = 'v' ",
+                        "WHERE stexam.course = 'M 100T' AND passed = 'V'",
+                        " AND stexam.exam_dt >= ", conn.sqlDateValue(threshold),
+                        " AND stexam.stu_id NOT IN (SELECT stu_id FROM mpe_credit WHERE course = 'M 100C')");
+
+                final String sql14 = SimpleBuilder.concat("UPDATE stexam SET passed = 'g' ",
+                        "WHERE stexam.course = 'M 100T' AND passed = 'G'",
+                        " AND stexam.exam_dt >= ", conn.sqlDateValue(threshold),
+                        " AND stexam.stu_id NOT IN (SELECT stu_id FROM mpe_credit WHERE course = 'M 100C')");
+
+                result = doSql(conn, sql10, "stexam");
                 if (result == ESuccessFailure.SUCCESS) {
-                    result = doSql(sql32, "stexam");
+                    result = doSql(conn, sql11, "stexam");
+                    if (result == ESuccessFailure.SUCCESS) {
+                        result = doSql(conn, sql12, "stexam");
+                        if (result == ESuccessFailure.SUCCESS) {
+                            result = doSql(conn, sql13, "stexam");
+                            if (result == ESuccessFailure.SUCCESS) {
+                                result = doSql(conn, sql14, "stexam");
+                            }
+                        }
+                    }
                 }
             }
-        }
 
-        return result;
+            // Precalculus Tutorial - keep history if this is a Summer -> Fall rollover
+            if (result == ESuccessFailure.SUCCESS) {
+                if ("SM".equals(activeTerm.term.termCode)) {
+                    final String sql20 = SimpleBuilder.concat("UPDATE stexam SET passed = 'Y' ",
+                            "WHERE stexam.course IN ('M 1170','M 1180','M 1240','M 1250','M 1260') AND passed = 'D'");
+
+                    final String sql21 = SimpleBuilder.concat("UPDATE stexam SET passed = 'F' ",
+                            "WHERE stexam.course IN ('M 1170','M 1180','M 1240','M 1250','M 1260') AND passed = 'N'");
+
+                    final String sql22 = SimpleBuilder.concat("UPDATE stexam SET passed = 'P' ",
+                            "WHERE stexam.course IN ('M 1170','M 1180','M 1240','M 1250','M 1260') AND passed = 'p'");
+
+                    final String sql23 = SimpleBuilder.concat("UPDATE stexam SET passed = 'v' ",
+                            "WHERE stexam.course IN ('M 1170','M 1180','M 1240','M 1250','M 1260') AND passed = 'V'");
+
+                    final String sql24 = SimpleBuilder.concat("UPDATE stexam SET passed = 'g' ",
+                            "WHERE stexam.course IN ('M 1170','M 1180','M 1240','M 1250','M 1260') AND passed = 'G'");
+
+                    final String sql25 = SimpleBuilder.concat(
+                            "DELETE FROM stexam WHERE passed NOT IN ('Y','P','F','g','v') AND exam_dt >= ",
+                            conn.sqlDateValue(activeTerm.startDate));
+
+                    final String sql26 = "UPDATE stexam SET passed = 'P' WHERE passed = 'D'";
+                    final String sql27 = "UPDATE stexam SET passed = 'P' WHERE passed = 'p'";
+
+                    result = doSql(conn, sql20, "stexam");
+                    if (result == ESuccessFailure.SUCCESS) {
+                        result = doSql(conn, sql21, "stexam");
+                        if (result == ESuccessFailure.SUCCESS) {
+                            result = doSql(conn, sql22, "stexam");
+                            if (result == ESuccessFailure.SUCCESS) {
+                                result = doSql(conn, sql23, "stexam");
+                                if (result == ESuccessFailure.SUCCESS) {
+                                    result = doSql(conn, sql24, "stexam");
+                                    if (result == ESuccessFailure.SUCCESS) {
+                                        result = doSql(conn, sql25, "stexam");
+                                        if (result == ESuccessFailure.SUCCESS) {
+                                            result = doSql(conn, sql26, "stexam");
+                                            if (result == ESuccessFailure.SUCCESS) {
+                                                result = doSql(conn, sql27, "stexam");
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    final String sql28 = "DELETE FROM stexam WHERE passed NOT IN ('Y','P','F','g','v')";
+                    result = doSql(conn, sql28, "stexam");
+                }
+            }
+
+            if (result == ESuccessFailure.SUCCESS) {
+                final String sql30 = "UPDATE stexam SET passed = 'N' WHERE passed = 'F'";
+                final String sql31 = "UPDATE stexam SET passed = 'V' WHERE passed = 'v'";
+                final String sql32 = "UPDATE stexam SET passed = 'G' WHERE passed = 'g'";
+
+                result = doSql(conn, sql30, "stexam");
+                if (result == ESuccessFailure.SUCCESS) {
+                    result = doSql(conn, sql31, "stexam");
+                    if (result == ESuccessFailure.SUCCESS) {
+                        result = doSql(conn, sql32, "stexam");
+                    }
+                }
+            }
+
+            return result;
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -1310,11 +1610,17 @@ public class PerformRollover implements Runnable {
 
         Log.info("> Cleaning the stchallenge table.");
 
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
         final LocalDate thresholdDate = activeTerm.endDate.minusYears(15L);
         final String sql = SimpleBuilder.concat("DELETE FROM stchallenge WHERE exam_dt <= ",
-                LogicUtils.sqlDateValue(thresholdDate));
+                conn.sqlDateValue(thresholdDate));
 
-        return doSql(sql, "stchallenge");
+        try {
+            return doSql(conn, sql, "stchallenge");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -1326,12 +1632,18 @@ public class PerformRollover implements Runnable {
 
         Log.info("> Cleaning the stmpe table.");
 
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
         final LocalDate thresholdDate = activeTerm.endDate.minusYears(15L);
         final String sql = SimpleBuilder.concat("DELETE FROM stmpe WHERE exam_dt <= ",
-                LogicUtils.sqlDateValue(thresholdDate),
+                conn.sqlDateValue(thresholdDate),
                 " AND stu_id NOT IN (SELECT stu_id FROM stexam WHERE course = 'M 100T')");
 
-        return doSql(sql, "stmpe");
+        try {
+            return doSql(conn, sql, "stmpe");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -1401,22 +1713,28 @@ public class PerformRollover implements Runnable {
 
         Log.info("> Rolling prereq table.");
 
-        ESuccessFailure result = ESuccessFailure.SUCCESS;
+        ESuccessFailure result;
+
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
 
         final String sql1 = SimpleBuilder.concat("DELETE FROM prereq ",
-                "WHERE term_yr != ", LogicUtils.sqlIntegerValue(activeTerm.term.shortYear),
-                " AND term != ", LogicUtils.sqlStringValue(activeTerm.term.termCode));
+                "WHERE term_yr != ", conn.sqlIntegerValue(activeTerm.term.shortYear),
+                " AND term != ", conn.sqlStringValue(activeTerm.term.termCode));
 
         final String sql2 = SimpleBuilder.concat("UPDATE prereq SET term = ",
-                LogicUtils.sqlStringValue(nextTerm.term.termCode), ", term_yr = ",
-                LogicUtils.sqlIntegerValue(nextTerm.term.shortYear));
+                conn.sqlStringValue(nextTerm.term.termCode), ", term_yr = ",
+                conn.sqlIntegerValue(nextTerm.term.shortYear));
 
-        result = doSql(sql1, "prereq");
-        if (result == ESuccessFailure.SUCCESS) {
-            result = doSql(sql2, "prereq");
+        try {
+            result = doSql(conn, sql1, "prereq");
+            if (result == ESuccessFailure.SUCCESS) {
+                result = doSql(conn, sql2, "prereq");
+            }
+
+            return result;
+        } finally {
+            Cache.checkInConnection(conn);
         }
-
-        return result;
     }
 
     /**
@@ -1430,22 +1748,26 @@ public class PerformRollover implements Runnable {
 
         Log.info("> Rolling surveyqa table.");
 
-        ESuccessFailure result;
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
 
         final String sql1 = SimpleBuilder.concat("DELETE FROM surveyqa ",
-                "WHERE term_yr != ", LogicUtils.sqlIntegerValue(activeTerm.term.shortYear),
-                " AND term != ", LogicUtils.sqlStringValue(activeTerm.term.termCode));
+                "WHERE term_yr != ", conn.sqlIntegerValue(activeTerm.term.shortYear),
+                " AND term != ", conn.sqlStringValue(activeTerm.term.termCode));
 
         final String sql2 = SimpleBuilder.concat("UPDATE surveyqa SET term = ",
-                LogicUtils.sqlStringValue(nextTerm.term.termCode), ", term_yr = ",
-                LogicUtils.sqlIntegerValue(nextTerm.term.shortYear));
+                conn.sqlStringValue(nextTerm.term.termCode), ", term_yr = ",
+                conn.sqlIntegerValue(nextTerm.term.shortYear));
 
-        result = doSql(sql1, "surveyqa");
-        if (result == ESuccessFailure.SUCCESS) {
-            result = doSql(sql2, "surveyqa");
+        try {
+            ESuccessFailure result = doSql(conn, sql1, "surveyqa");
+            if (result == ESuccessFailure.SUCCESS) {
+                result = doSql(conn, sql2, "surveyqa");
+            }
+
+            return result;
+        } finally {
+            Cache.checkInConnection(conn);
         }
-
-        return result;
     }
 
     /**
@@ -1457,7 +1779,13 @@ public class PerformRollover implements Runnable {
 
         Log.info("> Cleaning next_campus_calendar table.");
 
-        return doSql("DELETE from next_campus_calendar", "next_campus_calendar");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, "DELETE from next_campus_calendar", "next_campus_calendar");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -1469,7 +1797,13 @@ public class PerformRollover implements Runnable {
 
         Log.info("> Cleaning next_csection table.");
 
-        return doSql("DELETE from next_csection", "next_csection");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, "DELETE from next_csection", "next_csection");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -1481,7 +1815,13 @@ public class PerformRollover implements Runnable {
 
         Log.info("> Cleaning next_milestone table.");
 
-        return doSql("DELETE from next_milestone", "next_milestone");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, "DELETE from next_milestone", "next_milestone");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -1493,7 +1833,13 @@ public class PerformRollover implements Runnable {
 
         Log.info("> Cleaning next_remote_mpe table.");
 
-        return doSql("DELETE from next_remote_mpe", "next_remote_mpe");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, "DELETE from next_remote_mpe", "next_remote_mpe");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -1505,7 +1851,13 @@ public class PerformRollover implements Runnable {
 
         Log.info("> Cleaning next_semester_calendar table.");
 
-        return doSql("DELETE from next_semester_calendar", "next_semester_calendar");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doSql(conn, "DELETE from next_semester_calendar", "next_semester_calendar");
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -1525,52 +1877,53 @@ public class PerformRollover implements Runnable {
         final String sql6 = "UPDATE term SET active = '3' WHERE active = '4'";
         final String sql7 = "UPDATE term set active_index = active_index - 1";
 
-        ESuccessFailure result = doSql(sql1, "term");
-        if (result == ESuccessFailure.SUCCESS) {
-            result = doSql(sql2, "term");
+        final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            ESuccessFailure result = doSql(conn, sql1, "term");
             if (result == ESuccessFailure.SUCCESS) {
-                result = doSql(sql3, "term");
+                result = doSql(conn, sql2, "term");
                 if (result == ESuccessFailure.SUCCESS) {
-                    result = doSql(sql4, "term");
+                    result = doSql(conn, sql3, "term");
                     if (result == ESuccessFailure.SUCCESS) {
-                        result = doSql(sql5, "term");
+                        result = doSql(conn, sql4, "term");
                         if (result == ESuccessFailure.SUCCESS) {
-                            result = doSql(sql6, "term");
+                            result = doSql(conn, sql5, "term");
                             if (result == ESuccessFailure.SUCCESS) {
-                                result = doSql(sql7, "term");
+                                result = doSql(conn, sql6, "term");
+                                if (result == ESuccessFailure.SUCCESS) {
+                                    result = doSql(conn, sql7, "term");
+                                }
                             }
                         }
                     }
                 }
             }
-        }
 
-        return result;
+            return result;
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
      * Executes an SQL statement.
      *
+     * @param conn      the database connection
      * @param sql       the SQL statement
      * @param tableName the table name, for error logging
      * @return success or failure
      */
-    private ESuccessFailure doSql(final String sql, final String tableName) {
+    private ESuccessFailure doSql(final DbConnection conn, final String sql, final String tableName) {
 
         ESuccessFailure result = ESuccessFailure.SUCCESS;
 
         if (DEBUG_MODE == EDebugMode.DEBUG) {
             Log.info("> ", sql);
         } else {
-            try {
-                final DbConnection conn = this.cache.checkOutConnection(ESchema.LEGACY);
-
-                try (final Statement stmt = conn.createStatement()) {
-                    stmt.executeUpdate(sql);
-                    conn.commit();
-                } finally {
-                    Cache.checkInConnection(conn);
-                }
+            try (final Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate(sql);
+                conn.commit();
             } catch (final SQLException ex) {
                 Log.warning("> Failed to clean ", tableName, " records.", ex);
                 result = ESuccessFailure.FAILURE;

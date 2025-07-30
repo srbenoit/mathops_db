@@ -64,20 +64,20 @@ public enum RawExamLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat("INSERT INTO ", tableName,
                 " (version,course,unit,vsn_explt,title,tree_ref,exam_type,active_dt,pull_dt,button_label) VALUES (",
-                LogicUtils.sqlStringValue(record.version), ",",
-                LogicUtils.sqlStringValue(record.course), ",",
-                LogicUtils.sqlIntegerValue(record.unit), ",",
-                LogicUtils.sqlStringValue(record.vsnExplt), ",",
-                LogicUtils.sqlStringValue(record.title), ",",
-                LogicUtils.sqlStringValue(record.treeRef), ",",
-                LogicUtils.sqlStringValue(record.examType), ",",
-                LogicUtils.sqlDateValue(record.activeDt), ",",
-                LogicUtils.sqlDateValue(record.pullDt), ",",
-                LogicUtils.sqlStringValue(record.buttonLabel), ")");
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                conn.sqlStringValue(record.version), ",",
+                conn.sqlStringValue(record.course), ",",
+                conn.sqlIntegerValue(record.unit), ",",
+                conn.sqlStringValue(record.vsnExplt), ",",
+                conn.sqlStringValue(record.title), ",",
+                conn.sqlStringValue(record.treeRef), ",",
+                conn.sqlStringValue(record.examType), ",",
+                conn.sqlDateValue(record.activeDt), ",",
+                conn.sqlDateValue(record.pullDt), ",",
+                conn.sqlStringValue(record.buttonLabel), ")");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -89,6 +89,9 @@ public enum RawExamLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -106,10 +109,10 @@ public enum RawExamLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE version=", LogicUtils.sqlStringValue(record.version));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE version=", conn.sqlStringValue(record.version));
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -121,6 +124,9 @@ public enum RawExamLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -137,7 +143,13 @@ public enum RawExamLogic {
 
         final String tableName = getTableName(cache);
 
-        return doListQuery(cache, "SELECT * FROM " + tableName);
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return doListQuery(conn, "SELECT * FROM " + tableName);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -152,11 +164,17 @@ public enum RawExamLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat(
-                "SELECT * FROM ", tableName, " WHERE course=", LogicUtils.sqlStringValue(course),
+                "SELECT * FROM ", tableName, " WHERE course=", conn.sqlStringValue(course),
                 " AND pull_dt IS NULL");
 
-        return doListQuery(cache, sql);
+        try {
+            return doListQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -173,12 +191,18 @@ public enum RawExamLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat(
-                "SELECT * FROM ", tableName, " WHERE course=", LogicUtils.sqlStringValue(course),
-                " AND unit=", LogicUtils.sqlIntegerValue(unit),
+                "SELECT * FROM ", tableName, " WHERE course=", conn.sqlStringValue(course),
+                " AND unit=", conn.sqlIntegerValue(unit),
                 " AND pull_dt IS NULL");
 
-        return doListQuery(cache, sql);
+        try {
+            return doListQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -197,13 +221,19 @@ public enum RawExamLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat(
-                "SELECT * FROM ", tableName, " WHERE course=", LogicUtils.sqlStringValue(course),
-                " AND unit=", LogicUtils.sqlIntegerValue(unit),
-                " AND exam_type=", LogicUtils.sqlStringValue(examType),
+                "SELECT * FROM ", tableName, " WHERE course=", conn.sqlStringValue(course),
+                " AND unit=", conn.sqlIntegerValue(unit),
+                " AND exam_type=", conn.sqlStringValue(examType),
                 " AND pull_dt IS NULL");
 
-        return doSingleQuery(cache, sql);
+        try {
+            return doSingleQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -218,25 +248,29 @@ public enum RawExamLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat(
-                "SELECT * FROM ", tableName, " WHERE version=", LogicUtils.sqlStringValue(version));
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
-        return doSingleQuery(cache, sql);
+        final String sql = SimpleBuilder.concat(
+                "SELECT * FROM ", tableName, " WHERE version=", conn.sqlStringValue(version));
+
+        try {
+            return doSingleQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
      * Performs a query that returns single record.
      *
-     * @param cache the data cache
-     * @param sql   the query SQL
+     * @param conn the database connection
+     * @param sql  the query SQL
      * @return the record; null if none returned
      * @throws SQLException if there is an error performing the query
      */
-    private static RawExam doSingleQuery(final Cache cache, final String sql) throws SQLException {
+    private static RawExam doSingleQuery(final DbConnection conn, final String sql) throws SQLException {
 
         RawExam result = null;
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -244,8 +278,6 @@ public enum RawExamLogic {
             if (rs.next()) {
                 result = RawExam.fromResultSet(rs);
             }
-        } finally {
-            Cache.checkInConnection(conn);
         }
 
         return result;
@@ -254,16 +286,14 @@ public enum RawExamLogic {
     /**
      * Performs a query that returns list of records.
      *
-     * @param cache the data cache
-     * @param sql   the query SQL
+     * @param conn the database connection
+     * @param sql  the query SQL
      * @return the list of records returned
      * @throws SQLException if there is an error performing the query
      */
-    private static List<RawExam> doListQuery(final Cache cache, final String sql) throws SQLException {
+    private static List<RawExam> doListQuery(final DbConnection conn, final String sql) throws SQLException {
 
         final List<RawExam> result = new ArrayList<>(50);
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -271,8 +301,6 @@ public enum RawExamLogic {
             while (rs.next()) {
                 result.add(RawExam.fromResultSet(rs));
             }
-        } finally {
-            Cache.checkInConnection(conn);
         }
 
         return result;

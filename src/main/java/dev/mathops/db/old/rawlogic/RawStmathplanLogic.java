@@ -323,19 +323,19 @@ public enum RawStmathplanLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat("INSERT INTO ", tableName,
                 " (stu_id,pidm,apln_term,version,exam_dt,survey_nbr,stu_answer,finish_time,session) VALUES (",
-                LogicUtils.sqlStringValue(record.stuId), ",",
-                LogicUtils.sqlIntegerValue(record.pidm), ",",
-                LogicUtils.sqlStringValue(record.aplnTerm), ",",
-                LogicUtils.sqlStringValue(record.version), ",",
-                LogicUtils.sqlDateValue(record.examDt), ",",
-                LogicUtils.sqlIntegerValue(record.surveyNbr), ",",
-                LogicUtils.sqlStringValue(record.stuAnswer), ",",
-                LogicUtils.sqlIntegerValue(record.finishTime), ",",
-                LogicUtils.sqlLongValue(record.session), ")");
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+                conn.sqlStringValue(record.stuId), ",",
+                conn.sqlIntegerValue(record.pidm), ",",
+                conn.sqlStringValue(record.aplnTerm), ",",
+                conn.sqlStringValue(record.version), ",",
+                conn.sqlDateValue(record.examDt), ",",
+                conn.sqlIntegerValue(record.surveyNbr), ",",
+                conn.sqlStringValue(record.stuAnswer), ",",
+                conn.sqlIntegerValue(record.finishTime), ",",
+                conn.sqlLongValue(record.session), ")");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;
@@ -347,6 +347,9 @@ public enum RawStmathplanLogic {
             }
 
             return result;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -366,14 +369,14 @@ public enum RawStmathplanLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                " WHERE stu_id=", LogicUtils.sqlStringValue(record.stuId),
-                " AND version=", LogicUtils.sqlStringValue(record.version),
-                " AND exam_dt=", LogicUtils.sqlDateValue(record.examDt),
-                " AND finish_time=", LogicUtils.sqlIntegerValue(record.finishTime),
-                " AND survey_nbr=", LogicUtils.sqlIntegerValue(record.surveyNbr));
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE stu_id=", conn.sqlStringValue(record.stuId),
+                " AND version=", conn.sqlStringValue(record.version),
+                " AND exam_dt=", conn.sqlDateValue(record.examDt),
+                " AND finish_time=", conn.sqlIntegerValue(record.finishTime),
+                " AND survey_nbr=", conn.sqlIntegerValue(record.surveyNbr));
 
         try (final Statement stmt = conn.createStatement()) {
             result = stmt.executeUpdate(sql) == 1;
@@ -383,6 +386,9 @@ public enum RawStmathplanLogic {
             } else {
                 conn.rollback();
             }
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         } finally {
             Cache.checkInConnection(conn);
         }
@@ -401,7 +407,13 @@ public enum RawStmathplanLogic {
 
         final String tableName = getTableName(cache);
 
-        return executeQuery(cache, "SELECT * FROM " + tableName);
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        try {
+            return executeQuery(conn, "SELECT * FROM " + tableName);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -416,10 +428,16 @@ public enum RawStmathplanLogic {
 
         final String tableName = getTableName(cache);
 
-        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
-                " WHERE stu_id=", LogicUtils.sqlStringValue(stuId));
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
-        return executeQuery(cache, sql);
+        final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
+                " WHERE stu_id=", conn.sqlStringValue(stuId));
+
+        try {
+            return executeQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -442,23 +460,29 @@ public enum RawStmathplanLogic {
         } else {
             final String tableName = getTableName(cache);
 
+            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
             final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
-                    " WHERE stu_id=", LogicUtils.sqlStringValue(studentId),
-                    "   AND version=", LogicUtils.sqlStringValue(pageId),
+                    " WHERE stu_id=", conn.sqlStringValue(studentId),
+                    "   AND version=", conn.sqlStringValue(pageId),
                     "  AND exam_dt IN ",
                     "  (SELECT MAX(exam_dt) ",
-                    "    FROM stmathplan WHERE stu_id=", LogicUtils.sqlStringValue(studentId),
-                    "    AND version=", LogicUtils.sqlStringValue(pageId), ") ",
+                    "    FROM ", tableName, " WHERE stu_id=", conn.sqlStringValue(studentId),
+                    "    AND version=", conn.sqlStringValue(pageId), ") ",
                     "  AND finish_time IN ",
-                    "  (SELECT MAX(finish_time) FROM stmathplan WHERE exam_dt IN ",
-                    "   (SELECT MAX(exam_dt) FROM stmathplan ",
-                    "      WHERE stu_id=", LogicUtils.sqlStringValue(studentId),
-                    "        AND version=", LogicUtils.sqlStringValue(pageId), ") ",
-                    "   AND stu_id=", LogicUtils.sqlStringValue(studentId),
-                    "   AND version=", LogicUtils.sqlStringValue(pageId),
+                    "  (SELECT MAX(finish_time) FROM ", tableName, " WHERE exam_dt IN ",
+                    "   (SELECT MAX(exam_dt) FROM ", tableName,
+                    "      WHERE stu_id=", conn.sqlStringValue(studentId),
+                    "        AND version=", conn.sqlStringValue(pageId), ") ",
+                    "   AND stu_id=", conn.sqlStringValue(studentId),
+                    "   AND version=", conn.sqlStringValue(pageId),
                     "  ) ORDER BY survey_nbr");
 
-            result = executeQuery(cache, sql);
+            try {
+                result = executeQuery(conn, sql);
+            } finally {
+                Cache.checkInConnection(conn);
+            }
         }
 
         return result;
@@ -484,23 +508,29 @@ public enum RawStmathplanLogic {
         } else {
             final String tableName = getTableName(cache);
 
+            final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
             final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName,
-                    " WHERE pidm=", LogicUtils.sqlIntegerValue(pidm),
-                    "   AND version=", LogicUtils.sqlStringValue(pageId),
+                    " WHERE pidm=", conn.sqlIntegerValue(pidm),
+                    "   AND version=", conn.sqlStringValue(pageId),
                     "  AND exam_dt IN ",
                     "  (SELECT MAX(exam_dt) ",
-                    "    FROM stmathplan WHERE pidm=", LogicUtils.sqlIntegerValue(pidm),
-                    "    AND version=", LogicUtils.sqlStringValue(pageId), ") ",
+                    "    FROM ", tableName, " WHERE pidm=", conn.sqlIntegerValue(pidm),
+                    "    AND version=", conn.sqlStringValue(pageId), ") ",
                     "  AND finish_time IN ",
-                    "  (SELECT MAX(finish_time) FROM stmathplan WHERE exam_dt IN ",
-                    "   (SELECT MAX(exam_dt) FROM stmathplan ",
-                    "      WHERE pidm=", LogicUtils.sqlIntegerValue(pidm),
-                    "        AND version=", LogicUtils.sqlStringValue(pageId), ") ",
-                    "   AND pidm=", LogicUtils.sqlIntegerValue(pidm),
-                    "   AND version=", LogicUtils.sqlStringValue(pageId),
+                    "  (SELECT MAX(finish_time) FROM ", tableName, " WHERE exam_dt IN ",
+                    "   (SELECT MAX(exam_dt) FROM ", tableName,
+                    "      WHERE pidm=", conn.sqlIntegerValue(pidm),
+                    "        AND version=", conn.sqlStringValue(pageId), ") ",
+                    "   AND pidm=", conn.sqlIntegerValue(pidm),
+                    "   AND version=", conn.sqlStringValue(pageId),
                     "  ) ORDER BY survey_nbr");
 
-            result = executeQuery(cache, sql);
+            try {
+                result = executeQuery(conn, sql);
+            } finally {
+                Cache.checkInConnection(conn);
+            }
         }
 
         return result;
@@ -526,13 +556,11 @@ public enum RawStmathplanLogic {
         } else {
             final String tableName = getTableName(cache);
 
-            final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
-                    " WHERE stu_id=", LogicUtils.sqlStringValue(stuId),
-                    "  AND version=", LogicUtils.sqlStringValue(pageId));
-
-            Log.info(sql);
-
             final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+            final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                    " WHERE stu_id=", conn.sqlStringValue(stuId),
+                    "  AND version=", conn.sqlStringValue(pageId));
 
             try (final Statement stmt = conn.createStatement()) {
                 result = stmt.executeUpdate(sql) > 0;
@@ -542,6 +570,9 @@ public enum RawStmathplanLogic {
                 } else {
                     conn.rollback();
                 }
+            } catch (final SQLException ex) {
+                conn.rollback();
+                throw ex;
             } finally {
                 Cache.checkInConnection(conn);
             }
@@ -573,29 +604,35 @@ public enum RawStmathplanLogic {
 
         final String tableName = getTableName(cache);
 
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
         final String sql = SimpleBuilder.concat("SELECT * FROM ", tableName, " WHERE exam_dt>=",
-                LogicUtils.sqlDateValue(earliest));
+                conn.sqlDateValue(earliest));
 
-        final List<RawStmathplan> all = executeQuery(cache, sql);
-        Collections.sort(all);
+        try {
+            final List<RawStmathplan> all = executeQuery(conn, sql);
+            Collections.sort(all);
 
-        int start = 0;
-        int position = 0;
-        final int size = all.size();
-        for (int i = 0; i < numDays; ++i) {
+            int start = 0;
+            int position = 0;
+            final int size = all.size();
+            for (int i = 0; i < numDays; ++i) {
 
-            while (position < size && all.get(position).examDt.equals(earliest)) {
-                ++position;
+                while (position < size && all.get(position).examDt.equals(earliest)) {
+                    ++position;
+                }
+
+                final List<RawStmathplan> daily = new ArrayList<>(position - start);
+                for (int j = start; j < position; ++j) {
+                    daily.add(all.get(j));
+                }
+                history.add(daily);
+                start = position;
+
+                earliest = earliest.plusDays(1L);
             }
-
-            final List<RawStmathplan> daily = new ArrayList<>(position - start);
-            for (int j = start; j < position; ++j) {
-                daily.add(all.get(j));
-            }
-            history.add(daily);
-            start = position;
-
-            earliest = earliest.plusDays(1L);
+        } finally {
+            Cache.checkInConnection(conn);
         }
     }
 
@@ -652,16 +689,14 @@ public enum RawStmathplanLogic {
     /**
      * Executes a query that returns a list of records.
      *
-     * @param cache the data cache
-     * @param sql   the SQL to execute
+     * @param conn the database connection
+     * @param sql  the SQL to execute
      * @return the list of matching records
      * @throws SQLException if there is an error accessing the database
      */
-    private static List<RawStmathplan> executeQuery(final Cache cache, final String sql) throws SQLException {
+    private static List<RawStmathplan> executeQuery(final DbConnection conn, final String sql) throws SQLException {
 
         final List<RawStmathplan> result = new ArrayList<>(20);
-
-        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -669,8 +704,6 @@ public enum RawStmathplanLogic {
             while (rs.next()) {
                 result.add(RawStmathplan.fromResultSet(rs));
             }
-        } finally {
-            Cache.checkInConnection(conn);
         }
 
         return result;

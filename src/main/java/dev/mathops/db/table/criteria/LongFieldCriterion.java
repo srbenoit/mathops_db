@@ -2,6 +2,7 @@ package dev.mathops.db.table.criteria;
 
 import dev.mathops.db.table.EFieldType;
 import dev.mathops.db.table.Field;
+import dev.mathops.db.table.FieldDef;
 
 /**
  *  A criterion that can be used to match a Long field.
@@ -25,7 +26,8 @@ public class LongFieldCriterion extends AbstractFieldCriterion {
 
         super(theField);
 
-        if (theField.getType() != EFieldType.LONG) {
+        final FieldDef def = theField.getDef();
+        if (def.getType() != EFieldType.LONG) {
             throw new IllegalArgumentException("A Long field criterion must be used with a Long field");
         }
         if (theMatchType == null) {
