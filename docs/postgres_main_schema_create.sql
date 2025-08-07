@@ -1,6 +1,6 @@
 -- postgres_main_schema_create.sql
 -- (this script is designed to be run under the 'math' database owner)
--- /opt/postgresql/bin/psql -d math -U math
+-- /opt/postgresql/bin/psql -d math[_dev|_test] -U math
 
 -- ------------------------------------------------------------------------------------------------
 -- Before executing this script, ensure that all actions in 'postgres_database_create.sql' have
@@ -9,28 +9,14 @@
 
 -- Create the schemas in the "math" database.
 
-CREATE SCHEMA IF NOT EXISTS mathops AUTHORIZATION math;         -- Production mathops
-CREATE SCHEMA IF NOT EXISTS mathops_dev AUTHORIZATION math;     -- Development mathops
-CREATE SCHEMA IF NOT EXISTS mathops_test AUTHORIZATION math;    -- Test mathops
-
-CREATE SCHEMA IF NOT EXISTS main AUTHORIZATION math;            -- Production main
-CREATE SCHEMA IF NOT EXISTS main_dev AUTHORIZATION math;        -- Development main
-CREATE SCHEMA IF NOT EXISTS main_test AUTHORIZATION math;       -- Test main
-
-CREATE SCHEMA IF NOT EXISTS legacy AUTHORIZATION math;          -- Production legacy
-CREATE SCHEMA IF NOT EXISTS legacy_dev AUTHORIZATION math;      -- Development legacy
-CREATE SCHEMA IF NOT EXISTS legacy_test AUTHORIZATION math;     -- Test legacy
-
-CREATE SCHEMA IF NOT EXISTS extern AUTHORIZATION math;          -- Production extern
-CREATE SCHEMA IF NOT EXISTS extern_dev AUTHORIZATION math;      -- Development extern
-CREATE SCHEMA IF NOT EXISTS extern_test AUTHORIZATION math;     -- Test extern
-
-CREATE SCHEMA IF NOT EXISTS analytics AUTHORIZATION math;       -- Production analytics
-CREATE SCHEMA IF NOT EXISTS analytics_dev AUTHORIZATION math;   -- Development analytics
-CREATE SCHEMA IF NOT EXISTS analytics_test AUTHORIZATION math;  -- Test analytics
+CREATE SCHEMA IF NOT EXISTS mathops AUTHORIZATION math;         -- mathops
+CREATE SCHEMA IF NOT EXISTS main AUTHORIZATION math;            -- main
+CREATE SCHEMA IF NOT EXISTS legacy AUTHORIZATION math;          -- legacy
+CREATE SCHEMA IF NOT EXISTS extern AUTHORIZATION math;          -- extern
+CREATE SCHEMA IF NOT EXISTS analytics AUTHORIZATION math;       -- analytics
 
 -- ================================================================================================
--- Create schema objects within the 'main', 'main_dev', and 'main_test' schemas.
+-- Create schema objects within the 'main' schema.
 -- ================================================================================================
 
 -- ------------------------------------------------------------------------------------------------
@@ -51,23 +37,7 @@ CREATE TABLE IF NOT EXISTS main.which_db (
     PRIMARY KEY (descr)
 ) TABLESPACE primary_ts;
 ALTER TABLE IF EXISTS main.which_db OWNER to math;
-INSERT INTO main.which_db (descr) values ('PROD');
-
--- DROP TABLE IF EXISTS main_dev.which_db;
-CREATE TABLE IF NOT EXISTS main_dev.which_db (
-    descr                    char(4)        NOT NULL,
-    PRIMARY KEY (descr)
-) TABLESPACE primary_ts;
-ALTER TABLE IF EXISTS main_dev.which_db OWNER to math;
-INSERT INTO main_dev.which_db (descr) values ('DEV');
-
--- DROP TABLE IF EXISTS main_test.which_db;
-CREATE TABLE IF NOT EXISTS main_test.which_db (
-    descr                    char(4)        NOT NULL,
-    PRIMARY KEY (descr)
-) TABLESPACE primary_ts;
-ALTER TABLE IF EXISTS main_test.which_db OWNER to math;
-INSERT INTO main_test.which_db (descr) values ('TEST');
+INSERT INTO main.which_db (descr) values ('PROD');     -- EDIT this depending on which database ('DEV', 'TEST')
 
 -- ------------------------------------------------------------------------------------------------
 -- TABLE: facility
@@ -92,26 +62,6 @@ CREATE TABLE IF NOT EXISTS main.facility (
     PRIMARY KEY (facility_id)
 ) TABLESPACE primary_ts;
 ALTER TABLE IF EXISTS main.facility OWNER to math;
-
--- DROP TABLE IF EXISTS main_dev.facility;
-CREATE TABLE IF NOT EXISTS main_dev.facility (
-    facility_id              char(10)        NOT NULL,
-    facility_name            varchar(100)    NOT NULL,
-    building_name            varchar(40),
-    room_nbr                 varchar(20),
-    PRIMARY KEY (facility_id)
-) TABLESPACE primary_ts;
-ALTER TABLE IF EXISTS main_dev.facility OWNER to math;
-
--- DROP TABLE IF EXISTS main_test.facility;
-CREATE TABLE IF NOT EXISTS main_test.facility (
-    facility_id              char(10)        NOT NULL,
-    facility_name            varchar(100)    NOT NULL,
-    building_name            varchar(40),
-    room_nbr                 varchar(20),
-    PRIMARY KEY (facility_id)
-) TABLESPACE primary_ts;
-ALTER TABLE IF EXISTS main_test.facility OWNER to math;
 
 -- ------------------------------------------------------------------------------------------------
 -- TABLE: facility_hours
@@ -144,36 +94,6 @@ CREATE TABLE IF NOT EXISTS main.facility_hours (
 ) TABLESPACE primary_ts;
 ALTER TABLE IF EXISTS main.facility_hours OWNER to math;
 
--- DROP TABLE IF EXISTS main_dev.facility_hours;
-CREATE TABLE IF NOT EXISTS main_dev.facility_hours (
-    facility_id              char(10)        NOT NULL,
-    display_index            smallint        NOT NULL,
-    weekdays                 smallint        NOT NULL,
-    start_date               date            NOT NULL,
-    end_date                 date            NOT NULL,
-    open_time_1              time            NOT NULL,
-    close_time_1             time            NOT NULL,
-    open_time_2              time,
-    close_time_2             time,
-    PRIMARY KEY (facility_id, display_index)
-) TABLESPACE primary_ts;
-ALTER TABLE IF EXISTS main_dev.facility_hours OWNER to math;
-
--- DROP TABLE IF EXISTS main_test.facility_hours;
-CREATE TABLE IF NOT EXISTS main_test.facility_hours (
-    facility_id              char(10)        NOT NULL,
-    display_index            smallint        NOT NULL,
-    weekdays                 smallint        NOT NULL,
-    start_date               date            NOT NULL,
-    end_date                 date            NOT NULL,
-    open_time_1              time            NOT NULL,
-    close_time_1             time            NOT NULL,
-    open_time_2              time,
-    close_time_2             time,
-    PRIMARY KEY (facility_id, display_index)
-) TABLESPACE primary_ts;
-ALTER TABLE IF EXISTS main_test.facility_hours OWNER to math;
-
 -- ------------------------------------------------------------------------------------------------
 -- TABLE: facility_closure
 --
@@ -203,30 +123,6 @@ CREATE TABLE IF NOT EXISTS main.facility_closure (
 ) TABLESPACE primary_ts;
 ALTER TABLE IF EXISTS main.facility_closure OWNER to math;
 
--- DROP TABLE IF EXISTS main_dev.facility_closure;
-CREATE TABLE IF NOT EXISTS main_dev.facility_closure (
-    facility_id              char(10)        NOT NULL,
-    start_date               date            NOT NULL,
-    end_date                 date            NOT NULL,
-    closure_type             char(10)        NOT NULL,
-    start_time               time,
-    end_time                 time,
-    PRIMARY KEY (facility_id, start_date)
-) TABLESPACE primary_ts;
-ALTER TABLE IF EXISTS main_dev.facility_closure OWNER to math;
-
--- DROP TABLE IF EXISTS main_test.facility_closure;
-CREATE TABLE IF NOT EXISTS main_test.facility_closure (
-    facility_id              char(10)        NOT NULL,
-    start_date               date            NOT NULL,
-    end_date                 date            NOT NULL,
-    closure_type             char(10)        NOT NULL,
-    start_time               time,
-    end_time                 time,
-    PRIMARY KEY (facility_id, start_date)
-) TABLESPACE primary_ts;
-ALTER TABLE IF EXISTS main_test.facility_closure OWNER to math;
-
 -- ------------------------------------------------------------------------------------------------
 -- TABLE: standards_course
 --
@@ -254,30 +150,6 @@ CREATE TABLE IF NOT EXISTS main.standards_course (
 ) TABLESPACE primary_ts;
 ALTER TABLE IF EXISTS main.standards_course OWNER to math;
 
--- DROP TABLE IF EXISTS main_dev.standards_course;
-CREATE TABLE IF NOT EXISTS main_dev.standards_course (
-    course_id                char(10)        NOT NULL,
-    course_title             varchar(50)     NOT NULL,
-    nbr_modules              smallint        NOT NULL,
-    nbr_credits              smallint        NOT NULL,
-    allow_lend               integer         NOT NULL,
-    metadata_path            varchar(50),
-    PRIMARY KEY (course_id)
-) TABLESPACE primary_ts;
-ALTER TABLE IF EXISTS main_dev.standards_course OWNER to math;
-
--- DROP TABLE IF EXISTS main_test.standards_course;
-CREATE TABLE IF NOT EXISTS main_test.standards_course (
-    course_id                char(10)        NOT NULL,
-    course_title             varchar(50)     NOT NULL,
-    nbr_modules              smallint        NOT NULL,
-    nbr_credits              smallint        NOT NULL,
-    allow_lend               integer         NOT NULL,
-    metadata_path            varchar(50),
-    PRIMARY KEY (course_id)
-) TABLESPACE primary_ts;
-ALTER TABLE IF EXISTS main_test.standards_course OWNER to math;
-
 -- ------------------------------------------------------------------------------------------------
 -- TABLE: standards_course_module
 --
@@ -302,28 +174,6 @@ CREATE TABLE IF NOT EXISTS main.standards_course_module (
 ) TABLESPACE primary_ts;
 ALTER TABLE IF EXISTS main.standards_course_module OWNER to math;
 
--- DROP TABLE IF EXISTS main_dev.standards_course_module;
-CREATE TABLE IF NOT EXISTS main_dev.standards_course_module (
-    course_id                char(10)        NOT NULL,
-    module_nbr               smallint        NOT NULL,
-    nbr_standards            smallint        NOT NULL,
-    nbr_essential            smallint        NOT NULL,
-    module_path              text,
-    PRIMARY KEY (course_id, module_nbr)
-) TABLESPACE primary_ts;
-ALTER TABLE IF EXISTS main_dev.standards_course_module OWNER to math;
-
--- DROP TABLE IF EXISTS main_test.standards_course_module;
-CREATE TABLE IF NOT EXISTS main_test.standards_course_module (
-    course_id                char(10)        NOT NULL,
-    module_nbr               smallint        NOT NULL,
-    nbr_standards            smallint        NOT NULL,
-    nbr_essential            smallint        NOT NULL,
-    module_path              text,
-    PRIMARY KEY (course_id, module_nbr)
-) TABLESPACE primary_ts;
-ALTER TABLE IF EXISTS main_test.standards_course_module OWNER to math;
-
 -- ------------------------------------------------------------------------------------------------
 -- TABLE: standards_course_standard
 --
@@ -347,28 +197,6 @@ CREATE TABLE IF NOT EXISTS main.standards_course_standard (
     PRIMARY KEY (course_id, module_nbr, standard_nbr)
 ) TABLESPACE primary_ts;
 ALTER TABLE IF EXISTS main.standards_course_standard OWNER to math;
-
--- DROP TABLE IF EXISTS main_dev.standards_course_standard;
-CREATE TABLE IF NOT EXISTS main_dev.standards_course_standard (
-    course_id                char(10)        NOT NULL,
-    module_nbr               smallint        NOT NULL,
-    standard_nbr             smallint        NOT NULL,
-    learning_objective       text            NOT NULL,
-    is_essential             char(1)         NOT NULL,
-    PRIMARY KEY (course_id, module_nbr, standard_nbr)
-) TABLESPACE primary_ts;
-ALTER TABLE IF EXISTS main_dev.standards_course_standard OWNER to math;
-
--- DROP TABLE IF EXISTS main_test.standards_course_standard;
-CREATE TABLE IF NOT EXISTS main_test.standards_course_standard (
-    course_id                char(10)        NOT NULL,
-    module_nbr               smallint        NOT NULL,
-    standard_nbr             smallint        NOT NULL,
-    learning_objective       text            NOT NULL,
-    is_essential             char(1)         NOT NULL,
-    PRIMARY KEY (course_id, module_nbr, standard_nbr)
-) TABLESPACE primary_ts;
-ALTER TABLE IF EXISTS main_test.standards_course_standard OWNER to math;
 
 -- ------------------------------------------------------------------------------------------------
 -- TABLE: standard_assignment
@@ -397,34 +225,6 @@ CREATE TABLE IF NOT EXISTS main.standard_assignment (
 ) TABLESPACE primary_ts;
 ALTER TABLE IF EXISTS main.standard_assignment OWNER to math;
 
--- DROP TABLE IF EXISTS main_dev.standard_assignment;
-CREATE TABLE IF NOT EXISTS main_dev.standard_assignment (
-    assignment_id            varchar(20)     NOT NULL,
-    assignment_type          char(2)         NOT NULL,
-    course_id                char(10)        NOT NULL,
-    module_nbr               smallint        NOT NULL,
-    standard_nbr             smallint        NOT NULL,
-    pts_possible             smallint,
-    min_passing_score        smallint,
-    tree_ref                 varchar(250),
-    PRIMARY KEY (assignment_id)
-) TABLESPACE primary_ts;
-ALTER TABLE IF EXISTS main_dev.standard_assignment OWNER to math;
-
--- DROP TABLE IF EXISTS main_test.standard_assignment;
-CREATE TABLE IF NOT EXISTS main_test.standard_assignment (
-    assignment_id            varchar(20)     NOT NULL,
-    assignment_type          char(2)         NOT NULL,
-    course_id                char(10)        NOT NULL,
-    module_nbr               smallint        NOT NULL,
-    standard_nbr             smallint        NOT NULL,
-    pts_possible             smallint,
-    min_passing_score        smallint,
-    tree_ref                 varchar(250),
-    PRIMARY KEY (assignment_id)
-) TABLESPACE primary_ts;
-ALTER TABLE IF EXISTS main_test.standard_assignment OWNER to math;
-
 -- ------------------------------------------------------------------------------------------------
 -- TABLE: course_survey
 --
@@ -445,24 +245,6 @@ CREATE TABLE IF NOT EXISTS main.course_survey (
     PRIMARY KEY (survey_id)
 ) TABLESPACE primary_ts;
 ALTER TABLE IF EXISTS main.course_survey OWNER to math;
-
--- DROP TABLE IF EXISTS main_dev.course_survey;
-CREATE TABLE IF NOT EXISTS main_dev.course_survey (
-    survey_id                char(10)       NOT NULL,
-    survey_title             text,
-    prompt_html              text,
-    PRIMARY KEY (survey_id)
-) TABLESPACE primary_ts;
-ALTER TABLE IF EXISTS main_dev.course_survey OWNER to math;
-
--- DROP TABLE IF EXISTS main_test.course_survey;
-CREATE TABLE IF NOT EXISTS main_test.course_survey (
-    survey_id                char(10)       NOT NULL,
-    survey_title             text,
-    prompt_html              text,
-    PRIMARY KEY (survey_id)
-) TABLESPACE primary_ts;
-ALTER TABLE IF EXISTS main_test.course_survey OWNER to math;
 
 -- ------------------------------------------------------------------------------------------------
 -- TABLE: course_survey_item
@@ -487,26 +269,6 @@ CREATE TABLE IF NOT EXISTS main.course_survey_item (
 ) TABLESPACE primary_ts;
 ALTER TABLE IF EXISTS main.course_survey_item OWNER to math;
 
--- DROP TABLE IF EXISTS main_dev.course_survey_item;
-CREATE TABLE IF NOT EXISTS main_dev.course_survey_item (
-    survey_id                char(10)       NOT NULL,
-    item_nbr                 smallint       NOT NULL,
-    item_type                smallint       NOT NULL,
-    prompt_html              text           NOT NULL,
-    PRIMARY KEY (survey_id, item_nbr)
-) TABLESPACE primary_ts;
-ALTER TABLE IF EXISTS main_dev.course_survey_item OWNER to math;
-
--- DROP TABLE IF EXISTS main_test.course_survey_item;
-CREATE TABLE IF NOT EXISTS main_test.course_survey_item (
-    survey_id                char(10)       NOT NULL,
-    item_nbr                 smallint       NOT NULL,
-    item_type                smallint       NOT NULL,
-    prompt_html              text           NOT NULL,
-    PRIMARY KEY (survey_id, item_nbr)
-) TABLESPACE primary_ts;
-ALTER TABLE IF EXISTS main_test.course_survey_item OWNER to math;
-
 -- ------------------------------------------------------------------------------------------------
 -- TABLE: course_survey_item_choice
 --
@@ -528,26 +290,6 @@ CREATE TABLE IF NOT EXISTS main.course_survey_item_choice (
     PRIMARY KEY (survey_id, item_nbr, choice_nbr)
 ) TABLESPACE primary_ts;
 ALTER TABLE IF EXISTS main.course_survey_item_choice OWNER to math;
-
--- DROP TABLE IF EXISTS main_dev.course_survey_item_choice;
-CREATE TABLE IF NOT EXISTS main_dev.course_survey_item_choice (
-    survey_id                char(10)       NOT NULL,
-    item_nbr                 smallint       NOT NULL,
-    choice_nbr               smallint       NOT NULL,
-    choice_html              varchar(250)   NOT NULL,
-    PRIMARY KEY (survey_id, item_nbr, choice_nbr)
-) TABLESPACE primary_ts;
-ALTER TABLE IF EXISTS main_dev.course_survey_item_choice OWNER to math;
-
--- DROP TABLE IF EXISTS main_test.course_survey_item_choice;
-CREATE TABLE IF NOT EXISTS main_test.course_survey_item_choice (
-    survey_id                char(10)       NOT NULL,
-    item_nbr                 smallint       NOT NULL,
-    choice_nbr               smallint       NOT NULL,
-    choice_html              varchar(250)   NOT NULL,
-    PRIMARY KEY (survey_id, item_nbr, choice_nbr)
-) TABLESPACE primary_ts;
-ALTER TABLE IF EXISTS main_test.course_survey_item_choice OWNER to math;
 
 
 
@@ -576,31 +318,3 @@ CREATE TABLE IF NOT EXISTS main.lti_registration (
     PRIMARY KEY (client_id, issuer)
 ) TABLESPACE primary_ts;
 ALTER TABLE IF EXISTS main.lti_registration OWNER to math;
-
--- DROP TABLE IF EXISTS main_dev.lti_registration;
-CREATE TABLE IF NOT EXISTS main_dev.lti_registration (
-    client_id                varchar(40)    NOT NULL,
-    issuer                   varchar(250)   NOT NULL,
-    issuer_port              char(6)        NOT NULL,
-    redirect_uri             varchar(250)   NOT NULL,
-    auth_endpoint            varchar(250)   NOT NULL,
-    token_endpoint           varchar(250)   NOT NULL,
-    reg_endpoint             varchar(250)   NOT NULL,
-    jwks_uri                 varchar(250)   NOT NULL,
-    PRIMARY KEY (client_id, issuer)
-) TABLESPACE primary_ts;
-ALTER TABLE IF EXISTS main_dev.lti_registration OWNER to math;
-
--- DROP TABLE IF EXISTS main_test.lti_registration;
-CREATE TABLE IF NOT EXISTS main_test.lti_registration (
-    client_id                varchar(40)    NOT NULL,
-    issuer                   varchar(250)   NOT NULL,
-    issuer_port              char(6)        NOT NULL,
-    redirect_uri             varchar(250)   NOT NULL,
-    auth_endpoint            varchar(250)   NOT NULL,
-    token_endpoint           varchar(250)   NOT NULL,
-    reg_endpoint             varchar(250)   NOT NULL,
-    jwks_uri                 varchar(250)   NOT NULL,
-    PRIMARY KEY (client_id, issuer)
-) TABLESPACE primary_ts;
-ALTER TABLE IF EXISTS main_test.lti_registration OWNER to math;

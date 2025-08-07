@@ -468,8 +468,6 @@ public enum RawMpeCreditLogic {
                 } catch (final SQLException ex) {
                     conn.rollback();
                     throw ex;
-                } finally {
-                    Cache.checkInConnection(conn);
                 }
 
                 // If there exists an M 100M row, we update placed and date
