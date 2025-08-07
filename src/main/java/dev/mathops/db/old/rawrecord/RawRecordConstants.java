@@ -111,4 +111,24 @@ public enum RawRecordConstants {
     /** A commonly used string. */
     public static final String M1260 = "M 1260";
 
+
+    /**
+     * Tests whether a course ID represents one of the 1-credit course that count toward pace.
+     *
+     * @param courseId the course ID
+     * @return true if the ID represents a 1-credit course
+     */
+    public static boolean isOneCreditCourse(final String courseId) {
+
+        return RawRecordConstants.M117.equals(courseId)
+               || RawRecordConstants.M118.equals(courseId)
+               || RawRecordConstants.M124.equals(courseId)
+               || RawRecordConstants.M125.equals(courseId)
+               || RawRecordConstants.M126.equals(courseId)
+               || RawRecordConstants.MATH117.equals(courseId)
+               || RawRecordConstants.MATH118.equals(courseId)
+               || RawRecordConstants.MATH124.equals(courseId)
+               || RawRecordConstants.MATH125.equals(courseId)
+               || RawRecordConstants.MATH126.equals(courseId);
+    }
 }

@@ -206,7 +206,7 @@ public final class StudentData {
     /**
      * Constructs a new {@code StudentData}.
      *
-     * @param theCache    the associated cache
+     * @param theCache         the associated cache
      * @param theStudentId     the student ID
      * @param theLiveRefreshes true if live student data should be queried;
      */
@@ -619,7 +619,7 @@ public final class StudentData {
                 } else if (test.examDt.isBefore(existing.examDt)) {
                     map.put(test.surveyNbr, test);
                 } else if (test.examDt.equals(existing.examDt)
-                        && test.finishTime.intValue() < existing.finishTime.intValue()) {
+                           && test.finishTime.intValue() < existing.finishTime.intValue()) {
                     map.put(test.surveyNbr, test);
                 }
             }
@@ -934,7 +934,7 @@ public final class StudentData {
     }
 
     /**
-     * Gets the list of all registrations for this student.
+     * Gets the list of all registrations for this student (this will include MATH 120 registrations).
      *
      * @return the list of registrations
      * @throws SQLException if there is an error accessing the database
@@ -946,8 +946,8 @@ public final class StudentData {
 
             for (final RawStcourse test : this.registrations) {
                 if (RawRecordConstants.M117.equals(test.course)
-                        && ("801".equals(test.sect) || "809".equals(test.sect))
-                        && (test.prereqSatis == null || "N".equals(test.prereqSatis))) {
+                    && ("801".equals(test.sect) || "809".equals(test.sect))
+                    && (test.prereqSatis == null || "N".equals(test.prereqSatis))) {
                     test.prereqSatis = "P";
                 }
             }
@@ -973,7 +973,9 @@ public final class StudentData {
                 continue;
             }
 
-            active.add(test);
+            if (RawRecordConstants.isOneCreditCourse(test.course)) {
+                active.add(test);
+            }
         }
 
         return active;
@@ -983,7 +985,7 @@ public final class StudentData {
      * Gets the list of active registrations for the student in a specified term.  This excludes those with open status
      * "D" or "G".  It includes registrations in "OT" sections (challenge credit).
      *
-     * @param term the term key
+     * @param term           the term key
      * @param includeForfeit true to include courses marked with open_status='G'
      * @return the list of registrations
      * @throws SQLException if there is an error accessing the database
@@ -1000,7 +1002,8 @@ public final class StudentData {
                 if ("D".equals(openStatus)) {
                     continue;
                 }
-                if (includeForfeit || !"G".equals(openStatus)) {
+
+                if (RawRecordConstants.isOneCreditCourse(test.course) && (includeForfeit || !"G".equals(openStatus))) {
                     active.add(test);
                 }
             }
@@ -1028,7 +1031,9 @@ public final class StudentData {
                     continue;
                 }
 
-                active.add(test);
+                if (RawRecordConstants.isOneCreditCourse(test.course)) {
+                    active.add(test);
+                }
             }
         }
 
@@ -1050,7 +1055,7 @@ public final class StudentData {
             if ("D".equals(test.openStatus)) {
                 continue;
             }
-            if ("Y".equals(test.completed)) {
+            if ("Y".equals(test.completed) && RawRecordConstants.isOneCreditCourse(test.course)) {
                 completed.add(test);
             }
         }
@@ -1071,7 +1076,7 @@ public final class StudentData {
 
         final List<RawStcourse> before = new ArrayList<>(6);
         for (final RawStcourse test : all) {
-            if (test.termKey.compareTo(term) < 0) {
+            if (test.termKey.compareTo(term) < 0 && RawRecordConstants.isOneCreditCourse(test.course)) {
                 before.add(test);
             }
         }
@@ -1105,7 +1110,9 @@ public final class StudentData {
             // TODO: We really should check the section or rule set to see if these are "paced" courses,
             //  but for now all courses are "paced".
 
-            paced.add(test);
+            if (RawRecordConstants.isOneCreditCourse(test.course)) {
+                paced.add(test);
+            }
         }
 
         return paced;
@@ -1156,7 +1163,7 @@ public final class StudentData {
         for (final RawStcourse test : all) {
             if ("OT".equals(test.instrnType)) {
                 final String placed = test.examPlaced;
-                if ("F".equals(placed) || "M".equals(placed)) {
+                if ("F".equals(placed) || "M".equals(placed) && RawRecordConstants.isOneCreditCourse(test.course)) {
                     result.add(test);
                 }
             }
@@ -1364,10 +1371,10 @@ public final class StudentData {
      * Scans all student exams in a course and unit and returns the first passing attempt.
      *
      * @param course the course ID
-     * @param unit the unit
-     * @param type the exam type
+     * @param unit   the unit
+     * @param type   the exam type
      * @return the first passing exam of the specified type in the specified course and unit; null if no passing attempt
-     * was found
+     *         was found
      * @throws SQLException if there is an error accessing the database
      */
     public RawStexam getFirstPassingStudentExam(final String course, final Integer unit, final String type)
@@ -1378,7 +1385,7 @@ public final class StudentData {
 
         for (final RawStexam test : all) {
             if (test.course.equals(course) && test.unit.equals(unit) && test.examType.equals(type)
-                    && "Y".equals(test.passed)) {
+                && "Y".equals(test.passed)) {
 
                 if (result == null || result.getFinishDateTime().isAfter(test.getFinishDateTime())) {
                     result = test;
@@ -1418,8 +1425,6 @@ public final class StudentData {
 
         return tries;
     }
-
-
 
     /**
      * Forgets student exams. forcing a re-query on next access.
@@ -1470,7 +1475,7 @@ public final class StudentData {
     /**
      * Gets the list of all records of homeworks taken by the student in a specified course.
      *
-     * @param course the course ID
+     * @param course     the course ID
      * @param passedOnly true to only return records marked as "passed"
      * @param hwTypes    an optional list of types to return (if null or empty, all types are returned)
      * @return the student homeworks
@@ -1670,9 +1675,6 @@ public final class StudentData {
 
         return row != null && row.lectureViewedDt != null;
     }
-
-
-
 
     /**
      * Forgets the list of student course objectives, forcing a re-query on next access.

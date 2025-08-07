@@ -291,6 +291,15 @@ final class UrgencyHistoryAnalysis {
 
         fireProgress("Querying registrations term", 2);
         this.registrations = RawStcourseLogic.queryByTerm(this.cache, this.active.term, false, false);
+
+        final Iterator<RawStcourse> iter = this.registrations.iterator();
+        while (iter.hasNext()) {
+            final RawStcourse reg = iter.next();
+            if (!RawRecordConstants.isOneCreditCourse(reg.course)) {
+                iter.remove();
+            }
+        }
+
         Log.info("    Queried ", Integer.toString(this.registrations.size()), " registrations");
 
         for (final RawStcourse reg : this.registrations) {

@@ -425,9 +425,8 @@ public enum RawStcourseLogic {
      * @return the list of records that matched the criteria, a zero-length array if none matched
      * @throws SQLException if there is an error performing the query
      */
-    public static List<RawStcourse> queryByStudent(final Cache cache, final String studentId,
-                                                   final boolean includeOT, final boolean includeDropped)
-            throws SQLException {
+    public static List<RawStcourse> queryByStudent(final Cache cache, final String studentId, final boolean includeOT,
+                                                   final boolean includeDropped) throws SQLException {
 
         final List<RawStcourse> result;
 
@@ -577,7 +576,7 @@ public enum RawStcourseLogic {
         while (iter.hasNext()) {
             final RawStcourse reg = iter.next();
 
-            if ("G".equals(reg.openStatus)) {
+            if ("G".equals(reg.openStatus) || "MATH 120".equals(reg.course)) {
                 iter.remove();
             }
             if ("Y".equals(reg.iInProgress) && "N".equals(reg.iCounted)) {
@@ -621,15 +620,15 @@ public enum RawStcourseLogic {
         try {
             final List<RawStcourse> list = executeQuery(conn, sql.toString());
 
-        if (!list.isEmpty()) {
-            result = list.getFirst();
+            if (!list.isEmpty()) {
+                result = list.getFirst();
 
-            if (list.size() > 1) {
-                Log.warning("Multiple registrations for ", studentId, " in ", courseId);
+                if (list.size() > 1) {
+                    Log.warning("Multiple registrations for ", studentId, " in ", courseId);
+                }
+
+                testProvisionalPrereqSatisfied(result);
             }
-
-            testProvisionalPrereqSatisfied(result);
-        }
         } finally {
             Cache.checkInConnection(conn);
         }

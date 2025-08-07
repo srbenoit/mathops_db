@@ -164,7 +164,8 @@ final class StudentStallPoints {
 
         this.registrations = new ArrayList<>(8000);
         for (final RawStcourse reg : allRegs) {
-            if ("Y".equals(reg.openStatus) && "N".equals(reg.completed)) {
+            if ("Y".equals(reg.openStatus) && "N".equals(reg.completed)
+                && RawRecordConstants.isOneCreditCourse(reg.course)) {
                 this.registrations.add(reg);
             }
         }

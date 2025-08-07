@@ -3,6 +3,7 @@ package dev.mathops.dbjobs.eos.grading;
 import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
 import dev.mathops.db.old.rawlogic.RawStcourseLogic;
+import dev.mathops.db.old.rawrecord.RawRecordConstants;
 import dev.mathops.db.old.rawrecord.RawStcourse;
 import dev.mathops.db.type.TermKey;
 
@@ -38,19 +39,16 @@ enum InitialStats {
                 if ("D".equals(reg.openStatus)) {
                     continue;
                 }
-                if ("Y".equals(reg.iInProgress) && "Y".equals(reg.finalClassRoll)) {
-                    final String course = reg.course;
-                    if ("M 117".equals(course) || "M 118".equals(course) || "M 124".equals(course)
-                        || "M 125".equals(course) || "M 126".equals(course)) {
-                        studentIds.add(reg.stuId);
-                        ++numIncRegs;
+                if ("Y".equals(reg.iInProgress) && "Y".equals(reg.finalClassRoll)
+                    && RawRecordConstants.isOneCreditCourse(reg.course)) {
+                    studentIds.add(reg.stuId);
+                    ++numIncRegs;
 
-                        if ("Y".equals(reg.completed)) {
-                            ++numCompleted;
-                        }
-                        if ("Y".equals(reg.iCounted)) {
-                            ++numCounted;
-                        }
+                    if ("Y".equals(reg.completed)) {
+                        ++numCompleted;
+                    }
+                    if ("Y".equals(reg.iCounted)) {
+                        ++numCounted;
                     }
                 }
             }
@@ -95,22 +93,17 @@ enum InitialStats {
                     continue;
                 }
 
-                if ("Y".equals(reg.finalClassRoll)) {
-                    final String course = reg.course;
-                    if ("M 117".equals(course) || "M 118".equals(course) || "M 124".equals(course)
-                        || "M 125".equals(course) || "M 126".equals(course)) {
-
-                        if ("550".equals(reg.sect)) {
-                            ++numMptRegs;
-                            if ("Y".equals(reg.completed)) {
-                                ++numMptCompleted;
-                            }
-                        } else {
-                            nonMptStudentIds.add(reg.stuId);
-                            ++numNonMptRegs;
-                            if ("Y".equals(reg.completed)) {
-                                ++numNonMptCompleted;
-                            }
+                if ("Y".equals(reg.finalClassRoll) && RawRecordConstants.isOneCreditCourse(reg.course)) {
+                    if ("550".equals(reg.sect)) {
+                        ++numMptRegs;
+                        if ("Y".equals(reg.completed)) {
+                            ++numMptCompleted;
+                        }
+                    } else {
+                        nonMptStudentIds.add(reg.stuId);
+                        ++numNonMptRegs;
+                        if ("Y".equals(reg.completed)) {
+                            ++numNonMptCompleted;
                         }
                     }
                 }

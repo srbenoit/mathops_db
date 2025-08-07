@@ -11,6 +11,7 @@ import dev.mathops.db.cfg.Login;
 import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.enums.EDisciplineActionType;
 import dev.mathops.db.enums.ETermName;
+import dev.mathops.db.logic.SystemData;
 import dev.mathops.db.logic.course.PaceTrackLogic;
 import dev.mathops.db.logic.course.PrerequisiteLogic;
 import dev.mathops.db.old.rawlogic.RawAdminHoldLogic;
@@ -175,6 +176,8 @@ public final class ImportBannerStudentRegistrations {
         final int curYear = active.term.year.intValue();
         final String term;
 
+        Log.info("Retrieving registrations for the ", active.term.longString, " term");
+
         if ("SPR".equals(suffix)) {
             term = curYear + "10";
         } else if ("SMR".equals(suffix)) {
@@ -195,7 +198,8 @@ public final class ImportBannerStudentRegistrations {
                     + "       COURSE_NUMBER='118' OR "
                     + "       COURSE_NUMBER='124' OR "
                     + "       COURSE_NUMBER='125' OR "
-                    + "       COURSE_NUMBER='126')";
+                    + "       COURSE_NUMBER='126' OR "
+                    + "       COURSE_NUMBER='120')";
 
             final LocalDate today = LocalDate.now();
 
@@ -234,7 +238,6 @@ public final class ImportBannerStudentRegistrations {
                     if (actualCourseId == null) {
                         Log.warning("No course/section record for MATH ", courseNum, " (", sect, ")");
                     } else {
-
                         final String credType = AbstractImpl.getString(rs, "COURSE_CREDIT_TYPE");
                         String instr = null;
                         if ("M".equals(credType)) {
@@ -318,32 +321,33 @@ public final class ImportBannerStudentRegistrations {
         final Map<String, Map<String, Map<String, Map<String, Integer>>>> map = new TreeMap<>();
 
         for (final RawStcourse test : allregs) {
-            if ("Y".equals(test.iInProgress)) {
-                continue;
-            }
+            if (RawRecordConstants.isOneCreditCourse(test.course)) {
+                if ("Y".equals(test.iInProgress)) {
+                    continue;
+                }
 
-            Map<String, Map<String, Map<String, Integer>>> sectMap = map.get(test.sect);
-            if (sectMap == null) {
-                sectMap = new TreeMap<>();
-                map.put(test.sect == null ? CoreConstants.SPC : test.sect, sectMap);
-            }
+                Map<String, Map<String, Map<String, Integer>>> sectMap = map.get(test.sect);
+                if (sectMap == null) {
+                    sectMap = new TreeMap<>();
+                    map.put(test.sect == null ? CoreConstants.SPC : test.sect, sectMap);
+                }
 
-            Map<String, Map<String, Integer>> gradingMap = sectMap.get(test.gradingOption);
-            if (gradingMap == null) {
-                gradingMap = new TreeMap<>();
-                sectMap.put(test.gradingOption == null ? CoreConstants.SPC : test.gradingOption,
-                        gradingMap);
-            }
+                Map<String, Map<String, Integer>> gradingMap = sectMap.get(test.gradingOption);
+                if (gradingMap == null) {
+                    gradingMap = new TreeMap<>();
+                    sectMap.put(test.gradingOption == null ? CoreConstants.SPC : test.gradingOption, gradingMap);
+                }
 
-            final String openStr = test.openStatus == null ? CoreConstants.SPC : test.openStatus;
+                final String openStr = test.openStatus == null ? CoreConstants.SPC : test.openStatus;
 
-            final Map<String, Integer> openMap = gradingMap.computeIfAbsent(openStr, s -> new TreeMap<>());
+                final Map<String, Integer> openMap = gradingMap.computeIfAbsent(openStr, s -> new TreeMap<>());
 
-            final Integer count = openMap.get(test.completed);
-            if (count == null) {
-                openMap.put(test.completed, Integer.valueOf(1));
-            } else {
-                openMap.put(test.completed, Integer.valueOf(count.intValue() + 1));
+                final Integer count = openMap.get(test.completed);
+                if (count == null) {
+                    openMap.put(test.completed, Integer.valueOf(1));
+                } else {
+                    openMap.put(test.completed, Integer.valueOf(count.intValue() + 1));
+                }
             }
         }
 
@@ -540,7 +544,8 @@ public final class ImportBannerStudentRegistrations {
         final Iterator<RawStcourse> iter = dbRegs.iterator();
         while (iter.hasNext()) {
             final RawStcourse next = iter.next();
-            if ("Y".equals(next.iInProgress) || next.iDeadlineDt != null) {
+            if (RawRecordConstants.isOneCreditCourse(next.course)
+                && ("Y".equals(next.iInProgress) || next.iDeadlineDt != null)) {
                 incompletes.add(next);
                 iter.remove();
                 ++numInc;
@@ -1162,16 +1167,19 @@ public final class ImportBannerStudentRegistrations {
     private static void updateStudentTermRecords(final Cache cache,
                                                  final Collection<? super String> report) throws SQLException {
 
-        final TermRec active = cache.getSystemData().getActiveTerm();
+        final SystemData systemData = cache.getSystemData();
+        final TermRec active = systemData.getActiveTerm();
 
         // NOTE: we ignore "OT" and dropped since they can't contribute to pace/track
         final List<RawStcourse> regs = RawStcourseLogic.queryByTerm(cache, active.term, false, false);
 
-        // Collect all registrations into a list per student
+        // Collect all registrations in 1-credit courses into a list per student
         final Map<String, List<RawStcourse>> studentRegs = new HashMap<>(2500);
         for (final RawStcourse reg : regs) {
-            final List<RawStcourse> list = studentRegs.computeIfAbsent(reg.stuId, s -> new ArrayList<>(6));
-            list.add(reg);
+            if (RawRecordConstants.isOneCreditCourse(reg.course)) {
+                final List<RawStcourse> list = studentRegs.computeIfAbsent(reg.stuId, s -> new ArrayList<>(6));
+                list.add(reg);
+            }
         }
 
         for (final Map.Entry<String, List<RawStcourse>> entry : studentRegs.entrySet()) {
@@ -1240,19 +1248,20 @@ public final class ImportBannerStudentRegistrations {
         int incCount = 0;
 
         for (final RawStcourse test : all) {
+            if (RawRecordConstants.isOneCreditCourse(test.course)) {
+                if ("Y".equals(test.iInProgress)) {
+                    ++incCount;
+                } else if ("Y".equals(test.finalClassRoll)) {
 
-            if ("Y".equals(test.iInProgress)) {
-                ++incCount;
-            } else if ("Y".equals(test.finalClassRoll)) {
+                    final String type = test.instrnType;
 
-                final String type = test.instrnType;
-
-                if ("RI".equals(type)) {
-                    ++riCount;
-                } else if ("CE".equals(type)) {
-                    ++ceCount;
-                } else if ("OT".equals(type)) {
-                    ++otCount;
+                    if ("RI".equals(type)) {
+                        ++riCount;
+                    } else if ("CE".equals(type)) {
+                        ++ceCount;
+                    } else if ("OT".equals(type)) {
+                        ++otCount;
+                    }
                 }
             }
         }

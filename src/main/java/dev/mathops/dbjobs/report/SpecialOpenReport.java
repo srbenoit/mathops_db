@@ -12,6 +12,7 @@ import dev.mathops.db.logic.SystemData;
 import dev.mathops.db.old.rawlogic.RawStcourseLogic;
 import dev.mathops.db.old.rawlogic.RawStudentLogic;
 import dev.mathops.db.old.rawrecord.RawCsection;
+import dev.mathops.db.old.rawrecord.RawRecordConstants;
 import dev.mathops.db.old.rawrecord.RawStcourse;
 import dev.mathops.db.old.rawrecord.RawStudent;
 import dev.mathops.db.rec.TermRec;
@@ -86,7 +87,7 @@ public enum SpecialOpenReport {
             }
 
             final String stat = test.openStatus;
-            if ("G".equals(stat) || "N".equals(stat)) {
+            if (("G".equals(stat) || "N".equals(stat)) && RawRecordConstants.isOneCreditCourse(test.course)) {
 
                 if ("G".equals(stat)) {
                     ++totalG;

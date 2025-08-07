@@ -8,6 +8,7 @@ import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.old.rawlogic.RawStcourseLogic;
 import dev.mathops.db.old.rawlogic.RawStexamLogic;
 import dev.mathops.db.old.rawlogic.RawStqaLogic;
+import dev.mathops.db.old.rawrecord.RawRecordConstants;
 import dev.mathops.db.old.rawrecord.RawStcourse;
 import dev.mathops.db.old.rawrecord.RawStexam;
 import dev.mathops.db.old.rawrecord.RawStqa;
@@ -55,7 +56,9 @@ final class FinalExamsToReexamine {
             Log.info("Found " + allRegs.size() + " registrations to examine...");
 
             for (final RawStcourse reg : allRegs) {
-                checkReg(reg);
+                if (RawRecordConstants.isOneCreditCourse(reg.course)) {
+                    checkReg(reg);
+                }
             }
         } catch (final SQLException ex) {
             Log.warning(ex);

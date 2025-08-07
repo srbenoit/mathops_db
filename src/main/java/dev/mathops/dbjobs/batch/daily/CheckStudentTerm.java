@@ -7,9 +7,11 @@ import dev.mathops.db.Contexts;
 import dev.mathops.db.DbConnection;
 import dev.mathops.db.cfg.DatabaseConfig;
 import dev.mathops.db.cfg.Profile;
+import dev.mathops.db.logic.SystemData;
 import dev.mathops.db.logic.course.PaceTrackLogic;
 import dev.mathops.db.old.rawlogic.RawStcourseLogic;
 import dev.mathops.db.old.rawlogic.RawSttermLogic;
+import dev.mathops.db.old.rawrecord.RawRecordConstants;
 import dev.mathops.db.old.rawrecord.RawStcourse;
 import dev.mathops.db.old.rawrecord.RawStterm;
 import dev.mathops.db.rec.TermRec;
@@ -62,23 +64,25 @@ public final class CheckStudentTerm {
             final Cache cache = new Cache(this.profile);
 
             try {
-                final TermRec active = cache.getSystemData().getActiveTerm();
+                final SystemData systemData = cache.getSystemData();
+                final TermRec active = systemData.getActiveTerm();
                 report.add("Active term is " + active.term.longString + ".");
 
                 final List<RawStcourse> allRegs = RawStcourseLogic.queryByTerm(cache, active.term, false, false);
                 report.add("Queried " + allRegs.size() + " active registrations.");
 
-                final Map<String, List<RawStcourse>> stuRegs =
-                        new HashMap<>(allRegs.size() / 2);
+                final Map<String, List<RawStcourse>> stuRegs = new HashMap<>(allRegs.size() / 2);
                 for (final RawStcourse reg : allRegs) {
                     // Remove non-counted incompletes and "ignored"
                     if ("G".equals(reg.openStatus) || ("Y".equals(reg.iInProgress) && "N".equals(reg.iCounted))) {
                         continue;
                     }
 
-                    final String studentId = reg.stuId;
-                    final List<RawStcourse> inner = stuRegs.computeIfAbsent(studentId, s -> new ArrayList<>(5));
-                    inner.add(reg);
+                    if (RawRecordConstants.isOneCreditCourse(reg.course)) {
+                        final String studentId = reg.stuId;
+                        final List<RawStcourse> inner = stuRegs.computeIfAbsent(studentId, s -> new ArrayList<>(5));
+                        inner.add(reg);
+                    }
                 }
                 report.add("Found " + stuRegs.size() + " distinct students with registrations.");
 

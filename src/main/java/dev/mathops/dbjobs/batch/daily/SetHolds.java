@@ -16,6 +16,7 @@ import dev.mathops.db.old.rawlogic.RawStudentLogic;
 import dev.mathops.db.old.rawrecord.RawAdminHold;
 import dev.mathops.db.old.rawrecord.RawDiscipline;
 import dev.mathops.db.old.rawrecord.RawHoldType;
+import dev.mathops.db.old.rawrecord.RawRecordConstants;
 import dev.mathops.db.old.rawrecord.RawResource;
 import dev.mathops.db.old.rawrecord.RawStchallenge;
 import dev.mathops.db.old.rawrecord.RawStcourse;
@@ -245,9 +246,11 @@ public enum SetHolds {
         // Group registrations by student
         final Map<String, List<RawStcourse>> studentRegs = new HashMap<>(5000);
         for (final RawStcourse reg : allRegs) {
-            final String stuId = reg.stuId;
-            final List<RawStcourse> stuRegs = studentRegs.computeIfAbsent(stuId, s -> new ArrayList<>(5));
-            stuRegs.add(reg);
+            if (RawRecordConstants.isOneCreditCourse(reg.course)) {
+                final String stuId = reg.stuId;
+                final List<RawStcourse> stuRegs = studentRegs.computeIfAbsent(stuId, s -> new ArrayList<>(5));
+                stuRegs.add(reg);
+            }
         }
 
         final List<RawDiscipline> allDiscipline = RawDisciplineLogic.queryByActionCode(cache, "04");

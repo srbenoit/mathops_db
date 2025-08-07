@@ -16,6 +16,7 @@ import dev.mathops.db.old.rawlogic.RawStcourseLogic;
 import dev.mathops.db.old.rawrecord.RawCsection;
 import dev.mathops.db.old.rawrecord.RawDontSubmit;
 import dev.mathops.db.old.rawrecord.RawParameters;
+import dev.mathops.db.old.rawrecord.RawRecordConstants;
 import dev.mathops.db.old.rawrecord.RawStcourse;
 import dev.mathops.db.rec.TermRec;
 import dev.mathops.db.type.TermKey;
@@ -184,7 +185,7 @@ public class CreateAPIFile implements Runnable {
             if ("Y".equals(reg.iInProgress) || "D".equals(reg.openStatus)) {
                 continue;
             }
-            if ("Y".equals(reg.finalClassRoll)) {
+            if ("Y".equals(reg.finalClassRoll) && RawRecordConstants.isOneCreditCourse(reg.course)) {
                 ++numConsidered;
                 boolean excluded = false;
                 for (final RawDontSubmit dont : dontSubmit) {

@@ -14,6 +14,7 @@ import dev.mathops.db.old.rawlogic.RawStcourseLogic;
 import dev.mathops.db.old.rawlogic.RawStexamLogic;
 import dev.mathops.db.old.rawlogic.RawSthomeworkLogic;
 import dev.mathops.db.old.rawlogic.RawSttermLogic;
+import dev.mathops.db.old.rawrecord.RawRecordConstants;
 import dev.mathops.db.old.rawrecord.RawStcourse;
 import dev.mathops.db.old.rawrecord.RawStexam;
 import dev.mathops.db.old.rawrecord.RawSthomework;
@@ -121,18 +122,20 @@ public enum StudentWorkReport {
             if (!"Y".equals(test.finalClassRoll) || "Y".equals(test.iInProgress)) {
                 continue;
             }
-            final String stuId = test.stuId;
+            if (RawRecordConstants.isOneCreditCourse(test.course)) {
+                final String stuId = test.stuId;
 
-            if (!studentIds.contains(stuId)) {
-                studentIds.add(stuId);
+                if (!studentIds.contains(stuId)) {
+                    studentIds.add(stuId);
 
-                final RawStterm stterm = RawSttermLogic.query(cache, term, test.stuId);
-                if (stterm != null) {
-                    final Map<String, List<String>> trackMap = classifiedStudentIds.computeIfAbsent(
-                            stterm.pace, A -> new HashMap<>(10));
-                    final List<String> studentList = trackMap.computeIfAbsent(stterm.paceTrack,
-                            A -> new ArrayList<>(1000));
-                    studentList.add(stuId);
+                    final RawStterm stterm = RawSttermLogic.query(cache, term, test.stuId);
+                    if (stterm != null) {
+                        final Map<String, List<String>> trackMap = classifiedStudentIds.computeIfAbsent(
+                                stterm.pace, A -> new HashMap<>(10));
+                        final List<String> studentList = trackMap.computeIfAbsent(stterm.paceTrack,
+                                A -> new ArrayList<>(1000));
+                        studentList.add(stuId);
+                    }
                 }
             }
         }

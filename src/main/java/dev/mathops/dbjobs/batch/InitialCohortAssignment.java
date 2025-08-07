@@ -11,6 +11,7 @@ import dev.mathops.db.old.rawlogic.RawCohortLogic;
 import dev.mathops.db.old.rawlogic.RawStcourseLogic;
 import dev.mathops.db.old.rawlogic.RawSttermLogic;
 import dev.mathops.db.old.rawrecord.RawCohort;
+import dev.mathops.db.old.rawrecord.RawRecordConstants;
 import dev.mathops.db.old.rawrecord.RawStcourse;
 import dev.mathops.db.old.rawrecord.RawStterm;
 import dev.mathops.db.rec.TermRec;
@@ -69,8 +70,10 @@ final class InitialCohortAssignment {
                 continue;
             }
 
-            final List<RawStcourse> list = sortedRegs.computeIfAbsent(test.stuId, s -> new ArrayList<>(10));
-            list.add(test);
+            if (RawRecordConstants.isOneCreditCourse(test.course)) {
+                final List<RawStcourse> list = sortedRegs.computeIfAbsent(test.stuId, s -> new ArrayList<>(10));
+                list.add(test);
+            }
         }
 
         // Within each student's registration list, sort courses into the order defined by "pace

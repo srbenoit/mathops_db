@@ -19,6 +19,7 @@ import dev.mathops.db.old.rawlogic.RawSthomeworkLogic;
 import dev.mathops.db.old.rawrecord.RawCsection;
 import dev.mathops.db.old.rawrecord.RawDontSubmit;
 import dev.mathops.db.old.rawrecord.RawParameters;
+import dev.mathops.db.old.rawrecord.RawRecordConstants;
 import dev.mathops.db.old.rawrecord.RawStcourse;
 import dev.mathops.db.old.rawrecord.RawStexam;
 import dev.mathops.db.old.rawrecord.RawSthomework;
@@ -197,7 +198,7 @@ public class CreateLastAttendanceFile implements Runnable {
             if ("Y".equals(reg.iInProgress) || "D".equals(reg.openStatus)) {
                 continue;
             }
-            if ("Y".equals(reg.finalClassRoll)) {
+            if ("Y".equals(reg.finalClassRoll) && RawRecordConstants.isOneCreditCourse(reg.course)) {
                 final String grade = reg.courseGrade;
                 if ("F".equals(grade) || "U".equals(grade)) {
                     ++numConsidered;

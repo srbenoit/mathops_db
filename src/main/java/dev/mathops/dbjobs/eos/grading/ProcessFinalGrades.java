@@ -11,6 +11,7 @@ import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.old.rawlogic.RawMpeCreditLogic;
 import dev.mathops.db.old.rawlogic.RawStcourseLogic;
 import dev.mathops.db.old.rawrecord.RawMpeCredit;
+import dev.mathops.db.old.rawrecord.RawRecordConstants;
 import dev.mathops.db.old.rawrecord.RawStcourse;
 import dev.mathops.db.rec.TermRec;
 import dev.mathops.db.reclogic.TermLogic;
@@ -85,6 +86,7 @@ public class ProcessFinalGrades implements Runnable {
 
         try {
             final List<RawStcourse> allRegs = RawStcourseLogic.queryByTerm(this.cache, active.term, false, false);
+
             for (final RawStcourse reg : allRegs) {
                 final String iInProgress = reg.iInProgress;
                 final String openStatus = reg.openStatus;
@@ -92,12 +94,7 @@ public class ProcessFinalGrades implements Runnable {
                     continue;
                 }
 
-                final String course = reg.course;
-                final String finalClassRoll = reg.finalClassRoll;
-
-                if (("M 117".equals(course) || "M 118".equals(course) || "M 124".equals(course)
-                     || "M 125".equals(course) || "M 126".equals(course))
-                    && "Y".equals(finalClassRoll)) {
+                if ("Y".equals(reg.finalClassRoll) && RawRecordConstants.isOneCreditCourse(reg.course)) {
                     incRegs.add(reg);
                 }
             }

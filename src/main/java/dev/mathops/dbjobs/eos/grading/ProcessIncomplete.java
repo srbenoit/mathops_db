@@ -10,6 +10,7 @@ import dev.mathops.db.cfg.DatabaseConfig;
 import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.old.rawlogic.RawStcourseLogic;
 import dev.mathops.db.old.rawlogic.RawStudentLogic;
+import dev.mathops.db.old.rawrecord.RawRecordConstants;
 import dev.mathops.db.old.rawrecord.RawStcourse;
 import dev.mathops.db.old.rawrecord.RawStudent;
 import dev.mathops.db.rec.TermRec;
@@ -85,17 +86,14 @@ public final class ProcessIncomplete implements Runnable {
 
         try {
             final List<RawStcourse> allRegs = RawStcourseLogic.queryByTerm(this.cache, active.term, false, false);
+
             for (final RawStcourse reg : allRegs) {
-                final String course = reg.course;
                 final String openStatus = reg.openStatus;
                 final String finalClassRoll = reg.finalClassRoll;
                 final String iInProgress = reg.iInProgress;
 
-                if ("Y".equals(iInProgress)
-                    && ("M 117".equals(course) || "M 118".equals(course) || "M 124".equals(course)
-                        || "M 125".equals(course) || "M 126".equals(course))
-                    && (!"D".equals(openStatus))
-                    && "Y".equals(finalClassRoll)) {
+                if ("Y".equals(iInProgress) && "Y".equals(finalClassRoll) && (!"D".equals(openStatus))
+                    && RawRecordConstants.isOneCreditCourse(reg.course)) {
                     incRegs.add(reg);
                 }
             }

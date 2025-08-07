@@ -10,6 +10,7 @@ import dev.mathops.db.cfg.DatabaseConfig;
 import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.logic.course.PaceTrackLogic;
 import dev.mathops.db.old.rawlogic.RawStcourseLogic;
+import dev.mathops.db.old.rawrecord.RawRecordConstants;
 import dev.mathops.db.old.rawrecord.RawStcourse;
 import dev.mathops.text.builder.HtmlBuilder;
 
@@ -24,6 +25,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -88,6 +90,13 @@ final class StudentsByPaceAndCourse implements Runnable {
 
             try {
                 this.registrations = RawStcourseLogic.queryActiveForActiveTerm(cache);
+                final Iterator<RawStcourse> iter = this.registrations.iterator();
+                while (iter.hasNext()) {
+                    final RawStcourse next = iter.next();
+                    if (!RawRecordConstants.isOneCreditCourse(next.course)) {
+                        iter.remove();
+                    }
+                }
 
                 Log.info("Generating report of enrollments in courses at each position in each track...");
 

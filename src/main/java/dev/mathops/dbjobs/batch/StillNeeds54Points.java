@@ -84,6 +84,11 @@ final class StillNeeds54Points {
         while (iter.hasNext()) {
             final RawStcourse reg = iter.next();
 
+            if (!RawRecordConstants.isOneCreditCourse(reg.course)) {
+                iter.remove();
+                continue;
+            }
+
             // If dropped before drop deadline disregard
             // Remove incompletes from this list
             if ("002".equals(reg.sect)) {
@@ -92,12 +97,10 @@ final class StillNeeds54Points {
                     iter.remove();
                     continue;
                 }
-            } else {
-                if (("D".equals(reg.openStatus) && reg.lastClassRollDt.isBefore(DAY_AFTER_DROP_SECT_1))
-                    || "Y".equals(reg.iInProgress)) {
-                    iter.remove();
-                    continue;
-                }
+            } else if (("D".equals(reg.openStatus) && reg.lastClassRollDt.isBefore(DAY_AFTER_DROP_SECT_1))
+                       || "Y".equals(reg.iInProgress)) {
+                iter.remove();
+                continue;
             }
 
             final String course = reg.course;

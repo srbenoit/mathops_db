@@ -9,6 +9,7 @@ import dev.mathops.db.cfg.DatabaseConfig;
 import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.old.rawlogic.RawStcourseLogic;
 import dev.mathops.db.old.rawlogic.RawStexamLogic;
+import dev.mathops.db.old.rawrecord.RawRecordConstants;
 import dev.mathops.db.old.rawrecord.RawStcourse;
 import dev.mathops.db.old.rawrecord.RawStexam;
 import dev.mathops.db.rec.TermRec;
@@ -102,11 +103,8 @@ public enum NotStartedButHasWork {
         report.add("----------    ------    ----");
 
         for (final RawStcourse test : activeTermRegs) {
-
-            if (test.openStatus == null) {
-
-                final List<RawStexam> exams =
-                        RawStexamLogic.getExams(cache, test.stuId, test.course, false, "R");
+            if (test.openStatus == null && RawRecordConstants.isOneCreditCourse(test.course)) {
+                final List<RawStexam> exams = RawStexamLogic.getExams(cache, test.stuId, test.course, false, "R");
 
                 if (!exams.isEmpty()) {
                     report.add(test.stuId + "     " + test.course + "     " + test.sect);
@@ -133,14 +131,14 @@ public enum NotStartedButHasWork {
         final LocalDate cutoff = LocalDate.of(2022, 7, 22);
 
         // Exclude OT but include dropped for this part
-        final List<RawStcourse> activeTermRegs =
-                RawStcourseLogic.queryByTerm(cache, active.term, false, true);
+        final List<RawStcourse> activeTermRegs = RawStcourseLogic.queryByTerm(cache, active.term, false, true);
 
         // Step 1: Sort into groups with last_class_roll after cutoff, organized by stu/course/sect
         final Map<String, List<RawStcourse>> found = new HashMap<>(100);
         for (final RawStcourse test : activeTermRegs) {
+            if (test.lastClassRollDt != null && test.lastClassRollDt.isAfter(cutoff)
+                && RawRecordConstants.isOneCreditCourse(test.course)) {
 
-            if (test.lastClassRollDt != null && test.lastClassRollDt.isAfter(cutoff)) {
                 final String key = test.stuId + test.course + test.sect;
 
                 final List<RawStcourse> list = found.computeIfAbsent(key, s -> new ArrayList<>(5));
@@ -191,12 +189,12 @@ public enum NotStartedButHasWork {
         final TermRec active = cache.getSystemData().getActiveTerm();
 
         // Exclude OT and dropped for this part
-        final List<RawStcourse> activeTermRegs =
-                RawStcourseLogic.queryByTerm(cache, active.term, false, false);
+        final List<RawStcourse> activeTermRegs = RawStcourseLogic.queryByTerm(cache, active.term, false, false);
 
         final Map<String, List<RawStcourse>> byStudent = new HashMap<>(10);
         for (final RawStcourse test : activeTermRegs) {
-            if ("Y".equals(test.openStatus) && test.paceOrder == null) {
+            if ("Y".equals(test.openStatus) && test.paceOrder == null
+                && RawRecordConstants.isOneCreditCourse(test.course)) {
                 final List<RawStcourse> list = byStudent.computeIfAbsent(test.stuId, s -> new ArrayList<>(5));
                 list.add(test);
             }
@@ -240,8 +238,7 @@ public enum NotStartedButHasWork {
         final TermRec active = cache.getSystemData().getActiveTerm();
 
         // Exclude OT and dropped for this part
-        final List<RawStcourse> activeTermRegs =
-                RawStcourseLogic.queryByTerm(cache, active.term, false, false);
+        final List<RawStcourse> activeTermRegs = RawStcourseLogic.queryByTerm(cache, active.term, false, false);
 
         // Step 1: Group by student
         final Map<String, List<RawStcourse>> found = new HashMap<>(100);
@@ -249,9 +246,10 @@ public enum NotStartedButHasWork {
             if ("G".equals(test.openStatus)) {
                 continue;
             }
-
-            final List<RawStcourse> list = found.computeIfAbsent(test.stuId, s -> new ArrayList<>(5));
-            list.add(test);
+            if (RawRecordConstants.isOneCreditCourse(test.course)) {
+                final List<RawStcourse> list = found.computeIfAbsent(test.stuId, s -> new ArrayList<>(5));
+                list.add(test);
+            }
         }
 
         // Now, for each student, find all exams on record, and get the earliest exam date in each

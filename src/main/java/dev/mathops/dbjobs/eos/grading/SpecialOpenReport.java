@@ -12,6 +12,7 @@ import dev.mathops.db.old.rawlogic.RawCsectionLogic;
 import dev.mathops.db.old.rawlogic.RawStcourseLogic;
 import dev.mathops.db.old.rawlogic.RawStudentLogic;
 import dev.mathops.db.old.rawrecord.RawCsection;
+import dev.mathops.db.old.rawrecord.RawRecordConstants;
 import dev.mathops.db.old.rawrecord.RawStcourse;
 import dev.mathops.db.old.rawrecord.RawStudent;
 import dev.mathops.db.rec.TermRec;
@@ -137,10 +138,11 @@ public class SpecialOpenReport implements Runnable {
                     continue;
                 }
 
-                final String openStatus = reg.openStatus;
-
-                if (("G".equals(openStatus) || "N".equals(openStatus)) && "Y".equals(reg.finalClassRoll)) {
-                    result.add(reg);
+                if (RawRecordConstants.isOneCreditCourse(reg.course)) {
+                    final String openStatus = reg.openStatus;
+                    if (("G".equals(openStatus) || "N".equals(openStatus)) && "Y".equals(reg.finalClassRoll)) {
+                        result.add(reg);
+                    }
                 }
             }
         } catch (final SQLException ex) {

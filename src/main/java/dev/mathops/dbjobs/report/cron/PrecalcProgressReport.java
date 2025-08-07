@@ -153,8 +153,9 @@ public final class PrecalcProgressReport {
         final List<RawStcourse> regs = RawStcourseLogic.queryByStudent(cache, stu.stuId, activeKey, false, false);
 
         // Remove "forfeit" courses and Incomplete courses not counted in pace
-        regs.removeIf(next -> "G".equals(next.openStatus) || ("Y".equals(next.iInProgress)
-                                                              && "N".equals(next.iCounted)));
+        regs.removeIf(next -> "G".equals(next.openStatus)
+                              | ("Y".equals(next.iInProgress) && "N".equals(next.iCounted))
+                              | !RawRecordConstants.isOneCreditCourse(next.course));
 
         // Order them by "pace order" if present, by course number if not
         final List<RawStcourse> ordered = new ArrayList<>(regs.size());
