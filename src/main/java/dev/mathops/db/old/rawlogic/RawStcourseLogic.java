@@ -1028,7 +1028,6 @@ public enum RawStcourseLogic {
                     "   AND term=", conn.sqlStringValue(termKey.termCode),
                     "   AND term_yr=", conn.sqlIntegerValue(termKey.shortYear),
                     "   AND last_class_roll_dt=", conn.sqlDateValue(lastRollDt),
-                    "   AND final_class_roll='Y'",
                     "   AND open_status='D'");
 
             try (final Statement stmt = conn.createStatement()) {

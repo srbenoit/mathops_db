@@ -40,6 +40,9 @@ final class StillNeeds54Points {
     /** The date after the drop date for section 2 (Wednesday of week 10). */
     private static final LocalDate DAY_AFTER_DROP_SECT_2 = LocalDate.of(2025, 4, 2);
 
+    /** The date after the drop date for section 401. */
+    private static final LocalDate DAY_AFTER_DROP_SECT_401 = LocalDate.of(2025, 6, 24);
+
     /** The database profile through which to access the database. */
     private final Profile profile;
 
@@ -97,6 +100,12 @@ final class StillNeeds54Points {
                     iter.remove();
                     continue;
                 }
+            } else if ("401".equals(reg.sect) || "801".equals(reg.sect)) {
+                if (("D".equals(reg.openStatus) && reg.lastClassRollDt.isBefore(DAY_AFTER_DROP_SECT_401))
+                    || "Y".equals(reg.iInProgress)) {
+                    iter.remove();
+                    continue;
+                }
             } else if (("D".equals(reg.openStatus) && reg.lastClassRollDt.isBefore(DAY_AFTER_DROP_SECT_1))
                        || "Y".equals(reg.iInProgress)) {
                 iter.remove();
@@ -105,7 +114,8 @@ final class StillNeeds54Points {
 
             final String course = reg.course;
             switch (course) {
-                case RawRecordConstants.M117, RawRecordConstants.M118, RawRecordConstants.M124 -> {
+                case RawRecordConstants.M117, RawRecordConstants.M118, RawRecordConstants.M124, RawRecordConstants.M125,
+                     RawRecordConstants.M126 -> {
                     final String sect = reg.sect;
 
                     // NOTE: For these courses, we only disregard 550
@@ -113,22 +123,6 @@ final class StillNeeds54Points {
                     if ("550".equals(sect)) {
                         iter.remove();
                     }
-                }
-                case RawRecordConstants.M125, RawRecordConstants.M126 -> {
-                    final String sect = reg.sect;
-
-                    // NOTE: For these, we disregard, 550, 003, and 004 (face-to-face)
-
-                    if ("550".equals(sect) || "003".equals(sect) || "004".equals(sect)) {
-                        iter.remove();
-                    }
-                }
-                case RawRecordConstants.MATH125, RawRecordConstants.MATH126 ->
-                    // New courses, remove.
-                        iter.remove();
-                case null, default -> {
-                    Log.warning("Unexpected course: ", course);
-                    iter.remove();
                 }
             }
         }
@@ -229,8 +223,8 @@ final class StillNeeds54Points {
                         Log.info("Marking withdrawal for ", reg.stuId, " in ", reg.course);
 
                         // FIXME:
-//                         RawStcourseLogic.updateDroppedGrade(cache, reg.stuId, reg.course, reg.sect,
-//                         reg.termKey, reg.lastClassRollDt, "W");
+//                        RawStcourseLogic.updateDroppedGrade(cache, reg.stuId, reg.course, reg.sect,
+//                                reg.termKey, reg.lastClassRollDt, "W");
                     }
                 } else if ("N".equals(reg.openStatus)) {
 
