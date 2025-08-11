@@ -1,4 +1,4 @@
-package dev.mathops.db.logic.transfercredit;
+package dev.mathops.dbjobs.batch.daily;
 
 import dev.mathops.commons.CoreConstants;
 import dev.mathops.commons.EDebugMode;
