@@ -1,7 +1,6 @@
 package dev.mathops.dbjobs.eos.scans;
 
 import dev.mathops.commons.CoreConstants;
-import dev.mathops.commons.EDebugMode;
 import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
 import dev.mathops.db.Contexts;
@@ -26,18 +25,11 @@ import java.util.Set;
 /**
  * A scan of registrations that checks for situations where a student did not complete a course, did not Forfeit the
  * course, but forfeiting would have improved the grade in an earlier course due to a different deadline schedule.
- *
- * <p>
- * If run in DEBUG mode, the program will simply scan for such cases and print them out.  In NORMAL mode, it will apply
- * the forfeits where beneficial (and print out what was done).
  * <p>
  * TODO: It might be useful to assign a different "open_status" code for forfeits applied this way to allow us to
  *  distinguish from forfeits based on student request.
  */
 public class ScanForHelpfulForfeits implements Runnable {
-
-    /** Flag to run in "debug" mode which prints changes that would be performed rather than performing any changes. */
-    private static final EDebugMode DEBUG_MODE = EDebugMode.DEBUG;
 
     /** The data cache. */
     private final Cache cache;
