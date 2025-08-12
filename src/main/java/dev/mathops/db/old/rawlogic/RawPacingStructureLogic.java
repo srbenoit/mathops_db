@@ -209,7 +209,11 @@ public enum RawPacingStructureLogic {
                 " WHERE term=", conn.sqlStringValue(termKey.termCode),
                 "   AND term_yr=", termKey.shortYear);
 
-        return executeListQuery(cache, sql);
+        try {
+            return executeListQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
     }
 
     /**
@@ -268,9 +272,25 @@ public enum RawPacingStructureLogic {
      */
     private static List<RawPacingStructure> executeListQuery(final Cache cache, final String sql) throws SQLException {
 
-        final List<RawPacingStructure> result = new ArrayList<>(20);
-
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+        try {
+            return executeListQuery(conn, sql);
+        } finally {
+            Cache.checkInConnection(conn);
+        }
+    }
+
+    /**
+     * Executes a query that returns a list of records.
+     *
+     * @param conn the connection
+     * @param sql  the query
+     * @return the list of records
+     * @throws SQLException if there is an error accessing the database
+     */
+    private static List<RawPacingStructure> executeListQuery(final DbConnection conn, final String sql) throws SQLException {
+
+        final List<RawPacingStructure> result = new ArrayList<>(20);
 
         try (final Statement stmt = conn.createStatement();
              final ResultSet rs = stmt.executeQuery(sql)) {
@@ -278,8 +298,6 @@ public enum RawPacingStructureLogic {
             while (rs.next()) {
                 result.add(RawPacingStructure.fromResultSet(rs));
             }
-        } finally {
-            Cache.checkInConnection(conn);
         }
 
         return result;

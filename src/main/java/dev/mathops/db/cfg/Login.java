@@ -3,6 +3,7 @@ package dev.mathops.db.cfg;
 import dev.mathops.commons.log.Log;
 import dev.mathops.db.DbConnection;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedList;
@@ -148,7 +149,8 @@ public final class Login {
             if (numCheckedOut == POOL_WARN_SIZE) {
                 final String numCheckedOutStr = Integer.toString(numCheckedOut);
                 final String msg = Res.fmt(Res.LOGIN_MANY_CONNECTIONS, this.id, numCheckedOutStr);
-                Log.warning(msg);
+                final IOException ex = new IOException(msg);
+                Log.warning(ex);
             }
         }
 

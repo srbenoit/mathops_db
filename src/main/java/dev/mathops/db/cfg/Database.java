@@ -53,7 +53,7 @@ public final class Database implements Comparable<Database> {
      * @param theDba      the username of the DBA if administration will be supported
      * @throws IllegalArgumentException if the server or database name is null
      */
-    Database(final Server theServer, final String theId, final String theInstance, final String theDba) {
+    public Database(final Server theServer, final String theId, final String theInstance, final String theDba) {
 
         if (theServer == null || theId == null) {
             final String msg = Res.get(Res.DATABASE_NULL_SERVER_ID);

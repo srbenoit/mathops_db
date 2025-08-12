@@ -27,7 +27,7 @@ import java.util.List;
 public class ProcessFinalGrades implements Runnable {
 
     /** Flag to run in "debug" mode which prints changes that would be performed rather than performing any changes. */
-    private static final EDebugMode DEBUG_MODE = EDebugMode.DEBUG;
+    private static final EDebugMode DEBUG_MODE = EDebugMode.NORMAL;
 
     /** The data cache. */
     private final Cache cache;
@@ -73,7 +73,7 @@ public class ProcessFinalGrades implements Runnable {
      * dropped where the student is on the final class roll.
      *
      * @param active the active term record
-     * @return the list of Incomplete records
+     * @return the list of normal records
      */
     private List<RawStcourse> getNormalRegs(final TermRec active) {
 
@@ -99,12 +99,12 @@ public class ProcessFinalGrades implements Runnable {
                 }
             }
         } catch (final SQLException ex) {
-            Log.warning("Failed to scan for Incomplete course registrations.", ex);
+            Log.warning("Failed to scan for course registrations.", ex);
         }
 
         final int count = incRegs.size();
         final String countStr = Integer.toString(count);
-        Log.info("Found ", countStr, " Incomplete registrations to process...");
+        Log.info("Found ", countStr, " registrations to process...");
 
         return incRegs;
     }
@@ -113,7 +113,7 @@ public class ProcessFinalGrades implements Runnable {
      * Does something impactful.
      *
      * @param active  the active term record
-     * @param incRegs the list of "Incomplete" registration records to process
+     * @param incRegs the list of registration records to process
      */
     private void processRegs(final TermRec active, final Iterable<RawStcourse> incRegs) {
 

@@ -158,8 +158,8 @@ public class PerformRollover implements Runnable {
     }
 
     /**
-     * Deletes administrative holds except hold 05 (Deferred F) and hold 06 (Discretionary hold) or for any hold whose
-     * hold number starts with "4" (overdue resources lends).
+     * Deletes administrative holds except hold 06 (Discretionary hold) or for any hold whose hold number starts with
+     * "4" (overdue resources lends).
      *
      * @return success or failure
      */
@@ -175,6 +175,7 @@ public class PerformRollover implements Runnable {
             int count = 0;
             for (final RawAdminHold hold : holds) {
                 final String holdId = hold.holdId;
+
                 // FIXME: This should be a field on the "admin_hold" record - retain across terms?
                 if ("06".equals(holdId) || holdId.startsWith("4")) {
                     continue;
