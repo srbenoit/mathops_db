@@ -9,6 +9,7 @@ import dev.mathops.db.ESchema;
 import dev.mathops.db.old.rawrecord.RawRecordConstants;
 import dev.mathops.db.old.rawrecord.RawStchallenge;
 import dev.mathops.db.old.rawrecord.RawStexam;
+import dev.mathops.db.old.rawrecord.RawSthomework;
 import dev.mathops.db.old.rawrecord.RawStmpe;
 import dev.mathops.db.old.rawrecord.RawUsers;
 import dev.mathops.db.rec.MasteryAttemptRec;
@@ -212,6 +213,33 @@ public enum RawStexamLogic {
             throw ex;
         } finally {
             Cache.checkInConnection(conn);
+        }
+    }
+
+    /**
+     * Deletes a record but does not do a commit.
+     *
+     * @param cache  the data cache
+     * @param conn   a connection checked out from the cache (for the LEGACY schema)
+     * @param record the record to delete
+     * @return {@code true} if successful; {@code false} if not
+     * @throws SQLException if there is an error accessing the database
+     */
+    public static boolean deleteNoCommit(final Cache cache, final DbConnection conn, final RawStexam record)
+            throws SQLException {
+
+        final String tableName = getTableName(cache);
+
+        final String sql = SimpleBuilder.concat("DELETE FROM ", tableName,
+                " WHERE serial_nbr=", conn.sqlLongValue(record.serialNbr),
+                " AND version=", conn.sqlStringValue(record.version),
+                " AND stu_id=", conn.sqlStringValue(record.stuId));
+
+        try (final Statement stmt = conn.createStatement()) {
+            return stmt.executeUpdate(sql) == 1;
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
         }
     }
 

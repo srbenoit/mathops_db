@@ -70,6 +70,8 @@ public final class PopulateArchiveDatabase implements Runnable {
             if (isArchiveEmpty(archiveConn)) {
                 Log.info("Archive database verified to be empty.");
                 archiveData(archiveConn);
+            } else {
+                Log.warning("Archive database is not empty!");
             }
         } catch (final SQLException ex) {
             Log.warning("Exception populating the archive database.", ex);
@@ -87,7 +89,7 @@ public final class PopulateArchiveDatabase implements Runnable {
 
         final DbConnection prodConn = this.cache.checkOutConnection(ESchema.LEGACY);
         try {
-            archiveAdminTerm(prodConn, archiveConn);
+            archiveAdminHold(prodConn, archiveConn);
             archiveActiveTermRows(prodConn, archiveConn, "bogus_mapping");
             archiveWholeTable(prodConn, archiveConn, "calcs");
             archiveWholeTable(prodConn, archiveConn, "campus_calendar");
@@ -157,6 +159,7 @@ public final class PopulateArchiveDatabase implements Runnable {
             archiveWholeTable(prodConn, archiveConn, "testing_centers");
             archiveWholeTable(prodConn, archiveConn, "user_clearance");
             archiveWholeTable(prodConn, archiveConn, "users");
+            createIndexData(archiveConn);
 
         } finally {
             Cache.checkInConnection(prodConn);
@@ -210,8 +213,9 @@ public final class PopulateArchiveDatabase implements Runnable {
      *
      * @param prodConn    the connection to the production database
      * @param archiveConn the connection to the archive database
+     * @throws SQLException if there is an error accessing the database
      */
-    private static void archiveAdminTerm(final DbConnection prodConn, final DbConnection archiveConn)
+    private static void archiveAdminHold(final DbConnection prodConn, final DbConnection archiveConn)
             throws SQLException {
 
         Log.info("> Archiving the admin_hold table.");
@@ -230,6 +234,7 @@ public final class PopulateArchiveDatabase implements Runnable {
      *
      * @param prodConn    the connection to the production database
      * @param archiveConn the connection to the archive database
+     * @throws SQLException if there is an error accessing the database
      */
     private static void archiveStcourse(final DbConnection prodConn, final DbConnection archiveConn)
             throws SQLException {
@@ -258,6 +263,7 @@ public final class PopulateArchiveDatabase implements Runnable {
      *
      * @param prodConn    the connection to the production database
      * @param archiveConn the connection to the archive database
+     * @throws SQLException if there is an error accessing the database
      */
     private static void archiveStudent(final DbConnection prodConn, final DbConnection archiveConn)
             throws SQLException {
@@ -309,6 +315,7 @@ public final class PopulateArchiveDatabase implements Runnable {
      *
      * @param prodConn    the connection to the production database
      * @param archiveConn the connection to the archive database
+     * @throws SQLException if there is an error accessing the database
      */
     private static void archiveTerm(final DbConnection prodConn, final DbConnection archiveConn) throws SQLException {
 
@@ -325,6 +332,7 @@ public final class PopulateArchiveDatabase implements Runnable {
      * @param prodConn    the connection to the production database
      * @param archiveConn the connection to the archive database
      * @param tableName   the table name
+     * @throws SQLException if there is an error accessing the database
      */
     private static void archiveWholeTable(final DbConnection prodConn, final DbConnection archiveConn,
                                           final String tableName) throws SQLException {
@@ -343,6 +351,7 @@ public final class PopulateArchiveDatabase implements Runnable {
      * @param prodConn    the connection to the production database
      * @param archiveConn the connection to the archive database
      * @param tableName   the table name
+     * @throws SQLException if there is an error accessing the database
      */
     private static void archiveActiveTermRows(final DbConnection prodConn, final DbConnection archiveConn,
                                               final String tableName) throws SQLException {
@@ -364,6 +373,7 @@ public final class PopulateArchiveDatabase implements Runnable {
      * @param archiveConn the connection to the archive database
      * @param tableName   the table name
      * @param dateField   the date field on which to compare
+     * @throws SQLException if there is an error accessing the database
      */
     private static void archiveBasedOnDate(final DbConnection prodConn, final DbConnection archiveConn,
                                            final String tableName, final String dateField) throws SQLException {
@@ -383,6 +393,7 @@ public final class PopulateArchiveDatabase implements Runnable {
      * @param archiveConn the connection to the archive database
      * @param tableName   the name of the table in (used to build the insert statement)
      * @param select      the SQL select statement with which to query the production table
+     * @throws SQLException if there is an error accessing the database
      */
     private static void copyTable(final DbConnection prodConn, final DbConnection archiveConn,
                                   final String tableName, final String select) throws SQLException {
@@ -436,6 +447,109 @@ public final class PopulateArchiveDatabase implements Runnable {
                 }
 
                 Log.info("Copied " + numRows + " records into the archive '", tableName, "' table.");
+            }
+        }
+    }
+
+    /**
+     * Creates the index data for the archive database.
+     *
+     * @param archiveConn the connection to the archive database
+     * @throws SQLException if there is an error accessing the database
+     */
+    private static void createIndexData(final DbConnection archiveConn) throws SQLException {
+
+        Log.info("> Creating index specifications");
+
+        // NOTE: Line-feeds keep four arrays aligned - take care if reformatting
+
+        final String[] tables = {"admin_hold", "bogus_mapping", "calcs", "campus_calendar", "challenge_fee",
+                "client_pc", "cohort", "course", "crsection", "csection",
+                "cunit", "cuobjective", "cusection",
+                "discipline", "dont_submit", "etext", "etext_course", "etext_key", "exam", "examqa", "except_stu",
+                "ffr_trns", "grade_roll", "grading_std", "high_schools", "hold_type", "homework", "mdstudent",
+                "milestone", "milestone_appeal", "mpe", "mpe_credit", "mpe_log", "mpecr_denied", "msg", "msg_lookup",
+                "pace_appeals", "pace_track_rule", "pacing_rules", "pacing_structure", "parameters", "plc_fee",
+                "prereq", "remote_mpe", "resource", "semester_calendar", "special_stus", "stchallenge", "stchallengeqa",
+                "stcourse", "stcuobjective", "stetext",
+                "stexam", "sthomework", "sthwqa", "stmdscores",
+                "stmilestone", "stmpe", "stmpeqa", "stmsg", "stpace_summary", "stqa", "stresource",
+                "stsurveyqa", "stterm", "student",
+                "surveyqa", "term", "testing_centers", "user_clearance", "users"};
+
+        final boolean[] hasDesc = {true, false, true, false, true,
+                true, true, false, true, true,
+                false, true, true,
+                true, false, false, false, true, true, true, false,
+                true, true, false, true, false, true, true,
+                false, true, false, true, true, true, false, true,
+                true, false, true, false, false, true,
+                false, false, true, false, true, true, true,
+                true, true, true,
+                true, true, true, true,
+                true, true, true, true, true, true, true,
+                true, true, true,
+                true, false, false, false, true};
+
+        final String[] types = {"unique", null, null, null, "unique",
+                "unique", "unique", null, "unique cluster", "unique cluster",
+                null, "unique cluster", "unique cluster",
+                null, null, null, null, null, "unique", "cluster", null,
+                null, null, null, "unique", null, "unique", "unique",
+                null, null, null, null, null, null, null, "unique",
+                null, null, null, null, null, "unique",
+                null, null, "unique", null, null, null, null,
+                "cluster", null, null,
+                "cluster", null, null, null,
+                null, null, null, null, null, null, null,
+                null, "unique", "unique",
+                "cluster", null, null, null, null};
+
+        final String[] cols = {"(stu_id,hold_id)", null, "(stu_id)", null, "(stu_id)",
+                "(computer_id)", "(cohort)", null, "(term,term_yr,course,sect,unit)", "(term,term_yr,course,sect)",
+                null, "(term,term_yr,course,unit,objective)", "(term,term_yr,course,sect,unit)",
+                "(stu_id)", null, null, null, "(etext_key)", "(version)", "(version,question_nbr)", null,
+                "(stu_id,course)", "(stu_id,course,sect)", null, "(hs_code)", null, "(version)", "(stu_id)",
+                null, "(stu_id)", null, "(stu_id,course)", "(stu_id)", "(stu_id,course)", null, "(domain,code)",
+                "(stu_id)", null, "(pacing_structure,term,term_yr)", null, null, "(stu_id)",
+                null, null, "(resource_id)", null, "(stu_id)", "(stu_id)", "(stu_id,question_nbr)",
+                "(stu_id,term,term_yr,course,sect)", "(stu_id,course,unit,objective)", "(stu_id)",
+                "(stu_id,course,unit,passed)", "(stu_id)", "(stu_id)", "(stu_id,term,term_yr,exam_dt,sts_nbr)",
+                "(stu_id)", "(stu_id)", "(stu_id,question_nbr)", "(stu_id)", "(stu_id)", "(stu_id)", "(stu_id)",
+                "(stu_id,version,exam_dt,finish_time)", "(stu_id,term,term_yr)", "(stu_id)",
+                "(term,term_yr,version,survey_nbr)", null, null, null, "(stu_id,term,term_yr)"};
+
+        final String sql1 = "INSERT INTO index_frequency (on_demand,weekend_indx,tblname) VALUES (?,?,?)";
+        final String sql2 = "INSERT INTO index_descriptions (tblname,indxname,indxtype,indxkeys) VALUES (?,?,?,?)";
+
+        if (DEBUG_MODE == EDebugMode.NORMAL) {
+            try (final PreparedStatement prepared1 = archiveConn.prepareStatement(sql1)) {
+                for (final String table : tables) {
+                    prepared1.setString(1, "d");
+                    prepared1.setString(2, "Y");
+                    prepared1.setString(3, table);
+
+                    prepared1.executeUpdate();
+                }
+                archiveConn.commit();
+            }
+            try (final PreparedStatement prepared2 = archiveConn.prepareStatement(sql2)) {
+                final int count = tables.length;
+                for (int i = 0; i < count; ++i) {
+                    if (hasDesc[i]) {
+                        final String table = tables[i];
+                        final String type = types[i];
+                        final String col = cols[i];
+
+                        prepared2.setString(1, table);
+                        prepared2.setString(2, "i_" + table);
+                        prepared2.setString(3, type);
+                        prepared2.setString(4, col);
+
+                        prepared2.executeUpdate();
+                    }
+                }
+                archiveConn.commit();
             }
         }
     }
