@@ -56,8 +56,8 @@ public final class PostArchiveCleanup implements Runnable {
 //            cleanCampusCalendar(prodConn);
 //            copyTable(prodConn, "milestone_appeal", "prev_milestone_appeal");
 
-        } catch (final SQLException ex) {
-            Log.warning("Exception performing post-archive cleanup.", ex);
+//        } catch (final SQLException ex) {
+//            Log.warning("Exception performing post-archive cleanup.", ex);
         } finally {
             Cache.checkInConnection(prodConn);
         }
