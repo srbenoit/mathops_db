@@ -198,7 +198,7 @@ subterm             CHAR(5)         -- A portion of a term
 
 survey_id           CHAR(5)         -- The unique ID of a student survey (not visible)
 
-term                SMALLIKNT       -- A term number such as 202390 (10-Spring, 60-Summer, 90=Fall)
+term                SMALLINT        -- A term number such as 202390 (10-Spring, 60-Summer, 90=Fall)
 
 title               VARCHAR(60)     -- A full (long) title
 

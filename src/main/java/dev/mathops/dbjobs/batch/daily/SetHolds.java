@@ -316,7 +316,7 @@ public enum SetHolds {
                         Log.warning("Student '", stuId, "' is registered for multiple sections of ", reg.course,
                                 " - adding hold 16");
                         final RawAdminHold hold16 = new RawAdminHold(stuId, "16", "F", ZERO, today);
-                        holdsToApply.put("05", hold16);
+                        holdsToApply.put("16", hold16);
                         ++num16Applied;
                         break;
                     }
@@ -324,12 +324,12 @@ public enum SetHolds {
             }
 
             // Check for students in a mix of courses incompatible pacing structures
-//            boolean hasNormalRI = false;
-//            boolean hasLateStartRI = false;
+            boolean hasNormalRI = false;
+            boolean hasLateStartRI = false;
             boolean hasNormalCE = false;
 //            boolean hasLateStartCE = false;
-
-            boolean hasF2F117Sect002 = false;
+//
+//            boolean hasF2F117Sect002 = false;
 //            boolean hasF2F117Sect003 = false;
 //            boolean hasF2F117Sect005 = false;
 //            boolean hasF2F117Sect006 = false;
@@ -353,83 +353,82 @@ public enum SetHolds {
                 final String course = reg.course;
                 final String sect = reg.sect;
 
-                if ("M 117".equals(course)) {
+                if (RawRecordConstants.M117.equals(course)) {
                     switch (sect) {
-                        case "002" -> hasF2F117Sect002 = true;
-//                        case "001" -> hasNormalRI = true;
-//                        case "002" -> hasLateStartRI = true;
+                        case "001" -> hasNormalRI = true;
+                        case "002" -> hasLateStartRI = true;
 //                        case "003" -> hasF2F117Sect003 = true;
 //                        case "005" -> hasF2F117Sect005 = true;
 //                        case "006" -> hasF2F117Sect006 = true;
                         case "401", "801", "809" -> hasNormalCE = true;
                         case null, default -> Log.warning("Unexpected ", course, " section number: ", sect);
                     }
-                } else if ("M 118".equals(course)) {
+                } else if (RawRecordConstants.M118.equals(course)) {
                     switch (sect) {
-//                        case "001" -> hasNormalRI = true;
-//                        case "002" -> hasLateStartRI = true;
+                        case "001" -> hasNormalRI = true;
+                        case "002" -> hasLateStartRI = true;
 //                        case "003" -> hasF2F118Sect003 = true;
                         case "401", "801", "809" -> hasNormalCE = true;
                         case null, default -> Log.warning("Unexpected ", course, " section number: ", sect);
                     }
-                } else if ("M 124".equals(course)) {
+                } else if (RawRecordConstants.M124.equals(course)) {
                     switch (sect) {
-//                        case "001" -> hasNormalRI = true;
-//                        case "002" -> hasLateStartRI = true;
+                        case "001" -> hasNormalRI = true;
+                        case "002" -> hasLateStartRI = true;
                         case "401", "801", "809" -> hasNormalCE = true;
                         case null, default -> Log.warning("Unexpected ", course, " section number: ", sect);
                     }
-                } else if ("M 125".equals(course)) {
+                } else if (RawRecordConstants.M125.equals(course)) {
                     switch (sect) {
-//                        case "001" -> hasNormalRI = true;
-//                        case "002" -> hasLateStartRI = true;
+                        case "001" -> hasNormalRI = true;
+                        case "002" -> hasLateStartRI = true;
 //                        case "003" -> hasF2F125Sect003 = true;
 //                        case "004" -> hasF2F125Sect004 = true;
 //                        case "005" -> hasF2F125Sect005 = true;
-                        case "401", "801" -> hasNormalCE = true;
+                        case "401", "801", "809" -> hasNormalCE = true;
 //                        case "802" -> hasLateStartCE = true;
                         case null, default -> Log.warning("Unexpected ", course, " section number: ", sect);
                     }
-                } else if ("M 126".equals(course)) {
+                } else if (RawRecordConstants.M126.equals(course)) {
                     switch (sect) {
-//                        case "001" -> hasNormalRI = true;
-//                        case "002" -> hasLateStartRI = true;
+                        case "001" -> hasNormalRI = true;
+                        case "002" -> hasLateStartRI = true;
 //                        case "003" -> hasF2F126Sect003 = true;
-                        case "401", "801" -> hasNormalCE = true;
+                        case "401", "801", "809" -> hasNormalCE = true;
                         case null, default -> Log.warning("Unexpected ", course, " section number: ", sect);
                     }
                 }
             }
 
-            final boolean hasF2F = hasF2F117Sect002;
+//            final boolean hasF2F = hasF2F117Sect002;
 
             boolean applyHold23 = false;
 
             if (hasNormalCE) { // || hasLateStartCE) {
-//                if (hasNormalRI || hasLateStartRI) {
-//                    Log.warning("Student '", stuId,
-//                            "' is registered for both online and distance sections - adding hold 23");
-//                    applyHold23 = true;
-//                } else
-                if (hasF2F) {
+                if (hasNormalRI || hasLateStartRI) {
                     Log.warning("Student '", stuId,
-                            "' is registered for both distance and face-to-face sections - adding hold 23");
+                            "' is registered for both online and distance sections - adding hold 23");
                     applyHold23 = true;
-//                } else if (hasNormalCE && hasLateStartCE) {
+//                } else
+//                if (hasF2F) {
+//                    Log.warning("Student '", stuId,
+//                            "' is registered for both distance and face-to-face sections - adding hold 23");
+//                    applyHold23 = true;
+//                } else if (hasLateStartCE) {
 //                    Log.warning("Student '", stuId,
 //                            "' is registered for both regular and late-start online sections - adding hold 23");
 //                    applyHold23 = true;
                 }
-//            } else if (hasLateStartRI) {
-//                if (hasNormalRI) {
-//                    Log.warning("Student '", stuId,
-//                            "' is registered for both regular and late-start sections - adding hold 23");
-//                    applyHold23 = true;
+            } else if (hasLateStartRI) {
+                if (hasNormalRI) {
+                    Log.warning("Student '", stuId,
+                            "' is registered for both regular and late-start sections - adding hold 23");
+                    applyHold23 = true;
 //                } else if (hasF2F) {
 //                    Log.warning("Student '", stuId,
 //                            "' is registered for both late-start and face-to-face sections - adding hold 23");
 //                    applyHold23 = true;
-//                }
+                }
 //            } else if (hasNormalRI) {
 //                if (hasF2F) {
 //                    Log.warning("Student '", stuId, "' is registered for both regular and face-to-face sections - ",

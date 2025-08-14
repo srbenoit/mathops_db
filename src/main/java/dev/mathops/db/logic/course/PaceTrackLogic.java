@@ -109,10 +109,10 @@ public enum PaceTrackLogic {
         final Collection<String> foundSections = new TreeSet<>(); // Must be a sorted set - see below....
 
         for (final RawStcourse test : registrations) {
+            if (test.synthetic || "OT".equals(test.instrnType)) {
+                continue;
+            }
             if (isApplicableCourse(test.course)) {
-                if (test.synthetic || "OT".equals(test.instrnType)) {
-                    continue;
-                }
                 if ("N".equals(test.iInProgress)) {
                     final String status = test.openStatus;
                     if ((!"D".equals(status) && !"G".equals(status))) {
@@ -125,10 +125,10 @@ public enum PaceTrackLogic {
         if (foundSections.isEmpty()) {
             // Look next at counted incompletes (if we get here, the student has ONLY incompletes)
             for (final RawStcourse test : registrations) {
+                if (test.synthetic || "OT".equals(test.instrnType)) {
+                    continue;
+                }
                 if (isApplicableCourse(test.course)) {
-                    if (test.synthetic || "OT".equals(test.instrnType)) {
-                        continue;
-                    }
                     if ("Y".equals(test.iInProgress) && "Y".equals(test.iCounted)) {
                         foundSections.add(test.sect);
                     }
@@ -139,14 +139,14 @@ public enum PaceTrackLogic {
         if (foundSections.isEmpty()) {
             // Last check is for non-counted incompletes (if we get here, the student has ONLY non-counted incompletes)
             for (final RawStcourse test : registrations) {
+                if (test.synthetic || "OT".equals(test.instrnType)) {
+                    continue;
+                }
+                final String status = test.openStatus;
+                if ("D".equals(status) || "G".equals(status)) {
+                    continue;
+                }
                 if (isApplicableCourse(test.course)) {
-                    if (test.synthetic || "OT".equals(test.instrnType)) {
-                        continue;
-                    }
-                    final String status = test.openStatus;
-                    if ("D".equals(status) || "G".equals(status)) {
-                        continue;
-                    }
                     if ("Y".equals(test.iInProgress) && "N".equals(test.iCounted)) {
                         foundSections.add(test.sect);
                     }
@@ -165,36 +165,41 @@ public enum PaceTrackLogic {
         String track = "A";
 
         // SUMMER: Everyone is in track A except section 002 of MATH 117, which is track B (face-to-face)
-        if ("002".equals(sect)) {
-            track = "B";
-        }
-//
-//        if ("001".equals(sect) || "801".equals(sect) || "809".equals(sect)) {
-//            // In Fall/Spring, 001 is the normal full-semester online section
-//            if (pace == 1) {
-//                // Students whose single course is MATH 117 or 124 are track A, the others are track B
-//                for (final RawStcourse test : registrations) {
-//                    if ((RawRecordConstants.M118.equals(test.course)
-//                         || RawRecordConstants.M125.equals(test.course)
-//                         || RawRecordConstants.M126.equals(test.course))
-//                        && isCountedTowardPace(test)) {
-//                        track = "B";
-//                        break;
-//                    }
-//                }
-//            } else if (pace == 2) {
-//                // If a student in 2 courses has MATH 125, they are track A; otherwise track B
-//                track = "B";
-//                for (final RawStcourse test : registrations) {
-//                    if (RawRecordConstants.M125.equals(test.course) && isCountedTowardPace(test)) {
-//                        track = "A";
-//                        break;
-//                    }
-//                }
-//            }
-//        } else if ("002".equals(sect)) {
-//            // In Fall/Spring, 002 is a "late-start" section: track C (only 1 or 2 course pace)
-//            track = "C";
+//        if ("002".equals(sect)) {
+//            track = "B";
+//        }
+
+        if ("001".equals(sect) || "801".equals(sect) || "809".equals(sect)) {
+            // In Fall/Spring, 001 is the normal full-semester online section
+            if (pace == 1) {
+                // Students whose single course is MATH 117 or 124 are track A, the others are track B
+                for (final RawStcourse test : registrations) {
+                    if ((RawRecordConstants.M118.equals(test.course)
+                         || RawRecordConstants.M125.equals(test.course)
+                         || RawRecordConstants.M126.equals(test.course)
+                         || RawRecordConstants.MATH118.equals(test.course)
+                         || RawRecordConstants.MATH125.equals(test.course)
+                         || RawRecordConstants.MATH126.equals(test.course))
+                        && isCountedTowardPace(test)) {
+                        track = "B";
+                        break;
+                    }
+                }
+            } else if (pace == 2) {
+                // If a student in 2 courses has MATH 117, they are track A; otherwise track B
+                track = "B";
+                for (final RawStcourse test : registrations) {
+                    if ((RawRecordConstants.M117.equals(test.course)
+                         || RawRecordConstants.MATH117.equals(test.course))
+                        && isCountedTowardPace(test)) {
+                        track = "A";
+                        break;
+                    }
+                }
+            }
+        } else if ("002".equals(sect)) {
+            // In Fall/Spring, 002 is a "late-start" section: track C (only 1 or 2 course pace)
+            track = "C";
 //        } else if ("003".equals(sect)) {
 //            // An in-person section, one of the following:
 //            //   116 + 117 or 116 + 117 + 118 (Track D)
@@ -235,7 +240,7 @@ public enum PaceTrackLogic {
 //        } else if ("006".equals(sect)) {
 //            // An in-person MATH 117 / 118 section (track E)
 //            track = "E";
-//        }
+        }
 
         return track;
     }
