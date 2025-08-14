@@ -1151,8 +1151,8 @@ public final class ImportBannerStudentRegistrations {
             report.add("  Re-applying  hold " + holdId + " for student " + studentId);
 
             if (!DEBUG) {
-                found = new RawAdminHold(studentId, holdId, "F", Integer.valueOf(0), LocalDate.now());
-                RawAdminHoldLogic.insert(cache, found);
+                found.createDt = LocalDate.now();
+                RawAdminHoldLogic.updateAdminHoldDate(cache, found);
             }
         }
     }
