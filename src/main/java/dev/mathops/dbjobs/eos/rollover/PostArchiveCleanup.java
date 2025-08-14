@@ -39,7 +39,7 @@ import java.util.List;
 public final class PostArchiveCleanup implements Runnable {
 
     /** Flag to run in "debug" mode which prints changes that would be performed rather than performing any changes. */
-    private static final EDebugMode DEBUG_MODE = EDebugMode.DEBUG;
+    private static final EDebugMode DEBUG_MODE = EDebugMode.NORMAL;
     /** The data cache. */
     private final Cache cache;
 
@@ -129,15 +129,18 @@ public final class PostArchiveCleanup implements Runnable {
     private void preserveIncompleteStcuobjectives(final DbConnection prodConn, final List<String> incompleteKeys)
             throws SQLException {
 
-        Log.info("> Deleting 'stcuobjective' records that are not associated with active Incompletes.");
+        Log.info("> Deleting 'stcuobjective' records that are not associated with tutorials or active Incompletes.");
 
         final List<RawStcuobjective> toPreserve = new ArrayList<>(300);
         final List<RawStcuobjective> toDelete = new ArrayList<>(10000);
 
         final List<RawStcuobjective> all = RawStcuobjectiveLogic.queryAll(this.cache);
         for (final RawStcuobjective record : all) {
-            final String key = record.stuId + "." + record.course;
-            if (incompleteKeys.contains(key)) {
+            final String course = record.course;
+            final String key = record.stuId + "." + course;
+            if ("M 100T".equals(course) || "M 1170".equals(course) || "M 1180".equals(course)
+                || "M 1240".equals(course) || "M 1250".equals(course) || "M 1260".equals(course)
+                || incompleteKeys.contains(key)) {
                 toPreserve.add(record);
             } else {
                 toDelete.add(record);
@@ -174,8 +177,11 @@ public final class PostArchiveCleanup implements Runnable {
         final List<Long> serials = new ArrayList<>(10000);
         final List<RawSthomework> allHomework = RawSthomeworkLogic.queryAll(this.cache);
         for (final RawSthomework record : allHomework) {
-            final String key = record.stuId + "." + record.course;
-            if (incompleteKeys.contains(key)) {
+            final String course = record.course;
+            final String key = record.stuId + "." + course;
+            if ("M 100T".equals(course) || "M 1170".equals(course) || "M 1180".equals(course)
+                || "M 1240".equals(course) || "M 1250".equals(course) || "M 1260".equals(course)
+                || incompleteKeys.contains(key)) {
                 hwToPreserve.add(record);
                 serials.add(record.serialNbr);
             } else {
@@ -241,8 +247,11 @@ public final class PostArchiveCleanup implements Runnable {
         final List<Long> serials = new ArrayList<>(10000);
         final List<RawStexam> allExams = RawStexamLogic.queryAll(this.cache);
         for (final RawStexam record : allExams) {
-            final String key = record.stuId + "." + record.course;
-            if (incompleteKeys.contains(key)) {
+            final String course = record.course;
+            final String key = record.stuId + "." + course;
+            if ("M 100T".equals(course) || "M 1170".equals(course) || "M 1180".equals(course)
+                || "M 1240".equals(course) || "M 1250".equals(course) || "M 1260".equals(course)
+                || incompleteKeys.contains(key)) {
                 examsToPreserve.add(record);
                 serials.add(record.serialNbr);
             } else {
