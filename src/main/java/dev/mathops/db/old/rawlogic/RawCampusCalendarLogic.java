@@ -24,10 +24,13 @@ import java.util.List;
  * dt_desc              char(20)                  no      PK
  * open_time1           char(10)                  yes
  * open_time2           char(10)                  yes
+ * open_time3           char(10)                  yes
  * close_time1          char(10)                  yes
+ * close_time2          char(10)                  yes
  * close_time2          char(10)                  yes
  * weekdays_1           char(20)                  yes
  * weekdays_2           char(20)                  yes
+ * weekdays_3           char(20)                  yes
  * </pre>
  */
 public enum RawCampusCalendarLogic {
@@ -64,16 +67,19 @@ public enum RawCampusCalendarLogic {
         final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
 
         final String sql = SimpleBuilder.concat(
-                "INSERT INTO ", tableName, " (campus_dt,dt_desc,open_time1,open_time2,",
-                "close_time1,close_time2,weekdays_1,weekdays_2) VALUES (",
+                "INSERT INTO ", tableName, " (campus_dt,dt_desc,open_time1,open_time2,open_time3,",
+                "close_time1,close_time2,close_time3,weekdays_1,weekdays_2,weekdays_3) VALUES (",
                 conn.sqlDateValue(record.campusDt), ",",
                 conn.sqlStringValue(record.dtDesc), ",",
                 conn.sqlStringValue(record.openTime1), ",",
                 conn.sqlStringValue(record.openTime2), ",",
+                conn.sqlStringValue(record.openTime3), ",",
                 conn.sqlStringValue(record.closeTime1), ",",
                 conn.sqlStringValue(record.closeTime2), ",",
+                conn.sqlStringValue(record.closeTime3), ",",
                 conn.sqlStringValue(record.weekdays1), ",",
-                conn.sqlStringValue(record.weekdays2), ")");
+                conn.sqlStringValue(record.weekdays2), ")",
+                conn.sqlStringValue(record.weekdays3), ")");
 
         try (final Statement stmt = conn.createStatement()) {
             final boolean result = stmt.executeUpdate(sql) == 1;

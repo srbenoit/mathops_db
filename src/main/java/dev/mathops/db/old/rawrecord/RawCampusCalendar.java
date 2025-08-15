@@ -29,16 +29,25 @@ public final class RawCampusCalendar extends RecBase implements Comparable<RawCa
     private static final String FLD_OPEN_TIME2 = "open_time2";
 
     /** A field name. */
+    private static final String FLD_OPEN_TIME3 = "open_time3";
+
+    /** A field name. */
     private static final String FLD_CLOSE_TIME1 = "close_time1";
 
     /** A field name. */
     private static final String FLD_CLOSE_TIME2 = "close_time2";
 
     /** A field name. */
+    private static final String FLD_CLOSE_TIME3 = "close_time3";
+
+    /** A field name. */
     private static final String FLD_WEEKDAYS_1 = "weekdays_1";
 
     /** A field name. */
     private static final String FLD_WEEKDAYS_2 = "weekdays_2";
+
+    /** A field name. */
+    private static final String FLD_WEEKDAYS_3 = "weekdays_3";
 
     /** Start of the first interval of "open" days. */
     public static final String DT_DESC_START_DATE_1 = "start_dt1";
@@ -105,17 +114,26 @@ public final class RawCampusCalendar extends RecBase implements Comparable<RawCa
     /** The 'open_time2' field value. */
     public String openTime2;
 
+    /** The 'open_time2' field value. */
+    public String openTime3;
+
     /** The 'close_time1' field value. */
     public String closeTime1;
 
     /** The 'close_time2' field value. */
     public String closeTime2;
 
+    /** The 'close_time2' field value. */
+    public String closeTime3;
+
     /** The 'weekdays_1' field value. */
     public String weekdays1;
 
     /** The 'weekdays_2' field value. */
     public String weekdays2;
+
+    /** The 'weekdays_2' field value. */
+    public String weekdays3;
 
     /**
      * Constructs a new {@code RawCampusCalendar}.
@@ -138,23 +156,27 @@ public final class RawCampusCalendar extends RecBase implements Comparable<RawCa
      * @param theWeekdays2  the weekdays of the second open period
      */
     public RawCampusCalendar(final LocalDate theCampusDt, final String theDtDesc,
-                             final String theOpenTime1, final String theOpenTime2, final String theCloseTime1,
-                             final String theCloseTime2, final String theWeekdays1, final String theWeekdays2) {
+                             final String theOpenTime1, final String theOpenTime2, final String theOpenTime3,
+                             final String theCloseTime1, final String theCloseTime2, final String theCloseTime3,
+                             final String theWeekdays1, final String theWeekdays2, final String theWeekdays3) {
         super();
 
         this.campusDt = theCampusDt;
         this.dtDesc = theDtDesc;
         this.openTime1 = theOpenTime1;
         this.openTime2 = theOpenTime2;
+        this.openTime3 = theOpenTime3;
         this.closeTime1 = theCloseTime1;
         this.closeTime2 = theCloseTime2;
+        this.closeTime3 = theCloseTime3;
         this.weekdays1 = theWeekdays1;
         this.weekdays2 = theWeekdays2;
+        this.weekdays3 = theWeekdays3;
     }
 
     /**
      * Gets the number of times (0 if none of the open/close times are present, 1 if times 1 are present but not times
-     * 2, and 2 if all are present)
+     * 2, 2 if times 2 are present but not times 3, and 3 if all are present)
      *
      * @return the number of times
      */
@@ -166,8 +188,10 @@ public final class RawCampusCalendar extends RecBase implements Comparable<RawCa
             result = 0;
         } else if (this.openTime2 == null || this.closeTime2 == null || this.weekdays2 == null) {
             result = 1;
-        } else {
+        } else if (this.openTime3 == null || this.closeTime3 == null || this.weekdays3 == null) {
             result = 2;
+        } else {
+            result = 3;
         }
 
         return result;
@@ -188,10 +212,13 @@ public final class RawCampusCalendar extends RecBase implements Comparable<RawCa
         result.dtDesc = getStringField(rs, FLD_DT_DESC);
         result.openTime1 = getStringField(rs, FLD_OPEN_TIME1);
         result.openTime2 = getStringField(rs, FLD_OPEN_TIME2);
+        result.openTime3 = getStringField(rs, FLD_OPEN_TIME3);
         result.closeTime1 = getStringField(rs, FLD_CLOSE_TIME1);
         result.closeTime2 = getStringField(rs, FLD_CLOSE_TIME2);
+        result.closeTime3 = getStringField(rs, FLD_CLOSE_TIME3);
         result.weekdays1 = getStringField(rs, FLD_WEEKDAYS_1);
         result.weekdays2 = getStringField(rs, FLD_WEEKDAYS_2);
+        result.weekdays3 = getStringField(rs, FLD_WEEKDAYS_3);
 
         return result;
     }
@@ -234,13 +261,19 @@ public final class RawCampusCalendar extends RecBase implements Comparable<RawCa
         htm.add(DIVIDER);
         appendField(htm, FLD_OPEN_TIME2, this.openTime2);
         htm.add(DIVIDER);
+        appendField(htm, FLD_OPEN_TIME3, this.openTime3);
+        htm.add(DIVIDER);
         appendField(htm, FLD_CLOSE_TIME1, this.closeTime1);
         htm.add(DIVIDER);
         appendField(htm, FLD_CLOSE_TIME2, this.closeTime2);
         htm.add(DIVIDER);
+        appendField(htm, FLD_CLOSE_TIME3, this.closeTime3);
+        htm.add(DIVIDER);
         appendField(htm, FLD_WEEKDAYS_1, this.weekdays1);
         htm.add(DIVIDER);
         appendField(htm, FLD_WEEKDAYS_2, this.weekdays2);
+        htm.add(DIVIDER);
+        appendField(htm, FLD_WEEKDAYS_3, this.weekdays3);
 
         return htm.toString();
     }
@@ -254,13 +287,16 @@ public final class RawCampusCalendar extends RecBase implements Comparable<RawCa
     public int hashCode() {
 
         return Objects.hashCode(this.campusDt)
-                + Objects.hashCode(this.dtDesc)
-                + Objects.hashCode(this.openTime1)
-                + Objects.hashCode(this.openTime2)
-                + Objects.hashCode(this.closeTime1)
-                + Objects.hashCode(this.closeTime2)
-                + Objects.hashCode(this.weekdays1)
-                + Objects.hashCode(this.weekdays2);
+               + Objects.hashCode(this.dtDesc)
+               + Objects.hashCode(this.openTime1)
+               + Objects.hashCode(this.openTime2)
+               + Objects.hashCode(this.openTime3)
+               + Objects.hashCode(this.closeTime1)
+               + Objects.hashCode(this.closeTime2)
+               + Objects.hashCode(this.closeTime3)
+               + Objects.hashCode(this.weekdays1)
+               + Objects.hashCode(this.weekdays2)
+               + Objects.hashCode(this.weekdays3);
     }
 
     /**
@@ -281,10 +317,13 @@ public final class RawCampusCalendar extends RecBase implements Comparable<RawCa
                     && Objects.equals(this.dtDesc, rec.dtDesc)
                     && Objects.equals(this.openTime1, rec.openTime1)
                     && Objects.equals(this.openTime2, rec.openTime2)
+                    && Objects.equals(this.openTime3, rec.openTime3)
                     && Objects.equals(this.closeTime1, rec.closeTime1)
                     && Objects.equals(this.closeTime2, rec.closeTime2)
+                    && Objects.equals(this.closeTime3, rec.closeTime3)
                     && Objects.equals(this.weekdays1, rec.weekdays1)
-                    && Objects.equals(this.weekdays2, rec.weekdays2);
+                    && Objects.equals(this.weekdays2, rec.weekdays2)
+                    && Objects.equals(this.weekdays3, rec.weekdays3);
         } else {
             equal = false;
         }

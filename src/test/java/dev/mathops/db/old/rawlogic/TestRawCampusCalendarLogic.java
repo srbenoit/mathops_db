@@ -53,13 +53,13 @@ final class TestRawCampusCalendarLogic {
             conn.commit();
 
             final RawCampusCalendar raw1 = new RawCampusCalendar(date1, RawCampusCalendar.DT_DESC_BOOKSTORE,
-                    "9:00 am", "6:30 pm", "4:00 pm", "9:00 pm", "M-F", "M-R");
+                    "9:00 am", "6:30 pm", "noon", "4:00 pm", "9:00 pm", "4:00 pm", "M-F", "M-R", "Sun");
 
             final RawCampusCalendar raw2 = new RawCampusCalendar(date2, RawCampusCalendar.DT_DESC_HOLIDAY,
-                    "9:01 am", "6:31 pm", "4:01 pm", "9:01 pm", "Mon-Fri", "Mon-Thu");
+                    "9:01 am", "6:31 pm", "1:00 pm", "4:01 pm", "9:01 pm", "5:00 pm", "Mon-Fri", "Mon-Thu", "Sat");
 
             final RawCampusCalendar raw3 = new RawCampusCalendar(date3, RawCampusCalendar.DT_DESC_HOLIDAY,
-                    "9:02 am", "6:32 pm", "4:02 pm", "9:02 pm", "Monday-Friday", "Monday-Thursday");
+                    "9:02 am", "6:32 pm", null, "4:02 pm", "9:02 pm", null, "Monday-Friday", "Monday-Thursday", null);
 
             assertTrue(RawCampusCalendarLogic.insert(cache, raw1), "Failed to insert campus_calendar");
             assertTrue(RawCampusCalendarLogic.insert(cache, raw2), "Failed to insert campus_calendar");
@@ -94,30 +94,39 @@ final class TestRawCampusCalendarLogic {
                     && RawCampusCalendar.DT_DESC_BOOKSTORE.equals(r.dtDesc)
                     && "9:00 am".equals(r.openTime1)
                     && "6:30 pm".equals(r.openTime2)
+                    && "noon".equals(r.openTime3)
                     && "4:00 pm".equals(r.closeTime1)
                     && "9:00 pm".equals(r.closeTime2)
+                    && "4:00 pm".equals(r.closeTime3)
                     && "M-F".equals(r.weekdays1)
-                    && "M-R".equals(r.weekdays2)) {
+                    && "M-R".equals(r.weekdays2)
+                    && "Sun".equals(r.weekdays3)) {
                     found1 = true;
 
                 } else if (date2.equals(r.campusDt)
                            && RawCampusCalendar.DT_DESC_HOLIDAY.equals(r.dtDesc)
                            && "9:01 am".equals(r.openTime1)
                            && "6:31 pm".equals(r.openTime2)
+                           && "1:00 pm".equals(r.openTime3)
                            && "4:01 pm".equals(r.closeTime1)
                            && "9:01 pm".equals(r.closeTime2)
+                           && "5:00 pm".equals(r.closeTime3)
                            && "Mon-Fri".equals(r.weekdays1)
-                           && "Mon-Thu".equals(r.weekdays2)) {
+                           && "Mon-Thu".equals(r.weekdays2)
+                           && "Sat".equals(r.weekdays3)) {
                     found2 = true;
 
                 } else if (date3.equals(r.campusDt)
                            && RawCampusCalendar.DT_DESC_HOLIDAY.equals(r.dtDesc)
                            && "9:02 am".equals(r.openTime1)
                            && "6:32 pm".equals(r.openTime2)
+                           && r.openTime3 == null
                            && "4:02 pm".equals(r.closeTime1)
                            && "9:02 pm".equals(r.closeTime2)
+                           && r.closeTime3 == null
                            && "Monday-Friday".equals(r.weekdays1)
-                           && "Monday-Thursday".equals(r.weekdays2)) {
+                           && "Monday-Thursday".equals(r.weekdays2)
+                           && r.weekdays3 == null) {
                     found3 = true;
 
                 } else {
@@ -163,20 +172,26 @@ final class TestRawCampusCalendarLogic {
                     && RawCampusCalendar.DT_DESC_HOLIDAY.equals(r.dtDesc)
                     && "9:01 am".equals(r.openTime1)
                     && "6:31 pm".equals(r.openTime2)
+                    && "1:00 pm".equals(r.openTime3)
                     && "4:01 pm".equals(r.closeTime1)
                     && "9:01 pm".equals(r.closeTime2)
+                    && "5:00 pm".equals(r.closeTime3)
                     && "Mon-Fri".equals(r.weekdays1)
-                    && "Mon-Thu".equals(r.weekdays2)) {
+                    && "Mon-Thu".equals(r.weekdays2)
+                    && "Sat".equals(r.weekdays3)) {
                     found2 = true;
 
                 } else if (date3.equals(r.campusDt)
                            && RawCampusCalendar.DT_DESC_HOLIDAY.equals(r.dtDesc)
                            && "9:02 am".equals(r.openTime1)
                            && "6:32 pm".equals(r.openTime2)
+                           && r.openTime3 == null
                            && "4:02 pm".equals(r.closeTime1)
                            && "9:02 pm".equals(r.closeTime2)
+                           && r.closeTime3 == null
                            && "Monday-Friday".equals(r.weekdays1)
-                           && "Monday-Thursday".equals(r.weekdays2)) {
+                           && "Monday-Thursday".equals(r.weekdays2)
+                           && r.weekdays3 == null) {
                     found3 = true;
 
                 } else {
@@ -208,7 +223,7 @@ final class TestRawCampusCalendarLogic {
 
         try {
             final RawCampusCalendar raw2 = new RawCampusCalendar(date2, RawCampusCalendar.DT_DESC_HOLIDAY,
-                    "9:01 am", "6:31 pm", "4:01 pm", "9:01 pm", "Mon-Fri", "Mon-Thu");
+                    "9:01 am", "6:31 pm", "1:00 pm", "4:01 pm", "9:01 pm", "5:00 pm", "Mon-Fri", "Mon-Thu", "Sat");
 
             final boolean result = RawCampusCalendarLogic.delete(cache, raw2);
             assertTrue(result, "delete returned false");
@@ -226,20 +241,26 @@ final class TestRawCampusCalendarLogic {
                     && RawCampusCalendar.DT_DESC_BOOKSTORE.equals(r.dtDesc)
                     && "9:00 am".equals(r.openTime1)
                     && "6:30 pm".equals(r.openTime2)
+                    && "noon".equals(r.openTime3)
                     && "4:00 pm".equals(r.closeTime1)
                     && "9:00 pm".equals(r.closeTime2)
+                    && "4:00 pm".equals(r.closeTime3)
                     && "M-F".equals(r.weekdays1)
-                    && "M-R".equals(r.weekdays2)) {
+                    && "M-R".equals(r.weekdays2)
+                    && "Sun".equals(r.weekdays3)) {
                     found1 = true;
 
                 } else if (date3.equals(r.campusDt)
                            && RawCampusCalendar.DT_DESC_HOLIDAY.equals(r.dtDesc)
-                           && "9:02 am".equals(r.openTime1)
-                           && "6:32 pm".equals(r.openTime2)
-                           && "4:02 pm".equals(r.closeTime1)
-                           && "9:02 pm".equals(r.closeTime2)
-                           && "Monday-Friday".equals(r.weekdays1)
-                           && "Monday-Thursday".equals(r.weekdays2)) {
+                           && "9:01 am".equals(r.openTime1)
+                           && "6:31 pm".equals(r.openTime2)
+                           && "1:00 pm".equals(r.openTime3)
+                           && "4:01 pm".equals(r.closeTime1)
+                           && "9:01 pm".equals(r.closeTime2)
+                           && "5:00 pm".equals(r.closeTime3)
+                           && "Mon-Fri".equals(r.weekdays1)
+                           && "Mon-Thu".equals(r.weekdays2)
+                           && "Sat".equals(r.weekdays3)) {
                     found3 = true;
 
                 } else {
