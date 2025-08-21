@@ -79,8 +79,8 @@ import java.util.TreeMap;
  */
 final class TransferPlacementDevtoProd {
 
-    // SP25: Switch to DEV happened on May 14 at 7:30 AM
-    private static final LocalDateTime CUTOVER_DATETIME = LocalDateTime.of(2025, 5, 14, 7, 30);
+    // SM25: Switch to DEV happened on August 10 at 7:30 AM
+    private static final LocalDateTime CUTOVER_DATETIME = LocalDateTime.of(2025, 8, 10, 7, 30);
 
     /** Debug flag - true to print but do no actual transfer of data; false to transfer data. */
     private static final boolean DEBUG = true;
