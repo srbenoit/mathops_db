@@ -2,7 +2,12 @@ package dev.mathops.db.logic.course;
 
 import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
+import dev.mathops.db.Contexts;
+import dev.mathops.db.DbConnection;
+import dev.mathops.db.cfg.DatabaseConfig;
+import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.logic.SystemData;
+import dev.mathops.db.old.rawlogic.RawStcourseLogic;
 import dev.mathops.db.old.rawlogic.RawSttermLogic;
 import dev.mathops.db.old.rawlogic.RawStudentLogic;
 import dev.mathops.db.old.rawrecord.RawCsection;
@@ -11,11 +16,14 @@ import dev.mathops.db.old.rawrecord.RawStcourse;
 import dev.mathops.db.old.rawrecord.RawStterm;
 import dev.mathops.db.old.rawrecord.RawStudent;
 import dev.mathops.db.rec.TermRec;
+import dev.mathops.db.reclogic.TermLogic;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.SequencedCollection;
 import java.util.TreeSet;
@@ -480,7 +488,8 @@ public enum PaceTrackLogic {
     public static void updateStudentTerm(final Cache cache, final String studentId,
                                          final Collection<RawStcourse> registrations) throws SQLException {
 
-        final TermRec active = cache.getSystemData().getActiveTerm();
+        final SystemData systemData = cache.getSystemData();
+        final TermRec active = systemData.getActiveTerm();
 
         if (Objects.nonNull(active)) {
             final int pace = determinePace(registrations);
@@ -518,6 +527,36 @@ public enum PaceTrackLogic {
                     RawSttermLogic.updatePaceTrackFirstCourse(cache, studentId, active.term, pace, track, first);
                 }
             }
+        }
+    }
+
+    /**
+     * Main method to test logic.
+     *
+     * @param args command-line arguments
+     */
+    public static void main(final String... args) {
+
+        DbConnection.registerDrivers();
+
+        final DatabaseConfig config = DatabaseConfig.getDefault();
+        final Profile profile = config.getCodeProfile(Contexts.BATCH_PATH);
+        final Cache cache = new Cache(profile);
+
+        try {
+            final String stuId = "837726352";
+
+            final TermRec active = TermLogic.INSTANCE.queryActive(cache);
+            final List<RawStcourse> regs = RawStcourseLogic.getActiveForStudent(cache, stuId, active.term);
+            final int pace = determinePace(regs);
+            final String track = determinePaceTrack(regs, pace);
+
+            Log.info("Student ", stuId, " has pace " + pace + ", track ", track);
+            for (final RawStcourse reg : regs) {
+                Log.info("    Registered in ", reg.course, " section ", reg.sect);
+            }
+        } catch (final SQLException ex) {
+            Log.warning(ex);
         }
     }
 }
