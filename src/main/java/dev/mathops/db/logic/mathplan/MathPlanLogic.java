@@ -8,8 +8,8 @@ import dev.mathops.db.logic.mathplan.types.EMathPlanStatus;
 import dev.mathops.db.logic.mathplan.majors.Major;
 import dev.mathops.db.logic.mathplan.majors.Majors;
 import dev.mathops.db.old.rawlogic.RawStmathplanLogic;
-import dev.mathops.db.old.rawrecord.RawStmathplan;
-import dev.mathops.db.old.rawrecord.RawStudent;
+import dev.mathops.db.schema.legacy.RawStmathplan;
+import dev.mathops.db.schema.legacy.RawStudent;
 
 import java.sql.SQLException;
 import java.time.LocalDate;

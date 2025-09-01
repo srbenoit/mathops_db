@@ -8,7 +8,7 @@ import dev.mathops.db.DbConnection;
 import dev.mathops.db.cfg.DatabaseConfig;
 import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.logic.SystemData;
-import dev.mathops.db.old.rawrecord.RawMilestone;
+import dev.mathops.db.schema.legacy.RawMilestone;
 import dev.mathops.db.rec.TermRec;
 
 import java.sql.SQLException;

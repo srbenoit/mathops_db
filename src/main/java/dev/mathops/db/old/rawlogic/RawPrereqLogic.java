@@ -4,7 +4,7 @@ import dev.mathops.db.Cache;
 import dev.mathops.db.DbConnection;
 import dev.mathops.db.ESchema;
 import dev.mathops.db.logic.SystemData;
-import dev.mathops.db.old.rawrecord.RawPrereq;
+import dev.mathops.db.schema.legacy.RawPrereq;
 import dev.mathops.db.rec.TermRec;
 import dev.mathops.db.type.TermKey;
 import dev.mathops.text.builder.SimpleBuilder;

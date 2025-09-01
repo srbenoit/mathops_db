@@ -1,7 +1,7 @@
 package dev.mathops.db.logic.course;
 
-import dev.mathops.db.old.rawrecord.RawCsection;
-import dev.mathops.db.old.rawrecord.RawStcourse;
+import dev.mathops.db.schema.legacy.RawCsection;
+import dev.mathops.db.schema.legacy.RawStcourse;
 
 import java.time.LocalDate;
 

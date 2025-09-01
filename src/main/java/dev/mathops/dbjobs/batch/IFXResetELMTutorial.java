@@ -12,9 +12,9 @@ import dev.mathops.db.enums.ETermName;
 import dev.mathops.db.logic.SystemData;
 import dev.mathops.db.old.rawlogic.RawMpeCreditLogic;
 import dev.mathops.db.old.rawlogic.RawStexamLogic;
-import dev.mathops.db.old.rawrecord.RawMpeCredit;
-import dev.mathops.db.old.rawrecord.RawRecordConstants;
-import dev.mathops.db.old.rawrecord.RawStexam;
+import dev.mathops.db.schema.legacy.RawMpeCredit;
+import dev.mathops.db.schema.RawRecordConstants;
+import dev.mathops.db.schema.legacy.RawStexam;
 import dev.mathops.db.rec.TermRec;
 import dev.mathops.text.builder.HtmlBuilder;
 

@@ -2,7 +2,7 @@ package dev.mathops.db.old.logic;
 
 import dev.mathops.db.Cache;
 import dev.mathops.db.old.rawlogic.RawAdminHoldLogic;
-import dev.mathops.db.old.rawrecord.RawAdminHold;
+import dev.mathops.db.schema.legacy.RawAdminHold;
 
 import java.sql.SQLException;
 import java.util.Collections;

@@ -11,7 +11,7 @@ import dev.mathops.db.cfg.DatabaseConfig;
 import dev.mathops.db.cfg.Login;
 import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.old.rawlogic.RawFfrTrnsLogic;
-import dev.mathops.db.old.rawrecord.RawFfrTrns;
+import dev.mathops.db.schema.legacy.RawFfrTrns;
 import dev.mathops.text.builder.HtmlBuilder;
 
 import java.sql.ResultSet;

@@ -4,7 +4,7 @@ import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
 import dev.mathops.db.DbConnection;
 import dev.mathops.db.ESchema;
-import dev.mathops.db.old.rawrecord.RawStcunit;
+import dev.mathops.db.schema.legacy.RawStcunit;
 import dev.mathops.text.builder.SimpleBuilder;
 
 import java.sql.ResultSet;

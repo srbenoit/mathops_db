@@ -7,7 +7,7 @@ import dev.mathops.db.ESchema;
 import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.enums.ETermName;
 import dev.mathops.db.old.TestUtils;
-import dev.mathops.db.old.rawrecord.RawStmilestone;
+import dev.mathops.db.schema.legacy.RawStmilestone;
 import dev.mathops.db.type.TermKey;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;

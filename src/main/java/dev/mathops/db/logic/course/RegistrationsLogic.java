@@ -2,8 +2,8 @@ package dev.mathops.db.logic.course;
 
 import dev.mathops.db.Cache;
 import dev.mathops.db.old.rawlogic.RawStcourseLogic;
-import dev.mathops.db.old.rawrecord.RawRecordConstants;
-import dev.mathops.db.old.rawrecord.RawStcourse;
+import dev.mathops.db.schema.RawRecordConstants;
+import dev.mathops.db.schema.legacy.RawStcourse;
 import dev.mathops.db.rec.RecBase;
 import dev.mathops.db.rec.TermRec;
 

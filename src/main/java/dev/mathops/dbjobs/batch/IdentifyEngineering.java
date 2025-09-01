@@ -9,8 +9,8 @@ import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.enums.ETermName;
 import dev.mathops.db.old.rawlogic.RawApplicantLogic;
 import dev.mathops.db.old.rawlogic.RawSpecialStusLogic;
-import dev.mathops.db.old.rawrecord.RawApplicant;
-import dev.mathops.db.old.rawrecord.RawSpecialStus;
+import dev.mathops.db.schema.legacy.RawApplicant;
+import dev.mathops.db.schema.legacy.RawSpecialStus;
 import dev.mathops.db.type.TermKey;
 import dev.mathops.text.builder.HtmlBuilder;
 

@@ -1,8 +1,7 @@
 package dev.mathops.db.old.schema.csubanner;
 
 import dev.mathops.db.DbConnection;
-import dev.mathops.db.old.ifaces.ILiveRegSm;
-import dev.mathops.db.rec.LiveReg;
+import dev.mathops.db.schema.live.LiveReg;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -10,7 +9,7 @@ import java.util.List;
 /**
  * Implementation of the {@code ILiveReg} interface for the CSU Banner schema.
  */
-public final class ImplLiveRegSm extends AbstractImplLiveReg implements ILiveRegSm {
+public final class ImplLiveRegSm extends AbstractImplLiveReg {
 
     /** A single instance. */
     public static final ImplLiveRegSm INSTANCE = new ImplLiveRegSm();
@@ -45,9 +44,7 @@ public final class ImplLiveRegSm extends AbstractImplLiveReg implements ILiveReg
      * @return the list of models that matched the criteria, a zero-length array if none matched
      * @throws SQLException if there is an error performing the query
      */
-    @Override
-    public List<LiveReg> query(final DbConnection conn, final String studentId)
-            throws SQLException {
+    public List<LiveReg> query(final DbConnection conn, final String studentId) throws SQLException {
 
         final String sql = "SELECT * FROM CSUS_MATH_REGISTRATION_SMR WHERE CSU_ID='" + studentId + "'";
 

@@ -19,9 +19,9 @@ import dev.mathops.db.logic.mathplan.types.ERequirement;
 import dev.mathops.db.old.rawlogic.RawMpscorequeueLogic;
 import dev.mathops.db.old.rawlogic.RawStmathplanLogic;
 import dev.mathops.db.old.rawlogic.RawStudentLogic;
-import dev.mathops.db.old.rawrecord.RawMpscorequeue;
-import dev.mathops.db.old.rawrecord.RawStmathplan;
-import dev.mathops.db.old.rawrecord.RawStudent;
+import dev.mathops.db.schema.legacy.RawMpscorequeue;
+import dev.mathops.db.schema.legacy.RawStmathplan;
+import dev.mathops.db.schema.legacy.RawStudent;
 import dev.mathops.text.builder.HtmlBuilder;
 
 import java.sql.SQLException;

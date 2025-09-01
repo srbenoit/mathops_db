@@ -10,10 +10,10 @@ import dev.mathops.db.logic.SystemData;
 import dev.mathops.db.old.rawlogic.RawFfrTrnsLogic;
 import dev.mathops.db.old.rawlogic.RawMpeCreditLogic;
 import dev.mathops.db.old.rawlogic.RawStcourseLogic;
-import dev.mathops.db.old.rawrecord.RawFfrTrns;
-import dev.mathops.db.old.rawrecord.RawMpeCredit;
-import dev.mathops.db.old.rawrecord.RawRecordConstants;
-import dev.mathops.db.old.rawrecord.RawStcourse;
+import dev.mathops.db.schema.legacy.RawFfrTrns;
+import dev.mathops.db.schema.legacy.RawMpeCredit;
+import dev.mathops.db.schema.RawRecordConstants;
+import dev.mathops.db.schema.legacy.RawStcourse;
 import dev.mathops.db.rec.TermRec;
 
 import java.sql.SQLException;

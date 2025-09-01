@@ -4,8 +4,8 @@ import dev.mathops.commons.CoreConstants;
 import dev.mathops.commons.file.FileLoader;
 import dev.mathops.commons.log.Log;
 import dev.mathops.db.enums.ETermName;
-import dev.mathops.db.old.rawrecord.RawRecordConstants;
-import dev.mathops.db.old.rawrecord.RawStcourse;
+import dev.mathops.db.schema.RawRecordConstants;
+import dev.mathops.db.schema.legacy.RawStcourse;
 import dev.mathops.db.type.TermKey;
 
 import javax.swing.JFileChooser;

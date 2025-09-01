@@ -13,7 +13,7 @@ import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.enums.ETermName;
 import dev.mathops.db.logic.SystemData;
 import dev.mathops.db.old.rawlogic.RawGradeRollLogic;
-import dev.mathops.db.old.rawrecord.RawGradeRoll;
+import dev.mathops.db.schema.legacy.RawGradeRoll;
 import dev.mathops.db.rec.TermRec;
 import dev.mathops.db.type.TermKey;
 import dev.mathops.text.builder.HtmlBuilder;

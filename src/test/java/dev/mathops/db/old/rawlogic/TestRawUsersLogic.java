@@ -6,7 +6,7 @@ import dev.mathops.db.DbConnection;
 import dev.mathops.db.ESchema;
 import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.old.TestUtils;
-import dev.mathops.db.old.rawrecord.RawUsers;
+import dev.mathops.db.schema.legacy.RawUsers;
 import dev.mathops.db.type.TermKey;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;

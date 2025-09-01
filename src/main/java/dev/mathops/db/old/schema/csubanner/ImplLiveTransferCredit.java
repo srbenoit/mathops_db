@@ -2,9 +2,8 @@ package dev.mathops.db.old.schema.csubanner;
 
 import dev.mathops.db.Cache;
 import dev.mathops.db.DbConnection;
-import dev.mathops.db.old.ifaces.ILiveTransferCredit;
 import dev.mathops.db.old.schema.AbstractImpl;
-import dev.mathops.db.rec.LiveTransferCredit;
+import dev.mathops.db.schema.live.LiveTransferCredit;
 import dev.mathops.text.builder.HtmlBuilder;
 
 import java.sql.ResultSet;
@@ -14,7 +13,7 @@ import java.util.List;
 /**
  * Implementation of the {@code ILiveTransferCredit} interface for the CSU Banner schema.
  */
-public final class ImplLiveTransferCredit extends AbstractImpl<LiveTransferCredit> implements ILiveTransferCredit {
+public final class ImplLiveTransferCredit extends AbstractImpl<LiveTransferCredit> {
 
     /** The single instance. */
     public static final ImplLiveTransferCredit INSTANCE = new ImplLiveTransferCredit();
@@ -88,9 +87,7 @@ public final class ImplLiveTransferCredit extends AbstractImpl<LiveTransferCredi
      * @return the list of models that matched the criteria, a zero-length array if none matched
      * @throws SQLException if there is an error performing the query
      */
-    @Override
-    public List<LiveTransferCredit> query(final DbConnection conn, final String studentId)
-            throws SQLException {
+    public List<LiveTransferCredit> query(final DbConnection conn, final String studentId) throws SQLException {
 
         final HtmlBuilder builder = new HtmlBuilder(1000);
 

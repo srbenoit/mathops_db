@@ -6,7 +6,7 @@ import dev.mathops.db.Contexts;
 import dev.mathops.db.cfg.DatabaseConfig;
 import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.old.rawlogic.RawPendingExamLogic;
-import dev.mathops.db.old.rawrecord.RawPendingExam;
+import dev.mathops.db.schema.legacy.RawPendingExam;
 
 import java.sql.SQLException;
 import java.util.List;

@@ -10,10 +10,10 @@ import dev.mathops.db.old.rawlogic.RawParametersLogic;
 import dev.mathops.db.old.rawlogic.RawPlcFeeLogic;
 import dev.mathops.db.old.rawlogic.RawStmpeLogic;
 import dev.mathops.db.old.rawlogic.RawStudentLogic;
-import dev.mathops.db.old.rawrecord.RawParameters;
-import dev.mathops.db.old.rawrecord.RawPlcFee;
-import dev.mathops.db.old.rawrecord.RawStmpe;
-import dev.mathops.db.old.rawrecord.RawStudent;
+import dev.mathops.db.schema.legacy.RawParameters;
+import dev.mathops.db.schema.legacy.RawPlcFee;
+import dev.mathops.db.schema.legacy.RawStmpe;
+import dev.mathops.db.schema.legacy.RawStudent;
 import dev.mathops.text.builder.HtmlBuilder;
 
 import java.io.File;

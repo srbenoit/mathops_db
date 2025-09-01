@@ -6,7 +6,7 @@ import dev.mathops.db.DbConnection;
 import dev.mathops.db.ESchema;
 import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.old.TestUtils;
-import dev.mathops.db.old.rawrecord.RawCohort;
+import dev.mathops.db.schema.legacy.RawCohort;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;

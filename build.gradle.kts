@@ -1,3 +1,6 @@
+import org.gradle.internal.Try
+import org.gradle.kotlin.dsl.testRuntimeOnly
+
 plugins {
     id("java")
 }
@@ -26,6 +29,7 @@ dependencies {
 
     testImplementation(platform("org.junit:junit-bom:5.11.0-M1"))
     testImplementation("org.junit.jupiter:junit-jupiter:5.11.0-M1")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 tasks.test {

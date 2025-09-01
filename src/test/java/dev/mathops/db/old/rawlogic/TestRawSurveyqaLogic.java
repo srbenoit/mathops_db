@@ -8,7 +8,7 @@ import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.enums.ETermName;
 import dev.mathops.db.logic.SystemData;
 import dev.mathops.db.old.TestUtils;
-import dev.mathops.db.old.rawrecord.RawSurveyqa;
+import dev.mathops.db.schema.legacy.RawSurveyqa;
 import dev.mathops.db.rec.TermRec;
 import dev.mathops.db.reclogic.TermLogic;
 import dev.mathops.db.type.TermKey;

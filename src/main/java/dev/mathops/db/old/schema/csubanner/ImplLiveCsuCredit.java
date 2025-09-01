@@ -2,9 +2,8 @@ package dev.mathops.db.old.schema.csubanner;
 
 import dev.mathops.db.Cache;
 import dev.mathops.db.DbConnection;
-import dev.mathops.db.old.ifaces.ILiveCsuCredit;
 import dev.mathops.db.old.schema.AbstractImpl;
-import dev.mathops.db.rec.LiveCsuCredit;
+import dev.mathops.db.schema.live.LiveCsuCredit;
 import dev.mathops.text.builder.HtmlBuilder;
 
 import java.sql.ResultSet;
@@ -14,7 +13,7 @@ import java.util.List;
 /**
  * Implementation of the {@code ILiveCsuCredit} interface for the CSU Banner schema.
  */
-public final class ImplLiveCsuCredit extends AbstractImpl<LiveCsuCredit> implements ILiveCsuCredit {
+public final class ImplLiveCsuCredit extends AbstractImpl<LiveCsuCredit> {
 
     /** A single instance. */
     public static final ImplLiveCsuCredit INSTANCE = new ImplLiveCsuCredit();
@@ -88,7 +87,6 @@ public final class ImplLiveCsuCredit extends AbstractImpl<LiveCsuCredit> impleme
      * @return the list of models that matched the criteria, a zero-length array if none matched
      * @throws SQLException if there is an error performing the query
      */
-    @Override
     public List<LiveCsuCredit> query(final DbConnection conn, final String studentId)
             throws SQLException {
 

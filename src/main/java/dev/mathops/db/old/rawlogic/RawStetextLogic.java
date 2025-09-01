@@ -4,8 +4,8 @@ import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
 import dev.mathops.db.DbConnection;
 import dev.mathops.db.ESchema;
-import dev.mathops.db.old.rawrecord.RawEtextCourse;
-import dev.mathops.db.old.rawrecord.RawStetext;
+import dev.mathops.db.schema.legacy.RawEtextCourse;
+import dev.mathops.db.schema.legacy.RawStetext;
 import dev.mathops.text.builder.SimpleBuilder;
 
 import java.sql.ResultSet;

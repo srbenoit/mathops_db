@@ -7,7 +7,7 @@ import dev.mathops.db.ESchema;
 import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.logic.SystemData;
 import dev.mathops.db.old.TestUtils;
-import dev.mathops.db.old.rawrecord.RawPacingStructure;
+import dev.mathops.db.schema.legacy.RawPacingStructure;
 import dev.mathops.db.rec.TermRec;
 import dev.mathops.db.reclogic.TermLogic;
 import dev.mathops.db.type.TermKey;

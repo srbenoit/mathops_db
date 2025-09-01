@@ -3,7 +3,7 @@ package dev.mathops.db.old.rawlogic;
 import dev.mathops.db.Cache;
 import dev.mathops.db.DbConnection;
 import dev.mathops.db.ESchema;
-import dev.mathops.db.old.rawrecord.RawStmsg;
+import dev.mathops.db.schema.legacy.RawStmsg;
 import dev.mathops.text.builder.SimpleBuilder;
 
 import java.sql.ResultSet;

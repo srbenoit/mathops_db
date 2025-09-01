@@ -8,8 +8,8 @@ import dev.mathops.db.Cache;
 import dev.mathops.db.DbConnection;
 import dev.mathops.db.ESchema;
 import dev.mathops.db.old.DbUtils;
-import dev.mathops.db.old.rawrecord.RawMpscorequeue;
-import dev.mathops.db.old.rawrecord.RawRecordConstants;
+import dev.mathops.db.schema.legacy.RawMpscorequeue;
+import dev.mathops.db.schema.RawRecordConstants;
 import dev.mathops.text.builder.HtmlBuilder;
 import dev.mathops.text.builder.SimpleBuilder;
 

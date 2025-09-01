@@ -26,11 +26,11 @@ import dev.mathops.db.logic.mathplan.types.PickList;
 import dev.mathops.db.logic.placement.PlacementLogic;
 import dev.mathops.db.logic.placement.PlacementStatus;
 import dev.mathops.db.old.rawlogic.RawStmathplanLogic;
-import dev.mathops.db.old.rawrecord.RawFfrTrns;
-import dev.mathops.db.old.rawrecord.RawRecordConstants;
-import dev.mathops.db.old.rawrecord.RawStcourse;
-import dev.mathops.db.old.rawrecord.RawStmathplan;
-import dev.mathops.db.old.rawrecord.RawStudent;
+import dev.mathops.db.schema.legacy.RawFfrTrns;
+import dev.mathops.db.schema.RawRecordConstants;
+import dev.mathops.db.schema.legacy.RawStcourse;
+import dev.mathops.db.schema.legacy.RawStmathplan;
+import dev.mathops.db.schema.legacy.RawStudent;
 import dev.mathops.text.builder.HtmlBuilder;
 
 import javax.swing.BorderFactory;

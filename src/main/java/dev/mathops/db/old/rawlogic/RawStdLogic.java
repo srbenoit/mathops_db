@@ -2,7 +2,7 @@ package dev.mathops.db.old.rawlogic;
 
 import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
-import dev.mathops.db.old.rawrecord.RawStd;
+import dev.mathops.db.schema.legacy.RawStd;
 
 import java.util.ArrayList;
 import java.util.List;

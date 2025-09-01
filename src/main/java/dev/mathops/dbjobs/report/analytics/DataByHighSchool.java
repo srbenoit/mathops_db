@@ -9,9 +9,9 @@ import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.old.rawlogic.RawHighSchoolsLogic;
 import dev.mathops.db.old.rawlogic.RawStmpeLogic;
 import dev.mathops.db.old.rawlogic.RawStudentLogic;
-import dev.mathops.db.old.rawrecord.RawHighSchools;
-import dev.mathops.db.old.rawrecord.RawStmpe;
-import dev.mathops.db.old.rawrecord.RawStudent;
+import dev.mathops.db.schema.legacy.RawHighSchools;
+import dev.mathops.db.schema.legacy.RawStmpe;
+import dev.mathops.db.schema.legacy.RawStudent;
 import dev.mathops.text.builder.HtmlBuilder;
 import dev.mathops.text.builder.SimpleBuilder;
 

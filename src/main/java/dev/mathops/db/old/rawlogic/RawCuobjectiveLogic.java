@@ -3,7 +3,7 @@ package dev.mathops.db.old.rawlogic;
 import dev.mathops.db.Cache;
 import dev.mathops.db.DbConnection;
 import dev.mathops.db.ESchema;
-import dev.mathops.db.old.rawrecord.RawCuobjective;
+import dev.mathops.db.schema.legacy.RawCuobjective;
 import dev.mathops.db.type.TermKey;
 import dev.mathops.text.builder.SimpleBuilder;
 

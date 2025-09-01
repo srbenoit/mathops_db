@@ -3,8 +3,8 @@ package dev.mathops.dbjobs.eos.grading;
 import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
 import dev.mathops.db.old.rawlogic.RawStpaceSummaryLogic;
-import dev.mathops.db.old.rawrecord.RawStcourse;
-import dev.mathops.db.old.rawrecord.RawStpaceSummary;
+import dev.mathops.db.schema.legacy.RawStcourse;
+import dev.mathops.db.schema.legacy.RawStpaceSummary;
 
 import java.sql.SQLException;
 import java.util.HashMap;

@@ -4,7 +4,6 @@ import dev.mathops.db.logic.mathplan.majors.Major;
 import dev.mathops.db.logic.mathplan.types.ECourse;
 import dev.mathops.db.logic.mathplan.types.ERequirement;
 import dev.mathops.db.logic.mathplan.types.PickList;
-import dev.mathops.db.old.rawrecord.RawRecordConstants;
 import dev.mathops.text.builder.HtmlBuilder;
 
 import java.util.ArrayList;

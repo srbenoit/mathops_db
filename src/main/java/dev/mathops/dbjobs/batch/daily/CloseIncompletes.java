@@ -7,7 +7,7 @@ import dev.mathops.db.DbConnection;
 import dev.mathops.db.cfg.DatabaseConfig;
 import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.old.rawlogic.RawStcourseLogic;
-import dev.mathops.db.old.rawrecord.RawStcourse;
+import dev.mathops.db.schema.legacy.RawStcourse;
 
 import java.sql.SQLException;
 import java.time.LocalDate;

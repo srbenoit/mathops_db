@@ -3,7 +3,7 @@ package dev.mathops.db.logic;
 import dev.mathops.db.Cache;
 import dev.mathops.db.DbConnection;
 import dev.mathops.db.ESchema;
-import dev.mathops.db.old.rawrecord.RawWhichDb;
+import dev.mathops.db.schema.legacy.RawWhichDb;
 import dev.mathops.db.rec.term.CourseSurveyResponseItemChoiceRec;
 import dev.mathops.db.rec.term.CourseSurveyResponseItemTextRec;
 import dev.mathops.db.rec.term.CourseSurveyResponseRec;

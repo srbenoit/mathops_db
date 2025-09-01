@@ -10,13 +10,12 @@ import dev.mathops.db.cfg.DatabaseConfig;
 import dev.mathops.db.cfg.Login;
 import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.enums.ETermName;
-import dev.mathops.db.old.ifaces.ILiveStudent;
 import dev.mathops.db.old.rawlogic.RawApplicantLogic;
 import dev.mathops.db.old.rawlogic.RawStudentLogic;
-import dev.mathops.db.old.rawrecord.RawApplicant;
-import dev.mathops.db.old.rawrecord.RawStudent;
+import dev.mathops.db.schema.legacy.RawApplicant;
+import dev.mathops.db.schema.legacy.RawStudent;
 import dev.mathops.db.old.schema.csubanner.ImplLiveStudent;
-import dev.mathops.db.rec.LiveStudent;
+import dev.mathops.db.schema.live.LiveStudent;
 import dev.mathops.db.rec.TermRec;
 import dev.mathops.db.type.TermKey;
 import dev.mathops.text.builder.HtmlBuilder;
@@ -470,7 +469,7 @@ public final class ImportOdsApplicants {
 
         final Map<String, RawStudent> newMap = new HashMap<>(applicants.size());
 
-        final ILiveStudent impl = ImplLiveStudent.INSTANCE;
+        final ImplLiveStudent impl = ImplLiveStudent.INSTANCE;
 
         reconcileApplicants(cache, applicants.values());
 

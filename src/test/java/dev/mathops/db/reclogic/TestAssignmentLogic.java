@@ -10,7 +10,7 @@ import dev.mathops.db.cfg.DatabaseConfig;
 import dev.mathops.db.cfg.Facet;
 import dev.mathops.db.cfg.Login;
 import dev.mathops.db.cfg.Profile;
-import dev.mathops.db.old.rawrecord.RawRecordConstants;
+import dev.mathops.db.schema.RawRecordConstants;
 import dev.mathops.db.rec.AssignmentRec;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;

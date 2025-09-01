@@ -10,10 +10,10 @@ import dev.mathops.db.logic.course.PaceTrackLogic;
 import dev.mathops.db.old.rawlogic.RawCohortLogic;
 import dev.mathops.db.old.rawlogic.RawStcourseLogic;
 import dev.mathops.db.old.rawlogic.RawSttermLogic;
-import dev.mathops.db.old.rawrecord.RawCohort;
-import dev.mathops.db.old.rawrecord.RawRecordConstants;
-import dev.mathops.db.old.rawrecord.RawStcourse;
-import dev.mathops.db.old.rawrecord.RawStterm;
+import dev.mathops.db.schema.legacy.RawCohort;
+import dev.mathops.db.schema.RawRecordConstants;
+import dev.mathops.db.schema.legacy.RawStcourse;
+import dev.mathops.db.schema.legacy.RawStterm;
 import dev.mathops.db.rec.TermRec;
 import dev.mathops.text.builder.HtmlBuilder;
 

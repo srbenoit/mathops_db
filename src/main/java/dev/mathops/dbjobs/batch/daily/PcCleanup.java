@@ -7,7 +7,7 @@ import dev.mathops.db.DbConnection;
 import dev.mathops.db.cfg.DatabaseConfig;
 import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.old.rawlogic.RawClientPcLogic;
-import dev.mathops.db.old.rawrecord.RawClientPc;
+import dev.mathops.db.schema.legacy.RawClientPc;
 
 import java.sql.SQLException;
 import java.util.Arrays;

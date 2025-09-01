@@ -10,9 +10,9 @@ import dev.mathops.db.cfg.DatabaseConfig;
 import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.old.rawlogic.RawMpeCreditLogic;
 import dev.mathops.db.old.rawlogic.RawStmpeLogic;
-import dev.mathops.db.old.rawrecord.RawMpeCredit;
-import dev.mathops.db.old.rawrecord.RawRecordConstants;
-import dev.mathops.db.old.rawrecord.RawStmpe;
+import dev.mathops.db.schema.legacy.RawMpeCredit;
+import dev.mathops.db.schema.RawRecordConstants;
+import dev.mathops.db.schema.legacy.RawStmpe;
 import dev.mathops.text.builder.HtmlBuilder;
 
 import java.sql.SQLException;

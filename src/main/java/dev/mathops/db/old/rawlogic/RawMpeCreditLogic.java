@@ -5,8 +5,8 @@ import dev.mathops.db.Cache;
 import dev.mathops.db.DbConnection;
 import dev.mathops.db.EDbProduct;
 import dev.mathops.db.ESchema;
-import dev.mathops.db.old.rawrecord.RawMpeCredit;
-import dev.mathops.db.old.rawrecord.RawRecordConstants;
+import dev.mathops.db.schema.legacy.RawMpeCredit;
+import dev.mathops.db.schema.RawRecordConstants;
 import dev.mathops.text.builder.SimpleBuilder;
 
 import java.sql.ResultSet;

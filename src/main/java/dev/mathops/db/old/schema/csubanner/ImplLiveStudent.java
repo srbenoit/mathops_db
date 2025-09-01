@@ -4,9 +4,8 @@ import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
 import dev.mathops.db.DbConnection;
 import dev.mathops.db.enums.ETermName;
-import dev.mathops.db.old.ifaces.ILiveStudent;
 import dev.mathops.db.old.schema.AbstractImpl;
-import dev.mathops.db.rec.LiveStudent;
+import dev.mathops.db.schema.live.LiveStudent;
 import dev.mathops.db.type.TermKey;
 import dev.mathops.text.builder.HtmlBuilder;
 
@@ -17,7 +16,7 @@ import java.util.List;
 /**
  * Implementation of the {@code ILiveStudent} interface for the CSU Banner schema.
  */
-public final class ImplLiveStudent extends AbstractImpl<LiveStudent> implements ILiveStudent {
+public final class ImplLiveStudent extends AbstractImpl<LiveStudent> {
 
     /** The single instance. */
     public static final ImplLiveStudent INSTANCE = new ImplLiveStudent();
@@ -100,7 +99,6 @@ public final class ImplLiveStudent extends AbstractImpl<LiveStudent> implements 
      * @return the list of models that matched the criteria, a zero-length array if none matched
      * @throws SQLException if there is an error performing the query
      */
-    @Override
     public List<LiveStudent> query(final DbConnection conn, final String studentId) throws SQLException {
 
         final HtmlBuilder builder = new HtmlBuilder(1000);

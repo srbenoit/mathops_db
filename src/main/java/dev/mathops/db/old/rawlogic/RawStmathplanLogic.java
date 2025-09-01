@@ -1,12 +1,11 @@
 package dev.mathops.db.old.rawlogic;
 
 import dev.mathops.commons.TemporalUtils;
-import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
 import dev.mathops.db.DbConnection;
 import dev.mathops.db.ESchema;
 import dev.mathops.db.logic.mathplan.MathPlanConstants;
-import dev.mathops.db.old.rawrecord.RawStmathplan;
+import dev.mathops.db.schema.legacy.RawStmathplan;
 import dev.mathops.text.builder.SimpleBuilder;
 
 import java.sql.ResultSet;

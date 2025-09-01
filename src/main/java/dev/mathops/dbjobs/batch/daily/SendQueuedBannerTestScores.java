@@ -10,7 +10,7 @@ import dev.mathops.db.cfg.Login;
 import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.old.rawlogic.LogicUtils;
 import dev.mathops.db.old.rawlogic.RawMpscorequeueLogic;
-import dev.mathops.db.old.rawrecord.RawMpscorequeue;
+import dev.mathops.db.schema.legacy.RawMpscorequeue;
 import dev.mathops.text.builder.HtmlBuilder;
 
 import java.sql.SQLException;

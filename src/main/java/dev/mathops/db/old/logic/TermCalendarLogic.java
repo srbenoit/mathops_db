@@ -3,7 +3,7 @@ package dev.mathops.db.old.logic;
 import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
 import dev.mathops.db.logic.SystemData;
-import dev.mathops.db.old.rawrecord.RawCampusCalendar;
+import dev.mathops.db.schema.legacy.RawCampusCalendar;
 import dev.mathops.db.rec.TermWeekRec;
 
 import java.sql.SQLException;

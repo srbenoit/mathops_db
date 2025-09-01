@@ -11,7 +11,7 @@ import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.enums.ETermName;
 import dev.mathops.db.old.DbUtils;
 import dev.mathops.db.old.rawlogic.RawStudentLogic;
-import dev.mathops.db.old.rawrecord.RawStudent;
+import dev.mathops.db.schema.legacy.RawStudent;
 import dev.mathops.db.type.TermKey;
 import dev.mathops.text.builder.SimpleBuilder;
 

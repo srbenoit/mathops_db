@@ -2,7 +2,7 @@ package dev.mathops.db.old.logic;
 
 import dev.mathops.db.Cache;
 import dev.mathops.db.old.rawlogic.RawSpecialStusLogic;
-import dev.mathops.db.old.rawrecord.RawSpecialStus;
+import dev.mathops.db.schema.legacy.RawSpecialStus;
 
 import java.sql.SQLException;
 import java.time.LocalDate;

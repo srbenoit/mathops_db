@@ -3,7 +3,7 @@ package dev.mathops.db.logic.course;
 import dev.mathops.db.Cache;
 import dev.mathops.db.logic.SystemData;
 import dev.mathops.db.old.rawlogic.RawSthomeworkLogic;
-import dev.mathops.db.old.rawrecord.RawSthomework;
+import dev.mathops.db.schema.legacy.RawSthomework;
 import dev.mathops.db.rec.MasteryAttemptQaRec;
 import dev.mathops.db.rec.MasteryAttemptRec;
 import dev.mathops.db.rec.MasteryExamRec;

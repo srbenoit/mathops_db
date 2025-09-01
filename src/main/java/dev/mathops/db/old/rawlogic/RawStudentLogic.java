@@ -5,16 +5,14 @@ import dev.mathops.db.Cache;
 import dev.mathops.db.DbConnection;
 import dev.mathops.db.ESchema;
 import dev.mathops.db.enums.ETermName;
-import dev.mathops.db.old.ifaces.ILiveStudent;
-import dev.mathops.db.old.ifaces.ILiveTransferCredit;
-import dev.mathops.db.old.rawrecord.RawFfrTrns;
-import dev.mathops.db.old.rawrecord.RawPacingStructure;
-import dev.mathops.db.old.rawrecord.RawStudent;
+import dev.mathops.db.schema.legacy.RawFfrTrns;
+import dev.mathops.db.schema.legacy.RawPacingStructure;
+import dev.mathops.db.schema.legacy.RawStudent;
 import dev.mathops.db.old.schema.csubanner.ImplLiveStudent;
 import dev.mathops.db.old.schema.csubanner.ImplLiveTransferCredit;
-import dev.mathops.db.rec.LiveReg;
-import dev.mathops.db.rec.LiveStudent;
-import dev.mathops.db.rec.LiveTransferCredit;
+import dev.mathops.db.schema.live.LiveReg;
+import dev.mathops.db.schema.live.LiveStudent;
+import dev.mathops.db.schema.live.LiveTransferCredit;
 import dev.mathops.db.rec.TermRec;
 import dev.mathops.db.type.TermKey;
 import dev.mathops.text.builder.HtmlBuilder;
@@ -1727,8 +1725,8 @@ public enum RawStudentLogic {
         final DbConnection bannerConn = cache.checkOutConnection(ESchema.LIVE);
 
         try {
-            final ILiveStudent impl1 = ImplLiveStudent.INSTANCE;
-            final ILiveTransferCredit impl2 = ImplLiveTransferCredit.INSTANCE;
+            final ImplLiveStudent impl1 = ImplLiveStudent.INSTANCE;
+            final ImplLiveTransferCredit impl2 = ImplLiveTransferCredit.INSTANCE;
 
             result = fetchLiveStudent(cache, bannerConn, studentId, impl1, impl2);
         } catch (final SQLException ex) {
@@ -1754,8 +1752,8 @@ public enum RawStudentLogic {
      * @throws SQLException if there is an error accessing the database
      */
     private static RawStudent fetchLiveStudent(final Cache cache, final DbConnection bannerConn,
-                                               final String studentId, final ILiveStudent impl1,
-                                               final ILiveTransferCredit impl2) throws SQLException {
+                                               final String studentId, final ImplLiveStudent impl1,
+                                               final ImplLiveTransferCredit impl2) throws SQLException {
 
         RawStudent result = null;
 
@@ -1877,7 +1875,7 @@ public enum RawStudentLogic {
         final DbConnection bannerConn = cache.checkOutConnection(ESchema.LIVE);
 
         try {
-            final ILiveStudent impl1 = ImplLiveStudent.INSTANCE;
+            final ImplLiveStudent impl1 = ImplLiveStudent.INSTANCE;
 
             final List<LiveStudent> liveList = impl1.query(bannerConn, stuId);
 

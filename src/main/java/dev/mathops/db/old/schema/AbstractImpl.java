@@ -1,8 +1,7 @@
 package dev.mathops.db.old.schema;
 
+import dev.mathops.db.Cache;
 import dev.mathops.db.DbConnection;
-import dev.mathops.db.old.IDataDomainObject;
-import dev.mathops.db.old.IDataObject;
 
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -22,7 +21,7 @@ import java.util.List;
  *
  * @param <E> the type of record object
  */
-public abstract class AbstractImpl<E> implements IDataObject<E> {
+public abstract class AbstractImpl<E> implements Comparable<AbstractImpl<?>> {
 
     /** The lowest three-digit number. */
     private static final int MAX_TWO_DIGIT = 99;
@@ -43,6 +42,33 @@ public abstract class AbstractImpl<E> implements IDataObject<E> {
 
         super();
     }
+
+    /**
+     * Returns the total number of objects in the database.
+     *
+     * @param conn the database connection, checked out to this thread
+     * @return the number of objects in the database
+     * @throws SQLException if there is an error performing the query
+     */
+    public abstract int count(DbConnection conn) throws SQLException;
+
+    /**
+     * Queries the database table to verify we are connected to a "TEST" database, then deletes all records in the
+     * table.
+     *
+     * @param cache the data cache
+     * @throws SQLException if there is an error performing the query
+     */
+    public abstract void clean(Cache cache) throws SQLException;
+
+    /**
+     * Queries every record in the database, in no particular order.
+     *
+     * @param conn the database connection, checked out to this thread
+     * @return the complete set of records in the database
+     * @throws SQLException if there is an error performing the query
+     */
+    public abstract List<E> queryAll(DbConnection conn) throws SQLException;
 
     /**
      * Extracts a named string value from a result set, trimming off any leading or trailing spaces.
@@ -278,8 +304,7 @@ public abstract class AbstractImpl<E> implements IDataObject<E> {
      * @return a negative integer, zero, or a positive integer as this object is less than, equal to, or greater than
      *         the specified object
      */
-    @Override
-    public final int compareTo(final IDataDomainObject obj) {
+    public final int compareTo(final AbstractImpl<?> obj) {
 
         return getClass().getSimpleName().compareTo(obj.getClass().getSimpleName());
     }

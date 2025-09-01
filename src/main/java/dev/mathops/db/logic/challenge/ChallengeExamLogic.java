@@ -6,9 +6,9 @@ import dev.mathops.db.Cache;
 import dev.mathops.db.logic.course.PrerequisiteLogic;
 import dev.mathops.db.old.rawlogic.RawStchallengeLogic;
 import dev.mathops.db.old.rawlogic.RawStcourseLogic;
-import dev.mathops.db.old.rawrecord.RawRecordConstants;
-import dev.mathops.db.old.rawrecord.RawStchallenge;
-import dev.mathops.db.old.rawrecord.RawStcourse;
+import dev.mathops.db.schema.RawRecordConstants;
+import dev.mathops.db.schema.legacy.RawStchallenge;
+import dev.mathops.db.schema.legacy.RawStcourse;
 import dev.mathops.db.rec.TermRec;
 
 import java.sql.SQLException;
