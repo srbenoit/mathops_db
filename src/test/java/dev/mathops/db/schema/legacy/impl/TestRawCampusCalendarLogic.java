@@ -252,15 +252,15 @@ final class TestRawCampusCalendarLogic {
 
                 } else if (date3.equals(r.campusDt)
                            && RawCampusCalendar.DT_DESC_HOLIDAY.equals(r.dtDesc)
-                           && "9:01 am".equals(r.openTime1)
-                           && "6:31 pm".equals(r.openTime2)
-                           && "1:00 pm".equals(r.openTime3)
-                           && "4:01 pm".equals(r.closeTime1)
-                           && "9:01 pm".equals(r.closeTime2)
-                           && "5:00 pm".equals(r.closeTime3)
-                           && "Mon-Fri".equals(r.weekdays1)
-                           && "Mon-Thu".equals(r.weekdays2)
-                           && "Sat".equals(r.weekdays3)) {
+                           && "9:02 am".equals(r.openTime1)
+                           && "6:32 pm".equals(r.openTime2)
+                           && r.openTime3 == null
+                           && "4:02 pm".equals(r.closeTime1)
+                           && "9:02 pm".equals(r.closeTime2)
+                           && r.closeTime3 == null
+                           && "Monday-Friday".equals(r.weekdays1)
+                           && "Monday-Thursday".equals(r.weekdays2)
+                           && r.weekdays3 == null) {
                     found3 = true;
 
                 } else {

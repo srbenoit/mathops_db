@@ -78,7 +78,7 @@ public enum RawCampusCalendarLogic {
                 conn.sqlStringValue(record.closeTime2), ",",
                 conn.sqlStringValue(record.closeTime3), ",",
                 conn.sqlStringValue(record.weekdays1), ",",
-                conn.sqlStringValue(record.weekdays2), ")",
+                conn.sqlStringValue(record.weekdays2), ",",
                 conn.sqlStringValue(record.weekdays3), ")");
 
         try (final Statement stmt = conn.createStatement()) {
