@@ -43,7 +43,7 @@ public final class UpdatedValues {
      *                                  defines, a field value does not satisfy a field role or constraint, or there
      *                                  were no field values provided
      */
-    public UpdatedValues(final Table theTable, final Object... theFieldValues) throws IllegalArgumentException {
+    public UpdatedValues(final Table theTable, final Object... theFieldValues) {
 
         if (theTable == null) {
             throw new IllegalArgumentException("Table may not be null");

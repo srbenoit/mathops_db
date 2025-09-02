@@ -2,10 +2,10 @@ package dev.mathops.dbjobs.eos.grading;
 
 import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
-import dev.mathops.db.old.rawlogic.RawCsectionLogic;
-import dev.mathops.db.schema.legacy.RawCsection;
-import dev.mathops.db.schema.legacy.RawStcourse;
-import dev.mathops.db.type.TermKey;
+import dev.mathops.db.schema.legacy.impl.RawCsectionLogic;
+import dev.mathops.db.schema.legacy.rec.RawCsection;
+import dev.mathops.db.schema.legacy.rec.RawStcourse;
+import dev.mathops.db.field.TermKey;
 
 import java.sql.SQLException;
 

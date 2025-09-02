@@ -1,7 +1,7 @@
 package dev.mathops.dbjobs.batch;
 
 import dev.mathops.commons.log.Log;
-import dev.mathops.db.schema.legacy.RawStudent;
+import dev.mathops.db.schema.legacy.rec.RawStudent;
 
 import java.io.File;
 

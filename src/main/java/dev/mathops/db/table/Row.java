@@ -36,7 +36,7 @@ public final class Row {
      * @throws IllegalArgumentException if the table name is null, there are more field values provided than the
      * table defines, or a field value does not satisfy a field role or constraint
      */
-    public Row(final Table theTable, final Object... theFieldValues) throws IllegalArgumentException {
+    public Row(final Table theTable, final Object... theFieldValues) {
 
         if (theTable == null) {
             throw new IllegalArgumentException("Table may not be null");

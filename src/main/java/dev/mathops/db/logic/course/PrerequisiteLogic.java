@@ -2,19 +2,19 @@ package dev.mathops.db.logic.course;
 
 import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
-import dev.mathops.db.Contexts;
+import dev.mathops.db.cfg.Contexts;
 import dev.mathops.db.DbConnection;
 import dev.mathops.db.cfg.DatabaseConfig;
 import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.logic.SystemData;
-import dev.mathops.db.old.rawlogic.RawFfrTrnsLogic;
-import dev.mathops.db.old.rawlogic.RawMpeCreditLogic;
-import dev.mathops.db.old.rawlogic.RawStcourseLogic;
-import dev.mathops.db.schema.legacy.RawFfrTrns;
-import dev.mathops.db.schema.legacy.RawMpeCredit;
+import dev.mathops.db.schema.legacy.impl.RawFfrTrnsLogic;
+import dev.mathops.db.schema.legacy.impl.RawMpeCreditLogic;
+import dev.mathops.db.schema.legacy.impl.RawStcourseLogic;
+import dev.mathops.db.schema.legacy.rec.RawFfrTrns;
+import dev.mathops.db.schema.legacy.rec.RawMpeCredit;
 import dev.mathops.db.schema.RawRecordConstants;
-import dev.mathops.db.schema.legacy.RawStcourse;
-import dev.mathops.db.rec.TermRec;
+import dev.mathops.db.schema.legacy.rec.RawStcourse;
+import dev.mathops.db.schema.main.rec.TermRec;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

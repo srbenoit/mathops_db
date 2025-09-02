@@ -4,14 +4,14 @@ import dev.mathops.commons.CoreConstants;
 import dev.mathops.commons.EDebugMode;
 import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
-import dev.mathops.db.Contexts;
+import dev.mathops.db.cfg.Contexts;
 import dev.mathops.db.DbConnection;
-import dev.mathops.db.ESchema;
+import dev.mathops.db.schema.ESchema;
 import dev.mathops.db.cfg.DatabaseConfig;
 import dev.mathops.db.cfg.Login;
 import dev.mathops.db.cfg.Profile;
-import dev.mathops.db.old.rawlogic.RawFfrTrnsLogic;
-import dev.mathops.db.schema.legacy.RawFfrTrns;
+import dev.mathops.db.schema.legacy.impl.RawFfrTrnsLogic;
+import dev.mathops.db.schema.legacy.rec.RawFfrTrns;
 import dev.mathops.text.builder.HtmlBuilder;
 
 import java.sql.ResultSet;

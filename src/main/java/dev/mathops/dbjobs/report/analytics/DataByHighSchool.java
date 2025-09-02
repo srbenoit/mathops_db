@@ -6,12 +6,12 @@ import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
 import dev.mathops.db.cfg.DatabaseConfig;
 import dev.mathops.db.cfg.Profile;
-import dev.mathops.db.old.rawlogic.RawHighSchoolsLogic;
-import dev.mathops.db.old.rawlogic.RawStmpeLogic;
-import dev.mathops.db.old.rawlogic.RawStudentLogic;
-import dev.mathops.db.schema.legacy.RawHighSchools;
-import dev.mathops.db.schema.legacy.RawStmpe;
-import dev.mathops.db.schema.legacy.RawStudent;
+import dev.mathops.db.schema.legacy.impl.RawHighSchoolsLogic;
+import dev.mathops.db.schema.legacy.impl.RawStmpeLogic;
+import dev.mathops.db.schema.legacy.impl.RawStudentLogic;
+import dev.mathops.db.schema.legacy.rec.RawHighSchools;
+import dev.mathops.db.schema.legacy.rec.RawStmpe;
+import dev.mathops.db.schema.legacy.rec.RawStudent;
 import dev.mathops.text.builder.HtmlBuilder;
 import dev.mathops.text.builder.SimpleBuilder;
 

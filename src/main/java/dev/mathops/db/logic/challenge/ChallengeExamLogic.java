@@ -4,12 +4,12 @@ import dev.mathops.commons.CoreConstants;
 import dev.mathops.commons.TemporalUtils;
 import dev.mathops.db.Cache;
 import dev.mathops.db.logic.course.PrerequisiteLogic;
-import dev.mathops.db.old.rawlogic.RawStchallengeLogic;
-import dev.mathops.db.old.rawlogic.RawStcourseLogic;
+import dev.mathops.db.schema.legacy.impl.RawStchallengeLogic;
+import dev.mathops.db.schema.legacy.impl.RawStcourseLogic;
 import dev.mathops.db.schema.RawRecordConstants;
-import dev.mathops.db.schema.legacy.RawStchallenge;
-import dev.mathops.db.schema.legacy.RawStcourse;
-import dev.mathops.db.rec.TermRec;
+import dev.mathops.db.schema.legacy.rec.RawStchallenge;
+import dev.mathops.db.schema.legacy.rec.RawStcourse;
+import dev.mathops.db.schema.main.rec.TermRec;
 
 import java.sql.SQLException;
 import java.time.LocalDate;

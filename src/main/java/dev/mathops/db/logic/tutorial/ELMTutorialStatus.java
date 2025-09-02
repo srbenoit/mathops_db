@@ -3,17 +3,17 @@ package dev.mathops.db.logic.tutorial;
 import dev.mathops.db.Cache;
 import dev.mathops.db.logic.DateRange;
 import dev.mathops.db.logic.DateRangeGroups;
-import dev.mathops.db.old.logic.HoldsStatus;
-import dev.mathops.db.old.rawlogic.RawSpecialStusLogic;
-import dev.mathops.db.old.rawlogic.RawStexamLogic;
-import dev.mathops.db.old.rawlogic.RawStmpeLogic;
-import dev.mathops.db.old.rawlogic.RawStudentLogic;
-import dev.mathops.db.schema.legacy.RawCampusCalendar;
+import dev.mathops.db.schema.legacy.impl.RawSpecialStusLogic;
+import dev.mathops.db.schema.legacy.impl.RawStexamLogic;
+import dev.mathops.db.schema.legacy.impl.RawStmpeLogic;
+import dev.mathops.db.schema.legacy.impl.RawStudentLogic;
+import dev.mathops.db.schema.legacy.rec.RawAdminHold;
+import dev.mathops.db.schema.legacy.rec.RawCampusCalendar;
 import dev.mathops.db.schema.RawRecordConstants;
-import dev.mathops.db.schema.legacy.RawSpecialStus;
-import dev.mathops.db.schema.legacy.RawStexam;
-import dev.mathops.db.schema.legacy.RawStmpe;
-import dev.mathops.db.schema.legacy.RawStudent;
+import dev.mathops.db.schema.legacy.rec.RawSpecialStus;
+import dev.mathops.db.schema.legacy.rec.RawStexam;
+import dev.mathops.db.schema.legacy.rec.RawStmpe;
+import dev.mathops.db.schema.legacy.rec.RawStudent;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -31,7 +31,7 @@ public final class ELMTutorialStatus {
     public final RawStudent student;
 
     /** All holds the student currently has. */
-    public final HoldsStatus holds;
+    public final List<RawAdminHold> holds;
 
     /**
      * Flag indicating student has completed the math placement tool and is eligible for the ELM Tutorial.
@@ -72,7 +72,7 @@ public final class ELMTutorialStatus {
      * @param theStudent the student record
      * @param theHolds   the holds status
      */
-    private ELMTutorialStatus(final RawStudent theStudent, final HoldsStatus theHolds) {
+    private ELMTutorialStatus(final RawStudent theStudent, final List<RawAdminHold> theHolds) {
 
         this.student = theStudent;
         this.holds = theHolds;
@@ -89,7 +89,7 @@ public final class ELMTutorialStatus {
      * @throws SQLException if there is an error accessing the database
      */
     public static ELMTutorialStatus of(final Cache cache, final String theStudentId, final ZonedDateTime now,
-                                       final HoldsStatus theHolds) throws SQLException {
+                                       final List<RawAdminHold> theHolds) throws SQLException {
 
         return of(cache, RawStudentLogic.query(cache, theStudentId, false), now, theHolds);
     }
@@ -105,7 +105,7 @@ public final class ELMTutorialStatus {
      * @throws SQLException if there is an error accessing the database
      */
     public static ELMTutorialStatus of(final Cache cache, final RawStudent theStudent, final ZonedDateTime now,
-                                       final HoldsStatus theHolds) throws SQLException {
+                                       final List<RawAdminHold> theHolds) throws SQLException {
 
         final ELMTutorialStatus status = new ELMTutorialStatus(theStudent, theHolds);
 

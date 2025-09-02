@@ -1,7 +1,6 @@
 package dev.mathops.db.logic;
 
 import dev.mathops.commons.CoreConstants;
-import dev.mathops.commons.TemporalUtils;
 import dev.mathops.text.builder.HtmlBuilder;
 
 import java.time.chrono.ChronoLocalDate;
@@ -34,26 +33,26 @@ public final class DateRangeGroups {
     public DateRangeGroups(final Collection<DateRange> theRanges, final ChronoLocalDate today) {
 
         final int numRanges = theRanges.size();
-        final List<DateRange> p = new ArrayList<>(numRanges);
-        final List<DateRange> f = new ArrayList<>(numRanges);
+        final List<DateRange> tempPast = new ArrayList<>(numRanges);
+        final List<DateRange> tempFuture = new ArrayList<>(numRanges);
 
-        DateRange c = null;
+        DateRange tempCurrent = null;
         for (final DateRange test : theRanges) {
             if (test.endsBefore(today)) {
-                p.add(test);
+                tempPast.add(test);
             } else if (test.startsAfter(today)) {
-                f.add(test);
+                tempFuture.add(test);
             } else {
-                c = test;
+                tempCurrent = test;
             }
         }
 
-        Collections.sort(p);
-        Collections.sort(f);
+        Collections.sort(tempPast);
+        Collections.sort(tempFuture);
 
-        this.past = Collections.unmodifiableList(p);
-        this.current = c;
-        this.future = Collections.unmodifiableList(f);
+        this.past = Collections.unmodifiableList(tempPast);
+        this.current = tempCurrent;
+        this.future = Collections.unmodifiableList(tempFuture);
     }
 
     /**
@@ -73,7 +72,9 @@ public final class DateRangeGroups {
      */
     public List<DateRange> getAll() {
 
-        final List<DateRange> all = new ArrayList<>(this.past.size() + 1 + this.future.size());
+        final int numPast = this.past.size();
+        final int numFuture = this.future.size();
+        final List<DateRange> all = new ArrayList<>(numPast + 1 + numFuture);
 
         all.addAll(this.past);
         if (this.current != null) {

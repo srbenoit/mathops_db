@@ -1,7 +1,5 @@
 package dev.mathops.db.cfg;
 
-import dev.mathops.db.EDbProduct;
-
 import java.util.ArrayList;
 import java.util.List;
 

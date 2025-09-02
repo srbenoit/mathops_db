@@ -1,6 +1,5 @@
 package dev.mathops.db.logic.mathplan.majors;
 
-import dev.mathops.commons.log.Log;
 import dev.mathops.db.logic.mathplan.MathPlanConstants;
 import dev.mathops.db.logic.mathplan.types.EMajorTrack;
 import dev.mathops.db.logic.mathplan.types.ERequirement;

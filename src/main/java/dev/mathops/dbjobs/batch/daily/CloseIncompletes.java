@@ -2,12 +2,12 @@ package dev.mathops.dbjobs.batch.daily;
 
 import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
-import dev.mathops.db.Contexts;
+import dev.mathops.db.cfg.Contexts;
 import dev.mathops.db.DbConnection;
 import dev.mathops.db.cfg.DatabaseConfig;
 import dev.mathops.db.cfg.Profile;
-import dev.mathops.db.old.rawlogic.RawStcourseLogic;
-import dev.mathops.db.schema.legacy.RawStcourse;
+import dev.mathops.db.schema.legacy.impl.RawStcourseLogic;
+import dev.mathops.db.schema.legacy.rec.RawStcourse;
 
 import java.sql.SQLException;
 import java.time.LocalDate;

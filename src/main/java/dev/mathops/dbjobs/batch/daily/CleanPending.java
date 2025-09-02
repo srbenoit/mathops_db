@@ -2,11 +2,11 @@ package dev.mathops.dbjobs.batch.daily;
 
 import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
-import dev.mathops.db.Contexts;
+import dev.mathops.db.cfg.Contexts;
 import dev.mathops.db.cfg.DatabaseConfig;
 import dev.mathops.db.cfg.Profile;
-import dev.mathops.db.old.rawlogic.RawPendingExamLogic;
-import dev.mathops.db.schema.legacy.RawPendingExam;
+import dev.mathops.db.schema.legacy.impl.RawPendingExamLogic;
+import dev.mathops.db.schema.legacy.rec.RawPendingExam;
 
 import java.sql.SQLException;
 import java.util.List;

@@ -2,15 +2,15 @@ package dev.mathops.dbjobs.batch.daily;
 
 import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
-import dev.mathops.db.Contexts;
+import dev.mathops.db.cfg.Contexts;
 import dev.mathops.db.DbConnection;
-import dev.mathops.db.ESchema;
+import dev.mathops.db.schema.ESchema;
 import dev.mathops.db.cfg.DatabaseConfig;
 import dev.mathops.db.cfg.Login;
 import dev.mathops.db.cfg.Profile;
-import dev.mathops.db.old.rawlogic.LogicUtils;
-import dev.mathops.db.old.rawlogic.RawMpscorequeueLogic;
-import dev.mathops.db.schema.legacy.RawMpscorequeue;
+import dev.mathops.db.schema.LogicUtils;
+import dev.mathops.db.schema.legacy.impl.RawMpscorequeueLogic;
+import dev.mathops.db.schema.legacy.rec.RawMpscorequeue;
 import dev.mathops.text.builder.HtmlBuilder;
 
 import java.sql.SQLException;

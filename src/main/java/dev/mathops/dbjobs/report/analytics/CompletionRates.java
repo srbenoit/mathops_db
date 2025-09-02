@@ -3,10 +3,10 @@ package dev.mathops.dbjobs.report.analytics;
 import dev.mathops.commons.CoreConstants;
 import dev.mathops.commons.file.FileLoader;
 import dev.mathops.commons.log.Log;
-import dev.mathops.db.enums.ETermName;
+import dev.mathops.db.field.ETermName;
 import dev.mathops.db.schema.RawRecordConstants;
-import dev.mathops.db.schema.legacy.RawStcourse;
-import dev.mathops.db.type.TermKey;
+import dev.mathops.db.schema.legacy.rec.RawStcourse;
+import dev.mathops.db.field.TermKey;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;

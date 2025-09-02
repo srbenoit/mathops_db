@@ -2,17 +2,17 @@ package dev.mathops.dbjobs.batch;
 
 import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
-import dev.mathops.db.Contexts;
+import dev.mathops.db.cfg.Contexts;
 import dev.mathops.db.DbConnection;
-import dev.mathops.db.ESchema;
+import dev.mathops.db.schema.ESchema;
 import dev.mathops.db.cfg.DatabaseConfig;
 import dev.mathops.db.cfg.Login;
 import dev.mathops.db.cfg.Profile;
-import dev.mathops.db.enums.ETermName;
-import dev.mathops.db.old.DbUtils;
-import dev.mathops.db.old.rawlogic.RawStudentLogic;
-import dev.mathops.db.schema.legacy.RawStudent;
-import dev.mathops.db.type.TermKey;
+import dev.mathops.db.field.ETermName;
+import dev.mathops.db.schema.DbUtils;
+import dev.mathops.db.schema.legacy.impl.RawStudentLogic;
+import dev.mathops.db.schema.legacy.rec.RawStudent;
+import dev.mathops.db.field.TermKey;
 import dev.mathops.text.builder.SimpleBuilder;
 
 import java.sql.ResultSet;

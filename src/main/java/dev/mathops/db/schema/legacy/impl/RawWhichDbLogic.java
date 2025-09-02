@@ -1,0 +1,74 @@
+package dev.mathops.db.schema.legacy.impl;
+
+import dev.mathops.commons.log.Log;
+import dev.mathops.db.Cache;
+import dev.mathops.db.DbConnection;
+import dev.mathops.db.schema.ESchema;
+import dev.mathops.db.schema.legacy.rec.RawWhichDb;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+/**
+ * A utility class to work with which_db records. Note that it is not possible to change this table through code, since
+ * this table's data identifies the database.
+ *
+ * <pre>
+ * Table:  'which_db'
+ *
+ * Column name          Type                      Nulls   Key
+ * -------------------  ------------------------  ------  -----
+ * descr                char(6)                   no      PK
+ * </pre>
+ */
+public enum RawWhichDbLogic {
+    ;
+
+    /**
+     * Gets the qualified table name for a LEGACY table based on the Cache being used.
+     *
+     * @param cache the data cache
+     * @return the table name
+     */
+    public static String getTableName(final Cache cache) {
+
+        final String schemaPrefix = cache.getSchemaPrefix(ESchema.LEGACY);
+
+        return schemaPrefix == null ? "which_db" : (schemaPrefix + ".which_db");
+    }
+
+    /**
+     * Gets the first record found in a query of all records (there should be only one).
+     *
+     * @param cache the data cache
+     * @return the record
+     * @throws SQLException if there is an error accessing the database
+     */
+    public static RawWhichDb query(final Cache cache) throws SQLException {
+
+        RawWhichDb result = null;
+
+        final String tableName = getTableName(cache);
+
+        final DbConnection conn = cache.checkOutConnection(ESchema.LEGACY);
+
+        try (final Statement stmt = conn.createStatement();
+             final ResultSet rs = stmt.executeQuery("SELECT * FROM " + tableName)) {
+
+            if (rs.next()) {
+                result = RawWhichDb.fromResultSet(rs);
+                if (rs.next()) {
+                    Log.warning("Multiple 'which_db' rows found!");
+                }
+            }
+        } catch (final SQLException ex) {
+            conn.rollback();
+            throw ex;
+        } finally {
+            Cache.checkInConnection(conn);
+        }
+
+        return result;
+    }
+}

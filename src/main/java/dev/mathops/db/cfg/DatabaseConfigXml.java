@@ -2,9 +2,7 @@ package dev.mathops.db.cfg;
 
 import dev.mathops.commons.file.FileLoader;
 import dev.mathops.commons.installation.PathList;
-import dev.mathops.db.EDbProduct;
-import dev.mathops.db.EDbUse;
-import dev.mathops.db.ESchema;
+import dev.mathops.db.schema.ESchema;
 import dev.mathops.text.parser.ParsingException;
 import dev.mathops.text.parser.xml.IElement;
 import dev.mathops.text.parser.xml.NonemptyElement;

@@ -7,9 +7,9 @@ import dev.mathops.db.logic.StudentData;
 import dev.mathops.db.logic.mathplan.types.EMathPlanStatus;
 import dev.mathops.db.logic.mathplan.majors.Major;
 import dev.mathops.db.logic.mathplan.majors.Majors;
-import dev.mathops.db.old.rawlogic.RawStmathplanLogic;
-import dev.mathops.db.schema.legacy.RawStmathplan;
-import dev.mathops.db.schema.legacy.RawStudent;
+import dev.mathops.db.schema.legacy.impl.RawStmathplanLogic;
+import dev.mathops.db.schema.legacy.rec.RawStmathplan;
+import dev.mathops.db.schema.legacy.rec.RawStudent;
 
 import java.sql.SQLException;
 import java.time.LocalDate;

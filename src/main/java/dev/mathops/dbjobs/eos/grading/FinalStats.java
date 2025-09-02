@@ -4,10 +4,10 @@ import dev.mathops.commons.EDebugMode;
 import dev.mathops.commons.ESuccessFailure;
 import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
-import dev.mathops.db.old.rawlogic.RawStcourseLogic;
+import dev.mathops.db.schema.legacy.impl.RawStcourseLogic;
 import dev.mathops.db.schema.RawRecordConstants;
-import dev.mathops.db.schema.legacy.RawStcourse;
-import dev.mathops.db.type.TermKey;
+import dev.mathops.db.schema.legacy.rec.RawStcourse;
+import dev.mathops.db.field.TermKey;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

@@ -2,19 +2,19 @@ package dev.mathops.dbjobs.batch;
 
 import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
-import dev.mathops.db.Contexts;
+import dev.mathops.db.cfg.Contexts;
 import dev.mathops.db.DbConnection;
 import dev.mathops.db.cfg.DatabaseConfig;
 import dev.mathops.db.cfg.Profile;
 import dev.mathops.db.logic.course.PaceTrackLogic;
-import dev.mathops.db.old.rawlogic.RawCohortLogic;
-import dev.mathops.db.old.rawlogic.RawStcourseLogic;
-import dev.mathops.db.old.rawlogic.RawSttermLogic;
-import dev.mathops.db.schema.legacy.RawCohort;
+import dev.mathops.db.schema.legacy.impl.RawCohortLogic;
+import dev.mathops.db.schema.legacy.impl.RawStcourseLogic;
+import dev.mathops.db.schema.legacy.impl.RawSttermLogic;
+import dev.mathops.db.schema.legacy.rec.RawCohort;
 import dev.mathops.db.schema.RawRecordConstants;
-import dev.mathops.db.schema.legacy.RawStcourse;
-import dev.mathops.db.schema.legacy.RawStterm;
-import dev.mathops.db.rec.TermRec;
+import dev.mathops.db.schema.legacy.rec.RawStcourse;
+import dev.mathops.db.schema.legacy.rec.RawStterm;
+import dev.mathops.db.schema.main.rec.TermRec;
 import dev.mathops.text.builder.HtmlBuilder;
 
 import java.sql.SQLException;

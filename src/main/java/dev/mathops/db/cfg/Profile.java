@@ -1,7 +1,7 @@
 package dev.mathops.db.cfg;
 
 import dev.mathops.commons.CoreConstants;
-import dev.mathops.db.ESchema;
+import dev.mathops.db.schema.ESchema;
 
 import java.util.ArrayList;
 import java.util.Collection;

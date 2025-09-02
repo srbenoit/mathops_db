@@ -1,4 +1,4 @@
 /**
- * Record classes that represent the records in the "legacy" schema.
+ * The "legacy" schema.
  */
 package dev.mathops.db.schema.legacy;

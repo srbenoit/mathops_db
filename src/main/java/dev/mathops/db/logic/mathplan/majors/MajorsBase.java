@@ -1,10 +1,5 @@
 package dev.mathops.db.logic.mathplan.majors;
 
-import dev.mathops.commons.log.Log;
-import dev.mathops.db.logic.mathplan.types.ECourse;
-import dev.mathops.db.logic.mathplan.types.EIdealFirstTermType;
-import dev.mathops.db.logic.mathplan.types.IdealFirstTerm;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

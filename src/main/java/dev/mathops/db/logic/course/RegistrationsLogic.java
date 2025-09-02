@@ -1,11 +1,11 @@
 package dev.mathops.db.logic.course;
 
 import dev.mathops.db.Cache;
-import dev.mathops.db.old.rawlogic.RawStcourseLogic;
+import dev.mathops.db.schema.legacy.impl.RawStcourseLogic;
 import dev.mathops.db.schema.RawRecordConstants;
-import dev.mathops.db.schema.legacy.RawStcourse;
-import dev.mathops.db.rec.RecBase;
-import dev.mathops.db.rec.TermRec;
+import dev.mathops.db.schema.legacy.rec.RawStcourse;
+import dev.mathops.db.schema.RecBase;
+import dev.mathops.db.schema.main.rec.TermRec;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

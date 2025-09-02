@@ -17,7 +17,7 @@ final class Res extends ResBundle {
     //
 
     /** The resources - an array of key-values pairs. */
-    private static final String[][] EN_US = { //
+    private static final String[][] EN_US = {
 
             {DAT_END_PRECEDES_START, "End date may not precede start date."},
     };
@@ -42,18 +42,5 @@ final class Res extends ResBundle {
     public static String get(final String key) {
 
         return instance.getMsg(key);
-    }
-
-    /**
-     * Retrieves the message with a specified key, then uses a {@code MessageFormat} to format that message pattern with
-     * a collection of arguments.
-     *
-     * @param key       the message key
-     * @param arguments the arguments, as for {@code MessageFormat}
-     * @return the formatted string (never {@code null})
-     */
-    public static String fmt(final String key, final Object... arguments) {
-
-        return instance.formatMsg(key, arguments);
     }
 }

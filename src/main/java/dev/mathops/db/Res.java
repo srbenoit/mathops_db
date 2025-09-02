@@ -9,47 +9,30 @@ import java.util.Locale;
  */
 final class Res extends ResBundle {
 
-    /** An incrementing index for resource keys. */
-    private static int index = 1;
-
     // Used by DbConnection
 
     /** A resource key. */
-    static final String DB_CONN_REG_IFX = key(index++);
+    static final String DB_CONN_REG_IFX = key(1);
 
     /** A resource key. */
-    static final String DB_CONN_REG_IFX_FAIL = key(index++);
+    static final String DB_CONN_REG_IFX_FAIL = key(2);
 
     /** A resource key. */
-    static final String DB_CONN_REG_ORA = key(index++);
+    static final String DB_CONN_REG_ORA = key(3);
 
     /** A resource key. */
-    static final String DB_CONN_REG_ORA_FAIL = key(index++);
+    static final String DB_CONN_REG_ORA_FAIL = key(4);
 
     /** A resource key. */
-    static final String DB_CONN_REG_PG = key(index++);
+    static final String DB_CONN_REG_PG = key(5);
 
     /** A resource key. */
-    static final String DB_CONN_REG_PG_FAIL = key(index++);
-
-    // Used by DbContext
-
-    /** A resource key. */
-    static final String DB_CTX_NULL_SCHEMA = key(index++);
-
-    /** A resource key. */
-    static final String DB_CTX_NULL_DRIVER = key(index++);
-
-    /** A resource key. */
-    static final String DB_CTX_MANY_CONNECTIONS = key(index++);
-
-    /** A resource key. */
-    static final String DB_CTX_NOT_CHECKED_IN = key(index++);
+    static final String DB_CONN_REG_PG_FAIL = key(6);
 
     //
 
     /** The resources - an array of key-values pairs. */
-    private static final String[][] EN_US = { //
+    private static final String[][] EN_US = {
 
             {DB_CONN_REG_IFX, "Registering Informix JDBC driver"},
             {DB_CONN_REG_IFX_FAIL, "Failed to register Informix JDBC driver"},
@@ -57,13 +40,6 @@ final class Res extends ResBundle {
             {DB_CONN_REG_ORA_FAIL, "Failed to register Oracle JDBC driver"},
             {DB_CONN_REG_PG, "Registering PostgreSQL JDBC driver"},
             {DB_CONN_REG_PG_FAIL, "Failed to register PostgreSQL JDBC driver"},
-
-            {DB_CTX_NULL_SCHEMA, "Null schema provided"},
-            {DB_CTX_NULL_DRIVER, "Null driver configuration provided"},
-            {DB_CTX_MANY_CONNECTIONS, "Pool for {0}/{1} has {2} connetions checked out"},
-            {DB_CTX_NOT_CHECKED_IN, "Connection checked in that was not checked out!"},
-
-            //
     };
 
     /** The singleton instance. */
@@ -86,18 +62,5 @@ final class Res extends ResBundle {
     static String get(final String key) {
 
         return instance.getMsg(key);
-    }
-
-    /**
-     * Retrieves the message with a specified key, then uses a {@code MessageFormat} to format that message pattern with
-     * a collection of arguments.
-     *
-     * @param key       the message key
-     * @param arguments the arguments, as for {@code MessageFormat}
-     * @return the formatted string (never {@code null})
-     */
-    static String fmt(final String key, final Object... arguments) {
-
-        return instance.formatMsg(key, arguments);
     }
 }

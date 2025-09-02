@@ -2,8 +2,8 @@ package dev.mathops.dbjobs.report;
 
 import dev.mathops.commons.log.Log;
 import dev.mathops.db.DbConnection;
-import dev.mathops.db.EDbUse;
-import dev.mathops.db.ESchema;
+import dev.mathops.db.cfg.EDbUse;
+import dev.mathops.db.schema.ESchema;
 import dev.mathops.db.cfg.Data;
 import dev.mathops.db.cfg.Database;
 import dev.mathops.db.cfg.DatabaseConfig;

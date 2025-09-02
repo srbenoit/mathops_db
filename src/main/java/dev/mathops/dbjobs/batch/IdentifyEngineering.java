@@ -2,16 +2,16 @@ package dev.mathops.dbjobs.batch;
 
 import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
-import dev.mathops.db.Contexts;
+import dev.mathops.db.cfg.Contexts;
 import dev.mathops.db.DbConnection;
 import dev.mathops.db.cfg.DatabaseConfig;
 import dev.mathops.db.cfg.Profile;
-import dev.mathops.db.enums.ETermName;
-import dev.mathops.db.old.rawlogic.RawApplicantLogic;
-import dev.mathops.db.old.rawlogic.RawSpecialStusLogic;
-import dev.mathops.db.schema.legacy.RawApplicant;
-import dev.mathops.db.schema.legacy.RawSpecialStus;
-import dev.mathops.db.type.TermKey;
+import dev.mathops.db.field.ETermName;
+import dev.mathops.db.schema.legacy.impl.RawApplicantLogic;
+import dev.mathops.db.schema.legacy.impl.RawSpecialStusLogic;
+import dev.mathops.db.schema.legacy.rec.RawApplicant;
+import dev.mathops.db.schema.legacy.rec.RawSpecialStus;
+import dev.mathops.db.field.TermKey;
 import dev.mathops.text.builder.HtmlBuilder;
 
 import java.sql.SQLException;

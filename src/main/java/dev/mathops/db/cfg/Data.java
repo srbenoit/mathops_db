@@ -1,7 +1,6 @@
 package dev.mathops.db.cfg;
 
-import dev.mathops.db.EDbUse;
-import dev.mathops.db.ESchema;
+import dev.mathops.db.schema.ESchema;
 
 /**
  * A "data" object from the database configuration file.

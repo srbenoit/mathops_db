@@ -1,6 +1,5 @@
 package dev.mathops.db.logic.mathplan;
 
-import dev.mathops.commons.log.Log;
 import dev.mathops.db.logic.mathplan.majors.Major;
 import dev.mathops.db.logic.mathplan.types.ENextStep;
 import dev.mathops.text.builder.HtmlBuilder;

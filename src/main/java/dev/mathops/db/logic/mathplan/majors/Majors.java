@@ -1,8 +1,5 @@
 package dev.mathops.db.logic.mathplan.majors;
 
-import dev.mathops.commons.log.Log;
-import dev.mathops.text.builder.HtmlBuilder;
-
 /**
  * A utility class to look up majors.
  */

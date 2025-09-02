@@ -1,6 +1,6 @@
 package dev.mathops.db.course;
 
-import dev.mathops.db.rec.main.StandardsCourseRec;
+import dev.mathops.db.schema.main.rec.StandardsCourseRec;
 import dev.mathops.text.parser.json.JSONObject;
 
 import java.io.File;

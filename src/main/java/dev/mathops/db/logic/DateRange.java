@@ -29,7 +29,8 @@ public final class DateRange implements Comparable<DateRange> {
     public DateRange(final LocalDate theStart, final LocalDate theEnd) {
 
         if (theStart != null && theEnd != null && theEnd.isBefore(theStart)) {
-            throw new IllegalArgumentException(Res.get(Res.DAT_END_PRECEDES_START));
+            final String msg = Res.get(Res.DAT_END_PRECEDES_START);
+            throw new IllegalArgumentException(msg);
         }
 
         this.start = theStart;

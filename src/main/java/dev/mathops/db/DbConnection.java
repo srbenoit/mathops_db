@@ -1,9 +1,9 @@
 package dev.mathops.db;
 
 import dev.mathops.commons.log.Log;
+import dev.mathops.db.cfg.EDbProduct;
 import dev.mathops.db.cfg.Login;
-import dev.mathops.db.type.TermKey;
-import dev.mathops.text.builder.HtmlBuilder;
+import dev.mathops.db.field.TermKey;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

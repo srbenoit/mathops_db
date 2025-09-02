@@ -2,13 +2,13 @@ package dev.mathops.db.logic.course;
 
 import dev.mathops.db.Cache;
 import dev.mathops.db.logic.SystemData;
-import dev.mathops.db.old.rawlogic.RawSthomeworkLogic;
-import dev.mathops.db.schema.legacy.RawSthomework;
-import dev.mathops.db.rec.MasteryAttemptQaRec;
-import dev.mathops.db.rec.MasteryAttemptRec;
-import dev.mathops.db.rec.MasteryExamRec;
-import dev.mathops.db.reclogic.MasteryAttemptLogic;
-import dev.mathops.db.reclogic.MasteryAttemptQaLogic;
+import dev.mathops.db.schema.legacy.impl.RawSthomeworkLogic;
+import dev.mathops.db.schema.legacy.rec.RawSthomework;
+import dev.mathops.db.schema.term.rec.MasteryAttemptQaRec;
+import dev.mathops.db.schema.term.rec.MasteryAttemptRec;
+import dev.mathops.db.schema.main.rec.MasteryExamRec;
+import dev.mathops.db.schema.main.impl.MasteryAttemptLogic;
+import dev.mathops.db.schema.main.impl.MasteryAttemptQaLogic;
 import dev.mathops.text.builder.SimpleBuilder;
 
 import java.sql.SQLException;

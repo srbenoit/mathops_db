@@ -1,7 +1,7 @@
 package dev.mathops.db.logic.course;
 
-import dev.mathops.db.rec.StandardMilestoneRec;
-import dev.mathops.db.rec.StuStandardMilestoneRec;
+import dev.mathops.db.schema.term.rec.StandardMilestoneRec;
+import dev.mathops.db.schema.term.rec.StuStandardMilestoneRec;
 
 import java.time.LocalDate;
 

@@ -9,8 +9,9 @@ import dev.mathops.db.logic.MainData;
 import dev.mathops.db.logic.StudentData;
 import dev.mathops.db.logic.SystemData;
 import dev.mathops.db.logic.TermData;
-import dev.mathops.db.old.rawlogic.RawStudentLogic;
-import dev.mathops.db.schema.legacy.RawStudent;
+import dev.mathops.db.schema.legacy.impl.RawStudentLogic;
+import dev.mathops.db.schema.ESchema;
+import dev.mathops.db.schema.legacy.rec.RawStudent;
 
 import java.util.HashMap;
 import java.util.Map;

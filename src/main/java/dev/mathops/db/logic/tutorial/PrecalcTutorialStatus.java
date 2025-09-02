@@ -1,7 +1,7 @@
 package dev.mathops.db.logic.tutorial;
 
 import dev.mathops.db.logic.DateRangeGroups;
-import dev.mathops.db.schema.legacy.RawAdminHold;
+import dev.mathops.db.schema.legacy.rec.RawAdminHold;
 
 import java.util.ArrayList;
 import java.util.HashSet;

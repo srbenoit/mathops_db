@@ -2,7 +2,6 @@ package dev.mathops.db.cfg;
 
 import dev.mathops.commons.CoreConstants;
 import dev.mathops.commons.log.Log;
-import dev.mathops.db.EDbProduct;
 import dev.mathops.text.builder.HtmlBuilder;
 
 import java.net.URLEncoder;

@@ -3,25 +3,26 @@ package dev.mathops.db.logic.placement;
 import dev.mathops.commons.TemporalUtils;
 import dev.mathops.commons.log.Log;
 import dev.mathops.db.Cache;
-import dev.mathops.db.Contexts;
 import dev.mathops.db.DbConnection;
+import dev.mathops.db.cfg.Contexts;
 import dev.mathops.db.cfg.DatabaseConfig;
 import dev.mathops.db.cfg.Profile;
-import dev.mathops.db.enums.ETermName;
+import dev.mathops.db.field.ETermName;
+import dev.mathops.db.field.TermKey;
 import dev.mathops.db.logic.DateRange;
 import dev.mathops.db.logic.DateRangeGroups;
+import dev.mathops.db.logic.SpecialCategoriesLogic;
 import dev.mathops.db.logic.SystemData;
-import dev.mathops.db.old.logic.SpecialCategoriesStatus;
-import dev.mathops.db.old.rawlogic.RawMpeCreditLogic;
-import dev.mathops.db.old.rawlogic.RawStmpeLogic;
-import dev.mathops.db.old.rawlogic.RawStudentLogic;
-import dev.mathops.db.schema.legacy.RawMpeCredit;
 import dev.mathops.db.schema.RawRecordConstants;
-import dev.mathops.db.schema.legacy.RawRemoteMpe;
-import dev.mathops.db.schema.legacy.RawSpecialStus;
-import dev.mathops.db.schema.legacy.RawStmpe;
-import dev.mathops.db.schema.legacy.RawStudent;
-import dev.mathops.db.type.TermKey;
+import dev.mathops.db.schema.legacy.impl.RawMpeCreditLogic;
+import dev.mathops.db.schema.legacy.impl.RawSpecialStusLogic;
+import dev.mathops.db.schema.legacy.impl.RawStmpeLogic;
+import dev.mathops.db.schema.legacy.impl.RawStudentLogic;
+import dev.mathops.db.schema.legacy.rec.RawMpeCredit;
+import dev.mathops.db.schema.legacy.rec.RawRemoteMpe;
+import dev.mathops.db.schema.legacy.rec.RawSpecialStus;
+import dev.mathops.db.schema.legacy.rec.RawStmpe;
+import dev.mathops.db.schema.legacy.rec.RawStudent;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -155,7 +156,7 @@ public class PlacementLogic {
     private final List<RawMpeCredit> allPlacementCredit;
 
     /** All special categories to which the student currently belongs. */
-    private final SpecialCategoriesStatus allSpecials;
+    private final List<RawSpecialStus> allSpecials;
 
     /** The student's status with respect to the math placement tool. */
     public final PlacementStatus status;
@@ -189,7 +190,7 @@ public class PlacementLogic {
         this.student = RawStudentLogic.query(cache, this.studentId, false);
         this.allAttempts = RawStmpeLogic.queryLegalByStudent(cache, this.studentId);
         this.allPlacementCredit = RawMpeCreditLogic.queryByStudent(cache, this.studentId);
-        this.allSpecials = SpecialCategoriesStatus.of(cache, this.studentId);
+        this.allSpecials = RawSpecialStusLogic.queryByStudent(cache, this.studentId);
 
         final LocalDate today = now.toLocalDate();
         computeStatus(cache, today);
@@ -224,7 +225,7 @@ public class PlacementLogic {
             int numCountedAttempts = 0;
 
             int maxTries = MAX_TOTAL_PLACEMENT_ATTEMPTS;
-            for (final RawSpecialStus test : this.allSpecials.getActive(today)) {
+            for (final RawSpecialStus test : SpecialCategoriesLogic.getActive(this.allSpecials, today)) {
                 if ("MPT3".equals(test.stuType)) {
                     ++maxTries;
                 }
@@ -318,7 +319,7 @@ public class PlacementLogic {
         // indicates DCE students are allowed unproctored attempts, add a synthetic remote MPE
         // record to the list with date ranges from the special student record
 
-        final List<RawSpecialStus> active = this.allSpecials.getActive(today);
+        final List<RawSpecialStus> active = SpecialCategoriesLogic.getActive(this.allSpecials, today);
 
         if (IS_DCE_ALLOWED_UNPROCTORED) {
             for (final RawSpecialStus spec : active) {
